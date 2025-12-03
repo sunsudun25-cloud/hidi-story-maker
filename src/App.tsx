@@ -3,7 +3,6 @@ import Layout from './components/Layout'
 import Welcome from './pages/Welcome'
 import OnboardingLogin from './pages/OnboardingLogin'
 import Home from './pages/Home'
-import Draw from './pages/Draw'
 import DrawStart from './pages/DrawStart'
 import DrawPractice from './pages/DrawPractice'
 import DrawDirect from './pages/DrawDirect'
@@ -16,23 +15,23 @@ import './App.css'
 function App() {
   return (
     <BrowserRouter>
-      <div className="App">
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/onboarding" element={<OnboardingLogin />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/draw" element={<Draw />} />
-            <Route path="/draw/start" element={<DrawStart />} />
-            <Route path="/draw/practice" element={<DrawPractice />} />
-            <Route path="/draw/direct" element={<DrawDirect />} />
-            <Route path="/write" element={<Write />} />
-            <Route path="/storybook" element={<Storybook />} />
-            <Route path="/my-works" element={<MyWorks />} />
-            <Route path="/goods" element={<Goods />} />
-          </Route>
-        </Routes>
-      </div>
+      <Routes>
+        {/* 헤더가 필요 없는 페이지 */}
+        <Route path="/" element={<Welcome />} />
+        <Route path="/onboarding" element={<OnboardingLogin />} />
+        <Route path="/home" element={<Home />} />
+
+        {/* 나머지 페이지는 Layout으로 감싸기 */}
+        <Route element={<Layout />}>
+          <Route path="/drawing/start" element={<DrawStart />} />
+          <Route path="/drawing/practice" element={<DrawPractice />} />
+          <Route path="/drawing/direct" element={<DrawDirect />} />
+          <Route path="/write" element={<Write />} />
+          <Route path="/storybook" element={<Storybook />} />
+          <Route path="/my-works" element={<MyWorks />} />
+          <Route path="/goods" element={<Goods />} />
+        </Route>
+      </Routes>
     </BrowserRouter>
   )
 }

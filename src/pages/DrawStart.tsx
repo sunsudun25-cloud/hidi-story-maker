@@ -12,7 +12,7 @@ export default function DrawStart() {
       <div className="draw-start-buttons">
         <button
           className="draw-mode-btn practice-btn"
-          onClick={() => navigate("/draw/practice")}
+          onClick={() => navigate("/drawing/practice")}
         >
           <span className="btn-emoji">🎨</span>
           <span className="btn-label">연습하기</span>
@@ -21,7 +21,7 @@ export default function DrawStart() {
 
         <button
           className="draw-mode-btn direct-btn"
-          onClick={() => navigate("/draw/direct")}
+          onClick={() => navigate("/drawing/direct")}
         >
           <span className="btn-emoji">✏️</span>
           <span className="btn-label">직접입력</span>

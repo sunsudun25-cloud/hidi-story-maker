@@ -9,7 +9,7 @@ export default function Home() {
       <h2 className="home-title">무엇을 만들어볼까요?</h2>
 
       <div className="grid-row">
-        <button className="menu-card yellow" onClick={() => navigate("/draw")}>
+        <button className="menu-card yellow" onClick={() => navigate("/drawing/start")}>
           <span className="emoji">🌈</span>
           <span className="label">그림 만들기</span>
         </button>

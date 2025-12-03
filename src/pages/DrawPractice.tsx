@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import TopHeader from "../components/TopHeader";
 import "./DrawPractice.css";
 
 type ExamplePrompt = {
@@ -139,9 +140,9 @@ export default function DrawPractice() {
   };
 
   return (
-    <div className="practice-page">
-      {/* 상단 제목 영역은 기존 스타일을 그대로 사용하셔도 됩니다 */}
-      <h2 className="practice-title">연습하기</h2>
+    <>
+      <TopHeader title="연습하기" />
+      <div className="practice-page">
 
       <section className="practice-box">
         <div className="practice-subtitle">
@@ -216,5 +217,6 @@ export default function DrawPractice() {
         </button>
       </div>
     </div>
+    </>
   );
 }

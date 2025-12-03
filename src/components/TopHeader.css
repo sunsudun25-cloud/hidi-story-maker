@@ -1,63 +1,36 @@
-/* TopHeader.css - 고령친화 UI */
-
-.top-header-wrapper {
+.header-container {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.header-btn {
-  width: 48px;
-  height: 48px;
-  border: none;
-  background: transparent;
-  font-size: 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  transition: all 0.2s ease;
-  color: #333;
-}
-
-.header-btn:hover {
-  background: #f5f5f5;
-}
-
-.header-btn:active {
-  background: #e8e8e8;
+  padding: 14px 20px;
+  background: #bcdcff; /* 고령친화형 파스텔 블루 배경 */
+  border-bottom: 1px solid #e3e3e3;
+  box-sizing: border-box;
 }
 
 .header-title {
   font-size: 20px;
   font-weight: 700;
-  color: #333;
-  margin: 0;
-  flex: 1;
-  text-align: center;
+  color: #222;
 }
 
-/* 모바일 */
-@media (max-width: 480px) {
-  .top-header-wrapper {
-    padding: 12px 16px;
-  }
+.header-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  font-size: 18px;
+  cursor: pointer;
+}
 
-  .header-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 22px;
-  }
+.header-btn:hover {
+  background: #f3f3f3;
+}
 
-  .header-title {
-    font-size: 18px;
-  }
+.header-placeholder {
+  width: 40px;
+  height: 40px;
 }

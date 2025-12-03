@@ -7,7 +7,7 @@ export default function TopHeader({ title }: { title: string }) {
   const navigate = useNavigate();
 
   return (
-    <div className="top-header-wrapper">
+    <div className="header-container">
       <button className="header-btn" onClick={() => navigate(-1)}>
         ←
       </button>

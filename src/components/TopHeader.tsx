@@ -1,22 +1,56 @@
-// src/components/TopHeader.tsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "./TopHeader.css";
 
-export default function TopHeader({ title }: { title: string }) {
+interface HeaderProps {
+  title: string;
+  onBack?: () => void;
+  onHome?: () => void;
+}
+
+export default function TopHeader({ title, onBack, onHome }: HeaderProps) {
   const navigate = useNavigate();
 
   return (
-    <div className="header-container">
-      <button className="header-btn" onClick={() => navigate(-1)}>
+    <header
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "12px 20px",
+        background: "#A8CBFF",
+        borderBottomLeftRadius: "16px",
+        borderBottomRightRadius: "16px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        fontSize: "20px",
+        fontWeight: 700,
+      }}
+    >
+      <button
+        style={iconBtn}
+        onClick={onBack ?? (() => navigate(-1))}
+      >
         ←
       </button>
 
-      <h2 className="header-title">{title}</h2>
+      <span>{title}</span>
 
-      <button className="header-btn" onClick={() => navigate("/home")}>
+      <button
+        style={iconBtn}
+        onClick={onHome ?? (() => navigate("/home"))}
+      >
         🏠
       </button>
-    </div>
+    </header>
   );
 }
+
+const iconBtn = {
+  width: "40px",
+  height: "40px",
+  background: "white",
+  borderRadius: "50%",
+  border: "none",
+  fontSize: "20px",
+  cursor: "pointer",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+};

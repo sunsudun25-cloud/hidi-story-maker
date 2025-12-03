@@ -6,9 +6,10 @@ export default function DrawDirect() {
     <>
       <TopHeader title="직접입력" />
 
-      <div style={{ padding: "24px", fontSize: "20px" }}>
-        <h2>직접입력 페이지입니다.</h2>
-        <p>원하는 그림을 직접 그려보세요.</p>
+      {/* 기존 직접입력 페이지 내용 */}
+      <div style={{ padding: "20px" }}>
+        <p>원하는 그림을 직접 설명하고 만들어 보세요.</p>
+        {/* ... 나머지 내용 ... */}
       </div>
     </>
   );

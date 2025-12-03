@@ -1,194 +1,86 @@
-/* Home.css - 고령친화 UI 스타일 */
-
 .home-container {
-  min-height: 100vh;
-  padding: 40px 20px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 32px;
+  padding: 24px;
+  text-align: center;
+  font-family: "Pretendard", sans-serif;
 }
 
 .home-title {
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 8px 0;
-  text-align: center;
+  margin-bottom: 24px;
+  color: #333;
 }
 
 .grid-row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  width: 100%;
-  max-width: 800px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .full-row {
-  width: 100%;
-  max-width: 800px;
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
 }
 
 .menu-card {
+  width: 150px;
+  height: 150px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 32px 20px;
-  border: none;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  min-height: 160px;
-  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  transition: transform 0.15s ease;
 }
 
 .menu-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-.menu-card:active {
-  transform: translateY(-2px);
+.menu-card .emoji {
+  font-size: 40px;
+  margin-bottom: 8px;
 }
 
-.emoji {
-  font-size: 56px;
-  line-height: 1;
-}
+/* 색상 */
 
-.label {
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-/* 색상 테마 */
 .yellow {
-  background: linear-gradient(135deg, #FFE66D 0%, #FFD93D 100%);
-  color: #333;
-}
-
-.yellow:hover {
-  background: linear-gradient(135deg, #FFD93D 0%, #FFC93D 100%);
+  background-color: #ffe888;
 }
 
 .green {
-  background: linear-gradient(135deg, #6BCF7F 0%, #4CAF50 100%);
-  color: white;
-}
-
-.green:hover {
-  background: linear-gradient(135deg, #5ABF6E 0%, #45A049 100%);
+  background-color: #c8f7cb;
 }
 
 .mint {
-  background: linear-gradient(135deg, #80DEEA 0%, #4DD0E1 100%);
-  color: white;
-}
-
-.mint:hover {
-  background: linear-gradient(135deg, #6FD4E0 0%, #3CC5D6 100%);
+  background-color: #b6f0f6;
 }
 
 .blue {
-  background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
-  color: white;
-}
-
-.blue:hover {
-  background: linear-gradient(135deg, #53ABF0 0%, #3B9BEB 100%);
+  background-color: #bcdcff;
 }
 
 .purple {
-  background: linear-gradient(135deg, #BA68C8 0%, #AB47BC 100%);
-  color: white;
+  background-color: #e5d1ff;
 }
 
-.purple:hover {
-  background: linear-gradient(135deg, #AF5DBE 0%, #A140B2 100%);
-}
+/* 하단 메뉴 */
 
-/* 하단 링크 */
 .other-device {
-  margin-top: 24px;
-  padding: 16px 24px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  font-size: 16px;
+  margin-top: 20px;
   color: #666;
+  font-size: 16px;
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.other-device:hover {
-  background: #f8f8f8;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .gear {
-  font-size: 20px;
-}
-
-/* 태블릿 */
-@media (max-width: 768px) {
-  .home-title {
-    font-size: 28px;
-  }
-
-  .menu-card {
-    min-height: 140px;
-    padding: 28px 16px;
-  }
-
-  .emoji {
-    font-size: 48px;
-  }
-
-  .label {
-    font-size: 18px;
-  }
-}
-
-/* 모바일 */
-@media (max-width: 480px) {
-  .home-container {
-    padding: 24px 16px;
-    gap: 24px;
-  }
-
-  .home-title {
-    font-size: 24px;
-  }
-
-  .grid-row {
-    gap: 16px;
-  }
-
-  .menu-card {
-    min-height: 120px;
-    padding: 24px 12px;
-    gap: 12px;
-  }
-
-  .emoji {
-    font-size: 40px;
-  }
-
-  .label {
-    font-size: 16px;
-  }
-
-  .other-device {
-    font-size: 14px;
-    padding: 14px 20px;
-  }
+  margin-right: 6px;
 }

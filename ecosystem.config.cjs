@@ -3,10 +3,10 @@ module.exports = {
     {
       name: 'webapp',
       script: 'npx',
-      args: 'vite preview --host 0.0.0.0 --port 3000',
+      args: 'vite --host 0.0.0.0 --port 3000',
       cwd: '/home/user/webapp',
       env: {
-        NODE_ENV: 'production',
+        NODE_ENV: 'development',
         PORT: 3000
       },
       watch: false,

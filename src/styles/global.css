@@ -1,0 +1,95 @@
+/* ===== Global Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Pretendard", sans-serif;
+}
+
+body {
+  background: #F8F7FE; /* 따뜻한 연라일락 톤 */
+  color: #222;
+  line-height: 1.6;
+}
+
+/* ===== Page Wrapper ===== */
+.page-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* ===== Title ===== */
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 16px;
+  color: #3F3A77; /* 메인 컬러 강조 */
+}
+
+/* ===== Subtitle ===== */
+.page-subtitle {
+  text-align: center;
+  font-size: 18px;
+  color: #6A6A6A;
+  margin-bottom: 24px;
+}
+
+/* ===== Main Button (Primary) ===== */
+.btn-primary {
+  width: 100%;
+  padding: 18px;
+  font-size: 20px;
+  font-weight: 600;
+  border-radius: 14px;
+  border: none;
+  color: white;
+  background: linear-gradient(90deg, #6C63FF, #8B74FF);
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+  cursor: pointer;
+}
+
+/* ===== Sub Button ===== */
+.btn-sub {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 18px;
+  border: 2px solid #6C63FF;
+  color: #6C63FF;
+  background: white;
+  margin-top: 12px;
+}
+
+/* ===== Card ===== */
+.option-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ===== Chip ===== */
+.chip {
+  display: inline-block;
+  background: #86E3CE;
+  color: #222;
+  padding: 10px 16px;
+  border-radius: 20px;
+  margin: 6px;
+  font-size: 16px;
+}
+
+/* ===== Small Tip Box ===== */
+.tip-box {
+  background: #FFFBEA;
+  border-left: 4px solid #FFD56B;
+  padding: 12px;
+  margin: 14px 0;
+  font-size: 15px;
+}

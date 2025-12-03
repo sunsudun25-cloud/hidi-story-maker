@@ -1,23 +1,20 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Welcome from './pages/Welcome'
+import OnboardingLogin from './pages/OnboardingLogin'
+import Home from './pages/Home'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>React + TypeScript</h1>
-        <div className="card">
-          <button onClick={() => setCount((count) => count + 1)}>
-            count is {count}
-          </button>
-        </div>
-        <p className="read-the-docs">
-          React와 TypeScript를 사용한 기본 프로젝트입니다.
-        </p>
-      </header>
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Welcome />} />
+          <Route path="/onboarding" element={<OnboardingLogin />} />
+          <Route path="/home" element={<Home />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   )
 }
 

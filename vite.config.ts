@@ -12,19 +12,17 @@ export default defineConfig({
     }
   },
   server: {
-    host: '0.0.0.0',
+    host: true,
     port: 3000,
     strictPort: true,
-    allowedHosts: [
-      "*.sandbox.novita.ai"
-    ]
+    hmr: {
+      host: '3000-i5dcsscuqxml7neuit43a-de59bda9.sandbox.novita.ai',
+      protocol: 'wss'
+    }
   },
   preview: {
-    host: '0.0.0.0',
+    host: true,
     port: 3000,
-    strictPort: true,
-    allowedHosts: [
-      "*.sandbox.novita.ai"
-    ]
+    strictPort: true
   }
 })

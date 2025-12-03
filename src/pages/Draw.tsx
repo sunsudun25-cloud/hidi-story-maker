@@ -1,9 +1,7 @@
 import React from "react";
+import { Navigate } from "react-router-dom";
 
 export default function Draw() {
-  return (
-    <div style={{ padding: "24px", fontSize: "20px" }}>
-      그림 만들기 페이지입니다.
-    </div>
-  );
+  // /draw로 접근하면 /draw/start로 리다이렉트
+  return <Navigate to="/draw/start" replace />;
 }

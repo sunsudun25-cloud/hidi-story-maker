@@ -1,24 +1,220 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import "./DrawPractice.css";
+
+type ExamplePrompt = {
+  label: string;
+  text: string;
+};
+
+type StyleOption = {
+  id: string;
+  label: string;
+  description: string;
+};
+
+const EXAMPLES: ExamplePrompt[] = [
+  {
+    label: "귀여운 고양이",
+    text: "햇살이 들어오는 창가에 앉아 있는 귀여운 고양이",
+  },
+  {
+    label: "아름다운 꽃밭",
+    text: "다양한 색깔의 꽃들이 가득 피어 있는 봄날의 꽃밭",
+  },
+  {
+    label: "맛있는 케이크",
+    text: "생크림과 과일이 올라간 맛있어 보이는 생일 케이크",
+  },
+  {
+    label: "작은 집",
+    text: "숲속에 조용히 자리 잡은 아담한 오두막 집",
+  },
+];
+
+const STYLES: StyleOption[] = [
+  {
+    id: "watercolor",
+    label: "수채화",
+    description: "부드럽고 번지는 느낌",
+  },
+  {
+    id: "pastel",
+    label: "파스텔톤",
+    description: "은은하고 차분한 색감",
+  },
+  {
+    id: "fairytale",
+    label: "동화 스타일",
+    description: "아이들 책에 나오는 그림 느낌",
+  },
+  {
+    id: "bright",
+    label: "밝고 따뜻한 느낌",
+    description: "햇살 가득, 포근한 분위기",
+  },
+];
 
 export default function DrawPractice() {
-  const navigate = useNavigate();
+  const [description, setDescription] = useState("");
+  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
+  const [isListening, setIsListening] = useState(false);
+
+  // 예시 버튼 클릭 → 텍스트 자동 완성
+  const handleExampleClick = (example: ExamplePrompt) => {
+    setDescription((prev) =>
+      prev.trim().length > 0 ? `${prev}\n${example.text}` : example.text
+    );
+  };
+
+  // 스타일 선택
+  const handleStyleClick = (styleId: string) => {
+    setSelectedStyle(styleId === selectedStyle ? null : styleId);
+  };
+
+  // 음성 입력 (Web Speech API)
+  const handleVoiceInput = () => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("이 브라우저에서는 음성 인식이 지원되지 않습니다.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "ko-KR";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+      alert("음성 인식 중 오류가 발생했어요. 다시 시도해 주세요.");
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onresult = (event: any) => {
+      const result = event.results[0][0].transcript as string;
+      setDescription((prev) =>
+        prev.trim().length > 0 ? `${prev} ${result}` : result
+      );
+    };
+
+    recognition.start();
+  };
+
+  // 아직은 실제 AI 호출 대신 콘솔/알림만
+  const handleGenerate = () => {
+    if (!description.trim()) {
+      alert("먼저 그리고 싶은 그림을 설명해 주세요.");
+      return;
+    }
+
+    const styleText = selectedStyle
+      ? `\n선택한 스타일: ${
+          STYLES.find((s) => s.id === selectedStyle)?.label ?? ""
+        }`
+      : "\n(스타일 미선택)";
+
+    // 나중에 여기서 실제 이미지 생성 API를 호출하면 됩니다.
+    console.log("그림 생성 요청:", description, styleText);
+    alert("지금은 연습 모드입니다.\n나중에 여기에 AI 그림 생성이 연결됩니다 🙂");
+  };
+
+  const handleHelp = () => {
+    alert(
+      "설명 잘 쓰는 방법 예시\n\n" +
+        "1) 무엇을: 예) 귀여운 고양이\n" +
+        "2) 어디에서: 예) 햇살이 들어오는 창가에서\n" +
+        "3) 어떤 느낌으로: 예) 따뜻하고 포근한 분위기\n\n" +
+        "이 세 가지를 넣어서 천천히 써 보시면 좋아요."
+    );
+  };
 
   return (
-    <div style={{ padding: "24px", fontSize: "20px" }}>
-      <h2>연습하기 페이지입니다.</h2>
-      <p>AI가 주제를 제안해드립니다.</p>
-      <button
-        onClick={() => navigate("/draw")}
-        style={{
-          marginTop: "20px",
-          padding: "12px 24px",
-          fontSize: "16px",
-          cursor: "pointer"
-        }}
-      >
-        ← 뒤로가기
-      </button>
+    <div className="practice-page">
+      {/* 상단 제목 영역은 기존 스타일을 그대로 사용하셔도 됩니다 */}
+      <h2 className="practice-title">연습하기</h2>
+
+      <section className="practice-box">
+        <div className="practice-subtitle">
+          💡 빠른 예시를 선택하고 설명글을 이어보세요
+        </div>
+        <div className="example-chips">
+          {EXAMPLES.map((ex) => (
+            <button
+              key={ex.label}
+              type="button"
+              className="example-chip"
+              onClick={() => handleExampleClick(ex)}
+            >
+              {ex.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="practice-section">
+        <div className="practice-label">원하는 그림을 설명해보세요</div>
+        <textarea
+          className="practice-textarea"
+          placeholder="여기에 그리고 싶은 그림을 설명해 주세요..."
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+
+        <div className="tip-box">
+          💡 팁: 무엇을 + 어디서 + 어떤 색깔과 분위기로 그릴지 자세히 써주세요.
+        </div>
+      </section>
+
+      <section className="practice-section">
+        <div className="practice-label">그림 스타일을 골라보세요 (선택)</div>
+        <div className="style-chips">
+          {STYLES.map((style) => (
+            <button
+              key={style.id}
+              type="button"
+              className={
+                "style-chip" + (selectedStyle === style.id ? " selected" : "")
+              }
+              onClick={() => handleStyleClick(style.id)}
+            >
+              <div className="style-label">{style.label}</div>
+              <div className="style-desc">{style.description}</div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="practice-section">
+        <div className="practice-label">말로 설명해도 좋아요</div>
+        <button
+          type="button"
+          className={
+            "voice-button" + (isListening ? " voice-button--active" : "")
+          }
+          onClick={handleVoiceInput}
+        >
+          {isListening ? "🎤 듣는 중... 한 번 더 누르면 종료" : "🎤 말로 설명하기"}
+        </button>
+      </section>
+
+      <div className="practice-actions">
+        <button type="button" className="main-action" onClick={handleGenerate}>
+          🎨 그림 만들기
+        </button>
+        <button type="button" className="sub-action" onClick={handleHelp}>
+          💡 도움말
+        </button>
+      </div>
     </div>
   );
 }

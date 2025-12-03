@@ -1,0 +1,298 @@
+/* DrawPractice.css - 고령친화 UI */
+
+.practice-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  font-family: "Pretendard", sans-serif;
+}
+
+.practice-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 32px 0;
+  text-align: center;
+}
+
+.practice-box {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.practice-subtitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+.example-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.example-chip {
+  padding: 12px 20px;
+  background: #ffe888;
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.example-chip:hover {
+  background: #ffd700;
+  transform: translateY(-2px);
+}
+
+.practice-section {
+  margin-bottom: 32px;
+}
+
+.practice-label {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.practice-textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 16px;
+  font-size: 18px;
+  line-height: 1.6;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.practice-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.tip-box {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: #fff9e6;
+  border-left: 4px solid #ffd700;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.style-chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.style-chip {
+  padding: 20px;
+  background: white;
+  border: 3px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.style-chip:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.style-chip.selected {
+  background: #e8eef5;
+  border-color: #667eea;
+  border-width: 3px;
+}
+
+.style-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.style-desc {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.voice-button {
+  width: 100%;
+  padding: 20px;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.voice-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+}
+
+.voice-button--active {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.practice-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.main-action {
+  flex: 2;
+  padding: 20px 32px;
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #3CB371 0%, #2e8b57 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.main-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(60, 179, 113, 0.3);
+}
+
+.sub-action {
+  flex: 1;
+  padding: 20px 32px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #666;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sub-action:hover {
+  background: #f5f5f5;
+  border-color: #bbb;
+}
+
+/* 태블릿 */
+@media (max-width: 768px) {
+  .practice-page {
+    padding: 24px 16px;
+  }
+
+  .practice-title {
+    font-size: 24px;
+  }
+
+  .practice-label {
+    font-size: 18px;
+  }
+
+  .practice-textarea {
+    font-size: 16px;
+  }
+
+  .style-chips {
+    grid-template-columns: 1fr;
+  }
+
+  .practice-actions {
+    flex-direction: column;
+  }
+
+  .main-action,
+  .sub-action {
+    width: 100%;
+  }
+}
+
+/* 모바일 */
+@media (max-width: 480px) {
+  .practice-page {
+    padding: 20px 12px;
+  }
+
+  .practice-title {
+    font-size: 22px;
+    margin-bottom: 24px;
+  }
+
+  .practice-subtitle {
+    font-size: 16px;
+  }
+
+  .example-chip {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .practice-label {
+    font-size: 16px;
+  }
+
+  .practice-textarea {
+    font-size: 15px;
+    min-height: 120px;
+  }
+
+  .tip-box {
+    font-size: 14px;
+  }
+
+  .style-label {
+    font-size: 16px;
+  }
+
+  .style-desc {
+    font-size: 13px;
+  }
+
+  .voice-button {
+    font-size: 18px;
+    padding: 18px;
+  }
+
+  .main-action {
+    font-size: 20px;
+    padding: 18px 28px;
+  }
+
+  .sub-action {
+    font-size: 16px;
+    padding: 16px 24px;
+  }
+}

@@ -1,15 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import TopHeader from "../components/TopHeader";
 import "./DrawStart.css";
 
 export default function DrawStart() {
   const navigate = useNavigate();
 
   return (
-    <>
-      <TopHeader title="그림 그리기" />
-      <div className="draw-start-container">
+    <div className="draw-start-container">
         <p className="draw-start-subtitle">어떤 방식으로 시작하시겠어요?</p>
 
       <div className="draw-start-buttons">
@@ -33,6 +30,5 @@ export default function DrawStart() {
       </div>
 
     </div>
-    </>
   );
 }

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Layout from './components/Layout'
 import Welcome from './pages/Welcome'
 import OnboardingLogin from './pages/OnboardingLogin'
 import Home from './pages/Home'
@@ -17,17 +18,19 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/onboarding" element={<OnboardingLogin />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/draw" element={<Draw />} />
-          <Route path="/draw/start" element={<DrawStart />} />
-          <Route path="/draw/practice" element={<DrawPractice />} />
-          <Route path="/draw/direct" element={<DrawDirect />} />
-          <Route path="/write" element={<Write />} />
-          <Route path="/storybook" element={<Storybook />} />
-          <Route path="/my-works" element={<MyWorks />} />
-          <Route path="/goods" element={<Goods />} />
+          <Route element={<Layout />}>
+            <Route path="/" element={<Welcome />} />
+            <Route path="/onboarding" element={<OnboardingLogin />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/draw" element={<Draw />} />
+            <Route path="/draw/start" element={<DrawStart />} />
+            <Route path="/draw/practice" element={<DrawPractice />} />
+            <Route path="/draw/direct" element={<DrawDirect />} />
+            <Route path="/write" element={<Write />} />
+            <Route path="/storybook" element={<Storybook />} />
+            <Route path="/my-works" element={<MyWorks />} />
+            <Route path="/goods" element={<Goods />} />
+          </Route>
         </Routes>
       </div>
     </BrowserRouter>

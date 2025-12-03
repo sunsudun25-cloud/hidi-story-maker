@@ -14,11 +14,17 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 3000,
-    strictPort: true
+    strictPort: true,
+    allowedHosts: [
+      "*.sandbox.novita.ai"
+    ]
   },
   preview: {
     host: '0.0.0.0',
     port: 3000,
-    strictPort: true
+    strictPort: true,
+    allowedHosts: [
+      "*.sandbox.novita.ai"
+    ]
   }
 })

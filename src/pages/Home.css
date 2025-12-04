@@ -1,9 +1,3 @@
-/* 페이지 배경 그라데이션 */
-.page-container {
-  background: linear-gradient(180deg, #f0fff7 0%, #ffffff 50%);
-  min-height: 100vh;
-}
-
 /* 2x2 메뉴 그리드 */
 .grid-menu {
   display: grid;

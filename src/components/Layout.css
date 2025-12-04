@@ -1,10 +1,22 @@
-/* Layout wrapper - 전체 레이아웃 컨테이너 */
+/* 페이지 전체 배경색 유지 */
 .layout-wrapper {
-  min-height: 100vh;
   width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-color, #faf7ef);
+  display: flex;
+  justify-content: center; /* 가운데 정렬 */
 }
 
+/* 실제 내용이 들어가는 캐비넷 영역 */
 .layout-inner {
   width: 100%;
-  height: 100%;
+  max-width: 600px; /* 모바일 앱 너비 기준 */
+  padding: 0 16px; /* 모바일 여백 */
+}
+
+/* 데스크탑 넓은 화면에서도 중앙에 고정 */
+@media (min-width: 900px) {
+  .layout-inner {
+    max-width: 700px;
+  }
 }

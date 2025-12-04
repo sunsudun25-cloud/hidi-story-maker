@@ -86,9 +86,11 @@
 .page-image {
   width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: 0.5rem; /* rounded-lg */
   display: block;
+  margin-top: 1rem; /* mt-4 */
   margin-bottom: 8px;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); /* shadow */
 }
 
 /* 이미지 생성/재생성 버튼 */

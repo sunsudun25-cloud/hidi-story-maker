@@ -164,12 +164,12 @@ export default function StorybookEditor() {
         ></textarea>
 
         {/* 페이지 이미지 */}
-        {pages[currentPage - 1]?.imageUrl ? (
+        {generatedImage ? (
           <div className="page-image-box">
             <img 
-              src={pages[currentPage - 1].imageUrl} 
-              alt={`페이지 ${currentPage} 이미지`} 
-              className="page-image"
+              src={generatedImage} 
+              alt="동화 이미지" 
+              className="w-full rounded-lg mt-4 shadow page-image"
             />
             <button
               className="regenerate-image-btn"

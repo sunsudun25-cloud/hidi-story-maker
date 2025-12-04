@@ -10,6 +10,7 @@ import DirectInput from './pages/DirectInput'
 import Write from './pages/Write'
 import Storybook from './pages/Storybook'
 import StorybookEditor from './pages/StorybookEditor'
+import StorybookExport from './pages/StorybookExport'
 import MyWorks from './pages/MyWorks'
 import Goods from './pages/Goods'
 import Result from './pages/Result'
@@ -34,6 +35,7 @@ function App() {
           <Route path="/write" element={<Write />} />
           <Route path="/storybook" element={<Storybook />} />
           <Route path="/storybook-editor" element={<StorybookEditor />} />
+          <Route path="/storybook-export" element={<StorybookExport />} />
           <Route path="/my-works" element={<MyWorks />} />
           <Route path="/goods" element={<Goods />} />
           <Route path="/result" element={<Result />} />

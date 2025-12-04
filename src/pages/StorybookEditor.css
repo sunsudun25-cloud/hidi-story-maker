@@ -322,3 +322,29 @@
     transform: translateY(0);
   }
 }
+
+/* PDF 내보내기 페이지 버튼 */
+.export-page-btn {
+  width: 100%;
+  padding: 16px;
+  margin-top: 16px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  text-align: center;
+}
+
+.export-page-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+.export-page-btn:active {
+  transform: translateY(0);
+}

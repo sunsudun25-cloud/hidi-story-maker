@@ -289,7 +289,7 @@ export default function StorybookEditor() {
           className="pdf-btn"
           onClick={handleSaveAsPDF}
         >
-          📕 PDF로 저장
+          📕 빠른 PDF
         </button>
 
         <button
@@ -307,6 +307,20 @@ export default function StorybookEditor() {
           💾 저장하기
         </button>
       </div>
+
+      {/* PDF 내보내기 페이지 이동 버튼 */}
+      <button
+        className="export-page-btn"
+        onClick={() => navigate("/storybook-export", {
+          state: {
+            title,
+            pages,
+            coverImageUrl
+          }
+        })}
+      >
+        📕 동화책 PDF 완성하기 →
+      </button>
 
       {/* PDF 설정 모달 */}
       {showPdfModal && (

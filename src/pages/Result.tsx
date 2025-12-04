@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { saveImageAsFile, shareImage, copyImageToClipboard } from "../services/imageService";
 import "./Result.css";
 
 export default function Result() {
@@ -9,31 +10,40 @@ export default function Result() {
   const handleDownload = () => {
     if (!imageUrl) return;
 
-    // 이미지 다운로드
-    const link = document.createElement("a");
-    link.href = imageUrl;
-    link.download = `ai-drawing-${Date.now()}.png`;
-    link.click();
+    try {
+      // imageService 사용하여 다운로드
+      const filename = `ai-drawing-${Date.now()}.png`;
+      saveImageAsFile(imageUrl, filename);
+      alert("💾 이미지가 저장되었습니다!");
+    } catch (err) {
+      console.error("다운로드 오류:", err);
+      alert("이미지 저장 중 오류가 발생했습니다.");
+    }
   };
 
   const handleShare = async () => {
     if (!imageUrl) return;
 
-    // Web Share API 사용
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "AI 그림 공유",
-          text: "제가 AI로 만든 그림이에요!",
-          url: imageUrl,
-        });
-      } catch (err) {
-        console.error("공유 실패:", err);
+    try {
+      // imageService 사용하여 공유
+      const success = await shareImage(
+        imageUrl,
+        "AI 그림 공유",
+        "제가 AI로 만든 그림이에요!"
+      );
+
+      if (!success) {
+        // Web Share API 미지원 시 클립보드 복사
+        const copied = await copyImageToClipboard(imageUrl);
+        if (copied) {
+          alert("📋 이미지가 클립보드에 복사되었습니다!");
+        } else {
+          alert("공유 기능을 사용할 수 없습니다.");
+        }
       }
-    } else {
-      // Fallback: 클립보드 복사
-      navigator.clipboard.writeText(imageUrl);
-      alert("이미지 URL이 클립보드에 복사되었습니다!");
+    } catch (err) {
+      console.error("공유 오류:", err);
+      alert("공유 중 오류가 발생했습니다.");
     }
   };
 

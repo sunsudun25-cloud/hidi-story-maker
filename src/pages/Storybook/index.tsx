@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateImage } from "../../services/geminiService";
+import { useStorybook } from "../../context/StorybookContext";
 import "./Storybook.css";
 
 export default function Storybook() {
   const navigate = useNavigate();
+  const storybookContext = useStorybook();
 
   const [storyTitle, setStoryTitle] = useState("");
   const [storyPrompt, setStoryPrompt] = useState("");
@@ -32,6 +34,13 @@ export default function Storybook() {
     try {
       // Gemini Service로 표지 이미지 생성
       const coverImageUrl = await generateImage(storyPrompt, selectedStyle ?? "동화 스타일");
+
+      // Context에 저장
+      storybookContext.setTitle(storyTitle);
+      storybookContext.setPrompt(storyPrompt);
+      storybookContext.setStyle(selectedStyle || "동화 스타일");
+      storybookContext.setCoverImageUrl(coverImageUrl);
+      storybookContext.resetStorybook(); // 페이지 초기화
 
       // 다음 단계(편집기 페이지)로 이동
       navigate("/storybook-editor", {

@@ -1,9 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { generateNextPage } from "../services/geminiService";
 import { generateStoryImage } from "../services/imageService";
 import { exportStorybookToPDF, exportEnhancedPDF } from "../services/pdfService";
 import { saveStorybook } from "../services/dbService";
+import { useStorybook } from "../context/StorybookContext";
 import "./StorybookEditor.css";
 
 type PageData = {
@@ -14,7 +15,11 @@ type PageData = {
 export default function StorybookEditor() {
   const navigate = useNavigate();
   const { state } = useLocation();
+  
+  // Context에서 가져오기
+  const storybookContext = useStorybook();
 
+  // 로컬 상태 (기존 방식 유지)
   const [pages, setPages] = useState<PageData[]>([
     { text: "달빛을 먹으면 힘이 나는 토끼는 오늘도 친구들을 만나기 위해 숲속을 달려갑니다.", imageUrl: undefined },
     { text: "숲속 깊은 곳에서 토끼는 이상한 빛을 발견하게 됩니다.", imageUrl: undefined },
@@ -30,6 +35,16 @@ export default function StorybookEditor() {
     usePastelBackground: true,
     textImageLayout: "image-top" as "image-right" | "image-top"
   });
+
+  // Context 초기화 (state가 있는 경우)
+  useEffect(() => {
+    if (state) {
+      storybookContext.setTitle(state.title || '나의 동화책');
+      storybookContext.setPrompt(state.prompt || '');
+      storybookContext.setStyle(state.style || '동화 스타일');
+      storybookContext.setCoverImageUrl(state.coverImageUrl || '');
+    }
+  }, [state]);
 
   if (!state) {
     return (
@@ -129,11 +144,12 @@ export default function StorybookEditor() {
   // 저장 핸들러
   const handleSave = async () => {
     try {
+      // Context 상태도 함께 저장
       const storybookId = await saveStorybook({
-        title,
-        prompt,
-        style,
-        coverImageUrl,
+        title: storybookContext.title || title,
+        prompt: storybookContext.prompt || prompt,
+        style: storybookContext.style || style,
+        coverImageUrl: storybookContext.coverImageUrl || coverImageUrl,
         pages,
         createdAt: new Date().toISOString()
       });

@@ -183,6 +183,14 @@
   transform: none;
 }
 
+.custom-generate-btn {
+  background: #10b981;
+}
+
+.custom-generate-btn:hover:not(:disabled) {
+  background: #059669;
+}
+
 /* ===== 결과 이미지 ===== */
 .result-image-container {
   background: white;

@@ -459,8 +459,8 @@ export interface StoryPDFOptions {
 }
 
 /**
- * html2canvas를 활용한 고급 Story PDF 생성
- * 표지 페이지 + HTML 본문 캡처
+ * jsPDF를 활용한 Story PDF 생성
+ * 표지 페이지 + 텍스트 본문 렌더링
  * @param story Story 데이터
  * @param options PDF 생성 옵션
  */
@@ -469,79 +469,71 @@ export async function generateStoryPDF(
   options: StoryPDFOptions = {}
 ): Promise<void> {
   const { default: jsPDF } = await import("jspdf");
-  const { default: html2canvas } = await import("html2canvas");
-
-  // 옵션 기본값 설정
-  const { margin = "normal", fontSize = "medium" } = options;
-
-  // 여백 설정
-  const marginMap = {
-    small: { horizontal: 80, vertical: 80 },
-    normal: { horizontal: 123, vertical: 150 },
-    large: { horizontal: 150, vertical: 200 },
-  };
-  const margins = marginMap[margin];
-
-  // 글자 크기 설정
-  const fontSizeMap = {
-    small: 20,
-    medium: 28,
-    large: 36,
-  };
-  const titleFontSize = fontSizeMap[fontSize];
 
   const pdf = new jsPDF({
     format: "a4",
     unit: "px",
   });
 
+  // ----- 옵션 반영 -----
+  const marginMap = {
+    small: 20,
+    normal: 40,
+    large: 70,
+  };
+
+  const fontMap = {
+    small: 12,
+    medium: 16,
+    large: 20,
+  };
+
+  const margin = marginMap[options.margin || "normal"];
+  const fontSize = fontMap[options.fontSize || "medium"];
+
   // ----- 📌 표지 생성 -----
   pdf.setFillColor("#F4F4F4");
   pdf.rect(0, 0, 595, 842, "F");
 
-  // 제목
-  pdf.setFontSize(titleFontSize);
+  pdf.setFontSize(28);
   pdf.setTextColor("#333");
-  pdf.text(story.title, 297, margins.vertical, { align: "center" });
+  pdf.text(story.title, 297, 200, { align: "center" });
 
-  // 대표 이미지
   if (story.image) {
     try {
       const img = await loadImageForPDF(story.image);
-      const maxImageWidth = 595 - 2 * margins.horizontal;
-      const imgWidth = Math.min(maxImageWidth, 350);
+      const imgWidth = 350;
       const imgHeight = (img.height / img.width) * imgWidth;
-      const imgX = (595 - imgWidth) / 2;
-      const imgY = margins.vertical + 80;
 
-      pdf.addImage(img, "JPEG", imgX, imgY, imgWidth, imgHeight);
+      pdf.addImage(img, "JPEG", 123, 260, imgWidth, imgHeight);
     } catch (error) {
       console.error("표지 이미지 로드 오류:", error);
     }
   }
 
-  // "표지" 표시 (작게)
   pdf.setFontSize(12);
   pdf.setTextColor("#777");
   pdf.text("AI Story Maker · Cover", 297, 780, { align: "center" });
 
-  // ----- 📌 다음 페이지부터 본문 -----
-  const contentElement = document.getElementById("pdf-content");
-  if (contentElement) {
-    pdf.addPage(); // 2페이지로 이동
+  // ----- 📌 본문 페이지 -----
+  pdf.addPage();
 
-    const canvas = await html2canvas(contentElement, { scale: 2 });
-    const imgData = canvas.toDataURL("image/png");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const usableWidth = pageWidth - margin * 2;
 
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
+  pdf.setFontSize(fontSize);
+  pdf.setTextColor("#000");
 
-    pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+  // 텍스트 내용 (description 또는 content 사용)
+  const textContent = story.description || story.content || "";
+  
+  if (textContent) {
+    const lines = pdf.splitTextToSize(textContent, usableWidth);
+    pdf.text(lines, margin, margin);
   }
 
-  // ----- 📌 자동 파일명 -----
-  const filename = `Story_${new Date().toISOString().slice(0, 10)}_${story.title}.pdf`;
-
+  // ----- 📌 파일 저장 -----
+  const filename = `Story_${story.title}_${new Date().toISOString().slice(0, 10)}.pdf`;
   pdf.save(filename);
 }
 

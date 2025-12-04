@@ -238,6 +238,19 @@ export interface PDFOptions {
 }
 
 /**
+ * 고급 PDF 생성 옵션
+ */
+export interface EnhancedPDFOptions {
+  pages: { text: string; image?: string | null }[];
+  title: string;
+  author: string;
+  layout: "vertical" | "horizontal";
+  usePastelBackground: boolean;
+  textImageLayout: "image-right" | "image-top";
+  coverImage?: string | null;
+}
+
+/**
  * 고급 설정으로 PDF 생성 (준비 중)
  * @param bookData 동화책 데이터
  * @param options PDF 설정 옵션
@@ -252,9 +265,143 @@ export async function generateStorybookPDFWithOptions(
   throw new Error("고급 PDF 생성 기능은 준비 중입니다.");
 }
 
+/**
+ * 강화된 PDF 생성기
+ * 파스텔 배경, 커버 이미지, 다양한 레이아웃 지원
+ * @param options 고급 PDF 생성 옵션
+ */
+export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<void> {
+  const jsPDF = (await import("jspdf")).default;
+
+  const {
+    pages,
+    title,
+    author,
+    layout,
+    usePastelBackground,
+    textImageLayout,
+    coverImage,
+  } = options;
+
+  // === 1. PDF 설정 ===
+  const doc = new jsPDF({
+    orientation: layout === "horizontal" ? "landscape" : "portrait",
+    unit: "pt",
+    format: "a4",
+  });
+
+  const width = doc.internal.pageSize.getWidth();
+  const height = doc.internal.pageSize.getHeight();
+
+  // ⭐ 파스텔톤 색상 목록
+  const pastelColors = [
+    "#FBE4E6", // 은은한 핑크
+    "#E8F0FE", // 파스텔 블루
+    "#EAF8E6", // 연녹색
+    "#FFF4CC", // 크림
+    "#F9EBFF", // 연보라
+  ];
+
+  // ======================================================
+  // ===== 2. 표지 페이지 생성 =================================
+  // ======================================================
+
+  // 배경 색 적용
+  if (usePastelBackground) {
+    doc.setFillColor("#E8F0FE");
+    doc.rect(0, 0, width, height, "F");
+  }
+
+  // 표지 이미지
+  if (coverImage) {
+    try {
+      doc.addImage(coverImage, "PNG", 100, 80, width - 200, height / 2);
+    } catch (e) {
+      console.warn("표지 이미지 로드 실패");
+    }
+  }
+
+  // 제목
+  doc.setFont("Helvetica", "bold");
+  doc.setFontSize(32);
+  doc.text(title, width / 2, height - 200, { align: "center" });
+
+  // 저자명
+  doc.setFont("Helvetica", "normal");
+  doc.setFontSize(18);
+  doc.text(`Written by ${author}`, width / 2, height - 160, { align: "center" });
+
+  // ======================================================
+  // ===== 3. 본문 페이지 생성 =================================
+  // ======================================================
+
+  pages.forEach((page, index) => {
+    doc.addPage();
+
+    // 배경 넣기
+    if (usePastelBackground) {
+      const bg = pastelColors[index % pastelColors.length];
+      doc.setFillColor(bg);
+      doc.rect(0, 0, width, height, "F");
+    }
+
+    // 제목: 페이지 번호
+    doc.setFont("Helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text(`Page ${index + 1}`, 40, 50);
+
+    // ===== 상세 레이아웃 =====
+
+    if (textImageLayout === "image-top" && page.image) {
+      // 이미지 상단 + 텍스트 하단
+      try {
+        doc.addImage(page.image, "PNG", 40, 80, width - 80, 240);
+      } catch (e) {
+        console.warn(`페이지 ${index + 1} 이미지 추가 실패:`, e);
+      }
+
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(14);
+
+      const contentY = 350;
+      const lines = doc.splitTextToSize(page.text, width - 80);
+      doc.text(lines, 40, contentY);
+    } else if (textImageLayout === "image-right" && page.image) {
+      // 텍스트 왼쪽 + 이미지 오른쪽
+      const half = width / 2 - 60;
+
+      // 텍스트
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(14);
+      const lines = doc.splitTextToSize(page.text, half);
+      doc.text(lines, 40, 80);
+
+      // 이미지
+      try {
+        doc.addImage(page.image, "PNG", width / 2 + 20, 80, half, half);
+      } catch (e) {
+        console.warn(`페이지 ${index + 1} 이미지 추가 실패:`, e);
+      }
+    } else {
+      // 텍스트만 있는 페이지
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(14);
+      const lines = doc.splitTextToSize(page.text, width - 80);
+      doc.text(lines, 40, 100);
+    }
+  });
+
+  // ======================================================
+  // ===== 4. 파일 저장 =====================================
+  // ======================================================
+
+  doc.save(`${title}.pdf`);
+}
+
 export default {
   generateStorybookPDF,
   exportStorybookToPDF,
+  exportEnhancedPDF,
   previewStorybookPDF,
   generateStorybookPDFWithOptions,
 };

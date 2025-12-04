@@ -23,8 +23,6 @@ export default function StorybookEditor() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [generatedImages, setGeneratedImages] = useState<(string | null)[]>([null, null, null]);
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [pdfOptions, setPdfOptions] = useState({
     author: "익명",
@@ -51,11 +49,18 @@ export default function StorybookEditor() {
 
   const { title, prompt, style, coverImageUrl } = state;
 
+  // 특정 페이지에 이미지 설정
+  const setImageForPage = (pageIndex: number, image: string) => {
+    setPages(prev =>
+      prev.map((page, i) =>
+        i === pageIndex ? { ...page, imageUrl: image } : page
+      )
+    );
+  };
+
   // 페이지 이동 핸들러
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    // 페이지 이동 시 해당 페이지의 이미지를 generatedImage에 동기화
-    setGeneratedImage(generatedImages[newPage - 1] || null);
   };
 
   // 텍스트 업데이트 핸들러
@@ -77,16 +82,10 @@ export default function StorybookEditor() {
       const nextPageText = await generateNextPage(prevTexts, style || "동화 스타일");
       
       // 새 페이지 추가
-      setPages([...pages, { text: nextPageText }]);
-      
-      // generatedImages 배열에 null 추가
-      setGeneratedImages(prev => [...prev, null]);
+      setPages([...pages, { text: nextPageText, imageUrl: undefined }]);
       
       // 새 페이지로 이동
       setCurrentPage(pages.length + 1);
-      
-      // 새 페이지는 이미지가 없으므로 generatedImage 초기화
-      setGeneratedImage(null);
       
       alert("✨ 새로운 페이지가 생성되었습니다!");
     } catch (err) {
@@ -115,20 +114,8 @@ export default function StorybookEditor() {
         mood: "따뜻하고 부드러운"
       });
 
-      // 생성된 이미지를 state에 저장
-      setGeneratedImage(img);
-
-      // 페이지 이미지 업데이트
-      const newPages = [...pages];
-      newPages[currentPage - 1].imageUrl = img;
-      setPages(newPages);
-
-      // generatedImages 배열 업데이트
-      setGeneratedImages(prev => {
-        const newImages = [...prev];
-        newImages[currentPage - 1] = img;
-        return newImages;
-      });
+      // 특정 페이지에 이미지 설정
+      setImageForPage(currentPage - 1, img);
 
       alert("🎨 페이지 이미지가 생성되었습니다!");
     } catch (err) {
@@ -237,10 +224,10 @@ export default function StorybookEditor() {
         ></textarea>
 
         {/* 페이지 이미지 */}
-        {generatedImage ? (
+        {pages[currentPage - 1]?.imageUrl ? (
           <div className="page-image-box">
             <img 
-              src={generatedImage} 
+              src={pages[currentPage - 1].imageUrl} 
               alt="동화 이미지" 
               className="w-full rounded-lg mt-4 shadow page-image"
             />

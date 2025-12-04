@@ -7,12 +7,15 @@ import { safeGeminiCall } from "../services/geminiService";
 export default function WritingEditor() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { addStory } = useStory();
+  const { addStory, updateStory } = useStory();
 
-  const { genre, label } = location.state || {};
+  const { genre, label, content, id } = location.state || {};
 
-  const [text, setText] = useState("");
+  // 수정 모드인 경우 기존 content 로드
+  const [text, setText] = useState(content || "");
   const [loading, setLoading] = useState(false);
+  
+  const isEditMode = !!id; // id가 있으면 수정 모드
 
   if (!genre) {
     return (
@@ -68,26 +71,37 @@ ${text}
       return;
     }
 
-    addStory({
-      title: label,
-      content: text,
-      description: `${label} 장르`,
-    });
+    if (isEditMode) {
+      // 수정 모드
+      updateStory(id, {
+        title: label,
+        content: text,
+        description: `${label} 장르`,
+      });
+      alert("✅ 수정되었습니다!");
+    } else {
+      // 새 글 작성 모드
+      addStory({
+        title: label,
+        content: text,
+        description: `${label} 장르`,
+      });
+      alert("✅ 저장되었습니다!");
+    }
 
-    alert("✅ 저장되었습니다!");
     navigate("/gallery");
   };
 
   return (
     <div className="pb-28">
-      <Header title={`${label} 쓰기`} />
+      <Header title={isEditMode ? `${label} 수정` : `${label} 쓰기`} />
 
       {/* 메인 영역 */}
       <div className="p-5">
         {/* 글자 수 카운터 */}
         <div className="flex justify-between items-center mb-3">
           <p className="text-lg text-gray-600 font-semibold">
-            ✍️ {label} 작성 중...
+            {isEditMode ? "📝 수정 중..." : "✍️ 작성 중..."}
           </p>
           <p className="text-sm text-gray-500">
             {text.length} 글자
@@ -136,7 +150,7 @@ ${text}
               transition-all duration-200
             "
           >
-            💾 저장하기
+            {isEditMode ? "✅ 수정 완료" : "💾 저장하기"}
           </button>
 
           <button

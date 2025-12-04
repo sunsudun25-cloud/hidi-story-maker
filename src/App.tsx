@@ -12,6 +12,7 @@ import Write from './pages/Write'
 import WritingGenre from './pages/WritingGenre'
 import WritingHelp from './pages/WritingHelp'
 import WritingEditor from './pages/WritingEditor'
+import WritingDetail from './pages/WritingDetail'
 import Storybook from './pages/Storybook'
 import StorybookEditor from './pages/StorybookEditor'
 import StorybookExport from './pages/StorybookExport'
@@ -45,6 +46,7 @@ function App() {
           <Route path="/writing/genre" element={<WritingGenre />} />
           <Route path="/writing/help" element={<WritingHelp />} />
           <Route path="/writing/editor" element={<WritingEditor />} />
+          <Route path="/writing/detail" element={<WritingDetail />} />
           <Route path="/storybook" element={<Storybook />} />
           <Route path="/storybook-editor" element={<StorybookEditor />} />
           <Route path="/storybook-export" element={<StorybookExport />} />

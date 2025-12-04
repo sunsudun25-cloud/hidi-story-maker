@@ -9,6 +9,7 @@ import DrawDirect from './pages/DrawDirect'
 import DrawingResult from './pages/DrawingResult'
 import DirectInput from './pages/DirectInput'
 import Write from './pages/Write'
+import WritingGenre from './pages/WritingGenre'
 import Storybook from './pages/Storybook'
 import StorybookEditor from './pages/StorybookEditor'
 import StorybookExport from './pages/StorybookExport'
@@ -39,6 +40,7 @@ function App() {
           <Route path="/drawing/result" element={<DrawingResult />} />
           <Route path="/direct-input" element={<DirectInput />} />
           <Route path="/write" element={<Write />} />
+          <Route path="/writing/genre" element={<WritingGenre />} />
           <Route path="/storybook" element={<Storybook />} />
           <Route path="/storybook-editor" element={<StorybookEditor />} />
           <Route path="/storybook-export" element={<StorybookExport />} />

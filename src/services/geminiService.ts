@@ -10,43 +10,51 @@ if (!API_KEY) {
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 /**
- * Gemini Pro Vision API - 이미지 생성
+ * Gemini 1.5 Flash - 이미지 생성
  * @param prompt 이미지 생성 프롬프트
- * @param style 스타일 (수채화, 파스텔톤, 동화 스타일 등)
- * @returns Base64 인코딩된 이미지 URL
+ * @param style 스타일 (기본, 동화풍, 수채화, 애니메이션, 연필스케치 등)
+ * @returns Base64 인코딩된 이미지 URL (data:image/png;base64,...)
  */
 export async function generateImage(prompt: string, style?: string): Promise<string> {
-  try {
-    const fullPrompt = style ? `${prompt}. 스타일: ${style}` : prompt;
+  const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || API_KEY;
 
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateImage?key=${API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: fullPrompt,
-          size: "1024x1024",
-        }),
-      }
-    );
-
-    if (!res.ok) {
-      throw new Error(`API 응답 오류: ${res.status} ${res.statusText}`);
-    }
-
-    const data = await res.json();
-    
-    if (!data.candidates?.[0]?.image?.base64) {
-      throw new Error("이미지 데이터를 받지 못했습니다.");
-    }
-
-    const base64Image = data.candidates[0].image.base64;
-    return `data:image/png;base64,${base64Image}`;
-  } catch (error) {
-    console.error("이미지 생성 오류:", error);
-    throw error;
+  if (!GOOGLE_API_KEY) {
+    throw new Error("⚠️ VITE_GOOGLE_API_KEY가 설정되지 않았습니다!");
   }
+
+  const fullPrompt = `
+${prompt}
+그림 스타일: ${style || "기본"}
+텍스트는 절대 포함하지 말 것.
+고품질 일러스트 스타일로 생성.
+  `;
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateImage?key=${GOOGLE_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prompt: { text: fullPrompt },
+        size: "1024x1024",
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Gemini API 오류:", errorText);
+    throw new Error(`이미지 생성 실패: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  const base64Image = data.image?.base64;
+
+  if (!base64Image) {
+    throw new Error("이미지 데이터를 받지 못했습니다.");
+  }
+
+  return `data:image/png;base64,${base64Image}`;
 }
 
 /**

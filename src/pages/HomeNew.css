@@ -1,17 +1,7 @@
-.home-wrap {
-  padding: 28px;
+/* 페이지 배경 그라데이션 */
+.page-container {
+  background: linear-gradient(180deg, #f0fff7 0%, #ffffff 50%);
   min-height: 100vh;
-  background: linear-gradient(180deg, #f0fff7 0%, #ffffff 45%);
-  font-family: 'Pretendard', sans-serif;
-}
-
-.welcome-box h1 {
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1.35;
-  margin-bottom: 24px;
-  text-align: left;
-  color: #222;
 }
 
 /* 2x2 메뉴 그리드 */
@@ -29,7 +19,7 @@
   box-shadow: 0 4px 14px rgba(33, 200, 132, 0.12);
   text-align: center;
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform 0.2s;
 }
 
 .menu-tile:hover {
@@ -45,11 +35,11 @@
 .menu-tile .label {
   font-size: 18px;
   font-weight: 600;
-  color: #222;
+  color: var(--text);
   display: block;
 }
 
-/* 하단 큰 카드 */
+/* 하단 큰 타일 */
 .big-tile {
   background: #e8f8f0;
   border-radius: 20px;
@@ -60,7 +50,7 @@
   text-align: center;
   box-shadow: 0 4px 14px rgba(33, 200, 132, 0.12);
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform 0.2s;
 }
 
 .big-tile:hover {
@@ -80,12 +70,12 @@
   background: none;
   border: none;
   font-size: 14px;
-  color: #555;
+  color: var(--text-light);
   padding: 6px 8px;
   cursor: pointer;
   transition: color 0.2s;
 }
 
 .footer-menu button:hover {
-  color: #222;
+  color: var(--text);
 }

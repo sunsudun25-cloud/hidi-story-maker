@@ -5,11 +5,10 @@ export default function HomeNew() {
   const navigate = useNavigate();
 
   return (
-    <div className="home-wrap">
-      {/* 상단 환영 영역 */}
-      <div className="welcome-box">
-        <h1>무엇을<br />만들어볼까요?</h1>
-      </div>
+    <div className="page-container">
+      <h1 className="page-title" style={{ textAlign: 'left', marginBottom: '30px' }}>
+        무엇을<br />만들어볼까요?
+      </h1>
 
       {/* 메뉴 2x2 그리드 */}
       <div className="grid-menu">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { generateStoryPDF, type Story } from "../services/pdfService";
 import PdfPreviewModal from "./PdfPreviewModal";
 
@@ -8,6 +9,7 @@ interface StoryCardProps {
 }
 
 export default function StoryCard({ story, onDelete }: StoryCardProps) {
+  const navigate = useNavigate();
   const [showLayoutSelector, setShowLayoutSelector] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [selectedLayout, setSelectedLayout] = useState("A");
@@ -15,8 +17,11 @@ export default function StoryCard({ story, onDelete }: StoryCardProps) {
   return (
     <>
       <div className="bg-white border rounded-xl shadow overflow-hidden flex flex-col">
-        {/* 이미지 비율 고정 */}
-        <div className="w-full aspect-[4/5] overflow-hidden">
+        {/* 이미지 비율 고정 - 클릭하면 상세 페이지로 */}
+        <div 
+          className="w-full aspect-[4/5] overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+          onClick={() => navigate("/writing/detail", { state: { id: story.id } })}
+        >
           <img 
             src={story.image} 
             alt={story.title}
@@ -24,8 +29,11 @@ export default function StoryCard({ story, onDelete }: StoryCardProps) {
           />
         </div>
 
-        {/* 제목 */}
-        <div className="p-3 flex-1">
+        {/* 제목 - 클릭하면 상세 페이지로 */}
+        <div 
+          className="p-3 flex-1 cursor-pointer hover:bg-gray-50 transition-colors"
+          onClick={() => navigate("/writing/detail", { state: { id: story.id } })}
+        >
           <h3 className="text-[18px] font-semibold leading-tight line-clamp-2">
             {story.title}
           </h3>
@@ -33,9 +41,20 @@ export default function StoryCard({ story, onDelete }: StoryCardProps) {
 
         {/* 버튼 그룹 */}
         <div className="flex flex-col gap-0">
+          {/* 상세보기 버튼 */}
+          <button
+            onClick={() => navigate("/writing/detail", { state: { id: story.id } })}
+            className="bg-blue-500 text-white py-3 text-[16px] font-bold w-full hover:bg-blue-600"
+          >
+            📖 상세보기
+          </button>
+
           {/* PDF 저장 버튼 */}
           <button
-            onClick={() => setShowLayoutSelector(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowLayoutSelector(true);
+            }}
             className="bg-emerald-500 text-white py-3 text-[16px] font-bold w-full hover:bg-emerald-600"
           >
             PDF로 저장하기
@@ -43,10 +62,11 @@ export default function StoryCard({ story, onDelete }: StoryCardProps) {
 
           {/* 삭제 버튼 */}
           <button
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               if (window.confirm("정말 삭제하시겠어요?\n삭제 후 복구는 불가능합니다.")) {
                 onDelete(story.id);
-                alert("삭제되었습니다.");
+                alert("✅ 삭제되었습니다.");
               }
             }}
             className="bg-red-500 text-white py-3 text-[16px] font-bold w-full rounded-b-xl hover:bg-red-600"

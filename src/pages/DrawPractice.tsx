@@ -115,33 +115,36 @@ export default function DrawPractice() {
   // 그림 생성
   const handleGenerate = async () => {
     if (!description.trim()) {
-      alert("그림 설명을 먼저 입력해주세요!");
+      alert("그림 설명을 입력해주세요!");
       return;
     }
 
-    // 🎨 스타일 선택이 필수는 아니므로 null 허용
-    const payload = {
-      prompt: description,
-      style: selectedStyle, // ⭐ 선택된 스타일 포함
-    };
-
-    console.log("🚀 전송 데이터:", payload);
-
-    // 👉 여기에 실제 API 요청 추가
     try {
-      const res = await fetch("/api/generate-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      // Gemini API로 이미지 생성
+      const res = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateImage?key=" +
+          import.meta.env.VITE_GEMINI_API_KEY,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt: `${description}. 스타일: ${selectedStyle ?? "기본 스타일"}`,
+            size: "1024x1024",
+          }),
+        }
+      );
 
       const data = await res.json();
 
+      // Base64 이미지 데이터 처리
+      const imageBase64 = data.candidates[0].image.base64;
+      const imageUrl = `data:image/png;base64,${imageBase64}`;
+
       // 결과 페이지로 이동
-      navigate("/result", { state: { imageUrl: data.imageUrl } });
-    } catch (err) {
-      console.error(err);
-      alert("그림 생성 중 오류가 발생했습니다.");
+      navigate("/result", { state: { imageUrl } });
+    } catch (error) {
+      console.error(error);
+      alert("Gemini 이미지 생성에서 오류가 발생했습니다.");
     }
   };
 

@@ -94,6 +94,28 @@ webapp/
 - **React Router DOM** 7.10.0 - 클라이언트 사이드 라우팅
 - **IndexedDB** - 로컬 데이터 저장
 - **PM2** - 프로세스 관리
+- **Gemini API** - AI 이미지 생성
+
+## Environment Setup
+
+**IMPORTANT: API 키 설정 필수!**
+
+1. **`.env` 파일 생성**:
+```bash
+# Copy the example file
+cp .env.example .env
+```
+
+2. **Gemini API 키 발급**:
+   - https://makersuite.google.com/app/apikey 방문
+   - Google 계정으로 로그인
+   - "Create API Key" 클릭
+   - 생성된 키를 복사
+
+3. **`.env` 파일 편집**:
+```bash
+VITE_GEMINI_API_KEY=your-gemini-api-key-here
+```
 
 ## Development Commands
 

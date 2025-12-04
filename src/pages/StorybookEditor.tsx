@@ -21,6 +21,7 @@ export default function StorybookEditor() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
 
   if (!state) {
     return (
@@ -39,6 +40,13 @@ export default function StorybookEditor() {
   }
 
   const { title, prompt, style, coverImageUrl } = state;
+
+  // 페이지 이동 핸들러
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    // 페이지 이동 시 해당 페이지의 이미지를 generatedImage에 동기화
+    setGeneratedImage(pages[newPage - 1]?.imageUrl || null);
+  };
 
   // 텍스트 업데이트 핸들러
   const handleTextChange = (index: number, newText: string) => {
@@ -63,6 +71,9 @@ export default function StorybookEditor() {
       
       // 새 페이지로 이동
       setCurrentPage(pages.length + 1);
+      
+      // 새 페이지는 이미지가 없으므로 generatedImage 초기화
+      setGeneratedImage(null);
       
       alert("✨ 새로운 페이지가 생성되었습니다!");
     } catch (err) {
@@ -90,6 +101,9 @@ export default function StorybookEditor() {
         style: style || "동화 스타일",
         mood: "따뜻하고 부드러운"
       });
+
+      // 생성된 이미지를 state에 저장
+      setGeneratedImage(imageUrl);
 
       // 페이지 이미지 업데이트
       const newPages = [...pages];
@@ -181,7 +195,7 @@ export default function StorybookEditor() {
         <button
           className="control-btn"
           disabled={currentPage === 1}
-          onClick={() => setCurrentPage((p) => p - 1)}
+          onClick={() => handlePageChange(currentPage - 1)}
         >
           ← 이전
         </button>
@@ -189,7 +203,7 @@ export default function StorybookEditor() {
         <button
           className="control-btn"
           disabled={currentPage === pages.length}
-          onClick={() => setCurrentPage((p) => p + 1)}
+          onClick={() => handlePageChange(currentPage + 1)}
         >
           다음 →
         </button>

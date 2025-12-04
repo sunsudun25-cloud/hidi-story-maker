@@ -5,7 +5,9 @@
 - **Goal**: 노인 친화적 AI 스토리 메이커 웹 애플리케이션
 - **Features**: 
   - 큰 글자, 높은 대비, 넓은 터치 영역으로 노인 친화적 UI 구현
-  - AI 기반 그림/글쓰기/동화책 제작 기능
+  - **AI 기반 그림 생성** (Gemini API - 완료 ✅)
+  - **AI 기반 동화책 생성** (Gemini Pro Text API - 완료 ✅)
+  - **페이지 자동생성 기능** (Gemini Pro - 완료 ✅)
   - IndexedDB 기반 로컬 스토리 저장
   - React Router 기반 SPA 구조
 
@@ -17,6 +19,9 @@
 - **Data Models**: Story (id, title, content, createdAt, updatedAt)
 - **Storage Services**: IndexedDB (dbService) - 브라우저 로컬 스토리지
 - **Data Flow**: StoryContext (React Context API) → dbService → IndexedDB
+- **AI Services**: 
+  - Gemini Pro Vision API (이미지 생성)
+  - Gemini Pro API (텍스트 생성 - 페이지 자동생성)
 
 ## Project Structure
 ```
@@ -42,6 +47,8 @@ webapp/
 │   │   └── StoryContext.tsx       # 스토리 상태 관리 Context
 │   ├── services/
 │   │   └── dbService.ts           # IndexedDB 서비스
+│   ├── utils/
+│   │   └── gemini.ts              # Gemini API 유틸리티 (페이지 자동생성)
 │   └── styles/
 │       └── global.css             # 글로벌 스타일 (노인 친화적 UI)
 ├── public/                        # 정적 파일
@@ -58,25 +65,45 @@ webapp/
 
 ### Layout으로 감싸진 페이지 (TopHeader 자동 표시)
 - `/drawing/start` - DrawStart (그림 그리기 시작)
-- `/drawing/practice` - DrawPractice (연습하기)
-- `/drawing/direct` - DrawDirect (직접입력)
+- `/drawing/practice` - DrawPractice (연습하기 - Gemini API 연동 ✅)
+- `/direct-input` - DirectInput (직접입력 - Gemini API 연동 ✅)
 - `/write` - Write (글쓰기)
-- `/storybook` - Storybook (동화책 만들기)
+- `/storybook` - Storybook (동화책 만들기 - Gemini API 연동 ✅)
+- `/storybook-editor` - StorybookEditor (페이지 편집 + 자동생성 ✅)
+- `/result` - Result (생성된 이미지 결과)
 - `/my-works` - MyWorks (내 작품 보기)
 - `/goods` - Goods (나만의 굿즈 만들기)
 
 ## User Guide
 
-1. **시작하기**: Welcome 화면에서 '시작하기' 버튼 클릭
-2. **로그인**: 비회원으로 시작 또는 소셜 로그인 선택
-3. **메뉴 선택**: 홈 화면에서 5가지 기능 중 선택
-   - 🌈 그림 만들기
-   - ✍️ 글쓰기
-   - 📚 동화책 만들기
-   - 🏆 내 작품 보기
-   - 🎁 나만의 굿즈 만들기
-4. **작품 제작**: 각 기능에서 AI 도움을 받아 작품 제작
-5. **작품 저장**: 작품은 자동으로 브라우저에 저장
+### 1️⃣ 그림 만들기 (완료 ✅)
+1. **DrawStart** - 연습하기 또는 직접입력 선택
+2. **DrawPractice** - 예시 선택 + 스타일 선택 + 음성 입력 지원
+3. **DirectInput** - 텍스트 입력 + 스타일 선택
+4. **AI 생성** - Gemini Pro Vision API로 이미지 생성 (1024x1024)
+5. **Result** - 결과 확인 + 저장/공유
+
+### 2️⃣ 동화책 만들기 (완료 ✅)
+1. **Storybook** - 제목/프롬프트/스타일 입력
+2. **표지 생성** - Gemini API로 표지 이미지 자동 생성
+3. **StorybookEditor** - 페이지 편집
+   - 3개 예시 페이지 제공
+   - 페이지별 텍스트 수정 가능
+   - **⭐ 페이지 자동생성** - Gemini Pro API로 다음 페이지 자동 생성
+   - 이전/다음 페이지 이동
+4. **저장하기** - 동화책 데이터 저장 (준비 중)
+
+### 3️⃣ 글쓰기 (준비 중)
+- AI 기반 글쓰기 도우미
+- 텍스트 생성 및 편집
+
+### 4️⃣ 내 작품 보기 (준비 중)
+- IndexedDB 기반 작품 저장/관리
+- 작품 목록 표시 및 편집
+
+### 5️⃣ 나만의 굿즈 만들기 (준비 중)
+- 작품을 굿즈로 제작
+- 프린트/배송 옵션
 
 ## 노인 친화적 UI 디자인 원칙
 
@@ -94,7 +121,9 @@ webapp/
 - **React Router DOM** 7.10.0 - 클라이언트 사이드 라우팅
 - **IndexedDB** - 로컬 데이터 저장
 - **PM2** - 프로세스 관리
-- **Gemini API** - AI 이미지 생성
+- **Gemini Pro Vision API** - AI 이미지 생성 (DrawPractice, DirectInput, Storybook 표지)
+- **Gemini Pro API** - AI 텍스트 생성 (StorybookEditor 페이지 자동생성)
+- **@google/generative-ai** - Gemini API SDK
 
 ## Environment Setup
 
@@ -180,28 +209,30 @@ git commit -m "커밋 메시지"
 
 ## 아직 구현되지 않은 기능
 
-❌ **AI 통합**
-- 이미지 생성 API 연동
-- 텍스트 생성 API 연동
-- 음성 입력 처리 (Web Speech API 구현됨, 백엔드 연동 필요)
+✅ **AI 통합** (완료)
+- ✅ 이미지 생성 API 연동 (Gemini Pro Vision)
+- ✅ 텍스트 생성 API 연동 (Gemini Pro)
+- ✅ 음성 입력 처리 (Web Speech API)
 
-❌ **DrawDirect 페이지 완성**
-- 텍스트 입력 영역
-- 스타일 선택
-- 이미지 생성 버튼
-- 결과 표시
+✅ **DirectInput 페이지** (완료)
+- ✅ 텍스트 입력 영역
+- ✅ 스타일 선택
+- ✅ 이미지 생성 (Gemini API)
+- ✅ 결과 표시 (Result 페이지)
+
+✅ **Storybook 페이지** (완료)
+- ✅ 표지 생성 (Gemini API)
+- ✅ 페이지 편집 (StorybookEditor)
+- ✅ **⭐ 페이지 자동생성** (Gemini Pro API)
+- ❌ PDF 출력 (준비 중)
 
 ❌ **Write 페이지 구현**
 - 텍스트 에디터
 - AI 글쓰기 도우미
 - 저장 기능
 
-❌ **Storybook 페이지 구현**
-- 스토리 생성 워크플로우
-- 그림+글 조합
-- PDF 출력
-
 ❌ **MyWorks 페이지 구현**
+- IndexedDB 기반 작품 저장
 - 저장된 작품 목록 표시
 - 작품 수정/삭제
 - 작품 미리보기
@@ -216,35 +247,79 @@ git commit -m "커밋 메시지"
 - Kakao 로그인 실제 연동
 - 사용자 세션 관리
 
+## ⭐ 새로 추가된 기능
+
+### **페이지 자동생성 (StorybookEditor)**
+```typescript
+// src/utils/gemini.ts
+export async function generateNextPage(prevPages: string[], style: string) {
+  // Gemini Pro API로 이전 페이지를 분석하여 자연스러운 다음 페이지 생성
+  // - 초등학생 수준의 쉬운 문장
+  // - 3-5문장의 짧은 단락
+  // - 스타일 유지 (동화, 모험, 힐링 등)
+}
+```
+
+**사용 방법:**
+1. StorybookEditor에서 "➕ 페이지 자동생성" 버튼 클릭
+2. Gemini Pro가 현재 페이지들을 분석
+3. 자연스럽게 이어지는 다음 페이지 자동 생성
+4. 생성된 페이지로 자동 이동
+
 ## 다음 개발 단계 권장사항
 
-1. **DrawDirect 페이지 완성**
-   - 텍스트 입력, 스타일 선택, 이미지 생성 버튼 추가
-   - DrawPractice와 비슷한 UI 적용
-
-2. **AI API 연동**
-   - 이미지 생성 API (예: DALL-E, Stable Diffusion) 연동
-   - 프롬프트 최적화 로직 추가
-
-3. **MyWorks 페이지 구현**
-   - dbService의 getAllStories() 활용
+1. **MyWorks 페이지 구현** ⭐ 우선순위 높음
+   - IndexedDB 기반 작품 저장 시스템
+   - 동화책, 그림 작품 목록 표시
    - 작품 카드 레이아웃 (그리드)
    - 상세보기/수정/삭제 기능
+   - 작품 검색 및 필터링
 
-4. **Write 페이지 구현**
-   - 텍스트 에디터 추가 (간단한 textarea 또는 React Quill)
-   - AI 글쓰기 도우미 (주제 제안, 문장 완성)
+2. **페이지별 이미지 생성** (StorybookEditor 고도화)
+   - 각 페이지 텍스트 기반 이미지 자동 생성
+   - Gemini Pro Vision API 활용
+   - 이미지 편집 및 재생성 기능
 
-5. **Storybook 페이지 구현**
-   - 스토리 페이지 추가/편집 UI
-   - 그림+글 조합 미리보기
-   - PDF 생성 및 다운로드
+3. **Write 페이지 구현**
+   - 텍스트 에디터 추가 (간단한 textarea)
+   - Gemini Pro로 AI 글쓰기 도우미
+   - 주제 제안, 문장 완성, 문법 교정
 
-6. **인증 기능 구현**
+4. **Loading UI 추가**
+   - 이미지 생성 중 스피너
+   - 진행률 표시
+   - 예상 소요 시간 표시
+
+5. **PDF 내보내기** (Storybook 완성)
+   - 동화책을 PDF로 변환
+   - 인쇄 최적화 레이아웃
+   - 다운로드 기능
+
+6. **Backend API Proxy** (보안 강화)
+   - Cloudflare Workers로 API 프록시
+   - API 키 보안 강화
+   - 사용량 제한 및 모니터링
+
+7. **인증 기능 구현**
    - Firebase Auth 또는 Supabase 연동
    - 사용자별 작품 관리
+   - 클라우드 백업
 
 ## Deployment
 - **Platform**: Sandbox Environment (개발)
 - **Status**: ✅ Active
-- **Last Updated**: 2025-12-03
+- **Production URL**: https://3000-i5dcsscuqxml7neuit43a-de59bda9.sandbox.novita.ai
+- **Last Updated**: 2025-12-04
+
+## 프로젝트 진행 상황
+
+### ✅ 완료된 모듈 (100%)
+1. **AI 그림 생성** - DrawStart, DrawPractice, DirectInput, Result
+2. **동화책 생성** - Storybook, StorybookEditor (페이지 자동생성 포함)
+
+### ⏳ 진행 중 (0%)
+3. **글쓰기** - Write 페이지
+4. **내 작품** - MyWorks 페이지
+5. **굿즈** - Goods 페이지
+
+**전체 진행률**: 40% (2/5 모듈 완료)

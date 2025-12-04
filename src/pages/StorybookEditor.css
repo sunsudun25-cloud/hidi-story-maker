@@ -70,6 +70,68 @@
   font-size: 16px;
   line-height: 1.5;
   resize: vertical;
+  margin-bottom: 12px;
+}
+
+/* 페이지 이미지 박스 */
+.page-image-box {
+  margin-top: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #e0e0e0;
+  padding: 8px;
+  background: white;
+}
+
+.page-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* 이미지 생성/재생성 버튼 */
+.generate-image-btn,
+.regenerate-image-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 12px;
+}
+
+.generate-image-btn {
+  background: #8b5cf6;
+  color: white;
+}
+
+.generate-image-btn:hover:not(:disabled) {
+  background: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.regenerate-image-btn {
+  background: #10b981;
+  color: white;
+}
+
+.regenerate-image-btn:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.generate-image-btn:disabled,
+.regenerate-image-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .page-controls {

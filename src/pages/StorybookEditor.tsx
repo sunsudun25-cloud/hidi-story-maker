@@ -1,10 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { generateNextPage } from "../services/geminiService";
+import { generateStoryImage } from "../services/imageService";
 import "./StorybookEditor.css";
 
 type PageData = {
   text: string;
+  imageUrl?: string;
 };
 
 export default function StorybookEditor() {
@@ -12,12 +14,13 @@ export default function StorybookEditor() {
   const { state } = useLocation();
 
   const [pages, setPages] = useState<PageData[]>([
-    { text: "달빛을 먹으면 힘이 나는 토끼는 오늘도 친구들을 만나기 위해 숲속을 달려갑니다." },
-    { text: "숲속 깊은 곳에서 토끼는 이상한 빛을 발견하게 됩니다." },
-    { text: "그 빛을 따라가자, 놀라운 모험이 시작되는데…" }
+    { text: "달빛을 먹으면 힘이 나는 토끼는 오늘도 친구들을 만나기 위해 숲속을 달려갑니다.", imageUrl: undefined },
+    { text: "숲속 깊은 곳에서 토끼는 이상한 빛을 발견하게 됩니다.", imageUrl: undefined },
+    { text: "그 빛을 따라가자, 놀라운 모험이 시작되는데…", imageUrl: undefined }
   ]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
   if (!state) {
     return (
@@ -70,6 +73,38 @@ export default function StorybookEditor() {
     }
   };
 
+  // 페이지 이미지 생성 핸들러
+  const handleGeneratePageImage = async () => {
+    const currentPageData = pages[currentPage - 1];
+    
+    if (!currentPageData.text.trim()) {
+      alert("먼저 페이지 내용을 입력해주세요!");
+      return;
+    }
+
+    setIsGeneratingImage(true);
+
+    try {
+      // generateStoryImage로 이미지 생성
+      const imageUrl = await generateStoryImage(currentPageData.text, {
+        style: style || "동화 스타일",
+        mood: "따뜻하고 부드러운"
+      });
+
+      // 페이지 이미지 업데이트
+      const newPages = [...pages];
+      newPages[currentPage - 1].imageUrl = imageUrl;
+      setPages(newPages);
+
+      alert("🎨 페이지 이미지가 생성되었습니다!");
+    } catch (err) {
+      console.error("이미지 생성 오류:", err);
+      alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
   // 저장 핸들러 (준비 중)
   const handleSave = () => {
     const storybook = {
@@ -113,6 +148,32 @@ export default function StorybookEditor() {
           value={pages[currentPage - 1]?.text || ""}
           onChange={(e) => handleTextChange(currentPage - 1, e.target.value)}
         ></textarea>
+
+        {/* 페이지 이미지 */}
+        {pages[currentPage - 1]?.imageUrl ? (
+          <div className="page-image-box">
+            <img 
+              src={pages[currentPage - 1].imageUrl} 
+              alt={`페이지 ${currentPage} 이미지`} 
+              className="page-image"
+            />
+            <button
+              className="regenerate-image-btn"
+              onClick={handleGeneratePageImage}
+              disabled={isGeneratingImage}
+            >
+              {isGeneratingImage ? "⏳ 생성 중..." : "🔄 이미지 재생성"}
+            </button>
+          </div>
+        ) : (
+          <button
+            className="generate-image-btn"
+            onClick={handleGeneratePageImage}
+            disabled={isGeneratingImage}
+          >
+            {isGeneratingImage ? "⏳ 생성 중..." : "🎨 페이지 이미지 생성"}
+          </button>
+        )}
       </div>
 
       {/* 페이지 이동 버튼 */}

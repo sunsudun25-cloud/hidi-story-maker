@@ -3,6 +3,110 @@
  * 이미지 다운로드, 변환, 최적화 등 이미지 관련 유틸리티 함수
  */
 
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const API_KEY = import.meta.env.VITE_GEMINI_KEY || import.meta.env.VITE_GEMINI_API_KEY;
+
+if (!API_KEY) {
+  console.error("⚠️ VITE_GEMINI_KEY 또는 VITE_GEMINI_API_KEY가 설정되지 않았습니다!");
+}
+
+const genAI = new GoogleGenerativeAI(API_KEY);
+
+/**
+ * Imagen 모델 - 동화 이미지 생성 (텍스트 기반)
+ * @param text 페이지 내용 또는 장면 설명
+ * @param options 추가 옵션 (스타일, 분위기 등)
+ * @returns Base64 인코딩된 이미지 URL
+ */
+export async function generateStoryImage(
+  text: string,
+  options?: {
+    style?: string;
+    mood?: string;
+  }
+): Promise<string> {
+  try {
+    const { style = "동화 스타일", mood = "따뜻하고 부드러운" } = options || {};
+
+    // Imagen 모델 초기화
+    const imagenModel = genAI.getGenerativeModel({ model: "imagen-3.0-generate-001" });
+
+    const prompt = `
+아래 동화 내용에 맞는 ${mood} 분위기의 그림을 만들어 주세요.
+어린이와 시니어가 보기 편한 ${style}로 표현해주세요.
+복잡한 배경은 피하고, 화면이 너무 어둡지 않게 구성해주세요.
+
+동화 내용:
+${text}
+`;
+
+    const result = await imagenModel.generateContent({
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: prompt }],
+        },
+      ],
+    });
+
+    // 응답에서 이미지 데이터 추출
+    const imageData = result.response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+
+    if (!imageData) {
+      throw new Error("이미지 데이터를 받지 못했습니다.");
+    }
+
+    return `data:image/png;base64,${imageData}`;
+  } catch (error) {
+    console.error("동화 이미지 생성 오류:", error);
+    
+    // Fallback: Gemini Pro Vision API 사용
+    console.log("Fallback: Gemini Pro Vision API 사용");
+    return generateImageFallback(text, options?.style);
+  }
+}
+
+/**
+ * Gemini Pro Vision API - 이미지 생성 (Fallback)
+ * @param prompt 이미지 생성 프롬프트
+ * @param style 스타일
+ * @returns Base64 인코딩된 이미지 URL
+ */
+async function generateImageFallback(prompt: string, style?: string): Promise<string> {
+  try {
+    const fullPrompt = style ? `${prompt}. 스타일: ${style}` : prompt;
+
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateImage?key=${API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: fullPrompt,
+          size: "1024x1024",
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`API 응답 오류: ${res.status} ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    
+    if (!data.candidates?.[0]?.image?.base64) {
+      throw new Error("이미지 데이터를 받지 못했습니다.");
+    }
+
+    const base64Image = data.candidates[0].image.base64;
+    return `data:image/png;base64,${base64Image}`;
+  } catch (error) {
+    console.error("Fallback 이미지 생성 오류:", error);
+    throw error;
+  }
+}
+
 /**
  * Base64 이미지를 Blob으로 변환
  * @param base64 Base64 인코딩된 이미지 데이터
@@ -334,6 +438,7 @@ export async function downloadImagesAsZip(
 }
 
 export default {
+  generateStoryImage,
   base64ToBlob,
   downloadImage,
   saveImageAsFile,

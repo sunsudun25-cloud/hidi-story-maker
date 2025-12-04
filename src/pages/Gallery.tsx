@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { useStory } from "../context/StoryContext";
-import { generateStoryPDF } from "../services/pdfService";
+import { generateStoryPDF, type Story, type StoryPDFOptions } from "../services/pdfService";
+import PdfOptions from "../components/PdfOptions";
 
 export default function Gallery() {
   const { stories, deleteStory } = useStory();
+  const [showPdfModal, setShowPdfModal] = useState(false);
+  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
 
   // 작품 없는 경우 안내 메시지
   if (!stories.length) {
@@ -60,14 +64,9 @@ export default function Gallery() {
             <div className="flex flex-col gap-0">
               {/* PDF 저장 버튼 */}
               <button
-                onClick={async () => {
-                  try {
-                    await generateStoryPDF(story);
-                    alert("✅ PDF가 다운로드되었습니다!");
-                  } catch (error) {
-                    console.error("PDF 생성 오류:", error);
-                    alert("PDF 생성 중 오류가 발생했습니다.");
-                  }
+                onClick={() => {
+                  setSelectedStory(story);
+                  setShowPdfModal(true);
                 }}
                 className="
                   bg-emerald-500 text-white 
@@ -98,6 +97,27 @@ export default function Gallery() {
           </div>
         ))}
       </div>
+
+      {/* PDF 옵션 모달 */}
+      {showPdfModal && selectedStory && (
+        <PdfOptions
+          onConfirm={async (options: StoryPDFOptions) => {
+            setShowPdfModal(false);
+            try {
+              await generateStoryPDF(selectedStory, options);
+              alert("✅ PDF가 다운로드되었습니다!");
+            } catch (error) {
+              console.error("PDF 생성 오류:", error);
+              alert("PDF 생성 중 오류가 발생했습니다.");
+            }
+            setSelectedStory(null);
+          }}
+          onClose={() => {
+            setShowPdfModal(false);
+            setSelectedStory(null);
+          }}
+        />
+      )}
     </div>
   );
 }

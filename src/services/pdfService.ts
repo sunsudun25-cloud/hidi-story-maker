@@ -451,13 +451,44 @@ export interface Story {
 }
 
 /**
+ * PDF 옵션 인터페이스
+ */
+export interface StoryPDFOptions {
+  margin?: "small" | "normal" | "large";
+  fontSize?: "small" | "medium" | "large";
+}
+
+/**
  * html2canvas를 활용한 고급 Story PDF 생성
  * 표지 페이지 + HTML 본문 캡처
  * @param story Story 데이터
+ * @param options PDF 생성 옵션
  */
-export async function generateStoryPDF(story: Story): Promise<void> {
+export async function generateStoryPDF(
+  story: Story,
+  options: StoryPDFOptions = {}
+): Promise<void> {
   const { default: jsPDF } = await import("jspdf");
   const { default: html2canvas } = await import("html2canvas");
+
+  // 옵션 기본값 설정
+  const { margin = "normal", fontSize = "medium" } = options;
+
+  // 여백 설정
+  const marginMap = {
+    small: { horizontal: 80, vertical: 80 },
+    normal: { horizontal: 123, vertical: 150 },
+    large: { horizontal: 150, vertical: 200 },
+  };
+  const margins = marginMap[margin];
+
+  // 글자 크기 설정
+  const fontSizeMap = {
+    small: 20,
+    medium: 28,
+    large: 36,
+  };
+  const titleFontSize = fontSizeMap[fontSize];
 
   const pdf = new jsPDF({
     format: "a4",
@@ -469,18 +500,21 @@ export async function generateStoryPDF(story: Story): Promise<void> {
   pdf.rect(0, 0, 595, 842, "F");
 
   // 제목
-  pdf.setFontSize(28);
+  pdf.setFontSize(titleFontSize);
   pdf.setTextColor("#333");
-  pdf.text(story.title, 297, 200, { align: "center" });
+  pdf.text(story.title, 297, margins.vertical, { align: "center" });
 
   // 대표 이미지
   if (story.image) {
     try {
       const img = await loadImageForPDF(story.image);
-      const imgWidth = 350;
+      const maxImageWidth = 595 - 2 * margins.horizontal;
+      const imgWidth = Math.min(maxImageWidth, 350);
       const imgHeight = (img.height / img.width) * imgWidth;
+      const imgX = (595 - imgWidth) / 2;
+      const imgY = margins.vertical + 80;
 
-      pdf.addImage(img, "JPEG", 123, 260, imgWidth, imgHeight);
+      pdf.addImage(img, "JPEG", imgX, imgY, imgWidth, imgHeight);
     } catch (error) {
       console.error("표지 이미지 로드 오류:", error);
     }

@@ -17,15 +17,23 @@ export default function StorybookEditor() {
   const { state } = useLocation();
   
   // Context에서 가져오기
-  const storybookContext = useStorybook();
-
-  // 로컬 상태 (기존 방식 유지)
-  const [pages, setPages] = useState<PageData[]>([
-    { text: "달빛을 먹으면 힘이 나는 토끼는 오늘도 친구들을 만나기 위해 숲속을 달려갑니다.", imageUrl: undefined },
-    { text: "숲속 깊은 곳에서 토끼는 이상한 빛을 발견하게 됩니다.", imageUrl: undefined },
-    { text: "그 빛을 따라가자, 놀라운 모험이 시작되는데…", imageUrl: undefined }
-  ]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const {
+    storyPages,
+    setStoryPages,
+    currentPage,
+    setCurrentPage,
+    setImageForPage,
+    setTextForPage,
+    addNewPage,
+    title: contextTitle,
+    setTitle,
+    prompt: contextPrompt,
+    setPrompt,
+    style: contextStyle,
+    setStyle,
+    coverImageUrl: contextCoverImageUrl,
+    setCoverImageUrl,
+  } = useStorybook();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [showPdfModal, setShowPdfModal] = useState(false);
@@ -39,10 +47,19 @@ export default function StorybookEditor() {
   // Context 초기화 (state가 있는 경우)
   useEffect(() => {
     if (state) {
-      storybookContext.setTitle(state.title || '나의 동화책');
-      storybookContext.setPrompt(state.prompt || '');
-      storybookContext.setStyle(state.style || '동화 스타일');
-      storybookContext.setCoverImageUrl(state.coverImageUrl || '');
+      setTitle(state.title || '나의 동화책');
+      setPrompt(state.prompt || '');
+      setStyle(state.style || '동화 스타일');
+      setCoverImageUrl(state.coverImageUrl || '');
+      
+      // 기본 페이지 설정 (storyPages가 비어있는 경우)
+      if (storyPages.length === 0 || (storyPages.length === 1 && !storyPages[0].text)) {
+        setStoryPages([
+          { text: "달빛을 먹으면 힘이 나는 토끼는 오늘도 친구들을 만나기 위해 숲속을 달려갑니다.", imageUrl: undefined },
+          { text: "숲속 깊은 곳에서 토끼는 이상한 빛을 발견하게 됩니다.", imageUrl: undefined },
+          { text: "그 빛을 따라가자, 놀라운 모험이 시작되는데…", imageUrl: undefined }
+        ]);
+      }
     }
   }, [state]);
 
@@ -64,25 +81,14 @@ export default function StorybookEditor() {
 
   const { title, prompt, style, coverImageUrl } = state;
 
-  // 특정 페이지에 이미지 설정
-  const setImageForPage = (pageIndex: number, image: string) => {
-    setPages(prev =>
-      prev.map((page, i) =>
-        i === pageIndex ? { ...page, imageUrl: image } : page
-      )
-    );
-  };
-
   // 페이지 이동 핸들러
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
 
-  // 텍스트 업데이트 핸들러
+  // 텍스트 업데이트 핸들러 (Context 사용)
   const handleTextChange = (index: number, newText: string) => {
-    const newPages = [...pages];
-    newPages[index].text = newText;
-    setPages(newPages);
+    setTextForPage(index, newText);
   };
 
   // 페이지 자동생성 핸들러
@@ -91,16 +97,14 @@ export default function StorybookEditor() {
 
     try {
       // 현재까지의 모든 페이지 텍스트 수집
-      const prevTexts = pages.map(p => p.text);
+      const prevTexts = storyPages.map(p => p.text);
       
       // Gemini API로 다음 페이지 생성
       const nextPageText = await generateNextPage(prevTexts, style || "동화 스타일");
       
-      // 새 페이지 추가
-      setPages([...pages, { text: nextPageText, imageUrl: undefined }]);
-      
-      // 새 페이지로 이동
-      setCurrentPage(pages.length + 1);
+      // 새 페이지 추가 (Context 사용)
+      addNewPage(nextPageText);
+
       
       alert("✨ 새로운 페이지가 생성되었습니다!");
     } catch (err) {
@@ -113,7 +117,7 @@ export default function StorybookEditor() {
 
   // 페이지 이미지 생성 핸들러
   const handleGeneratePageImage = async () => {
-    const currentPageData = pages[currentPage - 1];
+    const currentPageData = storyPages[currentPage - 1];
     
     if (!currentPageData.text.trim()) {
       alert("먼저 페이지 내용을 입력해주세요!");
@@ -144,13 +148,13 @@ export default function StorybookEditor() {
   // 저장 핸들러
   const handleSave = async () => {
     try {
-      // Context 상태도 함께 저장
+      // Context 상태 저장
       const storybookId = await saveStorybook({
-        title: storybookContext.title || title,
-        prompt: storybookContext.prompt || prompt,
-        style: storybookContext.style || style,
-        coverImageUrl: storybookContext.coverImageUrl || coverImageUrl,
-        pages,
+        title: contextTitle || title,
+        prompt: contextPrompt || prompt,
+        style: contextStyle || style,
+        coverImageUrl: contextCoverImageUrl || coverImageUrl,
+        pages: storyPages,
         createdAt: new Date().toISOString()
       });
 
@@ -174,7 +178,7 @@ export default function StorybookEditor() {
 
       // PDF 생성 (간단 버전)
       await exportStorybookToPDF(
-        pages.map((page) => ({
+        storyPages.map((page) => ({
           text: page.text,
           image: page.imageUrl || null,
         })),
@@ -192,7 +196,7 @@ export default function StorybookEditor() {
   const handleEnhancedPDF = async () => {
     try {
       await exportEnhancedPDF({
-        pages: pages.map((page) => ({
+        pages: storyPages.map((page) => ({
           text: page.text,
           image: page.imageUrl || null,
         })),
@@ -235,15 +239,15 @@ export default function StorybookEditor() {
 
         <textarea
           className="page-textarea"
-          value={pages[currentPage - 1]?.text || ""}
+          value={storyPages[currentPage - 1]?.text || ""}
           onChange={(e) => handleTextChange(currentPage - 1, e.target.value)}
         ></textarea>
 
         {/* 페이지 이미지 */}
-        {pages[currentPage - 1]?.imageUrl ? (
+        {storyPages[currentPage - 1]?.imageUrl ? (
           <div className="page-image-box">
             <img 
-              src={pages[currentPage - 1].imageUrl} 
+              src={storyPages[currentPage - 1].imageUrl} 
               alt="동화 이미지" 
               className="w-full rounded-lg mt-4 shadow page-image"
             />
@@ -278,7 +282,7 @@ export default function StorybookEditor() {
 
         <button
           className="control-btn"
-          disabled={currentPage === pages.length}
+          disabled={currentPage === storyPages.length}
           onClick={() => handlePageChange(currentPage + 1)}
         >
           다음 →

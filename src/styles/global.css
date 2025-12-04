@@ -1,95 +1,186 @@
-/* ===== Global Reset ===== */
+/* 글로벌 색상 팔레트 — 시니어 친화형 */
+:root {
+  --primary: #4A90E2;         /* 차분한 파란색 */
+  --primary-light: #A8CBFF;   /* 연한 파란색 */
+  --secondary: #F8F8F8;       /* 밝은 회색 */
+  --text: #222;
+  --text-light: #666;
+  --bg: #F2F6FF;              /* 은은한 전체 배경색 */
+  --card-bg: #FFFFFF;
+  --radius: 16px;
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* 전체 기본 설정 */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Pretendard", sans-serif;
 }
 
 body {
-  background: #F8F7FE; /* 따뜻한 연라일락 톤 */
-  color: #222;
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  font-family: "Pretendard", sans-serif;
+  font-size: 18px; /* 시니어 기본 폰트 */
+  color: var(--text);
   line-height: 1.6;
 }
 
-/* ===== Page Wrapper ===== */
-.page-container {
+/* 페이지 공통 레이아웃 */
+main {
+  padding: 20px;
   max-width: 480px;
   margin: 0 auto;
-  padding: 24px;
 }
 
-/* ===== Title ===== */
-.page-title {
-  font-size: 28px;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 16px;
-  color: #3F3A77; /* 메인 컬러 강조 */
-}
-
-/* ===== Subtitle ===== */
-.page-subtitle {
-  text-align: center;
-  font-size: 18px;
-  color: #6A6A6A;
-  margin-bottom: 24px;
-}
-
-/* ===== Main Button (Primary) ===== */
-.btn-primary {
+/* 시니어 스타일 버튼 공통화 */
+.btn {
   width: 100%;
   padding: 18px;
   font-size: 20px;
-  font-weight: 600;
-  border-radius: 14px;
+  border-radius: var(--radius);
   border: none;
+  background: var(--primary);
   color: white;
-  background: linear-gradient(90deg, #6C63FF, #8B74FF);
-  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+  font-weight: 600;
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.2s ease;
 }
 
-/* ===== Sub Button ===== */
-.btn-sub {
+.btn:hover {
+  background: var(--primary-light);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* 카드형 박스 */
+.card {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 20px;
+}
+
+/* 제목 공통 스타일 */
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+  color: var(--text);
+}
+
+.page-subtitle {
+  font-size: 18px;
+  font-weight: 400;
+  text-align: center;
+  color: var(--text-light);
+  margin-bottom: 24px;
+}
+
+/* 부가 버튼 (보조 버튼) */
+.btn-secondary {
   width: 100%;
   padding: 16px;
-  border-radius: 14px;
   font-size: 18px;
-  border: 2px solid #6C63FF;
-  color: #6C63FF;
+  border-radius: var(--radius);
+  border: 2px solid var(--primary);
   background: white;
-  margin-top: 12px;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
 }
 
-/* ===== Card ===== */
-.option-card {
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.btn-secondary:hover {
+  background: var(--secondary);
 }
 
-/* ===== Chip ===== */
+/* 입력 필드 */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+  width: 100%;
+  padding: 16px;
+  font-size: 18px;
+  border-radius: var(--radius);
+  border: 2px solid var(--secondary);
+  background: white;
+  color: var(--text);
+  font-family: "Pretendard", sans-serif;
+  transition: border-color 0.2s ease;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* 칩 스타일 */
 .chip {
   display: inline-block;
-  background: #86E3CE;
-  color: #222;
   padding: 10px 16px;
   border-radius: 20px;
-  margin: 6px;
   font-size: 16px;
+  font-weight: 500;
+  background: var(--secondary);
+  color: var(--text);
+  margin: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* ===== Small Tip Box ===== */
+.chip:hover {
+  background: var(--primary-light);
+  color: white;
+}
+
+.chip.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* 팁 박스 */
 .tip-box {
   background: #FFFBEA;
   border-left: 4px solid #FFD56B;
-  padding: 12px;
-  margin: 14px 0;
-  font-size: 15px;
+  padding: 14px;
+  margin: 16px 0;
+  font-size: 16px;
+  color: var(--text);
+  border-radius: 8px;
+}
+
+/* 옵션 카드 */
+.option-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.option-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.option-card.active {
+  border: 2px solid var(--primary);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
 }

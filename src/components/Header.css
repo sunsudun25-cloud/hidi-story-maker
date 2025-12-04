@@ -1,5 +1,5 @@
 /* 전체 헤더 영역 */
-.header-container {
+.header {
   width: 100%;
   max-width: 600px;       /* 모바일 중심 + 데스크탑에서도 중앙 정렬 */
   margin: 0 auto;

@@ -6,6 +6,7 @@ import Home from './pages/Home'
 import DrawStart from './pages/DrawStart'
 import DrawPractice from './pages/DrawPractice'
 import DrawDirect from './pages/DrawDirect'
+import DirectInput from './pages/DirectInput'
 import Write from './pages/Write'
 import Storybook from './pages/Storybook'
 import MyWorks from './pages/MyWorks'
@@ -27,6 +28,7 @@ function App() {
           <Route path="/drawing/start" element={<DrawStart />} />
           <Route path="/drawing/practice" element={<DrawPractice />} />
           <Route path="/drawing/direct" element={<DrawDirect />} />
+          <Route path="/direct-input" element={<DirectInput />} />
           <Route path="/write" element={<Write />} />
           <Route path="/storybook" element={<Storybook />} />
           <Route path="/my-works" element={<MyWorks />} />

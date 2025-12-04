@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Header from "../components/Header";
 import "./DrawPractice.css";
 
 type ExamplePrompt = {
@@ -140,6 +141,7 @@ export default function DrawPractice() {
 
   return (
     <div className="page-container">
+      <Header title="연습하기" />
       <div className="practice-page">
 
         <section className="practice-box">

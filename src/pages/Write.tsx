@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 
 export default function Write() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function Write() {
 
   return (
     <main>
+      <Header title="글쓰기" />
       <h1 className="page-title">글쓰기</h1>
       <p className="page-subtitle">오늘의 이야기를 자유롭게 써보세요</p>
 

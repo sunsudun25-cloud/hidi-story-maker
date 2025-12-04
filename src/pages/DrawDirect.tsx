@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Header from "../components/Header";
 import "./DrawDirect.css";
 
 export default function DrawDirect() {
@@ -41,6 +42,7 @@ export default function DrawDirect() {
 
   return (
     <main>
+      <Header title="직접 입력" />
       {/* 설명 안내 */}
       <p className="guide-text">
         원하는 그림을 자세히 설명해주세요 😊

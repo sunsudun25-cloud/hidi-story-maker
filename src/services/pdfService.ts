@@ -398,10 +398,52 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
   doc.save(`${title}.pdf`);
 }
 
+/**
+ * 간단한 PDF 생성 함수
+ * @param items 작품 배열 (title, image, description)
+ */
+export async function makePDF(items: Array<{
+  title?: string;
+  image?: string;
+  description?: string;
+}>): Promise<void> {
+  const { default: jsPDF } = await import("jspdf");
+  
+  const pdf = new jsPDF({
+    unit: "pt",
+    format: "a4",
+  });
+
+  items.forEach((item, index) => {
+    if (index !== 0) pdf.addPage();
+
+    // 제목
+    pdf.setFontSize(20);
+    pdf.text(item.title || "작품 제목 없음", 40, 60);
+
+    // 이미지
+    if (item.image) {
+      try {
+        pdf.addImage(item.image, "JPEG", 40, 100, 500, 500);
+      } catch (error) {
+        console.error(`이미지 ${index + 1} 추가 오류:`, error);
+      }
+    }
+
+    // 설명
+    pdf.setFontSize(14);
+    const lines = pdf.splitTextToSize(item.description || "", 500);
+    pdf.text(lines, 40, 630);
+  });
+
+  pdf.save("my_storybook.pdf");
+}
+
 export default {
   generateStorybookPDF,
   exportStorybookToPDF,
   exportEnhancedPDF,
   previewStorybookPDF,
   generateStorybookPDFWithOptions,
+  makePDF,
 };

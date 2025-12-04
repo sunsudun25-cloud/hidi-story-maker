@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllImages, deleteImage } from "../services/dbService";
+import { makePDF } from "../services/pdfService";
 
 interface SavedImage {
   id?: number;
@@ -44,6 +45,28 @@ export default function Gallery() {
     }
   };
 
+  // 전체 이미지를 PDF로 만들기
+  const handleExportAllToPDF = async () => {
+    if (images.length === 0) {
+      alert("PDF로 만들 이미지가 없습니다.");
+      return;
+    }
+
+    try {
+      const items = images.map((img) => ({
+        title: img.prompt || "제목 없음",
+        image: img.image,
+        description: img.style ? `스타일: ${img.style}` : "",
+      }));
+
+      await makePDF(items);
+      alert("✅ PDF가 다운로드되었습니다!");
+    } catch (error) {
+      console.error("PDF 생성 오류:", error);
+      alert("PDF 생성 중 오류가 발생했습니다.");
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="p-6 max-w-[600px] mx-auto">
@@ -72,11 +95,21 @@ export default function Gallery() {
         </button>
       </div>
 
-      {/* 작품 개수 표시 */}
-      <div className="bg-blue-50 p-3 rounded-xl mb-4 text-center">
-        <p className="text-[18px] font-semibold text-blue-700">
-          총 {images.length}개의 작품
-        </p>
+      {/* 작품 개수 표시 및 PDF 버튼 */}
+      <div className="bg-blue-50 p-3 rounded-xl mb-4">
+        <div className="flex items-center justify-between">
+          <p className="text-[18px] font-semibold text-blue-700">
+            총 {images.length}개의 작품
+          </p>
+          {images.length > 0 && (
+            <button
+              onClick={handleExportAllToPDF}
+              className="px-4 py-2 bg-red-500 text-white rounded-lg text-[16px] font-semibold hover:bg-red-600"
+            >
+              📕 전체 PDF로 만들기
+            </button>
+          )}
+        </div>
       </div>
 
       {/* 빈 상태 */}

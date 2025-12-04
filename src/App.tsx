@@ -15,6 +15,9 @@ import MyWorks from './pages/MyWorks'
 import Goods from './pages/Goods'
 import Result from './pages/Result'
 import TestButtons from './pages/TestButtons'
+import ImageMakePractice from './pages/ImageMake/Practice'
+import ImageMakeCustom from './pages/ImageMake/Custom'
+import ImageMakeResult from './pages/ImageMake/Result'
 import './App.css'
 
 function App() {
@@ -37,6 +40,9 @@ function App() {
           <Route path="/storybook-editor" element={<StorybookEditor />} />
           <Route path="/storybook-export" element={<StorybookExport />} />
           <Route path="/export" element={<StorybookExport />} />
+          <Route path="/image/practice" element={<ImageMakePractice />} />
+          <Route path="/image/custom" element={<ImageMakeCustom />} />
+          <Route path="/image/result" element={<ImageMakeResult />} />
           <Route path="/my-works" element={<MyWorks />} />
           <Route path="/goods" element={<Goods />} />
           <Route path="/result" element={<Result />} />

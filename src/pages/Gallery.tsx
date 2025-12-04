@@ -77,10 +77,10 @@ export default function Gallery() {
     }
 
     try {
-      const items = stories.map((story) => ({
+      const items = stories.map((story: any) => ({
         title: story.title || "제목 없음",
-        image: "", // 스토리는 이미지가 없을 수 있음
-        description: story.content || "",
+        image: story.image || "", // image 필드가 있으면 사용
+        description: story.description || story.content || "", // description 또는 content 필드 사용
       }));
 
       await makePDF(items);

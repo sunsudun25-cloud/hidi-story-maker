@@ -6,6 +6,8 @@ export interface Story {
   id: string
   title: string
   content: string
+  image?: string        // 선택적 이미지 필드
+  description?: string  // 선택적 설명 필드
   createdAt: Date
   updatedAt: Date
 }
@@ -14,6 +16,7 @@ export interface Story {
 interface StoryContextType {
   stories: Story[]
   addStory: (title: string, content: string) => Promise<void>
+  addStoryWithImage: (title: string, content: string, image?: string, description?: string) => Promise<void>
   updateStory: (id: string, title: string, content: string) => Promise<void>
   deleteStory: (id: string) => Promise<void>
   getStory: (id: string) => Story | undefined
@@ -56,6 +59,32 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
       id: Date.now().toString(),
       title,
       content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    
+    try {
+      await db.addStory(newStory)
+      setStories((prev) => [...prev, newStory])
+    } catch (error) {
+      console.error('스토리 추가 실패:', error)
+      throw error
+    }
+  }
+
+  // 이미지와 함께 스토리 추가
+  const addStoryWithImage = async (
+    title: string,
+    content: string,
+    image?: string,
+    description?: string
+  ) => {
+    const newStory: Story = {
+      id: Date.now().toString(),
+      title,
+      content,
+      image,
+      description,
       createdAt: new Date(),
       updatedAt: new Date(),
     }
@@ -124,6 +153,7 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
   const value = {
     stories,
     addStory,
+    addStoryWithImage,
     updateStory,
     deleteStory,
     getStory,

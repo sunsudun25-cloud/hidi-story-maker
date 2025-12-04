@@ -47,7 +47,8 @@ webapp/
 │   │   └── StoryContext.tsx       # 스토리 상태 관리 Context
 │   ├── services/
 │   │   ├── dbService.ts           # IndexedDB 서비스
-│   │   └── geminiService.ts       # Gemini API 통합 서비스 (이미지/텍스트 생성, 글쓰기 도우미)
+│   │   ├── geminiService.ts       # Gemini API 서비스 (텍스트 생성, 글쓰기 도우미)
+│   │   └── imageService.ts        # 이미지 서비스 (생성, 다운로드, 리사이즈, 워터마크 등)
 │   └── styles/
 │       └── global.css             # 글로벌 스타일 (노인 친화적 UI)
 ├── public/                        # 정적 파일

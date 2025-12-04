@@ -1,0 +1,218 @@
+/* StorybookEditor.css */
+
+.editor-container {
+  max-width: 480px;
+  margin: 0 auto;
+  background: #fef9ef;
+  min-height: 100vh;
+  padding-bottom: 20px;
+}
+
+/* 🔵 상단 헤더 */
+.editor-header {
+  background: #b7d4ff;
+  padding: 12px 16px;
+  border-radius: 0 0 16px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.header-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.header-btn:hover {
+  background: #f5f5f5;
+  transform: translateY(-1px);
+}
+
+.editor-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* 제목 */
+.book-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  margin: 0 16px 18px 16px;
+}
+
+/* 표지 박스 */
+.cover-box {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 0 16px 20px 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.cover-box img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+}
+
+/* 페이지 내용 */
+.page-content {
+  margin: 0 16px 16px 16px;
+}
+
+.page-number {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.page-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  font-size: 16px;
+  line-height: 1.6;
+  resize: vertical;
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.page-textarea:focus {
+  outline: none;
+  border-color: #50b36b;
+}
+
+/* 페이지 이동 버튼 */
+.page-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  margin-bottom: 20px;
+}
+
+.control-btn {
+  flex: 1;
+  padding: 14px;
+  background: #25c56e;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-btn:hover:not(:disabled) {
+  background: #1bb173;
+  transform: translateY(-2px);
+}
+
+.control-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 하단 액션 버튼 */
+.bottom-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px;
+  margin-top: 24px;
+}
+
+.secondary-btn,
+.primary-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.secondary-btn {
+  background: white;
+  color: #25c56e;
+  border: 2px solid #25c56e;
+}
+
+.secondary-btn:hover {
+  background: #25c56e;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.primary-btn {
+  background: #25c56e;
+  color: white;
+}
+
+.primary-btn:hover {
+  background: #1bb173;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 197, 110, 0.3);
+}
+
+/* 반응형 */
+@media (max-width: 480px) {
+  .editor-title {
+    font-size: 18px;
+  }
+
+  .book-title {
+    font-size: 20px;
+  }
+
+  .page-number {
+    font-size: 16px;
+  }
+
+  .page-textarea {
+    font-size: 15px;
+    min-height: 100px;
+  }
+
+  .control-btn {
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .secondary-btn,
+  .primary-btn {
+    padding: 14px;
+    font-size: 16px;
+  }
+}

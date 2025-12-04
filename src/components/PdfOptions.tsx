@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PdfPreviewModal from "./PdfPreviewModal";
 
 interface PdfOptionsProps {
   onConfirm: (options: { margin: string; fontSize: string; layout: string }) => void;
@@ -9,6 +10,7 @@ export default function PdfOptions({ onConfirm, onClose }: PdfOptionsProps) {
   const [margin, setMargin] = useState("normal");
   const [fontSize, setFontSize] = useState("medium");
   const [layout, setLayout] = useState("A");
+  const [showPreview, setShowPreview] = useState(false);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -98,6 +100,14 @@ export default function PdfOptions({ onConfirm, onClose }: PdfOptionsProps) {
           </div>
         </div>
 
+        {/* 미리보기 버튼 */}
+        <button
+          onClick={() => setShowPreview(true)}
+          className="w-full mb-4 py-3 bg-blue-500 text-white rounded-lg font-bold hover:bg-blue-600"
+        >
+          📄 레이아웃 미리보기
+        </button>
+
         {/* 버튼 그룹 */}
         <div className="flex gap-2">
           {onClose && (
@@ -116,6 +126,18 @@ export default function PdfOptions({ onConfirm, onClose }: PdfOptionsProps) {
           </button>
         </div>
       </div>
+
+      {/* 미리보기 모달 */}
+      {showPreview && (
+        <PdfPreviewModal
+          layout={layout}
+          onClose={() => setShowPreview(false)}
+          onConfirm={() => {
+            setShowPreview(false);
+            onConfirm({ margin, fontSize, layout });
+          }}
+        />
+      )}
     </div>
   );
 }

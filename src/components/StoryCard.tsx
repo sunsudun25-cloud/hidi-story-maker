@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { generateStoryPDF, type Story, type StoryPDFOptions } from "../services/pdfService";
-import PdfOptions from "./PdfOptions";
+import { generateStoryPDF, type Story } from "../services/pdfService";
+import PdfPreviewModal from "./PdfPreviewModal";
 
 interface StoryCardProps {
   story: Story;
@@ -8,7 +8,9 @@ interface StoryCardProps {
 }
 
 export default function StoryCard({ story, onDelete }: StoryCardProps) {
-  const [showOptions, setShowOptions] = useState(false);
+  const [showLayoutSelector, setShowLayoutSelector] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [selectedLayout, setSelectedLayout] = useState("A");
 
   return (
     <>
@@ -33,7 +35,7 @@ export default function StoryCard({ story, onDelete }: StoryCardProps) {
         <div className="flex flex-col gap-0">
           {/* PDF 저장 버튼 */}
           <button
-            onClick={() => setShowOptions(true)}
+            onClick={() => setShowLayoutSelector(true)}
             className="bg-emerald-500 text-white py-3 text-[16px] font-bold w-full hover:bg-emerald-600"
           >
             PDF로 저장하기
@@ -54,20 +56,90 @@ export default function StoryCard({ story, onDelete }: StoryCardProps) {
         </div>
       </div>
 
-      {/* PDF 옵션 모달 */}
-      {showOptions && (
-        <PdfOptions
-          onConfirm={async (options: StoryPDFOptions) => {
-            setShowOptions(false);
+      {/* 레이아웃 선택 모달 */}
+      {showLayoutSelector && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white p-5 rounded-xl shadow-xl w-full max-w-md">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">PDF 레이아웃 선택</h2>
+              <button
+                onClick={() => setShowLayoutSelector(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {/* A안 */}
+              <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                <input
+                  type="radio"
+                  name="layout"
+                  value="A"
+                  checked={selectedLayout === "A"}
+                  onChange={() => setSelectedLayout("A")}
+                  className="w-4 h-4"
+                />
+                <span className="font-semibold">A안 — 그림 위 / 글 아래</span>
+              </label>
+
+              {/* B안 */}
+              <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                <input
+                  type="radio"
+                  name="layout"
+                  value="B"
+                  checked={selectedLayout === "B"}
+                  onChange={() => setSelectedLayout("B")}
+                  className="w-4 h-4"
+                />
+                <span className="font-semibold">B안 — 그림 전체 페이지</span>
+              </label>
+
+              {/* C안 */}
+              <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                <input
+                  type="radio"
+                  name="layout"
+                  value="C"
+                  checked={selectedLayout === "C"}
+                  onChange={() => setSelectedLayout("C")}
+                  className="w-4 h-4"
+                />
+                <span className="font-semibold">C안 — 그림/글 반반</span>
+              </label>
+            </div>
+
+            {/* 버튼 */}
+            <button
+              onClick={() => {
+                setShowLayoutSelector(false);
+                setShowPreview(true); // 🔹 미리보기 열기
+              }}
+              className="mt-5 bg-emerald-500 text-white w-full py-3 rounded-lg font-bold hover:bg-emerald-600"
+            >
+              선택 완료
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 미리보기 모달 */}
+      {showPreview && (
+        <PdfPreviewModal
+          layout={selectedLayout}
+          onClose={() => setShowPreview(false)}
+          onConfirm={async () => {
+            setShowPreview(false);
             try {
-              await generateStoryPDF(story, options);
+              await generateStoryPDF(story, { layout: selectedLayout });
               alert("✅ PDF가 다운로드되었습니다!");
             } catch (error) {
               console.error("PDF 생성 오류:", error);
               alert("PDF 생성 중 오류가 발생했습니다.");
             }
           }}
-          onClose={() => setShowOptions(false)}
         />
       )}
     </>

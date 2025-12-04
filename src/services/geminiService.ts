@@ -228,10 +228,29 @@ ${text}
   }
 }
 
+/**
+ * 안전한 Gemini API 호출 (에러 처리 포함)
+ * @param prompt 사용자 프롬프트
+ * @returns AI 응답 텍스트 또는 null
+ */
+export async function safeGeminiCall(prompt: string): Promise<string | null> {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+    return text.trim();
+  } catch (error) {
+    console.error("Gemini API 호출 오류:", error);
+    alert("AI 응답을 받아오는 중 오류가 발생했습니다. 다시 시도해주세요.");
+    return null;
+  }
+}
+
 export default {
   generateImage,
   generateNextPage,
   suggestNextSentence,
   suggestTopics,
   checkGrammar,
+  safeGeminiCall,
 };

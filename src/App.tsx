@@ -35,6 +35,7 @@ function App() {
           <Route path="/drawing/start" element={<DrawStart />} />
           <Route path="/drawing/practice" element={<DrawPractice />} />
           <Route path="/drawing/direct" element={<DrawDirect />} />
+          <Route path="/drawing/result" element={<Result />} />
           <Route path="/direct-input" element={<DirectInput />} />
           <Route path="/write" element={<Write />} />
           <Route path="/storybook" element={<Storybook />} />

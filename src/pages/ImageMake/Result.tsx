@@ -1,14 +1,17 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { downloadImage } from "../../services/imageService";
 import { saveImageToDB } from "../../services/dbService";
+import { useStorybook } from "../../context/StorybookContext";
 import { useState } from "react";
 import "./ImageMake.css";
 
 export default function Result() {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const { storyPages, setImageForPage, addNewPage } = useStorybook();
   const [isSaving, setIsSaving] = useState(false);
   const [isSavingToDB, setIsSavingToDB] = useState(false);
+  const [showPageSelector, setShowPageSelector] = useState(false);
 
   const { image, prompt, style } = state || {};
 
@@ -59,6 +62,37 @@ export default function Result() {
     } finally {
       setIsSavingToDB(false);
     }
+  };
+
+  // 동화책에 이미지 추가
+  const handleAddToStorybook = (pageIndex: number) => {
+    setImageForPage(pageIndex, image);
+    setShowPageSelector(false);
+    alert(`✅ ${pageIndex + 1}페이지에 이미지가 추가되었습니다!`);
+    navigate("/storybook-editor", {
+      state: {
+        title: "나의 동화책",
+        prompt: "",
+        style: "동화 스타일",
+        coverImageUrl: ""
+      }
+    });
+  };
+
+  // 새 페이지로 추가
+  const handleAddAsNewPage = () => {
+    addNewPage(prompt || "새로운 페이지");
+    setImageForPage(storyPages.length, image);
+    setShowPageSelector(false);
+    alert(`✅ 새 페이지(${storyPages.length + 1}페이지)에 추가되었습니다!`);
+    navigate("/storybook-editor", {
+      state: {
+        title: "나의 동화책",
+        prompt: "",
+        style: "동화 스타일",
+        coverImageUrl: ""
+      }
+    });
   };
 
   return (
@@ -116,7 +150,7 @@ export default function Result() {
 
           <button
             className="result-btn storybook-btn"
-            onClick={() => navigate("/storybook")}
+            onClick={() => setShowPageSelector(true)}
           >
             📕 동화책에 넣기
           </button>
@@ -129,6 +163,112 @@ export default function Result() {
           </button>
         </div>
       </div>
+
+      {/* 페이지 선택 모달 */}
+      {showPageSelector && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+          onClick={() => setShowPageSelector(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: "30px",
+              borderRadius: "16px",
+              maxWidth: "400px",
+              width: "90%",
+              maxHeight: "80vh",
+              overflowY: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 style={{ fontSize: "22px", marginBottom: "20px", textAlign: "center" }}>
+              어느 페이지에 넣을까요?
+            </h2>
+
+            {/* 기존 페이지 목록 */}
+            <div style={{ marginBottom: "20px" }}>
+              {storyPages.length > 0 ? (
+                storyPages.map((page, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleAddToStorybook(index)}
+                    style={{
+                      width: "100%",
+                      padding: "15px",
+                      marginBottom: "10px",
+                      border: "2px solid #e0e0e0",
+                      borderRadius: "12px",
+                      backgroundColor: page.imageUrl ? "#f0f0f0" : "white",
+                      cursor: "pointer",
+                      textAlign: "left",
+                      fontSize: "16px",
+                    }}
+                  >
+                    <strong>{index + 1}페이지</strong>
+                    {page.imageUrl && " 🖼️ (이미지 있음)"}
+                    <br />
+                    <span style={{ color: "#666", fontSize: "14px" }}>
+                      {page.text ? page.text.substring(0, 30) + "..." : "(내용 없음)"}
+                    </span>
+                  </button>
+                ))
+              ) : (
+                <p style={{ textAlign: "center", color: "#999" }}>
+                  아직 페이지가 없습니다
+                </p>
+              )}
+            </div>
+
+            {/* 새 페이지로 추가 버튼 */}
+            <button
+              onClick={handleAddAsNewPage}
+              style={{
+                width: "100%",
+                padding: "15px",
+                backgroundColor: "#8B5CF6",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                fontSize: "18px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                marginBottom: "10px",
+              }}
+            >
+              ➕ 새 페이지로 추가
+            </button>
+
+            {/* 취소 버튼 */}
+            <button
+              onClick={() => setShowPageSelector(false)}
+              style={{
+                width: "100%",
+                padding: "15px",
+                backgroundColor: "#e0e0e0",
+                color: "#333",
+                border: "none",
+                borderRadius: "12px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+            >
+              취소
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

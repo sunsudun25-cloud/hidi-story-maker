@@ -1,46 +1,25 @@
 import { useNavigate } from "react-router-dom";
-import "./Home.css"; // 스타일 분리
+import "./Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
 
   return (
     <div className="home-container">
-      <h2 className="home-title">무엇을 만들어볼까요?</h2>
+      <div className="home-card">
+        <div className="home-icon">AI</div>
 
-      <div className="grid-row">
-        <button className="menu-card yellow" onClick={() => navigate("/drawing/start")}>
-          <span className="emoji">🌈</span>
-          <span className="label">그림 만들기</span>
+        <h1 className="home-title">스토리 메이커</h1>
+        <p className="home-subtitle">AI와 함께 만드는 특별한 이야기</p>
+
+        <button className="home-start-btn" onClick={() => navigate("/home-new")}>
+          시작하기
         </button>
 
-        <button className="menu-card green" onClick={() => navigate("/write")}>
-          <span className="emoji">✍️</span>
-          <span className="label">글쓰기</span>
-        </button>
-      </div>
-
-      <div className="grid-row">
-        <button className="menu-card mint" onClick={() => navigate("/storybook")}>
-          <span className="emoji">📚</span>
-          <span className="label">동화책 만들기</span>
-        </button>
-
-        <button className="menu-card blue" onClick={() => navigate("/my-works")}>
-          <span className="emoji">🏆</span>
-          <span className="label">내 작품 보기</span>
-        </button>
-      </div>
-
-      <div className="full-row">
-        <button className="menu-card purple" onClick={() => navigate("/goods")}>
-          <span className="emoji">🎁</span>
-          <span className="label">나만의 굿즈 만들기</span>
-        </button>
-      </div>
-
-      <div className="other-device">
-        <span className="gear">⚙️</span> 다른 기기에서 작품 보기
+        <div className="home-info">
+          <span className="dot green"></span> 무료로 시작
+          <span className="dot yellow"></span> 회원가입 불필요
+        </div>
       </div>
     </div>
   );

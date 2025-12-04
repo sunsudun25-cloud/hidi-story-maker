@@ -1,86 +1,130 @@
+/* Home 랜딩 페이지 스타일 */
+
 .home-container {
-  padding: 24px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.home-card {
+  background: white;
+  border-radius: 24px;
+  padding: 48px 32px;
+  max-width: 400px;
+  width: 100%;
   text-align: center;
-  font-family: "Pretendard", sans-serif;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.home-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 2px;
 }
 
 .home-title {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 700;
-  margin-bottom: 24px;
-  color: #333;
+  color: #222;
+  margin-bottom: 12px;
 }
 
-.grid-row {
+.home-subtitle {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+.home-start-btn {
+  width: 100%;
+  padding: 18px;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.home-start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.home-start-btn:active {
+  transform: translateY(0);
+}
+
+.home-info {
+  margin-top: 24px;
+  font-size: 14px;
+  color: #888;
   display: flex;
+  align-items: center;
   justify-content: center;
   gap: 16px;
-  margin-bottom: 16px;
 }
 
-.full-row {
-  display: flex;
-  justify-content: center;
-  margin: 16px 0;
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 4px;
 }
 
-.menu-card {
-  width: 150px;
-  height: 150px;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: 600;
-  transition: transform 0.15s ease;
+.dot.green {
+  background: #4ade80;
 }
 
-.menu-card:hover {
-  transform: translateY(-4px);
+.dot.yellow {
+  background: #fbbf24;
 }
 
-.menu-card .emoji {
-  font-size: 40px;
-  margin-bottom: 8px;
-}
+/* 반응형 */
+@media (max-width: 480px) {
+  .home-card {
+    padding: 40px 24px;
+  }
 
-/* 색상 */
+  .home-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 24px;
+  }
 
-.yellow {
-  background-color: #ffe888;
-}
+  .home-title {
+    font-size: 28px;
+  }
 
-.green {
-  background-color: #c8f7cb;
-}
+  .home-subtitle {
+    font-size: 16px;
+  }
 
-.mint {
-  background-color: #b6f0f6;
-}
+  .home-start-btn {
+    font-size: 18px;
+    padding: 16px;
+  }
 
-.blue {
-  background-color: #bcdcff;
-}
-
-.purple {
-  background-color: #e5d1ff;
-}
-
-/* 하단 메뉴 */
-
-.other-device {
-  margin-top: 20px;
-  color: #666;
-  font-size: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.gear {
-  margin-right: 6px;
+  .home-info {
+    font-size: 13px;
+    flex-direction: column;
+    gap: 8px;
+  }
 }

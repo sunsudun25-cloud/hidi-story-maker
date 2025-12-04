@@ -1,14 +1,130 @@
-import React from "react";
-import Header from "../../components/Header";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Storybook.css";
 
 export default function Storybook() {
+  const navigate = useNavigate();
+
+  const [storyTitle, setStoryTitle] = useState("");
+  const [storyPrompt, setStoryPrompt] = useState("");
+  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
+
+  const styles = [
+    { id: "fairytale", label: "동화 스타일", desc: "아이 책 느낌" },
+    { id: "watercolor", label: "수채화", desc: "부드럽고 번지는 느낌" },
+    { id: "pastel", label: "파스텔톤", desc: "은은하고 차분한 색감" },
+    { id: "warm", label: "따뜻한 느낌", desc: "햇살 같은 분위기" },
+  ];
+
+  const handleCreateStorybook = async () => {
+    if (!storyTitle) {
+      alert("동화책 제목을 입력해주세요!");
+      return;
+    }
+    if (!storyPrompt) {
+      alert("동화책 줄거리를 입력해주세요!");
+      return;
+    }
+
+    const payload = {
+      title: storyTitle,
+      prompt: storyPrompt,
+      style: selectedStyle,
+    };
+
+    console.log("📘 동화책 생성용 API 요청 데이터:", payload);
+
+    try {
+      // Google Gemini 이미지 API
+      const res = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateImage?key=" +
+          import.meta.env.VITE_GEMINI_API_KEY,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt: `${storyPrompt}. 스타일: ${selectedStyle ?? "동화 스타일"}`,
+            size: "1024x1024",
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      // Base64 이미지로 변환
+      const base64Image = data.candidates[0].image.base64;
+      const coverImageUrl = `data:image/png;base64,${base64Image}`;
+
+      // 다음 단계(편집기 페이지)로 이동
+      navigate("/storybook-editor", {
+        state: {
+          title: storyTitle,
+          prompt: storyPrompt,
+          style: selectedStyle,
+          coverImageUrl,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      alert("동화책 표지 그림 생성 중 오류가 발생했습니다.");
+    }
+  };
+
   return (
     <div className="page-container">
-      <Header title="동화책 만들기" />
-      <h1 className="page-title">동화책 만들기</h1>
-      <p style={{ fontSize: "18px", textAlign: "center", color: "#666" }}>
-        AI와 함께 나만의 동화책을 만들어보세요.
-      </p>
+      {/* 상단 헤더 */}
+      <header className="page-header">
+        <button className="header-btn" onClick={() => navigate(-1)}>←</button>
+        <h1 className="header-title">동화책 만들기</h1>
+        <button className="header-btn" onClick={() => navigate("/home")}>🏠</button>
+      </header>
+
+      <div className="storybook-page">
+        {/* 제목 입력 */}
+        <div className="section-title">📘 동화책 제목</div>
+        <input
+          className="input-field"
+          placeholder="예: '달빛을 먹는 토끼'"
+          value={storyTitle}
+          onChange={(e) => setStoryTitle(e.target.value)}
+        />
+
+        {/* 줄거리 입력 */}
+        <div className="section-title">줄거리를 간단히 설명해주세요</div>
+        <div className="example-box">
+          <strong>예시</strong>
+          <p>달빛을 먹으면 힘이 나는 토끼가 친구들과 모험하는 이야기</p>
+        </div>
+
+        <textarea
+          className="input-area"
+          placeholder="동화책 줄거리를 간단히 입력해주세요…"
+          value={storyPrompt}
+          onChange={(e) => setStoryPrompt(e.target.value)}
+        />
+
+        {/* 스타일 선택 */}
+        <div className="section-title">그림 스타일 선택 (선택)</div>
+
+        <div className="style-grid">
+          {styles.map((s) => (
+            <button
+              key={s.id}
+              className={`style-card ${selectedStyle === s.id ? "selected" : ""}`}
+              onClick={() => setSelectedStyle(s.id)}
+            >
+              {s.label}
+              <br />
+              <span>{s.desc}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* 동화책 생성 버튼 */}
+        <button className="primary-btn" onClick={handleCreateStorybook}>
+          🚀 동화책 만들기 시작
+        </button>
+      </div>
     </div>
   );
 }

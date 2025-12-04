@@ -1,7 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { generateNextPage } from "../services/geminiService";
-import { generateStoryImage, generateStorybookPDF } from "../services/imageService";
+import { generateStoryImage } from "../services/imageService";
+import { generateStorybookPDF } from "../services/pdfService";
 import "./StorybookEditor.css";
 
 type PageData = {

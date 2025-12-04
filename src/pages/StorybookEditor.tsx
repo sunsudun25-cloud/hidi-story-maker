@@ -144,14 +144,14 @@ export default function StorybookEditor() {
       const date = new Date().toISOString().split("T")[0];
       const filename = `${title}_${date}.pdf`;
 
-      // 페이지 데이터를 간단한 형식으로 변환
-      const pdfPages = pages.map(page => ({
-        text: page.text,
-        image: page.imageUrl || null,
-      }));
-
       // PDF 생성 (간단 버전)
-      await exportStorybookToPDF(pdfPages, filename);
+      await exportStorybookToPDF(
+        pages.map((page) => ({
+          text: page.text,
+          image: page.imageUrl || null,
+        })),
+        filename
+      );
 
       alert("📕 PDF가 다운로드되었습니다!");
     } catch (error) {

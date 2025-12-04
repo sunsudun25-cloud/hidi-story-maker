@@ -439,6 +439,93 @@ export async function makePDF(items: Array<{
   pdf.save("my_storybook.pdf");
 }
 
+/**
+ * Story 타입 (html2canvas 기반 PDF용)
+ */
+export interface Story {
+  id: string;
+  title: string;
+  image?: string;
+  description?: string;
+  content?: string;
+}
+
+/**
+ * html2canvas를 활용한 고급 Story PDF 생성
+ * 표지 페이지 + HTML 본문 캡처
+ * @param story Story 데이터
+ */
+export async function generateStoryPDF(story: Story): Promise<void> {
+  const { default: jsPDF } = await import("jspdf");
+  const { default: html2canvas } = await import("html2canvas");
+
+  const pdf = new jsPDF({
+    format: "a4",
+    unit: "px",
+  });
+
+  // ----- 📌 표지 생성 -----
+  pdf.setFillColor("#F4F4F4");
+  pdf.rect(0, 0, 595, 842, "F");
+
+  // 제목
+  pdf.setFontSize(28);
+  pdf.setTextColor("#333");
+  pdf.text(story.title, 297, 200, { align: "center" });
+
+  // 대표 이미지
+  if (story.image) {
+    try {
+      const img = await loadImageForPDF(story.image);
+      const imgWidth = 350;
+      const imgHeight = (img.height / img.width) * imgWidth;
+
+      pdf.addImage(img, "JPEG", 123, 260, imgWidth, imgHeight);
+    } catch (error) {
+      console.error("표지 이미지 로드 오류:", error);
+    }
+  }
+
+  // "표지" 표시 (작게)
+  pdf.setFontSize(12);
+  pdf.setTextColor("#777");
+  pdf.text("AI Story Maker · Cover", 297, 780, { align: "center" });
+
+  // ----- 📌 다음 페이지부터 본문 -----
+  const contentElement = document.getElementById("pdf-content");
+  if (contentElement) {
+    pdf.addPage(); // 2페이지로 이동
+
+    const canvas = await html2canvas(contentElement, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+  }
+
+  // ----- 📌 자동 파일명 -----
+  const filename = `Story_${new Date().toISOString().slice(0, 10)}_${story.title}.pdf`;
+
+  pdf.save(filename);
+}
+
+/**
+ * 이미지 로드 헬퍼 함수 (Promise 기반)
+ * @param src 이미지 소스 URL
+ * @returns Image 객체
+ */
+function loadImageForPDF(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("이미지 로드 실패"));
+    img.src = src;
+  });
+}
+
 export default {
   generateStorybookPDF,
   exportStorybookToPDF,
@@ -446,4 +533,5 @@ export default {
   previewStorybookPDF,
   generateStorybookPDFWithOptions,
   makePDF,
+  generateStoryPDF,
 };

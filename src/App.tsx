@@ -18,6 +18,7 @@ import TestButtons from './pages/TestButtons'
 import ImageMakePractice from './pages/ImageMake/Practice'
 import ImageMakeCustom from './pages/ImageMake/Custom'
 import ImageMakeResult from './pages/ImageMake/Result'
+import Gallery from './pages/Gallery'
 import './App.css'
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
           <Route path="/image/practice" element={<ImageMakePractice />} />
           <Route path="/image/custom" element={<ImageMakeCustom />} />
           <Route path="/image/result" element={<ImageMakeResult />} />
+          <Route path="/gallery" element={<Gallery />} />
           <Route path="/my-works" element={<MyWorks />} />
           <Route path="/goods" element={<Goods />} />
           <Route path="/result" element={<Result />} />

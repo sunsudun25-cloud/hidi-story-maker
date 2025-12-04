@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { downloadImage } from "../../services/imageService";
+import { saveImageToDB } from "../../services/dbService";
 import { useState } from "react";
 import "./ImageMake.css";
 
@@ -7,8 +8,9 @@ export default function Result() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
+  const [isSavingToDB, setIsSavingToDB] = useState(false);
 
-  const { image, prompt } = state || {};
+  const { image, prompt, style } = state || {};
 
   // 이미지가 없는 경우
   if (!image) {
@@ -36,6 +38,26 @@ export default function Result() {
       alert("저장 중 오류가 발생했습니다.");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // IndexedDB에 저장
+  const handleSaveToDB = async () => {
+    setIsSavingToDB(true);
+    try {
+      await saveImageToDB({
+        image,
+        prompt,
+        style,
+        createdAt: new Date().toISOString(),
+      });
+      alert("✅ 저장되었습니다!");
+      navigate("/gallery"); // 저장 후 내 작품 보기로 이동
+    } catch (error) {
+      console.error("DB 저장 오류:", error);
+      alert("저장 중 오류가 발생했습니다.");
+    } finally {
+      setIsSavingToDB(false);
     }
   };
 
@@ -78,10 +100,18 @@ export default function Result() {
 
           <button
             className="result-btn save-btn"
+            onClick={handleSaveToDB}
+            disabled={isSavingToDB}
+          >
+            {isSavingToDB ? "⏳ 저장 중..." : "💾 내 작품에 저장"}
+          </button>
+
+          <button
+            className="result-btn download-btn"
             onClick={handleSave}
             disabled={isSaving}
           >
-            {isSaving ? "⏳ 저장 중..." : "💾 저장하기"}
+            {isSaving ? "⏳ 다운로드 중..." : "📥 다운로드"}
           </button>
 
           <button

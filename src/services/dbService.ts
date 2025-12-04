@@ -2,8 +2,9 @@ import { Story } from '../context/StoryContext'
 
 // IndexedDB 데이터베이스 설정
 const DB_NAME = 'StoryDB'
-const DB_VERSION = 1
+const DB_VERSION = 2  // 버전 업그레이드
 const STORE_NAME = 'stories'
+const IMAGE_STORE_NAME = 'images'  // 이미지 저장소
 
 // IndexedDB 초기화
 const initDB = (): Promise<IDBDatabase> => {
@@ -21,11 +22,18 @@ const initDB = (): Promise<IDBDatabase> => {
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result
 
-      // Object Store가 없으면 생성
+      // Stories Object Store가 없으면 생성
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         const objectStore = db.createObjectStore(STORE_NAME, { keyPath: 'id' })
         objectStore.createIndex('title', 'title', { unique: false })
         objectStore.createIndex('createdAt', 'createdAt', { unique: false })
+      }
+
+      // Images Object Store가 없으면 생성
+      if (!db.objectStoreNames.contains(IMAGE_STORE_NAME)) {
+        const imageStore = db.createObjectStore(IMAGE_STORE_NAME, { keyPath: 'id', autoIncrement: true })
+        imageStore.createIndex('prompt', 'prompt', { unique: false })
+        imageStore.createIndex('createdAt', 'createdAt', { unique: false })
       }
     }
   })
@@ -157,6 +165,91 @@ export const clearAllStories = async (): Promise<void> => {
 
     request.onerror = () => {
       reject(new Error('스토리를 삭제할 수 없습니다.'))
+    }
+  })
+}
+
+// ========== 이미지 관련 함수 ==========
+
+export interface SavedImage {
+  id?: number;
+  image: string;
+  prompt: string;
+  style?: string;
+  createdAt: string;
+}
+
+// 이미지 저장
+export const saveImageToDB = async (imageData: Omit<SavedImage, 'id'>): Promise<number> => {
+  const db = await initDB()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([IMAGE_STORE_NAME], 'readwrite')
+    const objectStore = transaction.objectStore(IMAGE_STORE_NAME)
+    const request = objectStore.add({
+      ...imageData,
+      createdAt: new Date().toISOString()
+    })
+
+    request.onsuccess = () => {
+      resolve(request.result as number)
+    }
+
+    request.onerror = () => {
+      reject(new Error('이미지를 저장할 수 없습니다.'))
+    }
+  })
+}
+
+// 모든 이미지 가져오기
+export const getAllImages = async (): Promise<SavedImage[]> => {
+  const db = await initDB()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([IMAGE_STORE_NAME], 'readonly')
+    const objectStore = transaction.objectStore(IMAGE_STORE_NAME)
+    const request = objectStore.getAll()
+
+    request.onsuccess = () => {
+      resolve(request.result)
+    }
+
+    request.onerror = () => {
+      reject(new Error('이미지를 가져올 수 없습니다.'))
+    }
+  })
+}
+
+// 이미지 삭제
+export const deleteImage = async (id: number): Promise<void> => {
+  const db = await initDB()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([IMAGE_STORE_NAME], 'readwrite')
+    const objectStore = transaction.objectStore(IMAGE_STORE_NAME)
+    const request = objectStore.delete(id)
+
+    request.onsuccess = () => {
+      resolve()
+    }
+
+    request.onerror = () => {
+      reject(new Error('이미지를 삭제할 수 없습니다.'))
+    }
+  })
+}
+
+// 모든 이미지 삭제 (초기화)
+export const clearAllImages = async (): Promise<void> => {
+  const db = await initDB()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([IMAGE_STORE_NAME], 'readwrite')
+    const objectStore = transaction.objectStore(IMAGE_STORE_NAME)
+    const request = objectStore.clear()
+
+    request.onsuccess = () => {
+      resolve()
+    }
+
+    request.onerror = () => {
+      reject(new Error('이미지를 삭제할 수 없습니다.'))
     }
   })
 }

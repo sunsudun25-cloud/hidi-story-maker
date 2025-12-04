@@ -437,6 +437,158 @@ export async function downloadImagesAsZip(
   throw new Error("ZIP 다운로드 기능은 아직 구현되지 않았습니다.");
 }
 
+/**
+ * 동화책을 PDF로 생성 및 다운로드
+ * @param bookData 동화책 데이터 (제목, 표지, 페이지 배열)
+ * @param filename PDF 파일명
+ */
+export async function generateStorybookPDF(
+  bookData: {
+    title: string;
+    coverImageUrl?: string;
+    pages: Array<{
+      text: string;
+      imageUrl?: string;
+    }>;
+  },
+  filename: string = "storybook.pdf"
+): Promise<void> {
+  const { jsPDF } = await import("jspdf");
+  
+  // A4 세로 방향 (210mm x 297mm)
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4",
+  });
+
+  const pageWidth = 210;
+  const pageHeight = 297;
+  const margin = 20;
+  const contentWidth = pageWidth - 2 * margin;
+
+  let isFirstPage = true;
+
+  // 📕 표지 페이지
+  if (bookData.coverImageUrl) {
+    try {
+      // 제목
+      doc.setFontSize(24);
+      doc.setFont("helvetica", "bold");
+      doc.text(bookData.title, pageWidth / 2, 40, { align: "center" });
+
+      // 표지 이미지
+      const coverImg = await loadImageAsDataURL(bookData.coverImageUrl);
+      const imgWidth = contentWidth * 0.8;
+      const imgHeight = (imgWidth * 3) / 4; // 4:3 비율
+      const imgX = (pageWidth - imgWidth) / 2;
+      const imgY = 60;
+      
+      doc.addImage(coverImg, "PNG", imgX, imgY, imgWidth, imgHeight);
+
+      isFirstPage = false;
+    } catch (error) {
+      console.error("표지 이미지 로드 오류:", error);
+    }
+  } else {
+    // 표지 이미지 없을 때 - 제목만
+    doc.setFontSize(28);
+    doc.setFont("helvetica", "bold");
+    doc.text(bookData.title, pageWidth / 2, pageHeight / 2, { align: "center" });
+    
+    isFirstPage = false;
+  }
+
+  // 📄 내용 페이지들
+  for (let i = 0; i < bookData.pages.length; i++) {
+    const page = bookData.pages[i];
+    
+    if (!isFirstPage) {
+      doc.addPage();
+    }
+    isFirstPage = false;
+
+    // 페이지 번호
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${i + 1}`, pageWidth / 2, margin, { align: "center" });
+
+    let currentY = margin + 10;
+
+    // 페이지 이미지
+    if (page.imageUrl) {
+      try {
+        const pageImg = await loadImageAsDataURL(page.imageUrl);
+        const imgWidth = contentWidth * 0.9;
+        const imgHeight = (imgWidth * 3) / 4; // 4:3 비율
+        const imgX = (pageWidth - imgWidth) / 2;
+        
+        doc.addImage(pageImg, "PNG", imgX, currentY, imgWidth, imgHeight);
+        currentY += imgHeight + 10;
+      } catch (error) {
+        console.error(`페이지 ${i + 1} 이미지 로드 오류:`, error);
+      }
+    }
+
+    // 페이지 텍스트
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "normal");
+    
+    // 텍스트를 여러 줄로 분할 (한글 지원 제한으로 영어/숫자 기준)
+    const lines = doc.splitTextToSize(page.text, contentWidth);
+    
+    // 페이지를 벗어나지 않도록 체크
+    const lineHeight = 7;
+    const maxY = pageHeight - margin;
+    
+    for (const line of lines) {
+      if (currentY + lineHeight > maxY) {
+        doc.addPage();
+        currentY = margin + 10;
+      }
+      doc.text(line, margin, currentY);
+      currentY += lineHeight;
+    }
+  }
+
+  // PDF 저장
+  doc.save(filename);
+}
+
+/**
+ * 이미지 URL을 Data URL로 로드
+ * @param imageUrl 이미지 URL
+ * @returns Data URL
+ */
+async function loadImageAsDataURL(imageUrl: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Canvas context를 가져올 수 없습니다."));
+        return;
+      }
+      
+      ctx.drawImage(img, 0, 0);
+      const dataURL = canvas.toDataURL("image/png");
+      resolve(dataURL);
+    };
+    
+    img.onerror = () => {
+      reject(new Error("이미지를 로드할 수 없습니다."));
+    };
+    
+    img.src = imageUrl;
+  });
+}
+
 export default {
   generateStoryImage,
   base64ToBlob,
@@ -449,4 +601,5 @@ export default {
   copyImageToClipboard,
   getImageFilename,
   downloadImagesAsZip,
+  generateStorybookPDF,
 };

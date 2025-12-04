@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { generateNextPage } from "../services/geminiService";
-import { generateStoryImage } from "../services/imageService";
+import { generateStoryImage, generateStorybookPDF } from "../services/imageService";
 import "./StorybookEditor.css";
 
 type PageData = {
@@ -136,6 +136,30 @@ export default function StorybookEditor() {
     alert("💾 저장 기능은 곧 연결됩니다!\n\n현재 콘솔에 데이터가 출력되었습니다.");
   };
 
+  // PDF 저장 핸들러
+  const handleSaveAsPDF = async () => {
+    try {
+      // 파일명 생성 (제목 + 날짜)
+      const date = new Date().toISOString().split("T")[0];
+      const filename = `${title}_${date}.pdf`;
+
+      // PDF 생성
+      await generateStorybookPDF(
+        {
+          title,
+          coverImageUrl,
+          pages,
+        },
+        filename
+      );
+
+      alert("📕 PDF가 다운로드되었습니다!");
+    } catch (error) {
+      console.error("PDF 생성 오류:", error);
+      alert("PDF 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
+  };
+
   return (
     <div className="editor-container">
       {/* 🔵 상단 헤더 */}
@@ -217,6 +241,13 @@ export default function StorybookEditor() {
           disabled={isGenerating}
         >
           {isGenerating ? "⏳ 생성 중..." : "➕ 페이지 자동생성"}
+        </button>
+
+        <button
+          className="pdf-btn"
+          onClick={handleSaveAsPDF}
+        >
+          📕 PDF로 저장
         </button>
 
         <button

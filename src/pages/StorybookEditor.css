@@ -210,6 +210,32 @@
   box-shadow: 0 4px 12px rgba(255, 225, 135, 0.4);
 }
 
+.pdf-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: #ef4444;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pdf-btn:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.secondary-btn:disabled,
+.pdf-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* 반응형 */
 @media (max-width: 480px) {
   .editor-container {
@@ -249,8 +275,14 @@
   }
 
   .primary-btn,
-  .secondary-btn {
+  .secondary-btn,
+  .pdf-btn {
     padding: 12px;
-    font-size: 15px;
+    font-size: 14px;
+  }
+
+  .bottom-actions {
+    flex-direction: column;
+    gap: 8px;
   }
 }

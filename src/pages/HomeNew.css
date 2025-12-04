@@ -1,148 +1,91 @@
-/* HomeNew 페이지 전용 스타일 */
-
 .home-wrap {
-  padding: 20px;
-  max-width: 480px;
-  margin: 0 auto;
+  padding: 28px;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* 상단 환영 영역 */
-.welcome-box {
-  text-align: center;
-  padding: 20px;
+  background: linear-gradient(180deg, #edf3ff 0%, #ffffff 45%);
+  font-family: 'Pretendard', sans-serif;
 }
 
 .welcome-box h1 {
   font-size: 32px;
   font-weight: 700;
-  color: var(--text);
-  line-height: 1.3;
+  line-height: 1.35;
+  margin-bottom: 24px;
+  text-align: left;
+  color: #222;
 }
 
-/* 2x2 그리드 메뉴 */
+/* 2x2 메뉴 그리드 */
 .grid-menu {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
 }
 
 .menu-tile {
-  aspect-ratio: 1;
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 4px 14px rgba(62, 108, 255, 0.12);
+  text-align: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: 0.2s;
 }
 
 .menu-tile:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-
-.menu-tile:active {
-  transform: scale(0.98);
+  transform: translateY(-4px);
 }
 
 .menu-tile .emoji {
-  font-size: 48px;
+  font-size: 38px;
+  margin-bottom: 8px;
+  display: block;
 }
 
 .menu-tile .label {
   font-size: 18px;
   font-weight: 600;
-  color: var(--text);
-  text-align: center;
+  color: #222;
+  display: block;
 }
 
-/* 하단 큰 타일 */
+/* 하단 큰 카드 */
 .big-tile {
-  width: 100%;
-  padding: 24px;
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  font-size: 20px;
+  background: #eaf0ff;
+  border-radius: 20px;
+  padding: 22px;
+  margin: 18px 0;
+  font-size: 18px;
   font-weight: 600;
-  color: var(--text);
   text-align: center;
+  box-shadow: 0 4px 14px rgba(80, 120, 255, 0.12);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: 0.2s;
 }
 
 .big-tile:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
 }
 
-.big-tile:active {
-  transform: scale(0.98);
-}
-
-/* 하단 작은 메뉴 */
+/* 하단 작은 버튼 모음 */
 .footer-menu {
   display: flex;
-  gap: 8px;
-  padding-top: 12px;
-  border-top: 1px solid #e0e0e0;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 16px;
 }
 
 .footer-menu button {
-  flex: 1;
-  padding: 14px 8px;
-  font-size: 14px;
-  background: var(--secondary);
+  background: none;
   border: none;
-  border-radius: var(--radius);
-  color: var(--text);
+  font-size: 14px;
+  color: #555;
+  padding: 6px 8px;
   cursor: pointer;
-  transition: background 0.2s ease;
-  white-space: nowrap;
+  transition: color 0.2s;
 }
 
 .footer-menu button:hover {
-  background: #e0e0e0;
-}
-
-.footer-menu button:active {
-  transform: scale(0.98);
-}
-
-/* 반응형 */
-@media (max-width: 480px) {
-  .home-wrap {
-    padding: 16px;
-    gap: 16px;
-  }
-
-  .welcome-box h1 {
-    font-size: 28px;
-  }
-
-  .menu-tile .emoji {
-    font-size: 40px;
-  }
-
-  .menu-tile .label {
-    font-size: 16px;
-  }
-
-  .big-tile {
-    font-size: 18px;
-    padding: 20px;
-  }
-
-  .footer-menu button {
-    font-size: 12px;
-    padding: 12px 6px;
-  }
+  color: #222;
 }

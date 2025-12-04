@@ -1,312 +1,79 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { getAllImages, deleteImage } from "../services/dbService";
-import { makePDF } from "../services/pdfService";
 import { useStory } from "../context/StoryContext";
 
-interface SavedImage {
-  id?: number;
-  image: string;
-  prompt: string;
-  style?: string;
-  createdAt: string;
-}
-
 export default function Gallery() {
-  const [images, setImages] = useState<SavedImage[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
   const { stories, deleteStory } = useStory();
 
-  useEffect(() => {
-    loadImages();
-  }, []);
-
-  const loadImages = async () => {
-    try {
-      const data = await getAllImages();
-      setImages(data.reverse()); // 최신순 정렬
-    } catch (error) {
-      console.error("이미지 불러오기 오류:", error);
-      alert("작품을 불러오는 중 오류가 발생했습니다.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    if (!confirm("이 작품을 삭제하시겠습니까?")) return;
-
-    try {
-      await deleteImage(id);
-      alert("✅ 작품이 삭제되었습니다.");
-      loadImages(); // 다시 로드
-    } catch (error) {
-      console.error("삭제 오류:", error);
-      alert("삭제 중 오류가 발생했습니다.");
-    }
-  };
-
-  // 전체 이미지를 PDF로 만들기
-  const handleExportAllToPDF = async () => {
-    if (images.length === 0) {
-      alert("PDF로 만들 이미지가 없습니다.");
-      return;
-    }
-
-    try {
-      const items = images.map((img) => ({
-        title: img.prompt || "제목 없음",
-        image: img.image,
-        description: img.style ? `스타일: ${img.style}` : "",
-      }));
-
-      await makePDF(items);
-      alert("✅ PDF가 다운로드되었습니다!");
-    } catch (error) {
-      console.error("PDF 생성 오류:", error);
-      alert("PDF 생성 중 오류가 발생했습니다.");
-    }
-  };
-
-  // StoryContext의 stories를 PDF로 만들기
-  const handleExportStoriesToPDF = async () => {
-    if (stories.length === 0) {
-      alert("PDF로 만들 스토리가 없습니다.");
-      return;
-    }
-
-    try {
-      const items = stories.map((story: any) => ({
-        title: story.title || "제목 없음",
-        image: story.image || "", // image 필드가 있으면 사용
-        description: story.description || story.content || "", // description 또는 content 필드 사용
-      }));
-
-      await makePDF(items);
-      alert("✅ 스토리 PDF가 다운로드되었습니다!");
-    } catch (error) {
-      console.error("PDF 생성 오류:", error);
-      alert("PDF 생성 중 오류가 발생했습니다.");
-    }
-  };
-
-  // Story 삭제 핸들러
-  const handleDeleteStory = async (id: string) => {
-    if (!window.confirm("정말 삭제하시겠어요?\n삭제된 작품은 복구할 수 없습니다.")) {
-      return;
-    }
-
-    try {
-      await deleteStory(id);
-      alert("✅ 작품이 삭제되었습니다.");
-    } catch (error) {
-      console.error("스토리 삭제 오류:", error);
-      alert("삭제 중 오류가 발생했습니다.");
-    }
-  };
-
-  if (isLoading) {
+  // 작품 없는 경우 안내 메시지
+  if (!stories.length) {
     return (
-      <div className="p-6 max-w-[600px] mx-auto">
-        <h1 className="text-[24px] font-bold mb-4 text-center">📁 내 작품 보기</h1>
-        <p className="text-[18px] text-center text-gray-600 mt-10">불러오는 중...</p>
+      <div className="p-6 text-center">
+        <h2 className="text-2xl font-bold mb-4">내 작품 보기</h2>
+        <p className="text-lg text-gray-600 leading-relaxed">
+          아직 저장된 작품이 없어요. <br />
+          그림 만들기 또는 동화책 만들기에서 작품을 만들어보세요!
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 max-w-[600px] mx-auto">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between mb-4">
-        <button
-          className="text-[18px] text-gray-600"
-          onClick={() => navigate(-1)}
-        >
-          ← 뒤로
-        </button>
-        <h1 className="text-[24px] font-bold">📁 내 작품 보기</h1>
-        <button
-          className="text-[18px] text-gray-600"
-          onClick={() => navigate("/")}
-        >
-          🏠
-        </button>
-      </div>
+    <div className="p-4 pb-24">
+      <h2 className="text-2xl font-bold mb-4">내 작품 보기</h2>
 
-      {/* 작품 개수 표시 및 PDF 버튼 */}
-      <div className="bg-blue-50 p-3 rounded-xl mb-4">
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <p className="text-[18px] font-semibold text-blue-700">
-              🇺️ 이미지: {images.length}개 | 📝 스토리: {stories.length}개
-            </p>
-          </div>
-          <div className="flex gap-2">
-            {images.length > 0 && (
-              <button
-                onClick={handleExportAllToPDF}
-                className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg text-[16px] font-semibold hover:bg-red-600"
-              >
-                📕 이미지 PDF
-              </button>
-            )}
-            {stories.length > 0 && (
-              <button
-                onClick={handleExportStoriesToPDF}
-                className="flex-1 px-4 py-2 bg-purple-500 text-white rounded-lg text-[16px] font-semibold hover:bg-purple-600"
-              >
-                📘 스토리 PDF
-              </button>
-            )}
-          </div>
-          {(images.length > 0 || stories.length > 0) && (
-            <p className="text-gray-600 text-[15px] mt-2 text-center">
-              PDF 파일은 자동으로 다운로드됩니다.
-              <br />
-              다운로드가 안될 경우, 다시 눌러주세요.
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* 빈 상태 */}
-      {images.length === 0 && stories.length === 0 && (
-        <div className="text-center mt-10">
-          <p className="text-[20px] text-gray-600 mb-6">
-            저장된 작품이 없습니다.
-          </p>
-          <button
-            className="px-6 py-3 bg-emerald-500 text-white rounded-xl text-[18px] font-semibold"
-            onClick={() => navigate("/image/practice")}
+      {/* ⭐ 반응형 그리드 구성 */}
+      <div className="
+        grid 
+        grid-cols-2 
+        sm:grid-cols-3 
+        lg:grid-cols-4 
+        gap-4
+      ">
+        {stories.map((story) => (
+          <div 
+            key={story.id}
+            className="
+              bg-white border rounded-xl shadow 
+              overflow-hidden flex flex-col
+            "
           >
-            그림 만들러 가기
-          </button>
-        </div>
-      )}
-
-      {/* 스토리 그리드 */}
-      {stories.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-[22px] font-bold mb-4 text-purple-700">📝 내 스토리</h2>
-          <div className="grid grid-cols-1 gap-4">
-            {stories.map((story) => (
-              <div
-                key={story.id}
-                className="border rounded-xl p-4 bg-white shadow hover:shadow-lg transition"
-              >
-                {/* 이미지가 있으면 표시 */}
-                {story.image && (
-                  <img
-                    src={story.image}
-                    alt={story.title}
-                    className="w-full rounded-xl mb-3 cursor-pointer object-cover"
-                    onClick={() => window.open(story.image, "_blank")}
-                  />
-                )}
-
-                {/* 제목 */}
-                <h3 className="text-[20px] font-semibold mb-2">{story.title}</h3>
-
-                {/* 설명 또는 내용 */}
-                <p className="text-[16px] text-gray-600 mb-2 line-clamp-3">
-                  {story.description || story.content}
-                </p>
-
-                {/* 생성 날짜 */}
-                <p className="text-[14px] text-gray-400 mb-3">
-                  {new Date(story.createdAt).toLocaleString("ko-KR", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
-
-                {/* 삭제 버튼 */}
-                <button
-                  onClick={() => handleDeleteStory(story.id)}
-                  className="w-full bg-red-500 text-white py-3 rounded-xl text-[18px] font-semibold hover:bg-red-600"
-                >
-                  🗑️ 작품 삭제하기
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 이미지 그리드 */}
-      {images.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-[22px] font-bold mb-4 text-blue-700">🎨 내 이미지</h2>
-          <div className="grid grid-cols-1 gap-4">
-        {images.map((item) => (
-          <div
-            key={item.id}
-            className="border rounded-xl p-4 bg-white shadow hover:shadow-lg transition"
-          >
-            <img
-              src={item.image}
-              alt="저장된 그림"
-              className="w-full rounded-xl mb-3 cursor-pointer"
-              onClick={() => {
-                // 이미지 클릭 시 크게 보기 (새 탭)
-                window.open(item.image, "_blank");
-              }}
-            />
-
-            {/* 프롬프트 정보 */}
-            <p className="text-[16px] text-gray-700 mb-2">
-              <strong>생성 요청:</strong> {item.prompt}
-            </p>
-
-            {/* 스타일 정보 (있는 경우) */}
-            {item.style && (
-              <p className="text-[14px] text-gray-500 mb-2">
-                <strong>스타일:</strong> {item.style}
-              </p>
-            )}
-
-            {/* 생성 날짜 */}
-            <p className="text-[14px] text-gray-400 mb-3">
-              {new Date(item.createdAt).toLocaleString("ko-KR", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </p>
-
-            {/* 액션 버튼 */}
-            <div className="flex gap-2">
-              <button
-                className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg text-[16px] font-semibold"
-                onClick={() => {
-                  // 다운로드
-                  const link = document.createElement("a");
-                  link.href = item.image;
-                  link.download = `ai-image-${item.id || Date.now()}.png`;
-                  link.click();
-                }}
-              >
-                📥 다운로드
-              </button>
-
-              <button
-                className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg text-[16px] font-semibold"
-                onClick={() => item.id && handleDelete(item.id)}
-              >
-                🗑️ 삭제
-              </button>
+            {/* 이미지 비율 고정 */}
+            <div className="w-full aspect-[4/5] overflow-hidden">
+              <img 
+                src={story.image} 
+                alt={story.title}
+                className="w-full h-full object-cover"
+              />
             </div>
+
+            {/* 제목 */}
+            <div className="p-3 flex-1">
+              <h3 className="
+                text-[18px] font-semibold 
+                leading-tight line-clamp-2
+              ">
+                {story.title}
+              </h3>
+            </div>
+
+            {/* 삭제 버튼 */}
+            <button
+              onClick={() => {
+                if (window.confirm("정말 삭제하시겠어요?\n삭제 후 복구는 불가능합니다.")) {
+                  deleteStory(story.id);
+                  alert("삭제되었습니다.");
+                }
+              }}
+              className="
+                bg-red-500 text-white 
+                py-3 text-[16px] font-bold 
+                w-full rounded-b-xl
+              "
+            >
+              삭제하기
+            </button>
           </div>
         ))}
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

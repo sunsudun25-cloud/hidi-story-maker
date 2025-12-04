@@ -1,12 +1,23 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { generateNextPage } from "../utils/gemini";
 import "./StorybookEditor.css";
+
+type PageData = {
+  text: string;
+};
 
 export default function StorybookEditor() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
+  const [pages, setPages] = useState<PageData[]>([
+    { text: "달빛을 먹으면 힘이 나는 토끼는 오늘도 친구들을 만나기 위해 숲속을 달려갑니다." },
+    { text: "숲속 깊은 곳에서 토끼는 이상한 빛을 발견하게 됩니다." },
+    { text: "그 빛을 따라가자, 놀라운 모험이 시작되는데…" }
+  ]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   if (!state) {
     return (
@@ -26,11 +37,55 @@ export default function StorybookEditor() {
 
   const { title, prompt, style, coverImageUrl } = state;
 
-  const exampleText = [
-    "달빛을 먹으면 힘이 나는 토끼는 오늘도 친구들을 만나기 위해 숲속을 달려갑니다.",
-    "숲속 깊은 곳에서 토끼는 이상한 빛을 발견하게 됩니다.",
-    "그 빛을 따라가자, 놀라운 모험이 시작되는데…"
-  ];
+  // 텍스트 업데이트 핸들러
+  const handleTextChange = (index: number, newText: string) => {
+    const newPages = [...pages];
+    newPages[index].text = newText;
+    setPages(newPages);
+  };
+
+  // 페이지 자동생성 핸들러
+  const handleAutoGenerate = async () => {
+    setIsGenerating(true);
+
+    try {
+      // 현재까지의 모든 페이지 텍스트 수집
+      const prevTexts = pages.map(p => p.text);
+      
+      // Gemini API로 다음 페이지 생성
+      const nextPageText = await generateNextPage(prevTexts, style || "동화 스타일");
+      
+      // 새 페이지 추가
+      setPages([...pages, { text: nextPageText }]);
+      
+      // 새 페이지로 이동
+      setCurrentPage(pages.length + 1);
+      
+      alert("✨ 새로운 페이지가 생성되었습니다!");
+    } catch (err) {
+      console.error("페이지 생성 오류:", err);
+      alert("페이지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // 저장 핸들러 (준비 중)
+  const handleSave = () => {
+    const storybook = {
+      title,
+      prompt,
+      style,
+      coverImageUrl,
+      pages,
+      createdAt: new Date().toISOString()
+    };
+
+    console.log("📘 저장할 동화책:", storybook);
+    
+    // TODO: IndexedDB에 저장
+    alert("💾 저장 기능은 곧 연결됩니다!\n\n현재 콘솔에 데이터가 출력되었습니다.");
+  };
 
   return (
     <div className="editor-container">
@@ -55,7 +110,8 @@ export default function StorybookEditor() {
 
         <textarea
           className="page-textarea"
-          defaultValue={exampleText[currentPage - 1]}
+          value={pages[currentPage - 1]?.text || ""}
+          onChange={(e) => handleTextChange(currentPage - 1, e.target.value)}
         ></textarea>
       </div>
 
@@ -71,7 +127,7 @@ export default function StorybookEditor() {
 
         <button
           className="control-btn"
-          disabled={currentPage === exampleText.length}
+          disabled={currentPage === pages.length}
           onClick={() => setCurrentPage((p) => p + 1)}
         >
           다음 →
@@ -82,14 +138,15 @@ export default function StorybookEditor() {
       <div className="bottom-actions">
         <button
           className="secondary-btn"
-          onClick={() => alert("다음 페이지 자동 생성 기능은 곧 추가됩니다!")}
+          onClick={handleAutoGenerate}
+          disabled={isGenerating}
         >
-          ➕ 페이지 자동생성
+          {isGenerating ? "⏳ 생성 중..." : "➕ 페이지 자동생성"}
         </button>
 
         <button
           className="primary-btn"
-          onClick={() => alert("저장 기능은 곧 연결됩니다!")}
+          onClick={handleSave}
         >
           💾 저장하기
         </button>

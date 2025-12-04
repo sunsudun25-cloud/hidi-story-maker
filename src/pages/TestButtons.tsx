@@ -1,8 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useStory } from "../context/StoryContext";
 
 export default function TestButtons() {
   const navigate = useNavigate();
+  const { addStoryWithImage } = useStory();
 
   return (
     <main>
@@ -65,6 +67,40 @@ export default function TestButtons() {
           <div style={{ fontSize: "14px", color: "var(--text-light)" }}>AI와 함께 그림을 만들어요</div>
         </div>
         <div style={{ fontSize: "24px" }}>→</div>
+      </div>
+
+      <div className="card">
+        <h3 style={{ marginBottom: "16px", fontSize: "20px" }}>🧪 테스트 데이터 추가</h3>
+        <button
+          className="btn"
+          onClick={async () => {
+            try {
+              // 샘플 이미지 (작은 빨간 사각형)
+              const sampleImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mP8z8BQz0AEYBxVSF+FABJADveWkH6oAAAAAElFTkSuQmCC";
+              
+              await addStoryWithImage(
+                "첫 번째 그림",
+                "이것은 테스트 스토리입니다.",
+                sampleImage,
+                "샘플 이미지 설명"
+              );
+              alert("✅ 테스트 스토리가 추가되었습니다!\n\nGallery 페이지에서 확인하세요.");
+            } catch (error) {
+              console.error(error);
+              alert("❌ 스토리 추가 실패");
+            }
+          }}
+        >
+          📝 테스트 스토리 추가 (이미지 포함)
+        </button>
+
+        <button
+          className="btn"
+          onClick={() => navigate("/gallery")}
+          style={{ marginTop: "12px" }}
+        >
+          📁 Gallery로 이동
+        </button>
       </div>
 
       <button 

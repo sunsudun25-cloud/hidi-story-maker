@@ -1,34 +1,50 @@
+/* 전체 헤더 영역 */
 .header-container {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 56px;
-  padding: 0 12px;
-
-  /* 폭 제한 — 데스크탑에서도 앱처럼 보이게 */
-  max-width: 600px;
+  width: 100%;
+  max-width: 600px;       /* 모바일 중심 + 데스크탑에서도 중앙 정렬 */
   margin: 0 auto;
+  padding: 12px 16px;
 
-  background: #a8cdfc;
+  background: #b7d4ff;
   border-radius: 0 0 12px 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
 }
 
+/* 헤더 중앙 타이틀 */
 .header-title {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  color: #1a1a1a;   /* 진한 글씨 */
   font-size: 20px;
   font-weight: 700;
+  color: #222;
 }
 
+/* 아이콘 공통 스타일 (완전 정중앙 배치) */
 .header-btn {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
+  background: #fff;
   border-radius: 50%;
-  font-size: 20px;
-  border: none;
-  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   cursor: pointer;
+  flex-shrink: 0;    /* 아이콘 좌우로 눌리지 않게 */
+  border: none;
+  font-size: 20px;
+}
+
+/* 아이콘 크기 */
+.header-btn img,
+.header-btn svg {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }

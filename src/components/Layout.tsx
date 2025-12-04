@@ -32,6 +32,7 @@ function getPageTitle(path: string) {
   if (path.includes("/storybook")) return "동화책 만들기";
   if (path.includes("/my-works")) return "내 작품 보기";
   if (path.includes("/goods")) return "나만의 굿즈";
+  if (path.includes("/test-buttons")) return "버튼 테스트";
 
   return "";
 }

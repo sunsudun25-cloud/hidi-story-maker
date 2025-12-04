@@ -10,6 +10,7 @@ import Write from './pages/Write'
 import Storybook from './pages/Storybook'
 import MyWorks from './pages/MyWorks'
 import Goods from './pages/Goods'
+import TestButtons from './pages/TestButtons'
 import './App.css'
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path="/storybook" element={<Storybook />} />
           <Route path="/my-works" element={<MyWorks />} />
           <Route path="/goods" element={<Goods />} />
+          <Route path="/test-buttons" element={<TestButtons />} />
         </Route>
       </Routes>
     </BrowserRouter>

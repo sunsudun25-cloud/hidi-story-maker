@@ -5,55 +5,45 @@ export default function HomeNew() {
   const navigate = useNavigate();
 
   return (
-    <div className="home-container">
-      <div className="home-welcome">
-        <h2>👋 환영합니다!</h2>
-        <p>AI 스토리 메이커와 함께  
-          <br />오늘 무엇을 만들어볼까요?</p>
+    <div className="home-wrap">
+      {/* 상단 환영 영역 */}
+      <div className="welcome-box">
+        <h1>무엇을<br />만들어볼까요?</h1>
       </div>
 
-      <div className="menu-list">
-        <div className="menu-card" onClick={() => navigate("/drawing/start")}>
+      {/* 메뉴 2x2 그리드 */}
+      <div className="grid-menu">
+        <div className="menu-tile" onClick={() => navigate("/drawing/start")}>
           <span className="emoji">🌈</span>
-          <span className="title">그림 만들기</span>
-          <span className="desc">원하는 그림을 쉽게 만들어요</span>
+          <span className="label">그림 만들기</span>
         </div>
 
-        <div className="menu-card" onClick={() => navigate("/write")}>
+        <div className="menu-tile" onClick={() => navigate("/write")}>
           <span className="emoji">✍️</span>
-          <span className="title">글쓰기</span>
-          <span className="desc">짧은 글부터 편하게 시작</span>
+          <span className="label">글쓰기</span>
         </div>
 
-        <div className="menu-card" onClick={() => navigate("/storybook")}>
+        <div className="menu-tile" onClick={() => navigate("/storybook")}>
           <span className="emoji">📚</span>
-          <span className="title">동화책 만들기</span>
-          <span className="desc">AI가 도와주는 이야기책</span>
+          <span className="label">동화책 만들기</span>
         </div>
 
-        <div className="menu-card" onClick={() => navigate("/my-works")}>
+        <div className="menu-tile" onClick={() => navigate("/my-works")}>
           <span className="emoji">🏆</span>
-          <span className="title">내 작품 보기</span>
-          <span className="desc">지금까지 만든 작품들</span>
-        </div>
-
-        <div className="menu-card" onClick={() => navigate("/goods")}>
-          <span className="emoji">🎁</span>
-          <span className="title">나만의 굿즈 만들기</span>
-          <span className="desc">내 그림으로 굿즈 제작</span>
+          <span className="label">내 작품 보기</span>
         </div>
       </div>
 
-      <div className="home-footer">
-        <button className="footer-btn" onClick={() => navigate("/help")}>
-          📄 도움말
-        </button>
-        <button className="footer-btn" onClick={() => navigate("/settings")}>
-          ⚙️ 설정
-        </button>
-        <button className="footer-btn" onClick={() => navigate("/qr")}>
-          📱 다른 기기에서 보기
-        </button>
+      {/* 하단 큰 타일 */}
+      <div className="big-tile" onClick={() => navigate("/goods")}>
+        🎁 나만의 굿즈 만들기
+      </div>
+
+      {/* 하단 작은 메뉴 */}
+      <div className="footer-menu">
+        <button onClick={() => navigate("/help")}>📄 도움말</button>
+        <button onClick={() => navigate("/settings")}>⚙️ 설정</button>
+        <button onClick={() => navigate("/qr")}>📱 다른 기기에서 보기</button>
       </div>
     </div>
   );

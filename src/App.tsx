@@ -36,6 +36,7 @@ function App() {
           <Route path="/storybook" element={<Storybook />} />
           <Route path="/storybook-editor" element={<StorybookEditor />} />
           <Route path="/storybook-export" element={<StorybookExport />} />
+          <Route path="/export" element={<StorybookExport />} />
           <Route path="/my-works" element={<MyWorks />} />
           <Route path="/goods" element={<Goods />} />
           <Route path="/result" element={<Result />} />

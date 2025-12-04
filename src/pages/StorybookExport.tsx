@@ -4,16 +4,43 @@ import { exportEnhancedPDF } from "../services/pdfService";
 import { generateStoryImage } from "../services/imageService";
 import "./StorybookExport.css";
 
-export default function StorybookExport() {
+type PageData = {
+  text: string;
+  image?: string | null;
+  imageUrl?: string | null;
+};
+
+type StorybookExportProps = {
+  pages?: PageData[];
+  title?: string;
+  coverImage?: string | null;
+};
+
+export default function StorybookExport({ 
+  pages: propPages, 
+  title: propTitle, 
+  coverImage: propCoverImage 
+}: StorybookExportProps = {}) {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  // State에서 동화책 데이터 받아오기
+  // Props 또는 State에서 동화책 데이터 받아오기 (Props 우선)
   const {
-    title: initialTitle = "나의 동화책",
-    pages = [],
-    coverImageUrl: initialCover = null,
+    title: stateTitle = "나의 동화책",
+    pages: statePages = [],
+    coverImageUrl: stateCover = null,
   } = state || {};
+
+  // Props가 있으면 Props 사용, 없으면 State 사용
+  const initialTitle = propTitle || stateTitle;
+  const initialPages = propPages || statePages;
+  const initialCover = propCoverImage || stateCover;
+
+  // imageUrl을 image로 정규화
+  const pages = initialPages.map((page: any) => ({
+    text: page.text,
+    imageUrl: page.imageUrl || page.image || null,
+  }));
 
   // PDF 설정 상태
   const [title, setTitle] = useState(initialTitle);
@@ -26,7 +53,7 @@ export default function StorybookExport() {
   const [isExporting, setIsExporting] = useState(false);
 
   // 동화책 데이터가 없는 경우
-  if (!state || pages.length === 0) {
+  if (pages.length === 0) {
     return (
       <div className="export-container">
         <div className="empty-state">

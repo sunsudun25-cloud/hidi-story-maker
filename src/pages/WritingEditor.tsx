@@ -71,25 +71,22 @@ ${text}
       return;
     }
 
-    if (isEditMode) {
-      // 수정 모드
-      updateStory(id, {
-        title: label,
-        content: text,
-        description: `${label} 장르`,
-      });
-      alert("✅ 수정되었습니다!");
-    } else {
-      // 새 글 작성 모드
-      addStory({
-        title: label,
-        content: text,
-        description: `${label} 장르`,
-      });
-      alert("✅ 저장되었습니다!");
-    }
+    try {
+      if (isEditMode) {
+        // 수정 모드: updateStory(id, title, content)
+        await updateStory(id, label, text);
+        alert("✅ 수정되었습니다!");
+      } else {
+        // 새 글 작성 모드: addStory(title, content)
+        await addStory(label, text);
+        alert("✅ 저장되었습니다!");
+      }
 
-    navigate("/gallery");
+      navigate("/gallery");
+    } catch (error) {
+      console.error("저장 오류:", error);
+      alert("저장 중 오류가 발생했습니다.");
+    }
   };
 
   return (

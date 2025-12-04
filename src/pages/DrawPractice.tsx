@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import Header from "../components/Header";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./DrawPractice.css";
 
 type ExamplePrompt = {
@@ -46,16 +46,17 @@ const STYLES: StyleOption[] = [
   {
     id: "fairytale",
     label: "동화 스타일",
-    description: "아이들 책에 나오는 그림 느낌",
+    description: "아이 책 느낌",
   },
   {
     id: "bright",
     label: "밝고 따뜻한 느낌",
-    description: "햇살 가득, 포근한 분위기",
+    description: "햇살 가득 분위기",
   },
 ];
 
 export default function DrawPractice() {
+  const navigate = useNavigate();
   const [description, setDescription] = useState("");
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   const [isListening, setIsListening] = useState(false);
@@ -111,7 +112,7 @@ export default function DrawPractice() {
     recognition.start();
   };
 
-  // 아직은 실제 AI 호출 대신 콘솔/알림만
+  // 그림 생성
   const handleGenerate = () => {
     if (!description.trim()) {
       alert("먼저 그리고 싶은 그림을 설명해 주세요.");
@@ -141,80 +142,88 @@ export default function DrawPractice() {
 
   return (
     <div className="page-container">
-      <Header title="연습하기" />
+      {/* 상단 헤더 */}
+      <header className="page-header">
+        <button className="header-btn" onClick={() => navigate(-1)}>←</button>
+        <h1 className="header-title">연습하기</h1>
+        <button className="header-btn" onClick={() => navigate("/home")}>🏠</button>
+      </header>
+
       <div className="practice-page">
-
+        {/* 빠른 예시 */}
         <section className="practice-box">
-        <div className="practice-subtitle">
-          💡 빠른 예시를 선택하고 설명글을 이어보세요
-        </div>
-        <div className="example-chips">
-          {EXAMPLES.map((ex) => (
-            <button
-              key={ex.label}
-              type="button"
-              className="example-chip"
-              onClick={() => handleExampleClick(ex)}
-            >
-              {ex.label}
-            </button>
-          ))}
-        </div>
-      </section>
+          <div className="practice-subtitle">
+            💡 빠른 예시를 선택하고 설명글을 이어보세요
+          </div>
+          <div className="example-chips">
+            {EXAMPLES.map((ex) => (
+              <button
+                key={ex.label}
+                type="button"
+                className="example-chip"
+                onClick={() => handleExampleClick(ex)}
+              >
+                {ex.label}
+              </button>
+            ))}
+          </div>
+        </section>
 
-      <section className="practice-section">
-        <div className="practice-label">원하는 그림을 설명해보세요</div>
-        <textarea
-          className="practice-textarea"
-          placeholder="여기에 그리고 싶은 그림을 설명해 주세요..."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        {/* 텍스트 입력 */}
+        <section className="practice-section">
+          <div className="practice-label">원하는 그림을 설명해보세요</div>
+          <textarea
+            className="practice-textarea"
+            placeholder="여기에 그리고 싶은 그림을 설명해 주세요..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
 
-        <div className="tip-box">
-          💡 팁: 무엇을 + 어디서 + 어떤 색깔과 분위기로 그릴지 자세히 써주세요.
-        </div>
-      </section>
+          <div className="tip-box">
+            💡 팁: 무엇을 + 어디서 + 어떤 색깔과 분위기로 그릴지 자세히 써주세요.
+          </div>
+        </section>
 
-      <section className="practice-section">
-        <div className="practice-label">그림 스타일을 골라보세요 (선택)</div>
-        <div className="style-chips">
+        {/* 스타일 선택 */}
+        <div className="section-title">그림 스타일을 골라보세요 (선택)</div>
+        <div className="style-grid">
           {STYLES.map((style) => (
             <button
               key={style.id}
               type="button"
               className={
-                "style-chip" + (selectedStyle === style.id ? " selected" : "")
+                "style-card" + (selectedStyle === style.id ? " selected" : "")
               }
               onClick={() => handleStyleClick(style.id)}
             >
-              <div className="style-label">{style.label}</div>
-              <div className="style-desc">{style.description}</div>
+              {style.label}
+              <br />
+              <span>{style.description}</span>
             </button>
           ))}
         </div>
-      </section>
 
-      <section className="practice-section">
-        <div className="practice-label">말로 설명해도 좋아요</div>
-        <button
-          type="button"
-          className={
-            "voice-button" + (isListening ? " voice-button--active" : "")
-          }
-          onClick={handleVoiceInput}
-        >
-          {isListening ? "🎤 듣는 중... 한 번 더 누르면 종료" : "🎤 말로 설명하기"}
-        </button>
-      </section>
+        {/* 음성 입력 */}
+        <section className="practice-section">
+          <button
+            type="button"
+            className={
+              "voice-button" + (isListening ? " voice-button--active" : "")
+            }
+            onClick={handleVoiceInput}
+          >
+            {isListening ? "🎤 듣는 중... 한 번 더 누르면 종료" : "🎤 말로 설명하기"}
+          </button>
+        </section>
 
-      <div className="practice-actions">
-        <button type="button" className="main-action" onClick={handleGenerate}>
-          🎨 그림 만들기
-        </button>
-        <button type="button" className="sub-action" onClick={handleHelp}>
-          💡 도움말
-        </button>
+        {/* 액션 버튼 */}
+        <div className="practice-actions">
+          <button type="button" className="main-action" onClick={handleGenerate}>
+            🎨 그림 만들기
+          </button>
+          <button type="button" className="sub-action" onClick={handleHelp}>
+            💡 도움말
+          </button>
         </div>
       </div>
     </div>

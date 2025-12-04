@@ -23,9 +23,7 @@ export default function StorybookEditor() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-
-  // Computed: 모든 페이지의 이미지를 배열로 추출
-  const generatedImages = pages.map(page => page.imageUrl || null);
+  const [generatedImages, setGeneratedImages] = useState<(string | null)[]>([null, null, null]);
 
   if (!state) {
     return (
@@ -49,7 +47,7 @@ export default function StorybookEditor() {
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     // 페이지 이동 시 해당 페이지의 이미지를 generatedImage에 동기화
-    setGeneratedImage(pages[newPage - 1]?.imageUrl || null);
+    setGeneratedImage(generatedImages[newPage - 1] || null);
   };
 
   // 텍스트 업데이트 핸들러
@@ -72,6 +70,9 @@ export default function StorybookEditor() {
       
       // 새 페이지 추가
       setPages([...pages, { text: nextPageText }]);
+      
+      // generatedImages 배열에 null 추가
+      setGeneratedImages(prev => [...prev, null]);
       
       // 새 페이지로 이동
       setCurrentPage(pages.length + 1);
@@ -101,18 +102,25 @@ export default function StorybookEditor() {
 
     try {
       // generateStoryImage로 이미지 생성
-      const imageUrl = await generateStoryImage(currentPageData.text, {
+      const img = await generateStoryImage(currentPageData.text, {
         style: style || "동화 스타일",
         mood: "따뜻하고 부드러운"
       });
 
       // 생성된 이미지를 state에 저장
-      setGeneratedImage(imageUrl);
+      setGeneratedImage(img);
 
       // 페이지 이미지 업데이트
       const newPages = [...pages];
-      newPages[currentPage - 1].imageUrl = imageUrl;
+      newPages[currentPage - 1].imageUrl = img;
       setPages(newPages);
+
+      // generatedImages 배열 업데이트
+      setGeneratedImages(prev => {
+        const newImages = [...prev];
+        newImages[currentPage - 1] = img;
+        return newImages;
+      });
 
       alert("🎨 페이지 이미지가 생성되었습니다!");
     } catch (err) {

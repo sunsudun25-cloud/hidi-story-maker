@@ -459,8 +459,8 @@ export interface StoryPDFOptions {
 }
 
 /**
- * jsPDF를 활용한 Story PDF 생성
- * 표지 페이지 + 텍스트 본문 렌더링
+ * html2canvas를 활용한 고해상도 Story PDF 생성
+ * 표지 페이지 + HTML 본문 캡처 (고품질)
  * @param story Story 데이터
  * @param options PDF 생성 옵션
  */
@@ -469,27 +469,12 @@ export async function generateStoryPDF(
   options: StoryPDFOptions = {}
 ): Promise<void> {
   const { default: jsPDF } = await import("jspdf");
+  const { default: html2canvas } = await import("html2canvas");
 
   const pdf = new jsPDF({
     format: "a4",
     unit: "px",
   });
-
-  // ----- 옵션 반영 -----
-  const marginMap = {
-    small: 20,
-    normal: 40,
-    large: 70,
-  };
-
-  const fontMap = {
-    small: 12,
-    medium: 16,
-    large: 20,
-  };
-
-  const margin = marginMap[options.margin || "normal"];
-  const fontSize = fontMap[options.fontSize || "medium"];
 
   // ----- 📌 표지 생성 -----
   pdf.setFillColor("#F4F4F4");
@@ -505,7 +490,7 @@ export async function generateStoryPDF(
       const imgWidth = 350;
       const imgHeight = (img.height / img.width) * imgWidth;
 
-      pdf.addImage(img, "JPEG", 123, 260, imgWidth, imgHeight);
+      pdf.addImage(img, "JPEG", 123, 260, imgWidth, imgHeight, undefined, "FAST");
     } catch (error) {
       console.error("표지 이미지 로드 오류:", error);
     }
@@ -515,21 +500,58 @@ export async function generateStoryPDF(
   pdf.setTextColor("#777");
   pdf.text("AI Story Maker · Cover", 297, 780, { align: "center" });
 
-  // ----- 📌 본문 페이지 -----
-  pdf.addPage();
-
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const usableWidth = pageWidth - margin * 2;
-
-  pdf.setFontSize(fontSize);
-  pdf.setTextColor("#000");
-
-  // 텍스트 내용 (description 또는 content 사용)
-  const textContent = story.description || story.content || "";
+  // ----- 📌 본문 페이지 (html2canvas 고해상도 캡처) -----
+  const content = document.getElementById("pdf-content");
   
-  if (textContent) {
-    const lines = pdf.splitTextToSize(textContent, usableWidth);
-    pdf.text(lines, margin, margin);
+  if (content) {
+    pdf.addPage();
+
+    // ⭐ 고해상도 캡처 옵션
+    const canvas = await html2canvas(content, {
+      scale: 3,               // PDF 해상도 3배 증가!
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+    });
+
+    // JPG 품질 강화 (0.98 = 98% 품질)
+    const imgData = canvas.toDataURL("image/jpeg", 0.98);
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    pdf.addImage(imgData, "JPEG", 0, 0, pageWidth, pageHeight, undefined, "FAST");
+  } else {
+    // pdf-content가 없을 경우 텍스트로 폴백
+    pdf.addPage();
+
+    const marginMap = {
+      small: 20,
+      normal: 40,
+      large: 70,
+    };
+
+    const fontMap = {
+      small: 12,
+      medium: 16,
+      large: 20,
+    };
+
+    const margin = marginMap[options.margin || "normal"];
+    const fontSize = fontMap[options.fontSize || "medium"];
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const usableWidth = pageWidth - margin * 2;
+
+    pdf.setFontSize(fontSize);
+    pdf.setTextColor("#000");
+
+    const textContent = story.description || story.content || "";
+    
+    if (textContent) {
+      const lines = pdf.splitTextToSize(textContent, usableWidth);
+      pdf.text(lines, margin, margin);
+    }
   }
 
   // ----- 📌 파일 저장 -----

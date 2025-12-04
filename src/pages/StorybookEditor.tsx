@@ -24,6 +24,9 @@ export default function StorybookEditor() {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
 
+  // Computed: 모든 페이지의 이미지를 배열로 추출
+  const generatedImages = pages.map(page => page.imageUrl || null);
+
   if (!state) {
     return (
       <div style={{ padding: 20 }}>

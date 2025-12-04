@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { generateImage } from "../services/geminiService";
 import "./DirectInput.css";
 
 export default function DirectInput() {
@@ -15,45 +16,24 @@ export default function DirectInput() {
     { id: "warm", label: "따뜻한 스타일", desc: "편안하고 포근" },
   ];
 
-  // ⭐ 실제 API 연결: Google Gemini 사용
+  // 그림 생성
   const handleGenerate = async () => {
     if (!description) {
       alert("그림 설명을 입력해주세요!");
       return;
     }
 
-    const payload = {
-      prompt: description,
-      style: selectedStyle,
-    };
-
-    console.log("🚀 API 전송 데이터:", payload);
+    console.log("🚀 이미지 생성:", { description, style: selectedStyle });
 
     try {
-      // Google Gemini API 버전
-      const res = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateImage?key=" +
-          import.meta.env.VITE_GEMINI_API_KEY,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            prompt: `${description}. 스타일: ${selectedStyle ?? "기본 스타일"}`,
-            size: "1024x1024",
-          }),
-        }
-      );
+      // Gemini Service로 이미지 생성
+      const imageUrl = await generateImage(description, selectedStyle ?? "기본 스타일");
 
-      const data = await res.json();
-
-      // Base64 이미지 변환
-      const base64Image = data.candidates[0].image.base64;
-      const imageUrl = `data:image/png;base64,${base64Image}`;
-
+      // 결과 페이지로 이동
       navigate("/result", { state: { imageUrl } });
     } catch (err) {
       console.error(err);
-      alert("그림 생성 중 오류가 발생했습니다.");
+      alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 

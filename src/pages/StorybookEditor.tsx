@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { generateNextPage } from "../utils/gemini";
+import { generateNextPage } from "../services/geminiService";
 import "./StorybookEditor.css";
 
 type PageData = {

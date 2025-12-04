@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { generateImage } from "../../services/geminiService";
 import "./Storybook.css";
 
 export default function Storybook() {
@@ -26,34 +27,11 @@ export default function Storybook() {
       return;
     }
 
-    const payload = {
-      title: storyTitle,
-      prompt: storyPrompt,
-      style: selectedStyle,
-    };
-
-    console.log("📘 동화책 생성용 API 요청 데이터:", payload);
+    console.log("📘 동화책 생성:", { title: storyTitle, prompt: storyPrompt, style: selectedStyle });
 
     try {
-      // Google Gemini 이미지 API
-      const res = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateImage?key=" +
-          import.meta.env.VITE_GEMINI_API_KEY,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            prompt: `${storyPrompt}. 스타일: ${selectedStyle ?? "동화 스타일"}`,
-            size: "1024x1024",
-          }),
-        }
-      );
-
-      const data = await res.json();
-
-      // Base64 이미지로 변환
-      const base64Image = data.candidates[0].image.base64;
-      const coverImageUrl = `data:image/png;base64,${base64Image}`;
+      // Gemini Service로 표지 이미지 생성
+      const coverImageUrl = await generateImage(storyPrompt, selectedStyle ?? "동화 스타일");
 
       // 다음 단계(편집기 페이지)로 이동
       navigate("/storybook-editor", {
@@ -66,7 +44,7 @@ export default function Storybook() {
       });
     } catch (err) {
       console.error(err);
-      alert("동화책 표지 그림 생성 중 오류가 발생했습니다.");
+      alert("동화책 표지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 

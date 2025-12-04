@@ -11,6 +11,7 @@ import Write from './pages/Write'
 import Storybook from './pages/Storybook'
 import MyWorks from './pages/MyWorks'
 import Goods from './pages/Goods'
+import Result from './pages/Result'
 import TestButtons from './pages/TestButtons'
 import './App.css'
 
@@ -33,6 +34,7 @@ function App() {
           <Route path="/storybook" element={<Storybook />} />
           <Route path="/my-works" element={<MyWorks />} />
           <Route path="/goods" element={<Goods />} />
+          <Route path="/result" element={<Result />} />
           <Route path="/test-buttons" element={<TestButtons />} />
         </Route>
       </Routes>

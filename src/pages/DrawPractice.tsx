@@ -113,21 +113,36 @@ export default function DrawPractice() {
   };
 
   // 그림 생성
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!description.trim()) {
-      alert("먼저 그리고 싶은 그림을 설명해 주세요.");
+      alert("그림 설명을 먼저 입력해주세요!");
       return;
     }
 
-    const styleText = selectedStyle
-      ? `\n선택한 스타일: ${
-          STYLES.find((s) => s.id === selectedStyle)?.label ?? ""
-        }`
-      : "\n(스타일 미선택)";
+    // 🎨 스타일 선택이 필수는 아니므로 null 허용
+    const payload = {
+      prompt: description,
+      style: selectedStyle, // ⭐ 선택된 스타일 포함
+    };
 
-    // 나중에 여기서 실제 이미지 생성 API를 호출하면 됩니다.
-    console.log("그림 생성 요청:", description, styleText);
-    alert("지금은 연습 모드입니다.\n나중에 여기에 AI 그림 생성이 연결됩니다 🙂");
+    console.log("🚀 전송 데이터:", payload);
+
+    // 👉 여기에 실제 API 요청 추가
+    try {
+      const res = await fetch("/api/generate-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      // 결과 페이지로 이동
+      navigate("/result", { state: { imageUrl: data.imageUrl } });
+    } catch (err) {
+      console.error(err);
+      alert("그림 생성 중 오류가 발생했습니다.");
+    }
   };
 
   const handleHelp = () => {

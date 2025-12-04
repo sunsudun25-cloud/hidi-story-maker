@@ -142,6 +142,9 @@ cp .env.example .env
 
 3. **`.env` 파일 편집**:
 ```bash
+# 두 가지 형식 모두 지원됩니다
+VITE_GEMINI_KEY=your-gemini-api-key-here
+# 또는
 VITE_GEMINI_API_KEY=your-gemini-api-key-here
 ```
 

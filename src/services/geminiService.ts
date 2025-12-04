@@ -1,9 +1,9 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const API_KEY = import.meta.env.VITE_GEMINI_KEY || import.meta.env.VITE_GEMINI_API_KEY;
 
 if (!API_KEY) {
-  console.error("⚠️ VITE_GEMINI_API_KEY가 설정되지 않았습니다!");
+  console.error("⚠️ VITE_GEMINI_KEY 또는 VITE_GEMINI_API_KEY가 설정되지 않았습니다!");
 }
 
 // Gemini 모델 초기화

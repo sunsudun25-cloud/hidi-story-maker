@@ -1,47 +1,31 @@
-/* Header 컨테이너 */
 .header-container {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
-  background: var(--primary, #21c884);
-  color: white;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  height: 56px;
+  padding: 0 12px;
+
+  /* 폭 제한 — 데스크탑에서도 앱처럼 보이게 */
+  max-width: 600px;
+  margin: 0 auto;
+
+  background: #a8cdfc;
+  border-radius: 0 0 12px 12px;
 }
 
-/* Header 제목 */
 .header-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0;
   flex: 1;
   text-align: center;
-  color: white;
+  font-size: 18px;
+  font-weight: 700;
 }
 
-/* Header 버튼 */
 .header-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   font-size: 20px;
-  border-radius: 8px;
+  border: none;
+  background: white;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.header-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.header-btn:active {
-  transform: scale(0.95);
 }

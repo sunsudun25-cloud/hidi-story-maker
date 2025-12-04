@@ -166,6 +166,53 @@ async function loadImageAsDataURL(imageUrl: string): Promise<string> {
 }
 
 /**
+ * 스토리북을 PDF로 생성 (간단 버전)
+ * @param pages [{ text: string, image: base64 string }]
+ * @param filename PDF 파일명
+ */
+export async function exportStorybookToPDF(
+  pages: Array<{ text: string; image?: string | null }>,
+  filename: string = "storybook.pdf"
+): Promise<void> {
+  const jsPDF = (await import("jspdf")).default;
+  
+  const doc = new jsPDF({
+    unit: "pt",
+    format: "a4",
+  });
+
+  pages.forEach((page, index) => {
+    if (index !== 0) doc.addPage();
+
+    // 페이지 제목
+    doc.setFont("Helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text(`페이지 ${index + 1}`, 40, 50);
+
+    // 이미지가 있다면 삽입
+    if (page.image) {
+      try {
+        doc.addImage(page.image, "PNG", 40, 80, 350, 260); // 자동 크기 조정
+      } catch (e) {
+        console.warn("이미지 삽입 실패:", e);
+      }
+    }
+
+    // 텍스트 삽입 (여백 넓게)
+    doc.setFont("Helvetica", "normal");
+    doc.setFontSize(14);
+
+    const textY = page.image ? 360 : 100;
+
+    const splitText = doc.splitTextToSize(page.text, 500);
+    doc.text(splitText, 40, textY);
+  });
+
+  // 파일 다운로드
+  doc.save(filename);
+}
+
+/**
  * PDF 미리보기 (준비 중)
  * @param bookData 동화책 데이터
  * @returns PDF Blob
@@ -207,6 +254,7 @@ export async function generateStorybookPDFWithOptions(
 
 export default {
   generateStorybookPDF,
+  exportStorybookToPDF,
   previewStorybookPDF,
   generateStorybookPDFWithOptions,
 };

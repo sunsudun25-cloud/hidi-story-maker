@@ -456,6 +456,7 @@ export interface Story {
 export interface StoryPDFOptions {
   margin?: "small" | "normal" | "large";
   fontSize?: "small" | "medium" | "large";
+  layout?: "A" | "B" | "C";  // A: 그림 위/글 아래, B: 그림 전체, C: 그림/글 반반
 }
 
 /**

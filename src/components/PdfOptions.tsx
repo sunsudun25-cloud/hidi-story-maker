@@ -1,13 +1,14 @@
 import { useState } from "react";
 
 interface PdfOptionsProps {
-  onConfirm: (options: { margin: string; fontSize: string }) => void;
+  onConfirm: (options: { margin: string; fontSize: string; layout: string }) => void;
   onClose?: () => void;
 }
 
 export default function PdfOptions({ onConfirm, onClose }: PdfOptionsProps) {
   const [margin, setMargin] = useState("normal");
   const [fontSize, setFontSize] = useState("medium");
+  const [layout, setLayout] = useState("A");
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -52,6 +53,51 @@ export default function PdfOptions({ onConfirm, onClose }: PdfOptionsProps) {
           </select>
         </div>
 
+        {/* 레이아웃 선택 */}
+        <div className="mb-4">
+          <label className="font-semibold block mb-2">PDF 레이아웃</label>
+          <div className="space-y-2">
+            {/* A안 */}
+            <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <input
+                type="radio"
+                name="layout"
+                value="A"
+                checked={layout === "A"}
+                onChange={() => setLayout("A")}
+                className="w-4 h-4"
+              />
+              <span className="font-semibold">A안 — 그림 위 / 글 아래</span>
+            </label>
+
+            {/* B안 */}
+            <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <input
+                type="radio"
+                name="layout"
+                value="B"
+                checked={layout === "B"}
+                onChange={() => setLayout("B")}
+                className="w-4 h-4"
+              />
+              <span className="font-semibold">B안 — 그림 전체 페이지</span>
+            </label>
+
+            {/* C안 */}
+            <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <input
+                type="radio"
+                name="layout"
+                value="C"
+                checked={layout === "C"}
+                onChange={() => setLayout("C")}
+                className="w-4 h-4"
+              />
+              <span className="font-semibold">C안 — 그림/글 반반</span>
+            </label>
+          </div>
+        </div>
+
         {/* 버튼 그룹 */}
         <div className="flex gap-2">
           {onClose && (
@@ -63,7 +109,7 @@ export default function PdfOptions({ onConfirm, onClose }: PdfOptionsProps) {
             </button>
           )}
           <button
-            onClick={() => onConfirm({ margin, fontSize })}
+            onClick={() => onConfirm({ margin, fontSize, layout })}
             className="flex-1 bg-emerald-500 text-white p-3 rounded-lg font-bold hover:bg-emerald-600"
           >
             적용하기

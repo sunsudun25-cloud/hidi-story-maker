@@ -170,10 +170,13 @@
   box-shadow: 0 3px 8px rgba(80, 179, 107, 0.15);
 }
 
+/* 🎨 선택된 스타일 카드 효과 */
 .style-card.selected {
-  background: #e8f8f0;
-  border-color: #25c56e;
-  border-width: 2.5px;
+  background: #d4ffe2;
+  border-color: #31c46a;
+  box-shadow: 0 0 0 3px #a7f5c5 inset;
+  font-weight: 600;
+  transform: scale(1.03);
 }
 
 .style-card span {

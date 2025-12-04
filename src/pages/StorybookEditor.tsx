@@ -319,7 +319,7 @@ export default function StorybookEditor() {
           }
         })}
       >
-        📕 동화책 PDF 완성하기 →
+        📘 PDF 만들기 설정 페이지로 이동
       </button>
 
       {/* PDF 설정 모달 */}

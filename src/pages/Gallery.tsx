@@ -16,7 +16,7 @@ export default function Gallery() {
   const [images, setImages] = useState<SavedImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  const { stories } = useStory();
+  const { stories, deleteStory } = useStory();
 
   useEffect(() => {
     loadImages();
@@ -91,6 +91,21 @@ export default function Gallery() {
     }
   };
 
+  // Story 삭제 핸들러
+  const handleDeleteStory = async (id: string) => {
+    if (!window.confirm("정말 삭제하시겠어요?\n삭제된 작품은 복구할 수 없습니다.")) {
+      return;
+    }
+
+    try {
+      await deleteStory(id);
+      alert("✅ 작품이 삭제되었습니다.");
+    } catch (error) {
+      console.error("스토리 삭제 오류:", error);
+      alert("삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="p-6 max-w-[600px] mx-auto">
@@ -145,11 +160,18 @@ export default function Gallery() {
               </button>
             )}
           </div>
+          {(images.length > 0 || stories.length > 0) && (
+            <p className="text-gray-600 text-[15px] mt-2 text-center">
+              PDF 파일은 자동으로 다운로드됩니다.
+              <br />
+              다운로드가 안될 경우, 다시 눌러주세요.
+            </p>
+          )}
         </div>
       </div>
 
       {/* 빈 상태 */}
-      {images.length === 0 && (
+      {images.length === 0 && stories.length === 0 && (
         <div className="text-center mt-10">
           <p className="text-[20px] text-gray-600 mb-6">
             저장된 작품이 없습니다.
@@ -163,8 +185,63 @@ export default function Gallery() {
         </div>
       )}
 
+      {/* 스토리 그리드 */}
+      {stories.length > 0 && (
+        <div className="mb-6">
+          <h2 className="text-[22px] font-bold mb-4 text-purple-700">📝 내 스토리</h2>
+          <div className="grid grid-cols-1 gap-4">
+            {stories.map((story) => (
+              <div
+                key={story.id}
+                className="border rounded-xl p-4 bg-white shadow hover:shadow-lg transition"
+              >
+                {/* 이미지가 있으면 표시 */}
+                {story.image && (
+                  <img
+                    src={story.image}
+                    alt={story.title}
+                    className="w-full rounded-xl mb-3 cursor-pointer object-cover"
+                    onClick={() => window.open(story.image, "_blank")}
+                  />
+                )}
+
+                {/* 제목 */}
+                <h3 className="text-[20px] font-semibold mb-2">{story.title}</h3>
+
+                {/* 설명 또는 내용 */}
+                <p className="text-[16px] text-gray-600 mb-2 line-clamp-3">
+                  {story.description || story.content}
+                </p>
+
+                {/* 생성 날짜 */}
+                <p className="text-[14px] text-gray-400 mb-3">
+                  {new Date(story.createdAt).toLocaleString("ko-KR", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+
+                {/* 삭제 버튼 */}
+                <button
+                  onClick={() => handleDeleteStory(story.id)}
+                  className="w-full bg-red-500 text-white py-3 rounded-xl text-[18px] font-semibold hover:bg-red-600"
+                >
+                  🗑️ 작품 삭제하기
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* 이미지 그리드 */}
-      <div className="grid grid-cols-1 gap-4 mt-4">
+      {images.length > 0 && (
+        <div className="mb-6">
+          <h2 className="text-[22px] font-bold mb-4 text-blue-700">🎨 내 이미지</h2>
+          <div className="grid grid-cols-1 gap-4">
         {images.map((item) => (
           <div
             key={item.id}
@@ -227,7 +304,9 @@ export default function Gallery() {
             </div>
           </div>
         ))}
-      </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

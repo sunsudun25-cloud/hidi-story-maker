@@ -139,9 +139,10 @@ export default function DrawPractice() {
   };
 
   return (
-    <div className="practice-page">
+    <div className="page-container">
+      <div className="practice-page">
 
-      <section className="practice-box">
+        <section className="practice-box">
         <div className="practice-subtitle">
           💡 빠른 예시를 선택하고 설명글을 이어보세요
         </div>
@@ -212,6 +213,7 @@ export default function DrawPractice() {
         <button type="button" className="sub-action" onClick={handleHelp}>
           💡 도움말
         </button>
+        </div>
       </div>
     </div>
   );

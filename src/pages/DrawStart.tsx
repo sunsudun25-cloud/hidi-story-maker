@@ -6,10 +6,11 @@ export default function DrawStart() {
   const navigate = useNavigate();
 
   return (
-    <div className="draw-start-container">
+    <div className="page-container">
+      <div className="draw-start-container">
         <p className="draw-start-subtitle">어떤 방식으로 시작하시겠어요?</p>
 
-      <div className="draw-start-buttons">
+        <div className="draw-start-buttons">
         <button
           className="draw-mode-btn practice-btn"
           onClick={() => navigate("/drawing/practice")}
@@ -27,8 +28,8 @@ export default function DrawStart() {
           <span className="btn-label">직접입력</span>
           <span className="btn-desc">원하는 그림을 직접 그려보세요</span>
         </button>
+        </div>
       </div>
-
     </div>
   );
 }

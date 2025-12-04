@@ -72,11 +72,7 @@ main {
 
 /* 제목 공통 스타일 */
 .page-title {
-  font-size: 26px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  text-align: center;
-  color: var(--text);
+  display: none;
 }
 
 .page-subtitle {

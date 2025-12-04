@@ -1,0 +1,144 @@
+/* HomeNew 페이지 전용 스타일 */
+
+.home-container {
+  padding: 20px;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 환영 메시지 */
+.home-welcome {
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.home-welcome h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.home-welcome p {
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--text-light);
+}
+
+/* 메뉴 리스트 */
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  margin-bottom: 20px;
+}
+
+/* 메뉴 카드 */
+.menu-card {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.menu-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.menu-card:active {
+  transform: scale(0.98);
+}
+
+.menu-card .emoji {
+  font-size: 40px;
+  flex-shrink: 0;
+}
+
+.menu-card .title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.menu-card .desc {
+  font-size: 16px;
+  color: var(--text-light);
+  display: block;
+}
+
+/* 푸터 버튼 그룹 */
+.home-footer {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.footer-btn {
+  flex: 1;
+  padding: 14px 8px;
+  font-size: 14px;
+  background: var(--secondary);
+  border: none;
+  border-radius: var(--radius);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.footer-btn:hover {
+  background: #e0e0e0;
+}
+
+.footer-btn:active {
+  transform: scale(0.98);
+}
+
+/* 반응형 */
+@media (max-width: 480px) {
+  .home-container {
+    padding: 16px;
+  }
+
+  .home-welcome h2 {
+    font-size: 24px;
+  }
+
+  .home-welcome p {
+    font-size: 16px;
+  }
+
+  .menu-card .emoji {
+    font-size: 36px;
+  }
+
+  .menu-card .title {
+    font-size: 18px;
+  }
+
+  .menu-card .desc {
+    font-size: 14px;
+  }
+
+  .footer-btn {
+    font-size: 12px;
+    padding: 12px 6px;
+  }
+}

@@ -1,91 +1,81 @@
-/* 기본 배경 */
-.home-container {
-  width: 100%;
+/* 페이지 배경 그라데이션 */
+.page-container {
+  background: linear-gradient(180deg, #f0fff7 0%, #ffffff 50%);
   min-height: 100vh;
-  background: #fff9f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
 }
 
-/* 메인 박스 */
-.home-card {
+/* 2x2 메뉴 그리드 */
+.grid-menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.menu-tile {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 4px 14px rgba(33, 200, 132, 0.12);
   text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
-/* AI 초록 박스 */
-.home-icon {
-  width: 80px;
-  height: 80px;
-  background: #21c884;
-  color: white;
-  font-size: 32px;
-  font-weight: bold;
-  border-radius: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto 20px;
+.menu-tile:hover {
+  transform: translateY(-4px);
 }
 
-/* 제목 */
-.home-title {
-  font-size: 32px;
-  font-weight: 700;
-  color: #222;
-  margin-bottom: 10px;
+.menu-tile .emoji {
+  font-size: 38px;
+  margin-bottom: 8px;
+  display: block;
 }
 
-/* 부제 */
-.home-subtitle {
-  font-size: 16px;
-  color: #555;
-  margin-bottom: 40px;
-}
-
-/* 시작하기 버튼 */
-.home-start-btn {
-  width: 240px;
-  padding: 16px 0;
-  background: #21c884;
-  color: white;
-  border-radius: 12px;
-  border: none;
+.menu-tile .label {
   font-size: 18px;
   font-weight: 600;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  color: var(--text);
+  display: block;
+}
+
+/* 하단 큰 타일 */
+.big-tile {
+  background: #e8f8f0;
+  border-radius: 20px;
+  padding: 22px;
+  margin: 18px 0;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(33, 200, 132, 0.12);
   cursor: pointer;
-  margin-bottom: 30px;
-  transition: background 0.2s;
+  transition: transform 0.2s;
 }
 
-.home-start-btn:hover {
-  background: #1bb173;
+.big-tile:hover {
+  transform: translateY(-4px);
 }
 
-/* 하단 안내 */
-.home-info {
-  font-size: 14px;
-  color: #777;
+/* 하단 작은 버튼 모음 */
+.footer-menu {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 16px;
 }
 
-/* 포인트 컬러 점 */
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
+.footer-menu button {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: var(--text-light);
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
-.green {
-  background: #21c884;
-}
-
-.yellow {
-  background: #ffcc00;
+.footer-menu button:hover {
+  color: var(--text);
 }

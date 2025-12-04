@@ -3,7 +3,6 @@ import Layout from './components/Layout'
 import Welcome from './pages/Welcome'
 import OnboardingLogin from './pages/OnboardingLogin'
 import Home from './pages/Home'
-import HomeNew from './pages/HomeNew'
 import DrawStart from './pages/DrawStart'
 import DrawPractice from './pages/DrawPractice'
 import DrawDirect from './pages/DrawDirect'
@@ -22,7 +21,6 @@ function App() {
         <Route path="/" element={<Welcome />} />
         <Route path="/onboarding" element={<OnboardingLogin />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/home-new" element={<HomeNew />} />
 
         {/* 나머지 페이지는 Layout으로 감싸기 */}
         <Route element={<Layout />}>

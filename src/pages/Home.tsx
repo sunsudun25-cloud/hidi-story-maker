@@ -5,21 +5,44 @@ export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="home-container">
-      <div className="home-card">
-        <div className="home-icon">AI</div>
+    <div className="page-container">
+      <h1 className="page-title" style={{ textAlign: 'left', marginBottom: '30px' }}>
+        무엇을<br />만들어볼까요?
+      </h1>
 
-        <h1 className="home-title">스토리 메이커</h1>
-        <p className="home-subtitle">AI와 함께 만드는 특별한 이야기</p>
-
-        <button className="home-start-btn" onClick={() => navigate("/home-new")}>
-          시작하기
-        </button>
-
-        <div className="home-info">
-          <span className="dot green"></span> 무료로 시작
-          <span className="dot yellow"></span> 회원가입 불필요
+      {/* 메뉴 2x2 그리드 */}
+      <div className="grid-menu">
+        <div className="menu-tile" onClick={() => navigate("/drawing/start")}>
+          <span className="emoji">🌈</span>
+          <span className="label">그림 만들기</span>
         </div>
+
+        <div className="menu-tile" onClick={() => navigate("/write")}>
+          <span className="emoji">✍️</span>
+          <span className="label">글쓰기</span>
+        </div>
+
+        <div className="menu-tile" onClick={() => navigate("/storybook")}>
+          <span className="emoji">📚</span>
+          <span className="label">동화책 만들기</span>
+        </div>
+
+        <div className="menu-tile" onClick={() => navigate("/my-works")}>
+          <span className="emoji">🏆</span>
+          <span className="label">내 작품 보기</span>
+        </div>
+      </div>
+
+      {/* 하단 큰 타일 */}
+      <div className="big-tile" onClick={() => navigate("/goods")}>
+        🎁 나만의 굿즈 만들기
+      </div>
+
+      {/* 하단 작은 메뉴 */}
+      <div className="footer-menu">
+        <button onClick={() => navigate("/help")}>📄 도움말</button>
+        <button onClick={() => navigate("/settings")}>⚙️ 설정</button>
+        <button onClick={() => navigate("/qr")}>📱 다른 기기에서 보기</button>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 .home-wrap {
   padding: 28px;
   min-height: 100vh;
-  background: linear-gradient(180deg, #edf3ff 0%, #ffffff 45%);
+  background: linear-gradient(180deg, #f0fff7 0%, #ffffff 45%);
   font-family: 'Pretendard', sans-serif;
 }
 
@@ -26,7 +26,7 @@
   background: #ffffff;
   border-radius: 18px;
   padding: 22px;
-  box-shadow: 0 4px 14px rgba(62, 108, 255, 0.12);
+  box-shadow: 0 4px 14px rgba(33, 200, 132, 0.12);
   text-align: center;
   cursor: pointer;
   transition: 0.2s;
@@ -51,14 +51,14 @@
 
 /* 하단 큰 카드 */
 .big-tile {
-  background: #eaf0ff;
+  background: #e8f8f0;
   border-radius: 20px;
   padding: 22px;
   margin: 18px 0;
   font-size: 18px;
   font-weight: 600;
   text-align: center;
-  box-shadow: 0 4px 14px rgba(80, 120, 255, 0.12);
+  box-shadow: 0 4px 14px rgba(33, 200, 132, 0.12);
   cursor: pointer;
   transition: 0.2s;
 }

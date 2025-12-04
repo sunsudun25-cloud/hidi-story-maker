@@ -1,11 +1,12 @@
-/* 글로벌 색상 팔레트 — 시니어 친화형 */
+/* 글로벌 색상 팔레트 — 시니어 친화형 (녹색 테마) */
 :root {
-  --primary: #4A90E2;         /* 차분한 파란색 */
-  --primary-light: #A8CBFF;   /* 연한 파란색 */
+  --primary: #21c884;         /* 밝은 녹색 */
+  --primary-light: #8de4bc;   /* 연한 녹색 */
+  --primary-hover: #1bb173;   /* 녹색 호버 */
   --secondary: #F8F8F8;       /* 밝은 회색 */
   --text: #222;
   --text-light: #666;
-  --bg: #F2F6FF;              /* 은은한 전체 배경색 */
+  --bg: #fff9f0;              /* 따뜻한 베이지 배경색 */
   --card-bg: #FFFFFF;
   --radius: 16px;
   --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
@@ -52,7 +53,7 @@ main {
 }
 
 .btn:hover {
-  background: var(--primary-light);
+  background: var(--primary-hover);
 }
 
 .btn:active {

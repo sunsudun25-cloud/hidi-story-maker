@@ -3,6 +3,7 @@ import { useState } from "react";
 import { generateNextPage } from "../services/geminiService";
 import { generateStoryImage } from "../services/imageService";
 import { exportStorybookToPDF, exportEnhancedPDF } from "../services/pdfService";
+import { saveStorybook } from "../services/dbService";
 import "./StorybookEditor.css";
 
 type PageData = {
@@ -138,21 +139,27 @@ export default function StorybookEditor() {
     }
   };
 
-  // 저장 핸들러 (준비 중)
-  const handleSave = () => {
-    const storybook = {
-      title,
-      prompt,
-      style,
-      coverImageUrl,
-      pages,
-      createdAt: new Date().toISOString()
-    };
+  // 저장 핸들러
+  const handleSave = async () => {
+    try {
+      const storybookId = await saveStorybook({
+        title,
+        prompt,
+        style,
+        coverImageUrl,
+        pages,
+        createdAt: new Date().toISOString()
+      });
 
-    console.log("📘 저장할 동화책:", storybook);
-    
-    // TODO: IndexedDB에 저장
-    alert("💾 저장 기능은 곧 연결됩니다!\n\n현재 콘솔에 데이터가 출력되었습니다.");
+      console.log("📘 저장된 동화책 ID:", storybookId);
+      alert("✅ 동화책이 저장되었습니다!\n\n내 작품에서 확인하실 수 있습니다.");
+      
+      // 저장 후 MyWorks 페이지로 이동
+      navigate("/my-works");
+    } catch (error) {
+      console.error("동화책 저장 오류:", error);
+      alert("저장 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
   };
 
   // PDF 저장 핸들러 (간단 버전)

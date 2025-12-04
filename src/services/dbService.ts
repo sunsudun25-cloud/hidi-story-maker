@@ -2,9 +2,10 @@ import { Story } from '../context/StoryContext'
 
 // IndexedDB 데이터베이스 설정
 const DB_NAME = 'StoryDB'
-const DB_VERSION = 2  // 버전 업그레이드
+const DB_VERSION = 3  // 버전 업그레이드 (storybooks 추가)
 const STORE_NAME = 'stories'
 const IMAGE_STORE_NAME = 'images'  // 이미지 저장소
+const STORYBOOK_STORE_NAME = 'storybooks'  // 동화책 저장소
 
 // IndexedDB 초기화
 const initDB = (): Promise<IDBDatabase> => {
@@ -34,6 +35,13 @@ const initDB = (): Promise<IDBDatabase> => {
         const imageStore = db.createObjectStore(IMAGE_STORE_NAME, { keyPath: 'id', autoIncrement: true })
         imageStore.createIndex('prompt', 'prompt', { unique: false })
         imageStore.createIndex('createdAt', 'createdAt', { unique: false })
+      }
+
+      // Storybooks Object Store가 없으면 생성
+      if (!db.objectStoreNames.contains(STORYBOOK_STORE_NAME)) {
+        const storybookStore = db.createObjectStore(STORYBOOK_STORE_NAME, { keyPath: 'id', autoIncrement: true })
+        storybookStore.createIndex('title', 'title', { unique: false })
+        storybookStore.createIndex('createdAt', 'createdAt', { unique: false })
       }
     }
   })
@@ -250,6 +258,138 @@ export const clearAllImages = async (): Promise<void> => {
 
     request.onerror = () => {
       reject(new Error('이미지를 삭제할 수 없습니다.'))
+    }
+  })
+}
+
+// ========== 동화책 관련 함수 ==========
+
+export interface StorybookPage {
+  text: string;
+  imageUrl?: string;
+}
+
+export interface Storybook {
+  id?: number;
+  title: string;
+  prompt?: string;
+  style?: string;
+  coverImageUrl?: string;
+  pages: StorybookPage[];
+  createdAt: string;
+}
+
+// 동화책 저장
+export const saveStorybook = async (storybookData: Omit<Storybook, 'id'>): Promise<number> => {
+  const db = await initDB()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORYBOOK_STORE_NAME], 'readwrite')
+    const objectStore = transaction.objectStore(STORYBOOK_STORE_NAME)
+    const request = objectStore.add({
+      ...storybookData,
+      createdAt: new Date().toISOString()
+    })
+
+    request.onsuccess = () => {
+      resolve(request.result as number)
+    }
+
+    request.onerror = () => {
+      reject(new Error('동화책을 저장할 수 없습니다.'))
+    }
+  })
+}
+
+// 모든 동화책 가져오기
+export const getAllStorybooks = async (): Promise<Storybook[]> => {
+  const db = await initDB()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORYBOOK_STORE_NAME], 'readonly')
+    const objectStore = transaction.objectStore(STORYBOOK_STORE_NAME)
+    const request = objectStore.getAll()
+
+    request.onsuccess = () => {
+      resolve(request.result)
+    }
+
+    request.onerror = () => {
+      reject(new Error('동화책을 가져올 수 없습니다.'))
+    }
+  })
+}
+
+// 특정 동화책 가져오기
+export const getStorybook = async (id: number): Promise<Storybook | undefined> => {
+  const db = await initDB()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORYBOOK_STORE_NAME], 'readonly')
+    const objectStore = transaction.objectStore(STORYBOOK_STORE_NAME)
+    const request = objectStore.get(id)
+
+    request.onsuccess = () => {
+      resolve(request.result)
+    }
+
+    request.onerror = () => {
+      reject(new Error('동화책을 가져올 수 없습니다.'))
+    }
+  })
+}
+
+// 동화책 업데이트
+export const updateStorybook = async (id: number, storybookData: Omit<Storybook, 'id'>): Promise<void> => {
+  const db = await initDB()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORYBOOK_STORE_NAME], 'readwrite')
+    const objectStore = transaction.objectStore(STORYBOOK_STORE_NAME)
+    const request = objectStore.put({
+      ...storybookData,
+      id,
+      createdAt: storybookData.createdAt
+    })
+
+    request.onsuccess = () => {
+      resolve()
+    }
+
+    request.onerror = () => {
+      reject(new Error('동화책을 업데이트할 수 없습니다.'))
+    }
+  })
+}
+
+// 동화책 삭제
+export const deleteStorybook = async (id: number): Promise<void> => {
+  const db = await initDB()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORYBOOK_STORE_NAME], 'readwrite')
+    const objectStore = transaction.objectStore(STORYBOOK_STORE_NAME)
+    const request = objectStore.delete(id)
+
+    request.onsuccess = () => {
+      resolve()
+    }
+
+    request.onerror = () => {
+      reject(new Error('동화책을 삭제할 수 없습니다.'))
+    }
+  })
+}
+
+// 모든 동화책 삭제 (초기화)
+export const clearAllStorybooks = async (): Promise<void> => {
+  const db = await initDB()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORYBOOK_STORE_NAME], 'readwrite')
+    const objectStore = transaction.objectStore(STORYBOOK_STORE_NAME)
+    const request = objectStore.clear()
+
+    request.onsuccess = () => {
+      resolve()
+    }
+
+    request.onerror = () => {
+      reject(new Error('동화책을 삭제할 수 없습니다.'))
     }
   })
 }

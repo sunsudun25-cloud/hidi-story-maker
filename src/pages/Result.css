@@ -4,6 +4,15 @@
   padding: 20px 16px 60px 16px;
 }
 
+/* 페이지 제목 */
+.result-page h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
 /* 이미지 컨테이너 */
 .result-image-container {
   background: white;
@@ -19,6 +28,19 @@
   height: auto;
   border-radius: 12px;
   display: block;
+}
+
+/* 빈 상태 */
+.result-empty {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.result-empty p {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 24px;
+  line-height: 1.6;
 }
 
 /* 액션 버튼들 */
@@ -80,6 +102,7 @@
   background: #667eea;
   color: white;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 /* 갤러리 버튼 */
@@ -100,28 +123,23 @@
   background: #ffa726;
   color: white;
   transform: translateY(-2px);
-}
-
-/* 빈 상태 */
-.result-empty {
-  text-align: center;
-  padding: 60px 20px;
-}
-
-.result-empty p {
-  font-size: 18px;
-  color: #666;
-  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
 }
 
 /* 반응형 */
+@media (max-width: 768px) {
+  .result-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 480px) {
   .result-page {
     padding: 16px 12px 50px 12px;
   }
 
-  .result-actions {
-    grid-template-columns: 1fr;
+  .result-page h1 {
+    font-size: 22px;
   }
 
   .action-btn {
@@ -133,5 +151,9 @@
   .result-gallery {
     font-size: 15px;
     padding: 14px;
+  }
+
+  .result-empty p {
+    font-size: 16px;
   }
 }

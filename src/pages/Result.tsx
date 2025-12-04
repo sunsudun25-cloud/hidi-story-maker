@@ -3,8 +3,8 @@ import "./Result.css";
 
 export default function Result() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { imageUrl } = location.state || {};
+  const { state } = useLocation();
+  const imageUrl = state?.imageUrl;
 
   const handleDownload = () => {
     if (!imageUrl) return;

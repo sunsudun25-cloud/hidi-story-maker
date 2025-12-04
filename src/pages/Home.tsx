@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import Layout from "../components/Layout";
 import "./Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="page-container">
+    <Layout>
+      <div className="page-container">
       <h1 className="page-title" style={{ textAlign: 'left', marginBottom: '30px' }}>
         무엇을<br />만들어볼까요?
       </h1>
@@ -44,6 +46,7 @@ export default function Home() {
         <button onClick={() => navigate("/settings")}>⚙️ 설정</button>
         <button onClick={() => navigate("/qr")}>📱 다른 기기에서 보기</button>
       </div>
-    </div>
+      </div>
+    </Layout>
   );
 }

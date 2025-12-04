@@ -42,13 +42,17 @@ export default function StorybookExport({
     imageUrl: page.imageUrl || page.image || null,
   }));
 
-  // PDF 설정 상태
+  // ===== 상태 정의 =====
+  const [step, setStep] = useState(1);
+  
   const [title, setTitle] = useState(initialTitle);
   const [author, setAuthor] = useState("익명");
   const [coverImage, setCoverImage] = useState(initialCover);
+
   const [layout, setLayout] = useState("vertical");
   const [usePastelBackground, setUsePastelBackground] = useState(true);
   const [textImageLayout, setTextImageLayout] = useState("image-top");
+
   const [isGeneratingCover, setIsGeneratingCover] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -67,7 +71,7 @@ export default function StorybookExport({
     );
   }
 
-  // 표지 이미지 자동 생성
+  // 표지 생성
   const generateCover = async () => {
     if (pages.length === 0 || !pages[0].text) {
       alert("페이지 내용이 없습니다!");
@@ -77,8 +81,8 @@ export default function StorybookExport({
     setIsGeneratingCover(true);
 
     try {
-      // 첫 번째 페이지 텍스트로 표지 생성
-      const img = await generateStoryImage(pages[0].text, {
+      const firstPageText = pages[0].text;
+      const img = await generateStoryImage(firstPageText, {
         style: "동화 스타일",
         mood: "따뜻하고 부드러운"
       });
@@ -92,7 +96,7 @@ export default function StorybookExport({
     }
   };
 
-  // PDF 내보내기 핸들러
+  // PDF 생성
   const handleExportPDF = async () => {
     setIsExporting(true);
 
@@ -102,12 +106,12 @@ export default function StorybookExport({
           text: page.text,
           image: page.imageUrl || null,
         })),
-        title: title,
-        author: author,
+        title,
+        author,
         layout: layout as "vertical" | "horizontal",
-        usePastelBackground: usePastelBackground,
+        usePastelBackground,
         textImageLayout: textImageLayout as "image-right" | "image-top",
-        coverImage: coverImage,
+        coverImage,
       });
 
       alert("✨ 동화책 PDF가 다운로드되었습니다!");
@@ -119,154 +123,201 @@ export default function StorybookExport({
     }
   };
 
-  // 이미지 완성도 계산
-  const pagesWithImages = pages.filter((page: any) => page.imageUrl);
-  const totalPages = pages.length;
-  const completedImages = pagesWithImages.length;
+  // ===== UI 템플릿 (고령친화 스타일) =====
+  const StepCard = ({ children }: { children: React.ReactNode }) => (
+    <div className="step-card">
+      {children}
+    </div>
+  );
+
+  const BigButton = ({ 
+    label, 
+    onClick, 
+    color = "emerald",
+    disabled = false 
+  }: { 
+    label: string; 
+    onClick: () => void; 
+    color?: string;
+    disabled?: boolean;
+  }) => (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`big-button big-button-${color}`}
+    >
+      {label}
+    </button>
+  );
 
   return (
-    <div className="export-container">
+    <div className="redesign-container">
       {/* 상단 헤더 */}
-      <header className="export-header">
-        <button className="header-btn" onClick={() => navigate(-1)}>
+      <div className="redesign-header">
+        <button className="back-btn" onClick={() => navigate(-1)}>
           ← 뒤로
         </button>
-        <h1 className="header-title">📕 PDF 만들기</h1>
-        <button className="header-btn" onClick={() => navigate("/")}>
+        <h1 className="redesign-title">📘 동화책 PDF 만들기</h1>
+        <button className="home-btn" onClick={() => navigate("/")}>
           🏠
         </button>
-      </header>
+      </div>
 
-      <div className="export-content">
-        {/* 책 정보 섹션 */}
-        <div className="section-card">
-          <h2 className="section-title">📚 책 정보</h2>
+      {/* ===== 상단 단계 안내 ===== */}
+      <div className="step-indicator">
+        <div className={`step-item ${step === 1 ? "active" : ""}`}>
+          1. 제목/저자
+        </div>
+        <div className={`step-item ${step === 2 ? "active" : ""}`}>
+          2. 표지
+        </div>
+        <div className={`step-item ${step === 3 ? "active" : ""}`}>
+          3. 옵션
+        </div>
+        <div className={`step-item ${step === 4 ? "active" : ""}`}>
+          4. PDF완성
+        </div>
+      </div>
 
-          {/* 제목 */}
-          <div className="input-group">
-            <label className="input-label">책 제목</label>
+      {/* ===== STEP 1: 제목 & 저자 ===== */}
+      {step === 1 && (
+        <>
+          <StepCard>
+            <label className="field-label">📙 책 제목</label>
             <input
-              className="input-field"
+              className="field-input"
               value={title}
+              placeholder="예: 작은 별의 여행"
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="동화책 제목을 입력하세요"
             />
-          </div>
 
-          {/* 저자명 */}
-          <div className="input-group">
-            <label className="input-label">저자명</label>
+            <label className="field-label">✍️ 저자명</label>
             <input
-              className="input-field"
+              className="field-input"
               value={author}
+              placeholder="예: 손선희"
               onChange={(e) => setAuthor(e.target.value)}
-              placeholder="저자 이름을 입력하세요"
             />
-          </div>
-        </div>
+          </StepCard>
 
-        {/* 표지 이미지 섹션 */}
-        <div className="section-card">
-          <h2 className="section-title">🎨 표지 이미지</h2>
+          <BigButton label="다음 단계로 이동" onClick={() => setStep(2)} color="blue" />
+        </>
+      )}
 
-          {coverImage && (
-            <div className="cover-preview">
-              <img src={coverImage} alt="표지" />
-            </div>
-          )}
+      {/* ===== STEP 2: 표지 설정 ===== */}
+      {step === 2 && (
+        <>
+          <StepCard>
+            <p className="step-title">🎨 표지 이미지 만들기</p>
 
-          <button
-            onClick={generateCover}
-            className="btn-purple"
-            disabled={isGeneratingCover}
-          >
-            {isGeneratingCover ? "⏳ 표지 생성 중..." : "🎨 표지 자동 생성"}
+            {coverImage && (
+              <img src={coverImage} className="cover-preview-img" alt="표지" />
+            )}
+
+            <BigButton
+              label={isGeneratingCover ? "⏳ 표지 생성 중..." : "표지 자동 생성"}
+              color="purple"
+              onClick={generateCover}
+              disabled={isGeneratingCover}
+            />
+          </StepCard>
+
+          <BigButton label="다음 단계로 이동" onClick={() => setStep(3)} color="blue" />
+
+          <button className="back-link" onClick={() => setStep(1)}>
+            ← 이전으로 돌아가기
           </button>
-        </div>
+        </>
+      )}
 
-        {/* PDF 설정 섹션 */}
-        <div className="section-card">
-          <h2 className="section-title">⚙️ PDF 설정</h2>
-
-          {/* PDF 방향 */}
-          <div className="input-group">
-            <label className="input-label">📐 PDF 방향</label>
+      {/* ===== STEP 3: PDF 옵션 ===== */}
+      {step === 3 && (
+        <>
+          <StepCard>
+            <label className="field-label">📄 PDF 방향</label>
             <select
-              className="select-field"
+              className="field-select"
               value={layout}
               onChange={(e) => setLayout(e.target.value)}
             >
-              <option value="vertical">세로 (Portrait)</option>
-              <option value="horizontal">가로 (Landscape)</option>
+              <option value="vertical">세로 (A4 기본)</option>
+              <option value="horizontal">가로</option>
             </select>
-          </div>
 
-          {/* 페이지 배치 방식 */}
-          <div className="input-group">
-            <label className="input-label">🖼️ 페이지 배치 방식</label>
+            <label className="field-label">🖼️ 페이지 배치 방식</label>
             <select
-              className="select-field"
+              className="field-select"
               value={textImageLayout}
               onChange={(e) => setTextImageLayout(e.target.value)}
             >
               <option value="image-top">이미지 위 + 텍스트 아래</option>
               <option value="image-right">텍스트 왼쪽 + 이미지 오른쪽</option>
             </select>
-          </div>
 
-          {/* 배경 스타일 */}
-          <div className="input-group">
-            <label className="input-label">🎨 배경 스타일</label>
+            <label className="field-label">🎨 배경 스타일</label>
             <select
-              className="select-field"
+              className="field-select"
               value={String(usePastelBackground)}
               onChange={(e) => setUsePastelBackground(e.target.value === "true")}
             >
               <option value="true">파스텔톤 배경</option>
               <option value="false">기본 흰색</option>
             </select>
-          </div>
-        </div>
+          </StepCard>
 
-        {/* 페이지 통계 */}
-        <div className="stats-card">
-          <div className="stat-item">
-            <span className="stat-icon">📄</span>
-            <div>
-              <div className="stat-label">전체 페이지</div>
-              <div className="stat-value">{totalPages}개</div>
-            </div>
-          </div>
-          <div className="stat-item">
-            <span className="stat-icon">🎨</span>
-            <div>
-              <div className="stat-label">이미지</div>
-              <div className="stat-value">{completedImages}/{totalPages}</div>
-            </div>
-          </div>
-        </div>
+          <BigButton label="다음 단계로 이동" onClick={() => setStep(4)} color="blue" />
+          <button className="back-link" onClick={() => setStep(2)}>
+            ← 이전으로 돌아가기
+          </button>
+        </>
+      )}
 
-        {/* 경고 메시지 */}
-        {completedImages < totalPages && (
-          <div className="warning-box">
-            <p className="warning-text">
-              ⚠️ 일부 페이지에 이미지가 없습니다. ({completedImages}/{totalPages})
-            </p>
-            <button className="btn-warning" onClick={() => navigate(-1)}>
-              편집하러 가기
+      {/* ===== STEP 4: PDF 생성 ===== */}
+      {step === 4 && (
+        <>
+          <StepCard>
+            <p className="step-title">📕 모든 설정이 완료되었습니다!</p>
+            
+            <div className="summary-box">
+              <div className="summary-item">
+                <span className="summary-label">📙 제목:</span>
+                <span className="summary-value">{title}</span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">✍️ 저자:</span>
+                <span className="summary-value">{author}</span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">📄 방향:</span>
+                <span className="summary-value">{layout === "vertical" ? "세로" : "가로"}</span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">🖼️ 배치:</span>
+                <span className="summary-value">
+                  {textImageLayout === "image-top" ? "이미지 위" : "이미지 우측"}
+                </span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">🎨 배경:</span>
+                <span className="summary-value">
+                  {usePastelBackground ? "파스텔톤" : "흰색"}
+                </span>
+              </div>
+            </div>
+
+            <BigButton
+              label={isExporting ? "⏳ PDF 생성 중..." : "📘 PDF 만들기"}
+              color="red"
+              onClick={handleExportPDF}
+              disabled={isExporting}
+            />
+
+            <button className="back-link" onClick={() => setStep(3)}>
+              ← 옵션 다시 선택하기
             </button>
-          </div>
-        )}
-
-        {/* PDF 생성 버튼 */}
-        <button
-          onClick={handleExportPDF}
-          className="btn-export"
-          disabled={isExporting}
-        >
-          {isExporting ? "⏳ PDF 생성 중..." : "📕 동화책 PDF 만들기"}
-        </button>
-      </div>
+          </StepCard>
+        </>
+      )}
     </div>
   );
 }

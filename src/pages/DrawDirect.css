@@ -2,52 +2,55 @@
 
 .guide-text {
   font-size: 18px;
-  line-height: 1.6;
-  color: var(--text);
-  text-align: center;
-  margin-bottom: 24px;
-  padding: 16px;
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  line-height: 1.5;
+  margin-bottom: 12px;
 }
 
 .input-box {
   width: 100%;
-  padding: 16px;
-  font-size: 18px;
-  line-height: 1.6;
+  padding: 14px;
   border-radius: var(--radius);
-  border: 2px solid var(--secondary);
-  background: var(--card-bg);
-  color: var(--text);
+  border: 1px solid #ddd;
+  font-size: 18px;
   font-family: "Pretendard", sans-serif;
   resize: vertical;
-  min-height: 120px;
   transition: border-color 0.2s ease;
 }
 
 .input-box:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
 }
 
-.input-box::placeholder {
-  color: var(--text-light);
+.btn-secondary {
+  width: 100%;
+  background: #e7f0ff;
+  padding: 16px;
+  border-radius: var(--radius);
+  font-size: 18px;
+  border: none;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #d0e3ff;
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
 }
 
 .button-group {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .button-group .btn-secondary {
-  margin: 0;
-  padding: 14px 12px;
-  font-size: 16px;
+  margin-bottom: 0;
 }
 
 /* 고급 옵션 */
@@ -66,12 +69,12 @@
   color: var(--text);
   cursor: pointer;
   user-select: none;
-  background: var(--secondary);
+  background: #f5f5f5;
   transition: background 0.2s ease;
 }
 
 .advanced summary:hover {
-  background: #E8E8E8;
+  background: #e8e8e8;
 }
 
 .advanced-box {
@@ -87,41 +90,24 @@
 
 /* 메인 CTA 버튼 */
 .main-cta {
-  margin-top: 24px;
-  font-size: 22px;
+  margin-top: 20px;
   padding: 20px;
-  background: linear-gradient(135deg, var(--primary) 0%, #5BA3FF 100%);
-  box-shadow: 0 4px 16px rgba(74, 144, 226, 0.3);
-  transform: translateY(0);
+  font-size: 20px;
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
 }
 
 .main-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+  background: var(--primary-light);
 }
 
 .main-cta:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 12px rgba(74, 144, 226, 0.3);
-}
-
-/* 반응형 */
-@media (max-width: 480px) {
-  .button-group {
-    grid-template-columns: 1fr;
-  }
-
-  .button-group .btn-secondary {
-    font-size: 18px;
-    padding: 16px;
-  }
-
-  .guide-text {
-    font-size: 16px;
-  }
-
-  .input-box {
-    font-size: 16px;
-  }
+  transform: scale(0.98);
 }

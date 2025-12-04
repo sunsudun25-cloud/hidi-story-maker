@@ -1,4 +1,5 @@
 import { useStory } from "../context/StoryContext";
+import { generateStoryPDF } from "../services/pdfService";
 
 export default function Gallery() {
   const { stories, deleteStory } = useStory();
@@ -55,22 +56,45 @@ export default function Gallery() {
               </h3>
             </div>
 
-            {/* 삭제 버튼 */}
-            <button
-              onClick={() => {
-                if (window.confirm("정말 삭제하시겠어요?\n삭제 후 복구는 불가능합니다.")) {
-                  deleteStory(story.id);
-                  alert("삭제되었습니다.");
-                }
-              }}
-              className="
-                bg-red-500 text-white 
-                py-3 text-[16px] font-bold 
-                w-full rounded-b-xl
-              "
-            >
-              삭제하기
-            </button>
+            {/* 버튼 그룹 */}
+            <div className="flex flex-col gap-0">
+              {/* PDF 저장 버튼 */}
+              <button
+                onClick={async () => {
+                  try {
+                    await generateStoryPDF(story);
+                    alert("✅ PDF가 다운로드되었습니다!");
+                  } catch (error) {
+                    console.error("PDF 생성 오류:", error);
+                    alert("PDF 생성 중 오류가 발생했습니다.");
+                  }
+                }}
+                className="
+                  bg-emerald-500 text-white 
+                  py-3 text-[16px] font-bold 
+                  w-full hover:bg-emerald-600
+                "
+              >
+                PDF로 저장하기
+              </button>
+
+              {/* 삭제 버튼 */}
+              <button
+                onClick={() => {
+                  if (window.confirm("정말 삭제하시겠어요?\n삭제 후 복구는 불가능합니다.")) {
+                    deleteStory(story.id);
+                    alert("삭제되었습니다.");
+                  }
+                }}
+                className="
+                  bg-red-500 text-white 
+                  py-3 text-[16px] font-bold 
+                  w-full rounded-b-xl hover:bg-red-600
+                "
+              >
+                삭제하기
+              </button>
+            </div>
           </div>
         ))}
       </div>

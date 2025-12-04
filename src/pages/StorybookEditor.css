@@ -1,130 +1,90 @@
-/* StorybookEditor.css */
-
 .editor-container {
+  padding: 16px;
   max-width: 480px;
   margin: 0 auto;
-  background: #fef9ef;
-  min-height: 100vh;
-  padding-bottom: 20px;
 }
 
-/* 🔵 상단 헤더 */
 .editor-header {
-  background: #b7d4ff;
-  padding: 12px 16px;
-  border-radius: 0 0 16px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative;
-  margin-bottom: 20px;
+  background: #ffffffbb;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(8px);
 }
 
 .header-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: white;
+  background: #f0f0f0;
   border: none;
-  font-size: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  font-size: 20px;
   cursor: pointer;
-  flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-}
-
-.header-btn:hover {
-  background: #f5f5f5;
-  transform: translateY(-1px);
 }
 
 .editor-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
   font-size: 20px;
   font-weight: 700;
-  color: #1a1a1a;
 }
 
-/* 제목 */
 .book-title {
   font-size: 22px;
-  font-weight: 700;
-  color: #333;
+  margin: 12px 0;
   text-align: center;
-  margin: 0 16px 18px 16px;
+  font-weight: 700;
 }
 
-/* 표지 박스 */
 .cover-box {
-  background: white;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 0 16px 20px 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  margin: 10px 0;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .cover-box img {
   width: 100%;
-  height: auto;
-  border-radius: 8px;
-  display: block;
+  border-radius: 10px;
 }
 
-/* 페이지 내용 */
 .page-content {
-  margin: 0 16px 16px 16px;
+  margin-top: 16px;
 }
 
 .page-number {
-  font-size: 18px;
+  font-size: 16px;
+  margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 12px;
 }
 
 .page-textarea {
   width: 100%;
-  min-height: 120px;
-  padding: 14px;
+  height: 160px;
+  padding: 12px;
   border-radius: 10px;
-  border: 1.5px solid #ccc;
+  border: 1px solid #ccc;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.5;
   resize: vertical;
-  font-family: 'Pretendard', -apple-system, sans-serif;
-  transition: border-color 0.2s ease;
-  box-sizing: border-box;
 }
 
-.page-textarea:focus {
-  outline: none;
-  border-color: #50b36b;
-}
-
-/* 페이지 이동 버튼 */
 .page-controls {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 0 16px;
-  margin-bottom: 20px;
+  margin-top: 14px;
 }
 
 .control-btn {
   flex: 1;
-  padding: 14px;
-  background: #25c56e;
-  color: white;
-  border: none;
+  margin: 0 4px;
+  padding: 12px;
   border-radius: 10px;
+  border: none;
+  background: #e8e8e8;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -132,62 +92,76 @@
 }
 
 .control-btn:hover:not(:disabled) {
-  background: #1bb173;
-  transform: translateY(-2px);
+  background: #d0d0d0;
+  transform: translateY(-1px);
 }
 
 .control-btn:disabled {
-  background: #ccc;
+  background: #f5f5f5;
+  color: #ccc;
   cursor: not-allowed;
-  transform: none;
 }
 
-/* 하단 액션 버튼 */
 .bottom-actions {
+  margin-top: 20px;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 0 16px;
-  margin-top: 24px;
+  gap: 10px;
 }
 
-.secondary-btn,
 .primary-btn {
-  width: 100%;
-  padding: 16px;
+  flex: 1;
+  padding: 14px;
   border-radius: 12px;
-  font-size: 17px;
-  font-weight: 600;
+  border: none;
+  background: #4b8bff;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: none;
-}
-
-.secondary-btn {
-  background: white;
-  color: #25c56e;
-  border: 2px solid #25c56e;
-}
-
-.secondary-btn:hover {
-  background: #25c56e;
-  color: white;
-  transform: translateY(-2px);
-}
-
-.primary-btn {
-  background: #25c56e;
-  color: white;
 }
 
 .primary-btn:hover {
-  background: #1bb173;
+  background: #3a7ae8;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37, 197, 110, 0.3);
+  box-shadow: 0 4px 12px rgba(75, 139, 255, 0.3);
+}
+
+.secondary-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: #ffe187;
+  color: #5e4b00;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+  background: #ffd35a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 225, 135, 0.4);
 }
 
 /* 반응형 */
 @media (max-width: 480px) {
+  .editor-container {
+    padding: 12px;
+  }
+
+  .editor-header {
+    padding: 10px;
+  }
+
+  .header-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
   .editor-title {
     font-size: 18px;
   }
@@ -197,22 +171,22 @@
   }
 
   .page-number {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .page-textarea {
+    height: 140px;
     font-size: 15px;
-    min-height: 100px;
   }
 
   .control-btn {
-    padding: 12px;
+    padding: 10px;
     font-size: 15px;
   }
 
-  .secondary-btn,
-  .primary-btn {
-    padding: 14px;
-    font-size: 16px;
+  .primary-btn,
+  .secondary-btn {
+    padding: 12px;
+    font-size: 15px;
   }
 }

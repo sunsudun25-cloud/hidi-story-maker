@@ -1,13 +1,13 @@
 /* 글로벌 색상 팔레트 — 시니어 친화형 (녹색 테마) */
 :root {
-  --primary: #21c884;         /* 밝은 녹색 */
-  --primary-light: #8de4bc;   /* 연한 녹색 */
-  --primary-hover: #1bb173;   /* 녹색 호버 */
-  --secondary: #F8F8F8;       /* 밝은 회색 */
+  --primary: #21c884;      
+  --primary-light: #8de4bc;
+  --primary-hover: #1bb173;
+  --secondary: #F8F8F8;
   --text: #222;
   --text-light: #666;
-  --bg: #fff9f0;              /* 따뜻한 베이지 배경색 */
-  --bg-color: #faf7ef;        /* Layout 배경색 */
+  --bg: #fff9f0;
+  --bg-color: #faf7ef;
   --card-bg: #FFFFFF;
   --radius: 16px;
   --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
@@ -15,62 +15,14 @@
 }
 
 /* 전체 기본 설정 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
-  margin: 0;
-  padding: 0;
   background: var(--bg);
   font-family: "Pretendard", sans-serif;
-  font-size: 18px; /* 시니어 기본 폰트 */
   color: var(--text);
   line-height: 1.6;
 }
 
-/* 페이지 공통 레이아웃 */
-main {
-  padding: 20px;
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-/* 시니어 스타일 버튼 공통화 */
-.btn {
-  width: 100%;
-  padding: 18px;
-  font-size: 20px;
-  border-radius: var(--radius);
-  border: none;
-  background: var(--primary);
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: background 0.2s ease;
-}
-
-.btn:hover {
-  background: var(--primary-hover);
-}
-
-.btn:active {
-  transform: scale(0.98);
-}
-
-/* 카드형 박스 */
-.card {
-  background: var(--card-bg);
-  padding: 20px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
-  margin-bottom: 20px;
-}
-
-/* 제목 공통 스타일 */
+/* 페이지 제목 숨김 */
 .page-title {
   display: none;
 }
@@ -83,45 +35,15 @@ main {
   margin-bottom: 24px;
 }
 
-/* 부가 버튼 (보조 버튼) */
-.btn-secondary {
-  width: 100%;
-  padding: 16px;
-  font-size: 18px;
-  border-radius: var(--radius);
-  border: 2px solid var(--primary);
-  background: white;
-  color: var(--primary);
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
-}
-
-.btn-secondary:hover {
-  background: var(--secondary);
-}
-
-/* 입력 필드 */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-textarea {
-  width: 100%;
-  padding: 16px;
-  font-size: 18px;
-  border-radius: var(--radius);
-  border: 2px solid var(--secondary);
-  background: white;
+/* 팁 박스 */
+.tip-box {
+  background: #FFFBEA;
+  border-left: 4px solid #FFD56B;
+  padding: 14px;
+  margin: 16px 0;
+  font-size: 16px;
   color: var(--text);
-  font-family: "Pretendard", sans-serif;
-  transition: border-color 0.2s ease;
-}
-
-input:focus,
-textarea:focus {
-  outline: none;
-  border-color: var(--primary);
+  border-radius: 8px;
 }
 
 /* 칩 스타일 */
@@ -146,17 +68,6 @@ textarea:focus {
 .chip.active {
   background: var(--primary);
   color: white;
-}
-
-/* 팁 박스 */
-.tip-box {
-  background: #FFFBEA;
-  border-left: 4px solid #FFD56B;
-  padding: 14px;
-  margin: 16px 0;
-  font-size: 16px;
-  color: var(--text);
-  border-radius: 8px;
 }
 
 /* 옵션 카드 */
@@ -188,4 +99,10 @@ textarea:focus {
   width: 100%;
   min-height: 100vh;
   padding: 20px;
+}
+
+main, header, div, section {
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
 }

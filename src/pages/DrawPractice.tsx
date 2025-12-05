@@ -128,8 +128,14 @@ export default function DrawPractice() {
       // Gemini Service로 이미지 생성
       const imageUrl = await generateImage(description, selectedStyle ?? "기본 스타일");
 
-      // 결과 페이지로 이동
-      navigate("/result", { state: { imageUrl } });
+      // 결과 페이지로 이동 (prompt와 style 정보도 함께 전달)
+      navigate("/result", { 
+        state: { 
+          imageUrl,
+          prompt: description,
+          style: selectedStyle ?? "기본"
+        } 
+      });
     } catch (error) {
       alert(friendlyErrorMessage(error));
     } finally {

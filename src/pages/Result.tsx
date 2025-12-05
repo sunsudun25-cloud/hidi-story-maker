@@ -1,11 +1,31 @@
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { saveImageAsFile, shareImage, copyImageToClipboard } from "../services/imageService";
+import { saveImageToDB } from "../services/dbService";
 import "./Result.css";
 
 export default function Result() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const imageUrl = state?.imageUrl;
+  const prompt = state?.prompt || "AI 생성 이미지";
+  const style = state?.style || "기본";
+
+  // 이미지가 생성되면 자동으로 DB에 저장
+  useEffect(() => {
+    if (imageUrl) {
+      saveImageToDB({
+        image: imageUrl,
+        prompt: prompt,
+        style: style,
+        createdAt: new Date().toISOString()
+      }).then(() => {
+        console.log("✅ 이미지가 내 작품에 저장되었습니다.");
+      }).catch((err) => {
+        console.error("이미지 저장 오류:", err);
+      });
+    }
+  }, [imageUrl, prompt, style]);
 
   const handleDownload = async () => {
     if (!imageUrl) return;

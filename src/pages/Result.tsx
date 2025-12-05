@@ -7,13 +7,13 @@ export default function Result() {
   const { state } = useLocation();
   const imageUrl = state?.imageUrl;
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!imageUrl) return;
 
     try {
       // imageService 사용하여 다운로드
       const filename = `ai-drawing-${Date.now()}.png`;
-      saveImageAsFile(imageUrl, filename);
+      await saveImageAsFile(imageUrl, filename);
       alert("💾 이미지가 저장되었습니다!");
     } catch (err) {
       console.error("다운로드 오류:", err);

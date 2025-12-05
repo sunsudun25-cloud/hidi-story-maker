@@ -108,16 +108,43 @@ async function generateImageFallback(prompt: string, style?: string): Promise<st
 }
 
 /**
- * Base64 이미지를 Blob으로 변환
- * @param base64 Base64 인코딩된 이미지 데이터
+ * 이미지 URL을 Blob으로 변환 (Base64 또는 HTTP URL 지원)
+ * @param imageUrl Base64 또는 HTTP 이미지 URL
  * @param mimeType MIME 타입 (기본값: image/png)
  * @returns Blob 객체
  */
-export function base64ToBlob(base64: string, mimeType: string = "image/png"): Blob {
+export async function imageUrlToBlob(imageUrl: string, mimeType: string = "image/png"): Promise<Blob> {
+  // HTTP/HTTPS URL인 경우
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error(`이미지를 가져올 수 없습니다: ${response.status}`);
+    }
+    return await response.blob();
+  }
+  
+  // Base64인 경우
   // data:image/png;base64, 접두사 제거
-  const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
+  const base64Data = imageUrl.replace(/^data:image\/\w+;base64,/, "");
   
   // Base64 디코딩
+  const byteCharacters = atob(base64Data);
+  const byteNumbers = new Array(byteCharacters.length);
+  
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  
+  const byteArray = new Uint8Array(byteNumbers);
+  return new Blob([byteArray], { type: mimeType });
+}
+
+/**
+ * Base64 이미지를 Blob으로 변환 (하위 호환성)
+ * @deprecated imageUrlToBlob 사용 권장
+ */
+export function base64ToBlob(base64: string, mimeType: string = "image/png"): Blob {
+  const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
   const byteCharacters = atob(base64Data);
   const byteNumbers = new Array(byteCharacters.length);
   
@@ -145,27 +172,32 @@ export function downloadImage(imageUrl: string, filename: string = "image.png"):
 
 /**
  * 이미지를 파일로 저장 (Blob 사용)
- * @param imageUrl Base64 이미지 URL
+ * @param imageUrl Base64 또는 HTTP 이미지 URL
  * @param filename 파일명
  */
-export function saveImageAsFile(imageUrl: string, filename: string = "image.png"): void {
-  const blob = base64ToBlob(imageUrl);
-  const url = URL.createObjectURL(blob);
-  
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  
-  // 메모리 해제
-  URL.revokeObjectURL(url);
+export async function saveImageAsFile(imageUrl: string, filename: string = "image.png"): Promise<void> {
+  try {
+    const blob = await imageUrlToBlob(imageUrl);
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // 메모리 해제
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+  } catch (error) {
+    console.error("이미지 저장 오류:", error);
+    throw new Error("이미지를 저장할 수 없습니다.");
+  }
 }
 
 /**
  * Web Share API를 사용한 이미지 공유
- * @param imageUrl Base64 이미지 URL
+ * @param imageUrl Base64 또는 HTTP 이미지 URL
  * @param title 공유 제목
  * @param text 공유 텍스트
  * @returns 공유 성공 여부
@@ -182,7 +214,7 @@ export async function shareImage(
   }
 
   try {
-    const blob = base64ToBlob(imageUrl);
+    const blob = await imageUrlToBlob(imageUrl);
     const file = new File([blob], "image.png", { type: "image/png" });
 
     await navigator.share({
@@ -391,12 +423,12 @@ export async function addWatermark(
 
 /**
  * 이미지를 클립보드에 복사
- * @param imageUrl Base64 이미지 URL
+ * @param imageUrl Base64 또는 HTTP 이미지 URL
  * @returns 복사 성공 여부
  */
 export async function copyImageToClipboard(imageUrl: string): Promise<boolean> {
   try {
-    const blob = base64ToBlob(imageUrl);
+    const blob = await imageUrlToBlob(imageUrl);
     const item = new ClipboardItem({ "image/png": blob });
     await navigator.clipboard.write([item]);
     return true;
@@ -439,6 +471,7 @@ export async function downloadImagesAsZip(
 
 export default {
   generateStoryImage,
+  imageUrlToBlob,
   base64ToBlob,
   downloadImage,
   saveImageAsFile,

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateImage } from "../services/geminiService";
+import LoadingSpinner from "../components/LoadingSpinner";
 import "./DirectInput.css";
 
 export default function DirectInput() {
@@ -8,6 +9,7 @@ export default function DirectInput() {
 
   const [description, setDescription] = useState("");
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const styles = [
     { id: "watercolor", label: "수채화", desc: "부드럽고 번지는 느낌" },
@@ -25,6 +27,7 @@ export default function DirectInput() {
 
     console.log("🚀 이미지 생성:", { description, style: selectedStyle });
 
+    setIsGenerating(true);
     try {
       // Gemini Service로 이미지 생성
       const imageUrl = await generateImage(description, selectedStyle ?? "기본 스타일");
@@ -34,6 +37,8 @@ export default function DirectInput() {
     } catch (err) {
       console.error(err);
       alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -46,6 +51,9 @@ export default function DirectInput() {
         <button className="header-btn" onClick={() => navigate("/home")}>🏠</button>
       </header>
 
+      {isGenerating ? (
+        <LoadingSpinner text="AI가 멋진 그림을 그리고 있어요... 🎨" />
+      ) : (
       <div className="direct-page">
         <div className="section-title">원하는 그림을 자세히 설명해주세요 😊</div>
 
@@ -82,6 +90,7 @@ export default function DirectInput() {
           🚀 그림 만들기
         </button>
       </div>
+      )}
     </div>
   );
 }

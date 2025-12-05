@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateImage } from "../services/geminiService";
+import LoadingSpinner from "../components/LoadingSpinner";
 import "./DrawPractice.css";
 
 type ExamplePrompt = {
@@ -61,6 +62,7 @@ export default function DrawPractice() {
   const [description, setDescription] = useState("");
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   const [isListening, setIsListening] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // 예시 버튼 클릭 → 텍스트 자동 완성
   const handleExampleClick = (example: ExamplePrompt) => {
@@ -120,6 +122,7 @@ export default function DrawPractice() {
       return;
     }
 
+    setIsGenerating(true);
     try {
       // Gemini Service로 이미지 생성
       const imageUrl = await generateImage(description, selectedStyle ?? "기본 스타일");
@@ -129,6 +132,8 @@ export default function DrawPractice() {
     } catch (error) {
       console.error(error);
       alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -151,6 +156,9 @@ export default function DrawPractice() {
         <button className="header-btn" onClick={() => navigate("/home")}>🏠</button>
       </header>
 
+      {isGenerating ? (
+        <LoadingSpinner text="AI가 그림을 그리고 있어요... 잠시만 기다려주세요 🎨" />
+      ) : (
       <div className="practice-page">
         {/* 빠른 예시 */}
         <section className="practice-box">
@@ -228,6 +236,7 @@ export default function DrawPractice() {
           </button>
         </div>
       </div>
+      )}
     </div>
   );
 }

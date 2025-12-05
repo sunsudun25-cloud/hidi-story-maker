@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateImage } from "../../services/geminiService";
 import { useStorybook } from "../../context/StorybookContext";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import "./Storybook.css";
 
 export default function Storybook() {
@@ -11,6 +12,7 @@ export default function Storybook() {
   const [storyTitle, setStoryTitle] = useState("");
   const [storyPrompt, setStoryPrompt] = useState("");
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const styles = [
     { id: "fairytale", label: "동화 스타일", desc: "아이 책 느낌" },
@@ -31,6 +33,7 @@ export default function Storybook() {
 
     console.log("📘 동화책 생성:", { title: storyTitle, prompt: storyPrompt, style: selectedStyle });
 
+    setIsGenerating(true);
     try {
       // Gemini Service로 표지 이미지 생성
       const coverImageUrl = await generateImage(storyPrompt, selectedStyle ?? "동화 스타일");
@@ -54,6 +57,8 @@ export default function Storybook() {
     } catch (err) {
       console.error(err);
       alert("동화책 표지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -66,6 +71,9 @@ export default function Storybook() {
         <button className="header-btn" onClick={() => navigate("/home")}>🏠</button>
       </header>
 
+      {isGenerating ? (
+        <LoadingSpinner text="동화책 표지를 그리고 있어요... 📚✨" />
+      ) : (
       <div className="storybook-page">
         {/* 제목 입력 */}
         <div className="section-title">📘 동화책 제목</div>
@@ -112,6 +120,7 @@ export default function Storybook() {
           🚀 동화책 만들기 시작
         </button>
       </div>
+      )}
     </div>
   );
 }

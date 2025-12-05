@@ -36,7 +36,12 @@ export default function Result() {
         // Web Share API 미지원 시 클립보드 복사
         const copied = await copyImageToClipboard(imageUrl);
         if (copied) {
-          alert("📋 이미지가 클립보드에 복사되었습니다!");
+          // HTTP URL인 경우
+          if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+            alert("📋 이미지 링크가 클립보드에 복사되었습니다!\n\n링크를 공유하거나 브라우저에 붙여넣어 다운로드하세요.");
+          } else {
+            alert("📋 이미지가 클립보드에 복사되었습니다!");
+          }
         } else {
           alert("공유 기능을 사용할 수 없습니다.");
         }

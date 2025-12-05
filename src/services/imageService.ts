@@ -116,11 +116,24 @@ async function generateImageFallback(prompt: string, style?: string): Promise<st
 export async function imageUrlToBlob(imageUrl: string, mimeType: string = "image/png"): Promise<Blob> {
   // HTTP/HTTPS URL인 경우
   if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-    const response = await fetch(imageUrl);
-    if (!response.ok) {
-      throw new Error(`이미지를 가져올 수 없습니다: ${response.status}`);
+    try {
+      // CORS 문제 해결: no-cors 모드로 시도
+      const response = await fetch(imageUrl, {
+        mode: 'cors',
+        cache: 'no-cache',
+      });
+      
+      if (!response.ok) {
+        throw new Error(`이미지를 가져올 수 없습니다: ${response.status}`);
+      }
+      
+      return await response.blob();
+    } catch (error) {
+      console.error("CORS fetch 실패, 이미지를 직접 로드합니다:", error);
+      
+      // CORS 실패 시: Canvas를 사용한 우회 방법
+      return await urlToBlobViaCanvas(imageUrl, mimeType);
     }
-    return await response.blob();
   }
   
   // Base64인 경우
@@ -137,6 +150,51 @@ export async function imageUrlToBlob(imageUrl: string, mimeType: string = "image
   
   const byteArray = new Uint8Array(byteNumbers);
   return new Blob([byteArray], { type: mimeType });
+}
+
+/**
+ * Canvas를 사용하여 URL을 Blob으로 변환 (CORS 우회)
+ * @param imageUrl 이미지 URL
+ * @param mimeType MIME 타입
+ * @returns Blob 객체
+ */
+async function urlToBlobViaCanvas(imageUrl: string, mimeType: string): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous'; // CORS 활성화
+    
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Canvas context를 가져올 수 없습니다.'));
+          return;
+        }
+        
+        ctx.drawImage(img, 0, 0);
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Blob 생성 실패'));
+          }
+        }, mimeType);
+      } catch (err) {
+        reject(err);
+      }
+    };
+    
+    img.onerror = () => {
+      reject(new Error('이미지 로드 실패. CORS 문제일 수 있습니다.'));
+    };
+    
+    img.src = imageUrl;
+  });
 }
 
 /**
@@ -177,6 +235,20 @@ export function downloadImage(imageUrl: string, filename: string = "image.png"):
  */
 export async function saveImageAsFile(imageUrl: string, filename: string = "image.png"): Promise<void> {
   try {
+    // HTTP URL인 경우: 직접 다운로드 링크 사용 (CORS 문제 회피)
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      const link = document.createElement("a");
+      link.href = imageUrl;
+      link.download = filename;
+      link.target = "_blank"; // 새 탭에서 열기
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      return;
+    }
+    
+    // Base64인 경우: Blob으로 변환
     const blob = await imageUrlToBlob(imageUrl);
     const url = URL.createObjectURL(blob);
     
@@ -214,6 +286,17 @@ export async function shareImage(
   }
 
   try {
+    // HTTP URL인 경우: URL만 공유 (파일 없이)
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      await navigator.share({
+        title,
+        text: `${text}\n${imageUrl}`,
+        url: imageUrl
+      });
+      return true;
+    }
+    
+    // Base64인 경우: 파일로 변환하여 공유
     const blob = await imageUrlToBlob(imageUrl);
     const file = new File([blob], "image.png", { type: "image/png" });
 
@@ -428,13 +511,28 @@ export async function addWatermark(
  */
 export async function copyImageToClipboard(imageUrl: string): Promise<boolean> {
   try {
+    // HTTP URL인 경우: URL을 텍스트로 복사
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      await navigator.clipboard.writeText(imageUrl);
+      return true;
+    }
+    
+    // Base64인 경우: 이미지를 클립보드에 복사
     const blob = await imageUrlToBlob(imageUrl);
     const item = new ClipboardItem({ "image/png": blob });
     await navigator.clipboard.write([item]);
     return true;
   } catch (error) {
     console.error("클립보드 복사 오류:", error);
-    return false;
+    
+    // 폴백: URL을 텍스트로 복사 시도
+    try {
+      await navigator.clipboard.writeText(imageUrl);
+      return true;
+    } catch (fallbackError) {
+      console.error("텍스트 복사도 실패:", fallbackError);
+      return false;
+    }
   }
 }
 

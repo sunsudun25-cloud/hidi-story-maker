@@ -22,10 +22,13 @@ jobs:
       
       - name: Install dependencies
         run: npm ci
-      
+        
       - name: Build project
         run: npm run build
         env:
+          VITE_GEMINI_API_KEY: AIzaSyDLyiqqcZgzCi09YmEtuPmMWXKS0EQlWos
+          VITE_GEMINI_KEY: AIzaSyDLyiqqcZgzCi09YmEtuPmMWXKS0EQlWos
+          VITE_GOOGLE_API_KEY: AIzaSyDLyiqqcZgzCi09YmEtuPmMWXKS0EQlWos
           VITE_FIREBASE_API_KEY: AIzaSyBBsjEVt-WktzSYC1zqZPslIjAie9a-F0
           VITE_FIREBASE_AUTH_DOMAIN: story-make-fbbd7.firebaseapp.com
           VITE_FIREBASE_PROJECT_ID: story-make-fbbd7
@@ -33,6 +36,8 @@ jobs:
           VITE_FIREBASE_MESSAGING_SENDER_ID: 63291004810
           VITE_FIREBASE_APP_ID: 1:63291004810:web:7a8301e17c4e528768da73
           VITE_FIREBASE_MEASUREMENT_ID: G-SK12ZCRM26
+  
+     
       
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0

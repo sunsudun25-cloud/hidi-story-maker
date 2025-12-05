@@ -1,5 +1,7 @@
 # HI-DI Edu AI Story Maker
 
+> 🚀 **배포 상태**: Firebase Hosting 자동 배포 설정 완료
+
 ## Project Overview
 - **Name**: webapp (HI-DI Edu AI Story Maker)
 - **Goal**: 노인 친화적 AI 스토리 메이커 웹 애플리케이션

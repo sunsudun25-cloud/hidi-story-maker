@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateImage } from "../services/geminiService";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { friendlyErrorMessage } from "../utils/errorHandler";
 import "./DirectInput.css";
 
 export default function DirectInput() {
@@ -35,8 +36,7 @@ export default function DirectInput() {
       // 결과 페이지로 이동
       navigate("/result", { state: { imageUrl } });
     } catch (err) {
-      console.error(err);
-      alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+      alert(friendlyErrorMessage(err));
     } finally {
       setIsGenerating(false);
     }

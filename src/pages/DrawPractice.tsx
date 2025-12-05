@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateImage } from "../services/geminiService";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { friendlyErrorMessage } from "../utils/errorHandler";
 import "./DrawPractice.css";
 
 type ExamplePrompt = {
@@ -130,8 +131,7 @@ export default function DrawPractice() {
       // 결과 페이지로 이동
       navigate("/result", { state: { imageUrl } });
     } catch (error) {
-      console.error(error);
-      alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+      alert(friendlyErrorMessage(error));
     } finally {
       setIsGenerating(false);
     }

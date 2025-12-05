@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { generateImage } from "../../services/geminiService";
 import { useStorybook } from "../../context/StorybookContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { friendlyErrorMessage } from "../../utils/errorHandler";
 import "./Storybook.css";
 
 export default function Storybook() {
@@ -55,8 +56,7 @@ export default function Storybook() {
         },
       });
     } catch (err) {
-      console.error(err);
-      alert("동화책 표지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+      alert(friendlyErrorMessage(err));
     } finally {
       setIsGenerating(false);
     }

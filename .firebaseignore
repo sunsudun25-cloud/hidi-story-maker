@@ -1,0 +1,36 @@
+# Firebase ignore file
+
+# Build output
+node_modules/
+.git/
+.gitignore
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test files
+**/__tests__/
+**/*.test.js
+**/*.test.ts
+**/*.spec.js
+**/*.spec.ts
+
+# Documentation (optional - uncomment if you don't want to deploy docs)
+# README.md
+# DEPLOYMENT.md
+# FIREBASE_LOGIN.md
+# DEPLOY_NOW.md

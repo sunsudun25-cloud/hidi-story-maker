@@ -10,51 +10,39 @@ if (!API_KEY) {
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 /**
- * Gemini 1.5 Flash - 이미지 생성
+ * Gemini Pro Vision - 이미지 설명 생성 (임시 대체 기능)
+ * 
+ * ⚠️ 중요: Gemini API는 이미지 생성을 지원하지 않습니다!
+ * 
+ * 이미지 생성 API 옵션:
+ * 1. Google Cloud Imagen API (유료)
+ * 2. OpenAI DALL-E (유료)
+ * 3. Stability AI (유료)
+ * 4. Replicate.com (다양한 모델, 유료)
+ * 
+ * 현재는 플레이스홀더 이미지를 반환합니다.
+ * 
  * @param prompt 이미지 생성 프롬프트
  * @param style 스타일 (기본, 동화풍, 수채화, 애니메이션, 연필스케치 등)
- * @returns Base64 인코딩된 이미지 URL (data:image/png;base64,...)
+ * @returns 플레이스홀더 이미지 URL
  */
 export async function generateImage(prompt: string, style?: string): Promise<string> {
-  const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || API_KEY;
-
-  if (!GOOGLE_API_KEY) {
-    throw new Error("⚠️ VITE_GOOGLE_API_KEY가 설정되지 않았습니다!");
-  }
-
-  const fullPrompt = `
-${prompt}
-그림 스타일: ${style || "기본"}
-텍스트는 절대 포함하지 말 것.
-고품질 일러스트 스타일로 생성.
-  `;
-
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateImage?key=${GOOGLE_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        prompt: { text: fullPrompt },
-        size: "1024x1024",
-      }),
-    }
+  console.warn("⚠️ Gemini API는 이미지 생성을 지원하지 않습니다. 플레이스홀더를 반환합니다.");
+  
+  // 임시: 프롬프트를 URL 인코딩하여 플레이스홀더 이미지 생성
+  const encodedPrompt = encodeURIComponent(`${prompt}\n스타일: ${style || "기본"}`);
+  const placeholderUrl = `https://via.placeholder.com/1024x1024/6A5ACD/FFFFFF?text=${encodedPrompt.substring(0, 100)}`;
+  
+  // 사용자에게 알림
+  throw new Error(
+    "죄송합니다. 현재 이미지 생성 기능은 지원되지 않습니다.\n\n" +
+    "이미지 생성을 사용하려면 아래 서비스 중 하나를 선택하세요:\n" +
+    "1. Google Cloud Imagen API\n" +
+    "2. OpenAI DALL-E\n" +
+    "3. Stability AI\n" +
+    "4. Replicate.com\n\n" +
+    "또는 관리자에게 문의하세요."
   );
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error("Gemini API 오류:", errorText);
-    throw new Error(`이미지 생성 실패: ${response.status} ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  const base64Image = data.image?.base64;
-
-  if (!base64Image) {
-    throw new Error("이미지 데이터를 받지 못했습니다.");
-  }
-
-  return `data:image/png;base64,${base64Image}`;
 }
 
 /**

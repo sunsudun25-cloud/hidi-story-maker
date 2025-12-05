@@ -10,39 +10,70 @@ if (!API_KEY) {
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 /**
- * Gemini Pro Vision - 이미지 설명 생성 (임시 대체 기능)
- * 
- * ⚠️ 중요: Gemini API는 이미지 생성을 지원하지 않습니다!
- * 
- * 이미지 생성 API 옵션:
- * 1. Google Cloud Imagen API (유료)
- * 2. OpenAI DALL-E (유료)
- * 3. Stability AI (유료)
- * 4. Replicate.com (다양한 모델, 유료)
- * 
- * 현재는 플레이스홀더 이미지를 반환합니다.
+ * OpenAI DALL-E 3 - 이미지 생성
  * 
  * @param prompt 이미지 생성 프롬프트
  * @param style 스타일 (기본, 동화풍, 수채화, 애니메이션, 연필스케치 등)
- * @returns 플레이스홀더 이미지 URL
+ * @returns 생성된 이미지 URL
  */
 export async function generateImage(prompt: string, style?: string): Promise<string> {
-  console.warn("⚠️ Gemini API는 이미지 생성을 지원하지 않습니다. 플레이스홀더를 반환합니다.");
-  
-  // 임시: 프롬프트를 URL 인코딩하여 플레이스홀더 이미지 생성
-  const encodedPrompt = encodeURIComponent(`${prompt}\n스타일: ${style || "기본"}`);
-  const placeholderUrl = `https://via.placeholder.com/1024x1024/6A5ACD/FFFFFF?text=${encodedPrompt.substring(0, 100)}`;
-  
-  // 사용자에게 알림
-  throw new Error(
-    "죄송합니다. 현재 이미지 생성 기능은 지원되지 않습니다.\n\n" +
-    "이미지 생성을 사용하려면 아래 서비스 중 하나를 선택하세요:\n" +
-    "1. Google Cloud Imagen API\n" +
-    "2. OpenAI DALL-E\n" +
-    "3. Stability AI\n" +
-    "4. Replicate.com\n\n" +
-    "또는 관리자에게 문의하세요."
-  );
+  const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+
+  if (!OPENAI_API_KEY) {
+    throw new Error("⚠️ VITE_OPENAI_API_KEY가 설정되지 않았습니다!");
+  }
+
+  // 스타일에 따른 프롬프트 변환
+  const styleMap: Record<string, string> = {
+    "수채화": "watercolor painting style",
+    "동화풍": "fairytale illustration style",
+    "파스텔톤": "soft pastel colors style",
+    "따뜻한 느낌": "warm and cozy atmosphere",
+    "애니메이션": "anime illustration style",
+    "연필스케치": "pencil sketch style",
+    "기본": "illustration style"
+  };
+
+  const stylePrompt = styleMap[style || "기본"] || "illustration style";
+  const fullPrompt = `${prompt}. ${stylePrompt}. High quality, detailed, no text or watermarks. Professional artwork.`;
+
+  console.log("🎨 DALL-E 3 이미지 생성 중:", fullPrompt);
+
+  try {
+    const response = await fetch('https://api.openai.com/v1/images/generations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "dall-e-3",
+        prompt: fullPrompt,
+        n: 1,
+        size: "1024x1024",
+        quality: "standard"
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("OpenAI API 오류:", errorData);
+      throw new Error(`이미지 생성 실패: ${errorData.error?.message || response.statusText}`);
+    }
+
+    const data = await response.json();
+    const imageUrl = data.data[0].url;
+
+    if (!imageUrl) {
+      throw new Error("이미지 URL을 받지 못했습니다.");
+    }
+
+    console.log("✅ 이미지 생성 완료:", imageUrl);
+    return imageUrl;
+  } catch (error) {
+    console.error("이미지 생성 오류:", error);
+    throw error;
+  }
 }
 
 /**

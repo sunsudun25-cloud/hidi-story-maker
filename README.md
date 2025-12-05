@@ -11,9 +11,19 @@
   - IndexedDB 기반 로컬 스토리 저장
   - React Router 기반 SPA 구조
 
-## URLs
-- **Production**: https://3000-i5dcsscuqxml7neuit43a-de59bda9.sandbox.novita.ai/
+## 🌐 URLs
+
+### 프로덕션 (Firebase Hosting)
+- **Live Site**: https://story-make-fbbd7.web.app
+- **Alternative**: https://story-make-fbbd7.firebaseapp.com
+
+### 개발 환경
+- **Sandbox Dev**: https://3000-i5dcsscuqxml7neuit43a-de59bda9.sandbox.novita.ai/
 - **Local Dev**: http://localhost:3000
+
+### GitHub
+- **Repository**: https://github.com/sunsudun25-cloud/hidi-story-maker
+- **Actions**: https://github.com/sunsudun25-cloud/hidi-story-maker/actions
 
 ## Data Architecture
 - **Data Models**: Story (id, title, content, createdAt, updatedAt)
@@ -309,11 +319,33 @@ export async function generateNextPage(prevPages: string[], style: string) {
    - 사용자별 작품 관리
    - 클라우드 백업
 
-## Deployment
-- **Platform**: Sandbox Environment (개발)
-- **Status**: ✅ Active
-- **Production URL**: https://3000-i5dcsscuqxml7neuit43a-de59bda9.sandbox.novita.ai
-- **Last Updated**: 2025-12-04
+## 🚀 Deployment
+
+### Firebase Hosting (프로덕션)
+- **Platform**: Firebase Hosting + GitHub Actions
+- **Status**: ✅ Active & Auto-Deploy
+- **Production URL**: https://story-make-fbbd7.web.app
+- **CI/CD**: GitHub Actions workflow (자동 배포)
+- **Last Updated**: 2025-12-05
+
+### 배포 방법
+```bash
+# 1. 코드 수정 후 커밋
+git add .
+git commit -m "새 기능 추가"
+
+# 2. GitHub에 푸시 (자동 배포 트리거)
+git push origin main
+
+# 3. 배포 확인 (2-3분 소요)
+# https://github.com/sunsudun25-cloud/hidi-story-maker/actions
+# https://story-make-fbbd7.web.app
+```
+
+### 배포 가이드
+- **빠른 시작**: `QUICK_START.md` - 3단계로 배포 완성
+- **상세 가이드**: `STEP_BY_STEP_DEPLOYMENT.md` - 단계별 설명
+- **배포 상태**: `DEPLOYMENT_STATUS.md` - 현재 상태 및 체크리스트
 
 ## 프로젝트 진행 상황
 

@@ -34,7 +34,33 @@ export default function Result() {
       // imageService 사용하여 다운로드
       const filename = `ai-drawing-${Date.now()}.png`;
       await saveImageAsFile(imageUrl, filename);
-      alert("💾 이미지가 저장되었습니다!");
+      
+      // 모바일 사용자를 위한 안내 메시지
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        if (isIOS) {
+          alert(
+            "💾 이미지가 새 탭에서 열렸습니다!\n\n" +
+            "📱 iPhone/iPad 저장 방법:\n" +
+            "1. 이미지를 길게 누르기\n" +
+            "2. '사진에 추가' 선택\n" +
+            "3. 사진 앱에서 확인하세요!\n\n" +
+            "💡 Tip: '내 작품 보기'에도 자동 저장되었습니다!"
+          );
+        } else {
+          alert(
+            "💾 이미지 다운로드가 시작되었습니다!\n\n" +
+            "📱 Android 저장 위치:\n" +
+            "• 내 파일 → Download 폴더\n" +
+            "• 갤러리 앱에서도 확인 가능\n\n" +
+            "💡 Tip: '내 작품 보기'에도 자동 저장되었습니다!"
+          );
+        }
+      } else {
+        alert("💾 이미지가 저장되었습니다!\n\n💡 Tip: '내 작품 보기'에서도 확인할 수 있습니다!");
+      }
     } catch (err) {
       console.error("다운로드 오류:", err);
       alert("이미지 저장 중 오류가 발생했습니다.");

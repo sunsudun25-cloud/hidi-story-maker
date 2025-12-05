@@ -2,7 +2,7 @@ import { Story } from '../context/StoryContext'
 
 // IndexedDB 데이터베이스 설정
 const DB_NAME = 'StoryDB'
-const DB_VERSION = 3  // 버전 업그레이드 (storybooks 추가)
+const DB_VERSION = 4  // 버전 업그레이드 (스토어 재생성)
 const STORE_NAME = 'stories'
 const IMAGE_STORE_NAME = 'images'  // 이미지 저장소
 const STORYBOOK_STORE_NAME = 'storybooks'  // 동화책 저장소
@@ -210,20 +210,32 @@ export const saveImageToDB = async (imageData: Omit<SavedImage, 'id'>): Promise<
 
 // 모든 이미지 가져오기
 export const getAllImages = async (): Promise<SavedImage[]> => {
-  const db = await initDB()
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction([IMAGE_STORE_NAME], 'readonly')
-    const objectStore = transaction.objectStore(IMAGE_STORE_NAME)
-    const request = objectStore.getAll()
-
-    request.onsuccess = () => {
-      resolve(request.result)
+  try {
+    const db = await initDB()
+    
+    // 스토어가 존재하는지 확인
+    if (!db.objectStoreNames.contains(IMAGE_STORE_NAME)) {
+      console.warn('Image store does not exist, returning empty array')
+      return []
     }
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([IMAGE_STORE_NAME], 'readonly')
+      const objectStore = transaction.objectStore(IMAGE_STORE_NAME)
+      const request = objectStore.getAll()
 
-    request.onerror = () => {
-      reject(new Error('이미지를 가져올 수 없습니다.'))
-    }
-  })
+      request.onsuccess = () => {
+        resolve(request.result)
+      }
+
+      request.onerror = () => {
+        reject(new Error('이미지를 가져올 수 없습니다.'))
+      }
+    })
+  } catch (error) {
+    console.error('getAllImages error:', error)
+    return []
+  }
 }
 
 // 이미지 삭제
@@ -302,20 +314,32 @@ export const saveStorybook = async (storybookData: Omit<Storybook, 'id'>): Promi
 
 // 모든 동화책 가져오기
 export const getAllStorybooks = async (): Promise<Storybook[]> => {
-  const db = await initDB()
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction([STORYBOOK_STORE_NAME], 'readonly')
-    const objectStore = transaction.objectStore(STORYBOOK_STORE_NAME)
-    const request = objectStore.getAll()
-
-    request.onsuccess = () => {
-      resolve(request.result)
+  try {
+    const db = await initDB()
+    
+    // 스토어가 존재하는지 확인
+    if (!db.objectStoreNames.contains(STORYBOOK_STORE_NAME)) {
+      console.warn('Storybook store does not exist, returning empty array')
+      return []
     }
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([STORYBOOK_STORE_NAME], 'readonly')
+      const objectStore = transaction.objectStore(STORYBOOK_STORE_NAME)
+      const request = objectStore.getAll()
 
-    request.onerror = () => {
-      reject(new Error('동화책을 가져올 수 없습니다.'))
-    }
-  })
+      request.onsuccess = () => {
+        resolve(request.result)
+      }
+
+      request.onerror = () => {
+        reject(new Error('동화책을 가져올 수 없습니다.'))
+      }
+    })
+  } catch (error) {
+    console.error('getAllStorybooks error:', error)
+    return []
+  }
 }
 
 // 특정 동화책 가져오기

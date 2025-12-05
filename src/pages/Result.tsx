@@ -76,7 +76,7 @@ export default function Result() {
 
             {/* 다시 만들기 */}
             <button
-              className="result-retry"
+              className="big-btn secondary result-retry"
               onClick={() => navigate("/drawing/practice")}
             >
               🎨 다시 만들기
@@ -84,7 +84,7 @@ export default function Result() {
 
             {/* 내 작품 보러가기 */}
             <button
-              className="result-gallery"
+              className="big-btn secondary result-gallery"
               onClick={() => navigate("/my-works")}
             >
               🖼️ 내 작품 보러가기
@@ -92,7 +92,7 @@ export default function Result() {
 
             {/* 홈으로 돌아가기 */}
             <button
-              className="result-home"
+              className="big-btn primary result-home"
               onClick={() => navigate("/home")}
             >
               🏠 홈으로 돌아가기

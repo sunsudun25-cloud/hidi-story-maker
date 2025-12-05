@@ -86,7 +86,7 @@ export default function DirectInput() {
           ))}
         </div>
 
-        <button className="primary-btn" onClick={handleGenerate}>
+        <button className="big-btn primary primary-btn" onClick={handleGenerate}>
           🚀 그림 만들기
         </button>
       </div>

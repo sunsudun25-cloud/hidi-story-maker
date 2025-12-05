@@ -116,7 +116,7 @@ export default function Storybook() {
         </div>
 
         {/* 동화책 생성 버튼 */}
-        <button className="primary-btn" onClick={handleCreateStorybook}>
+        <button className="big-btn primary primary-btn" onClick={handleCreateStorybook}>
           🚀 동화책 만들기 시작
         </button>
       </div>

@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <Layout>
       <div className="page-container">
-      <h1 className="page-title" style={{ textAlign: 'left', marginBottom: '30px' }}>
+      <h1 className="big-title" style={{ textAlign: 'left', marginBottom: '30px' }}>
         무엇을<br />만들어볼까요?
       </h1>
 

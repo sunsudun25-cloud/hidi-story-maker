@@ -228,10 +228,10 @@ export default function DrawPractice() {
 
         {/* 액션 버튼 */}
         <div className="practice-actions">
-          <button type="button" className="main-action" onClick={handleGenerate}>
+          <button type="button" className="big-btn primary main-action" onClick={handleGenerate}>
             🎨 그림 만들기
           </button>
-          <button type="button" className="sub-action" onClick={handleHelp}>
+          <button type="button" className="big-btn secondary sub-action" onClick={handleHelp}>
             💡 도움말
           </button>
         </div>

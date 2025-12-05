@@ -15,11 +15,11 @@ const Welcome: React.FC = () => {
       <div className="welcome-container">
       <div className="welcome-content">
         <div className="welcome-header">
-          <h1 className="welcome-title">AI 스토리 메이커</h1>
+          <h1 className="big-title welcome-title">AI 스토리 메이커</h1>
           <p className="welcome-subtitle">AI와 함께 만드는 특별한 이야기</p>
         </div>
         
-        <button className="welcome-start-button" onClick={handleStart}>
+        <button className="big-btn primary welcome-start-button" onClick={handleStart}>
           시작하기
         </button>
       </div>

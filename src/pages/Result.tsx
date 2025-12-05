@@ -89,6 +89,14 @@ export default function Result() {
             >
               🖼️ 내 작품 보러가기
             </button>
+
+            {/* 홈으로 돌아가기 */}
+            <button
+              className="result-home"
+              onClick={() => navigate("/home")}
+            >
+              🏠 홈으로 돌아가기
+            </button>
           </>
         ) : (
           <div className="result-empty">

@@ -222,7 +222,7 @@ export default function StorybookEditor() {
       <header className="editor-header">
         <button className="header-btn" onClick={() => navigate(-1)}>←</button>
         <h1 className="editor-title">동화책 편집</h1>
-        <button className="header-btn" onClick={() => navigate("/")}>🏠</button>
+        <button className="header-btn" onClick={() => navigate("/home")}>🏠</button>
       </header>
 
       {/* 제목 */}

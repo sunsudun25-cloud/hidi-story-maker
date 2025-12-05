@@ -17,29 +17,41 @@ const genAI = new GoogleGenerativeAI(API_KEY);
  * @returns 생성된 이미지 URL
  */
 export async function generateImage(prompt: string, style?: string): Promise<string> {
+  console.log("🎯 [generateImage] 함수 시작:", { prompt, style });
+  
   const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
   if (!OPENAI_API_KEY) {
+    console.error("❌ [generateImage] OPENAI_API_KEY가 없습니다!");
     throw new Error("⚠️ VITE_OPENAI_API_KEY가 설정되지 않았습니다!");
   }
+
+  console.log("✅ [generateImage] OPENAI_API_KEY 확인됨:", OPENAI_API_KEY.substring(0, 20) + "...");
 
   // 스타일에 따른 프롬프트 변환
   const styleMap: Record<string, string> = {
     "수채화": "watercolor painting style",
+    "watercolor": "watercolor painting style",
     "동화풍": "fairytale illustration style",
+    "fairytale": "fairytale illustration style",
     "파스텔톤": "soft pastel colors style",
-    "따뜻한 느낌": "warm and cozy atmosphere",
+    "pastel": "soft pastel colors style",
+    "따뜻한 스타일": "warm and cozy atmosphere",
+    "warm": "warm and cozy atmosphere",
     "애니메이션": "anime illustration style",
     "연필스케치": "pencil sketch style",
-    "기본": "illustration style"
+    "기본": "illustration style",
+    "기본 스타일": "illustration style"
   };
 
   const stylePrompt = styleMap[style || "기본"] || "illustration style";
   const fullPrompt = `${prompt}. ${stylePrompt}. High quality, detailed, no text or watermarks. Professional artwork.`;
 
-  console.log("🎨 DALL-E 3 이미지 생성 중:", fullPrompt);
+  console.log("🎨 [generateImage] DALL-E 3 이미지 생성 중:", fullPrompt);
 
   try {
+    console.log("📡 [generateImage] OpenAI API 호출...");
+    
     const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
@@ -55,23 +67,32 @@ export async function generateImage(prompt: string, style?: string): Promise<str
       })
     });
 
+    console.log("📥 [generateImage] API 응답:", { 
+      status: response.status, 
+      statusText: response.statusText,
+      ok: response.ok 
+    });
+
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("OpenAI API 오류:", errorData);
+      console.error("❌ [generateImage] OpenAI API 오류:", errorData);
       throw new Error(`이미지 생성 실패: ${errorData.error?.message || response.statusText}`);
     }
 
     const data = await response.json();
+    console.log("📦 [generateImage] API 응답 데이터:", data);
+    
     const imageUrl = data.data[0].url;
 
     if (!imageUrl) {
+      console.error("❌ [generateImage] 이미지 URL이 비어있습니다!");
       throw new Error("이미지 URL을 받지 못했습니다.");
     }
 
-    console.log("✅ 이미지 생성 완료:", imageUrl);
+    console.log("✅ [generateImage] 이미지 생성 완료:", imageUrl);
     return imageUrl;
   } catch (error) {
-    console.error("이미지 생성 오류:", error);
+    console.error("❌ [generateImage] 이미지 생성 오류:", error);
     throw error;
   }
 }

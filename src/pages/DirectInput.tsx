@@ -21,17 +21,24 @@ export default function DirectInput() {
 
   // 그림 생성
   const handleGenerate = async () => {
+    console.log("🔵 [DirectInput] handleGenerate 함수 호출됨!");
+    
     if (!description) {
+      console.warn("⚠️ [DirectInput] 그림 설명이 비어있습니다");
       alert("그림 설명을 입력해주세요!");
       return;
     }
 
-    console.log("🚀 이미지 생성:", { description, style: selectedStyle });
+    console.log("🚀 [DirectInput] 이미지 생성 시작:", { description, style: selectedStyle });
 
     setIsGenerating(true);
     try {
+      console.log("📡 [DirectInput] generateImage 호출 중...");
+      
       // Gemini Service로 이미지 생성
       const imageUrl = await generateImage(description, selectedStyle ?? "기본 스타일");
+
+      console.log("✅ [DirectInput] 이미지 생성 완료:", imageUrl);
 
       // 결과 페이지로 이동 (prompt와 style 정보도 함께 전달)
       navigate("/result", { 
@@ -42,8 +49,10 @@ export default function DirectInput() {
         } 
       });
     } catch (err) {
+      console.error("❌ [DirectInput] 이미지 생성 실패:", err);
       alert(friendlyErrorMessage(err));
     } finally {
+      console.log("🔵 [DirectInput] setIsGenerating(false)");
       setIsGenerating(false);
     }
   };

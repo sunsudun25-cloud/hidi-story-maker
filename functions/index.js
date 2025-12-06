@@ -7,10 +7,12 @@ const { onRequest } = require('firebase-functions/v2/https');
 const logger = require('firebase-functions/logger');
 const cors = require('cors')({ origin: true });
 const { OpenAI } = require('openai');
+const functions = require('firebase-functions');
 
 // OpenAI 클라이언트 초기화
+// Firebase Functions Config와 환경변수 모두 지원
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || functions.config().openai?.key,
 });
 
 /**
@@ -48,8 +50,11 @@ exports.generateImage = onRequest(
         logger.info('🚀 [generateImage] 함수 호출됨');
         
         // OpenAI API 키 확인
-        if (!process.env.OPENAI_API_KEY) {
+        const OPENAI_API_KEY = process.env.OPENAI_API_KEY || functions.config().openai?.key;
+        
+        if (!OPENAI_API_KEY) {
           logger.error('❌ OPENAI_API_KEY가 설정되지 않았습니다!');
+          logger.error('💡 해결 방법: firebase functions:config:set openai.key="YOUR_KEY"');
           return res.status(500).json({ 
             success: false, 
             error: 'API 키가 설정되지 않았습니다.' 

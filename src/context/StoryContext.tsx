@@ -45,7 +45,9 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
         const savedStories = await db.getAllStories()
         setStories(savedStories)
       } catch (error) {
-        console.error('스토리 불러오기 실패:', error)
+        console.error('⚠️ 스토리 불러오기 실패 (IndexedDB 접근 불가):', error)
+        // IndexedDB 접근 불가 시 빈 배열로 계속 진행
+        setStories([])
       } finally {
         setIsLoading(false)
       }

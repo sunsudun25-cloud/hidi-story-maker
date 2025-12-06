@@ -10,14 +10,24 @@ const STORYBOOK_STORE_NAME = 'storybooks'  // 동화책 저장소
 // IndexedDB 초기화
 const initDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION)
-
-    request.onerror = () => {
-      reject(new Error('데이터베이스를 열 수 없습니다.'))
+    // IndexedDB 지원 확인
+    if (!window.indexedDB) {
+      reject(new Error('⚠️ 이 브라우저는 IndexedDB를 지원하지 않습니다.'))
+      return
     }
 
-    request.onsuccess = () => {
-      resolve(request.result)
+    try {
+      const request = indexedDB.open(DB_NAME, DB_VERSION)
+
+      request.onerror = () => {
+        reject(new Error('데이터베이스를 열 수 없습니다. (접근 권한 또는 저장소 차단)'))
+      }
+
+      request.onsuccess = () => {
+        resolve(request.result)
+      }
+    } catch (error) {
+      reject(new Error('IndexedDB 초기화 실패: ' + (error as Error).message))
     }
 
     request.onupgradeneeded = (event) => {

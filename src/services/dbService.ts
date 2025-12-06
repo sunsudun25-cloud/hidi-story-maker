@@ -51,6 +51,11 @@ export interface Storybook {
     1) IndexedDB 사용 가능 여부 체크
 ------------------------------------------------------------------ */
 export function isIndexedDBAvailable(): boolean {
+  // 긴급 수정: IndexedDB 완전 비활성화 (오류 방지)
+  // localStorage만 사용하도록 강제
+  return false;
+  
+  /* 원래 코드 (주석 처리)
   try {
     // 시크릿 모드 감지
     if (typeof indexedDB === "undefined") {
@@ -68,6 +73,7 @@ export function isIndexedDBAvailable(): boolean {
   } catch {
     return false;
   }
+  */
 }
 
 /* ------------------------------------------------------------------

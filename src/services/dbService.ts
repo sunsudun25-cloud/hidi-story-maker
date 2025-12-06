@@ -52,7 +52,19 @@ export interface Storybook {
 ------------------------------------------------------------------ */
 export function isIndexedDBAvailable(): boolean {
   try {
-    return typeof indexedDB !== "undefined";
+    // 시크릿 모드 감지
+    if (typeof indexedDB === "undefined") {
+      return false;
+    }
+    
+    // 실제 IndexedDB 접근 가능 여부 테스트
+    try {
+      const testDB = indexedDB.open("__test__");
+      testDB.onerror = () => false;
+      return true;
+    } catch {
+      return false;
+    }
   } catch {
     return false;
   }
@@ -303,10 +315,13 @@ export async function getStory(id: string): Promise<Story | undefined> {
  * 모든 스토리 불러오기 (IndexedDB + localStorage 병합)
  */
 export async function getAllStories(): Promise<Story[]> {
-  // Private Mode 대응
+  // localStorage 우선 사용 (IndexedDB 오류 회피)
+  const fallbackStories = loadStoriesFromFallback();
+  
+  // IndexedDB 사용 불가능하면 localStorage만 사용
   if (!isIndexedDBAvailable()) {
-    console.warn("⚠ IndexedDB 사용 불가 → fallback 사용");
-    return loadStoriesFromFallback();
+    console.warn("⚠ IndexedDB 사용 불가 → localStorage 사용");
+    return fallbackStories;
   }
 
   try {
@@ -318,7 +333,6 @@ export async function getAllStories(): Promise<Story[]> {
     return new Promise((resolve) => {
       request.onsuccess = () => {
         const indexedDBStories = (request.result || []).map(normalizeStory);
-        const fallbackStories = loadStoriesFromFallback();
         
         // 병합 및 중복 제거 (id 기준)
         const allStories = [...indexedDBStories, ...fallbackStories];
@@ -329,13 +343,13 @@ export async function getAllStories(): Promise<Story[]> {
         resolve(uniqueStories);
       };
       request.onerror = () => {
-        console.warn("⚠ IndexedDB getAll 실패 → fallback 사용");
-        resolve(loadStoriesFromFallback());
+        console.warn("⚠ IndexedDB getAll 실패 → localStorage 사용");
+        resolve(fallbackStories);
       };
     });
   } catch (err) {
     console.warn("⚠ 스토리 불러오기 실패 (IndexedDB 접근 불가):", err);
-    return loadStoriesFromFallback();
+    return fallbackStories;
   }
 }
 

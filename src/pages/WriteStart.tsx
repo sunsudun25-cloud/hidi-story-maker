@@ -26,7 +26,7 @@ export default function WriteStart() {
           className="w-full py-6 bg-[#FFF2C6] rounded-2xl shadow-md text-lg font-bold 
                      flex items-center justify-center gap-3
                      hover:bg-[#FFE8A6] transition-all mb-4"
-          onClick={() => navigate("/writing/help")}
+          onClick={() => navigate("/writing/practice")}
         >
           📝 연습하기
           <span className="text-sm font-normal text-gray-600">AI 주제 추천</span>

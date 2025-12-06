@@ -14,6 +14,7 @@ import WritingGenre from './pages/WritingGenre'
 import WritingHelp from './pages/WritingHelp'
 import WritingEditor from './pages/WritingEditor'
 import WritingDetail from './pages/WritingDetail'
+import WritingPractice from './pages/WritingPractice'
 import Storybook from './pages/Storybook'
 import StorybookEditor from './pages/StorybookEditor'
 import StorybookExport from './pages/StorybookExport'
@@ -45,6 +46,7 @@ function App() {
           <Route path="/direct-input" element={<DirectInput />} />
           <Route path="/write/old" element={<Write />} />
           <Route path="/write" element={<WriteStart />} />
+          <Route path="/writing/practice" element={<WritingPractice />} />
           <Route path="/writing/genre" element={<WritingGenre />} />
           <Route path="/writing/help" element={<WritingHelp />} />
           <Route path="/writing/editor" element={<WritingEditor />} />

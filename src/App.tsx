@@ -33,7 +33,7 @@ import './App.css'
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
       <Routes>
         {/* 헤더가 필요 없는 페이지 */}
         <Route path="/" element={<Welcome />} />

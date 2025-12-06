@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import { generateDalleImageBase64 } from "../services/dalleService";
+import { generateImageViaFirebase } from "../services/firebaseFunctions";
 import { friendlyErrorMessage } from "../utils/errorHandler";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./DrawDirect.css";
@@ -50,10 +50,10 @@ export default function DrawDirect() {
       const styleText = selectedStyle && selectedStyle !== "기본" ? ` (${selectedStyle} 스타일)` : "";
       const fullPrompt = `${description}${styleText}`;
 
-      console.log("📡 [DrawDirect] generateDalleImageBase64 호출 중...", fullPrompt);
+      console.log("📡 [DrawDirect] generateImageViaFirebase 호출 중...", fullPrompt);
 
-      // DALL·E Base64 이미지 생성
-      const imageBase64 = await generateDalleImageBase64(fullPrompt, selectedStyle);
+      // Firebase Functions를 통한 DALL·E 이미지 생성
+      const imageBase64 = await generateImageViaFirebase(description, selectedStyle);
 
       console.log("✅ [DrawDirect] 이미지 생성 완료, Base64 길이:", imageBase64.length);
 

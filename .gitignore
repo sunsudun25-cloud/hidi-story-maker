@@ -15,6 +15,12 @@ dist/
 node_modules/
 .wrangler
 
+# Firebase Functions
+functions/node_modules/
+functions/lib/
+functions/.runtimeconfig.json
+.firebase/
+
 # env
 .env
 .env.production

@@ -1,6 +1,6 @@
 /**
  * Firebase Functions - OpenAI DALL-E 3 프록시 API
- * OpenAI SDK 사용 버전
+ * 완전한 환경변수 지원 버전
  */
 
 const { onRequest } = require('firebase-functions/v2/https');
@@ -8,12 +8,6 @@ const logger = require('firebase-functions/logger');
 const cors = require('cors')({ origin: true });
 const { OpenAI } = require('openai');
 const functions = require('firebase-functions');
-
-// OpenAI 클라이언트 초기화
-// Firebase Functions Config와 환경변수 모두 지원
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || functions.config().openai?.key,
-});
 
 /**
  * DALL-E 3 이미지 생성 API
@@ -49,8 +43,10 @@ exports.generateImage = onRequest(
       try {
         logger.info('🚀 [generateImage] 함수 호출됨');
         
-        // OpenAI API 키 확인
-        const OPENAI_API_KEY = process.env.OPENAI_API_KEY || functions.config().openai?.key;
+        // 🔑 OpenAI API 키 불러오기 (2가지 방법 지원)
+        const OPENAI_API_KEY = 
+          process.env.OPENAI_API_KEY ||              // 로컬 .env (에뮬레이터)
+          functions.config().openai?.key;            // 배포 환경 (실서버)
         
         if (!OPENAI_API_KEY) {
           logger.error('❌ OPENAI_API_KEY가 설정되지 않았습니다!');
@@ -61,7 +57,12 @@ exports.generateImage = onRequest(
           });
         }
 
-        logger.info('✅ OpenAI API 키 확인됨');
+        logger.info('✅ OpenAI API 키 확인됨 (출처:', process.env.OPENAI_API_KEY ? '.env' : 'Firebase Config', ')');
+
+        // OpenAI 클라이언트 초기화 (함수 내부에서!)
+        const openai = new OpenAI({
+          apiKey: OPENAI_API_KEY
+        });
 
         // 요청 파라미터 추출
         const { prompt, style } = req.body;
@@ -79,12 +80,17 @@ exports.generateImage = onRequest(
         // 스타일 매핑
         const styleMap = {
           "수채화": "watercolor painting style",
+          "watercolor": "watercolor painting style",
           "동화풍": "fairytale illustration style",
+          "fairytale": "fairytale illustration style",
           "파스텔톤": "soft pastel colors style",
+          "pastel": "soft pastel colors style",
           "따뜻한 스타일": "warm and cozy atmosphere",
+          "warm": "warm and cozy atmosphere",
           "애니메이션": "anime illustration style",
           "연필스케치": "pencil sketch style",
-          "기본": "illustration style"
+          "기본": "illustration style",
+          "기본 스타일": "illustration style"
         };
 
         const stylePrompt = styleMap[style || "기본"] || "illustration style";

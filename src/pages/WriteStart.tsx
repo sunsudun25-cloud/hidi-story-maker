@@ -14,44 +14,33 @@ export default function WriteStart() {
         <div className="text-4xl mb-4">✨</div>
 
         <h2 className="text-xl font-bold text-gray-800 mb-2">
-          글을 어떻게 시작할까요?
+          어떻게 글을 쓸까요?
         </h2>
 
-        <p className="text-gray-600 mb-6 text-[17px] leading-relaxed">
-          직접 입력하거나, 손글씨 사진을<br />업로드할 수 있어요
+        <p className="text-gray-600 mb-8 text-[17px] leading-relaxed">
+          AI가 도와주는 연습하기, 또는<br />자유롭게 직접 쓰기를 선택하세요
         </p>
 
-        {/* 사진 업로드 */}
+        {/* 연습하기 */}
         <button
-          className="w-full py-5 bg-[#FFF2C6] rounded-2xl shadow-md text-lg font-bold 
+          className="w-full py-6 bg-[#FFF2C6] rounded-2xl shadow-md text-lg font-bold 
                      flex items-center justify-center gap-3
                      hover:bg-[#FFE8A6] transition-all mb-4"
-          onClick={() => navigate("/write/upload")}
+          onClick={() => navigate("/writing/help")}
         >
-          📷 사진으로 올릴래요
+          📝 연습하기
+          <span className="text-sm font-normal text-gray-600">AI 주제 추천</span>
         </button>
 
-        {/* 직접 입력 */}
+        {/* 직접 쓰기 */}
         <button
-          className="w-full py-5 bg-[#C6ECFF] rounded-2xl shadow-md text-lg font-bold 
+          className="w-full py-6 bg-[#C6ECFF] rounded-2xl shadow-md text-lg font-bold 
                      flex items-center justify-center gap-3
-                     hover:bg-[#A9E3FF] transition-all mb-6"
+                     hover:bg-[#A9E3FF] transition-all"
           onClick={() => navigate("/writing/genre")}
         >
-          ✍️ 직접 입력할래요
-        </button>
-
-        {/* 음성 입력 */}
-        <div className="border-t w-full my-4 opacity-40" />
-
-        <div className="text-xl mb-3">✨</div>
-
-        <button
-          className="w-full py-5 bg-[#C8F7E4] rounded-2xl shadow-md text-lg font-bold 
-                     flex items-center justify-center gap-3
-                     hover:bg-[#B3F0D9] transition-all"
-        >
-          🎤 말로 입력할래요
+          ✍️ 직접 쓰기
+          <span className="text-sm font-normal text-gray-600">장르 선택</span>
         </button>
       </div>
     </div>

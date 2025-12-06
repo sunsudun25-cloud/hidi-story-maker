@@ -50,7 +50,24 @@ export default function StorybookEditor() {
       setTitle(state.title || '나의 동화책');
       setPrompt(state.prompt || '');
       setStyle(state.style || '동화 스타일');
-      setCoverImageUrl(state.coverImageUrl || '');
+      
+      // 표지 이미지 확인 로직
+      const coverUrl = state.coverImageUrl || '';
+      if (coverUrl && !state.coverConfirmed) {
+        const ok = confirm("이 이미지를 동화책 표지로 사용할까요?");
+        
+        if (!ok) {
+          // 표지 다시 생성 페이지로 보내기
+          navigate("/storybook", { state: { regenerateCover: true } });
+          return;
+        }
+
+        // 표지 확정
+        setCoverImageUrl(coverUrl);
+        state.coverConfirmed = true;
+      } else {
+        setCoverImageUrl(coverUrl);
+      }
       
       // 기본 페이지 설정 (storyPages가 비어있는 경우)
       if (storyPages.length === 0 || (storyPages.length === 1 && !storyPages[0].text)) {
@@ -61,7 +78,7 @@ export default function StorybookEditor() {
         ]);
       }
     }
-  }, [state]);
+  }, [state, navigate, setCoverImageUrl, setPrompt, setStoryPages, setStyle, setTitle, storyPages.length]);
 
   if (!state) {
     return (
@@ -96,20 +113,26 @@ export default function StorybookEditor() {
     setIsGenerating(true);
 
     try {
-      // 현재까지의 모든 페이지 텍스트 수집
-      const prevTexts = storyPages.map(p => p.text);
+      // 최근 2페이지만 참조 (컨텍스트 최적화)
+      const prevTexts = storyPages.slice(-2).map(p => p.text);
       
-      // Gemini API로 다음 페이지 생성
-      const nextPageText = await generateNextPage(prevTexts, style || "동화 스타일");
+      // Gemini API로 다음 페이지 생성 (주제 전달)
+      const nextPageText = await generateNextPage(
+        prevTexts, 
+        style || "동화 스타일",
+        prompt || contextPrompt  // 주제 전달로 일관성 유지
+      );
       
       // 새 페이지 추가 (Context 사용)
       addNewPage(nextPageText);
 
-      
       alert("✨ 새로운 페이지가 생성되었습니다!");
     } catch (err) {
       console.error("페이지 생성 오류:", err);
-      alert("페이지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+      
+      // 오류 시 fallback 제공
+      addNewPage("다음 모험이 곧 시작될 것 같아요…");
+      alert("⚠️ AI 생성에 실패했지만 기본 텍스트를 추가했습니다. 직접 수정해주세요.");
     } finally {
       setIsGenerating(false);
     }

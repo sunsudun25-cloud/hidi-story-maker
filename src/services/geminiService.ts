@@ -99,25 +99,36 @@ export async function generateImage(prompt: string, style?: string): Promise<str
 
 /**
  * Gemini Pro API - 텍스트 생성 (동화 다음 페이지)
- * @param prevPages 현재까지의 페이지 텍스트 배열
+ * @param prevPages 현재까지의 페이지 텍스트 배열 (최근 2페이지만 권장)
  * @param style 사용자가 선택한 스타일 (동화·모험·힐링 등)
+ * @param mainPrompt 동화책의 주요 주제/줄거리 (일관성 유지를 위해)
  * @returns 새로 생성된 다음 페이지 내용
  */
-export async function generateNextPage(prevPages: string[], style: string): Promise<string> {
+export async function generateNextPage(
+  prevPages: string[], 
+  style: string, 
+  mainPrompt?: string
+): Promise<string> {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     const prompt = `
-당신은 고령친화형 동화책을 만드는 작가입니다.
-아래는 지금까지의 동화 내용입니다:
+당신은 동화책 작가입니다.
 
+${mainPrompt ? `동화책 주제:\n${mainPrompt}\n` : ''}
+
+현재까지의 동화 내용:
 ${prevPages.map((p, i) => `페이지 ${i + 1}:\n${p}\n`).join("")}
 
-사용자가 선택한 동화 스타일: ${style}
+위 내용을 자연스럽게 이어서 다음 페이지 내용을 작성하세요.
+스타일: ${style}
 
-다음 페이지 내용을 3~5문장으로 자연스럽게 이어서 작성해 주세요.
-너무 어려운 표현은 피하고, 초등학생도 이해할 수 있는 쉬운 문장으로 작성해주세요.
-페이지 전체를 하나의 짧은 단락으로 출력해주세요.
+조건:
+- ${mainPrompt ? '주제에서 벗어나지 말 것' : '이야기의 흐름을 유지할 것'}
+- 어조, 분위기를 유지할 것
+- 3~5문장으로 작성
+- 초등학생도 이해할 수 있는 쉬운 문장
+- 페이지 전체를 하나의 짧은 단락으로 출력
     `;
 
     const result = await model.generateContent(prompt);

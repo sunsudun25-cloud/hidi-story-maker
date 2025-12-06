@@ -22,6 +22,13 @@ jobs:
       
       - name: Install dependencies
         run: npm ci
+      
+      - name: Install Functions dependencies
+        run: cd functions && npm ci
+        
+      - name: Create Functions environment file
+        run: |
+          echo "OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }}" > functions/.env.production
         
       - name: Build project
         run: npm run build
@@ -39,10 +46,13 @@ jobs:
           VITE_FIREBASE_MEASUREMENT_ID: G-SK12ZCRM26
      
       
-      - name: Deploy to Firebase Hosting
+      - name: Deploy to Firebase (Hosting + Functions)
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           channelId: live
           projectId: story-make-fbbd7
+          target: hosting,functions
+        env:
+          FIREBASE_CLI_EXPERIMENTS: webframeworks

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
-import { generateDalleImage } from "../services/dalleService";
+import { generateImageViaFirebase } from "../services/firebaseFunctions";  // ⭐ Firebase Functions 프록시 사용
 
 export default function DrawingPractice() {
   const [prompt, setPrompt] = useState("");
@@ -23,7 +23,7 @@ export default function DrawingPractice() {
 
     setLoading(true);
     try {
-      const imageBase64 = await generateDalleImage(prompt);
+      const imageBase64 = await generateImageViaFirebase(prompt, "기본");  // ⭐ Firebase Functions 프록시 사용
 
       navigate("/result", {
         state: {

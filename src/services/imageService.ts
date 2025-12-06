@@ -42,7 +42,7 @@ ${text}
     console.log("🎨 동화 이미지 생성 중:", prompt.substring(0, 100) + "...");
 
     // Firebase Functions 프록시를 통해 DALL-E 3 호출
-    const response = await fetch("https://us-central1-story-make-fbbd7.cloudfunctions.net/generateImage", {
+    const response = await fetch("https://us-central1-story-make-fbbd7.cloudfunctions.net/api/generateImage", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

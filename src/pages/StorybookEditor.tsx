@@ -357,7 +357,7 @@ ${currentPageData.text}
         onClick={() => navigate("/storybook-export", {
           state: {
             title,
-            pages,
+            pages: storyPages,
             coverImageUrl
           }
         })}

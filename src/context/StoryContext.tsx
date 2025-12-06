@@ -40,6 +40,14 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
   // 컴포넌트 마운트 시 IndexedDB에서 데이터 불러오기
   useEffect(() => {
     const loadStories = async () => {
+      // IndexedDB 사용 가능 여부 먼저 확인
+      if (!db.isIndexedDBAvailable()) {
+        console.warn('⚠️ IndexedDB 사용 불가 - localStorage fallback 모드')
+        setStories([])
+        setIsLoading(false)
+        return
+      }
+
       try {
         setIsLoading(true)
         const savedStories = await db.getAllStories()
@@ -58,7 +66,13 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
         setIsLoading(false)
       }
     }
-    loadStories()
+    
+    // 비동기 로딩을 약간 지연시켜 초기 렌더링 차단 방지
+    const timer = setTimeout(() => {
+      loadStories()
+    }, 0)
+
+    return () => clearTimeout(timer)
   }, [])
 
   // 스토리 추가

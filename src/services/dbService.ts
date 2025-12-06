@@ -26,33 +26,33 @@ const initDB = (): Promise<IDBDatabase> => {
       request.onsuccess = () => {
         resolve(request.result)
       }
+
+      request.onupgradeneeded = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result
+
+        // Stories Object Store가 없으면 생성
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          const objectStore = db.createObjectStore(STORE_NAME, { keyPath: 'id' })
+          objectStore.createIndex('title', 'title', { unique: false })
+          objectStore.createIndex('createdAt', 'createdAt', { unique: false })
+        }
+
+        // Images Object Store가 없으면 생성
+        if (!db.objectStoreNames.contains(IMAGE_STORE_NAME)) {
+          const imageStore = db.createObjectStore(IMAGE_STORE_NAME, { keyPath: 'id', autoIncrement: true })
+          imageStore.createIndex('prompt', 'prompt', { unique: false })
+          imageStore.createIndex('createdAt', 'createdAt', { unique: false })
+        }
+
+        // Storybooks Object Store가 없으면 생성
+        if (!db.objectStoreNames.contains(STORYBOOK_STORE_NAME)) {
+          const storybookStore = db.createObjectStore(STORYBOOK_STORE_NAME, { keyPath: 'id', autoIncrement: true })
+          storybookStore.createIndex('title', 'title', { unique: false })
+          storybookStore.createIndex('createdAt', 'createdAt', { unique: false })
+        }
+      }
     } catch (error) {
       reject(new Error('IndexedDB 초기화 실패: ' + (error as Error).message))
-    }
-
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result
-
-      // Stories Object Store가 없으면 생성
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        const objectStore = db.createObjectStore(STORE_NAME, { keyPath: 'id' })
-        objectStore.createIndex('title', 'title', { unique: false })
-        objectStore.createIndex('createdAt', 'createdAt', { unique: false })
-      }
-
-      // Images Object Store가 없으면 생성
-      if (!db.objectStoreNames.contains(IMAGE_STORE_NAME)) {
-        const imageStore = db.createObjectStore(IMAGE_STORE_NAME, { keyPath: 'id', autoIncrement: true })
-        imageStore.createIndex('prompt', 'prompt', { unique: false })
-        imageStore.createIndex('createdAt', 'createdAt', { unique: false })
-      }
-
-      // Storybooks Object Store가 없으면 생성
-      if (!db.objectStoreNames.contains(STORYBOOK_STORE_NAME)) {
-        const storybookStore = db.createObjectStore(STORYBOOK_STORE_NAME, { keyPath: 'id', autoIncrement: true })
-        storybookStore.createIndex('title', 'title', { unique: false })
-        storybookStore.createIndex('createdAt', 'createdAt', { unique: false })
-      }
     }
   })
 }

@@ -19,6 +19,7 @@ node_modules/
 functions/node_modules/
 functions/lib/
 functions/.runtimeconfig.json
+functions/.env.production
 .firebase/
 
 # env

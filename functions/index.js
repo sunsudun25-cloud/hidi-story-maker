@@ -9,6 +9,7 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const cors = require('cors')({ origin: true });
 const OpenAI = require('openai');
+require('dotenv').config({ path: '.env.production' });
 
 // Firebase Admin 초기화
 admin.initializeApp();
@@ -59,7 +60,9 @@ exports.generateImage = functions
         console.log('🚀 [generateImage] 함수 호출됨');
         
         // 환경 변수에서 OpenAI API 키 가져오기
-        const OPENAI_API_KEY = functions.config().openai?.key;
+        // 1순위: Firebase Functions Config
+        // 2순위: .env.production 파일
+        const OPENAI_API_KEY = functions.config().openai?.key || process.env.OPENAI_API_KEY;
         
         if (!OPENAI_API_KEY) {
           console.error('❌ OPENAI_API_KEY 환경 변수가 설정되지 않았습니다!');

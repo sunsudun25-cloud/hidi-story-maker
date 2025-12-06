@@ -8,7 +8,7 @@ export default function WritingGenre() {
     { key: "diary", label: "일기" },
     { key: "essay", label: "에세이" },
     { key: "poem", label: "시" },
-    { key: "fairytale", label: "동화" },
+    { key: "novel", label: "소설" },
     { key: "letter", label: "편지" },
     { key: "travel", label: "여행기" },
     { key: "memoir", label: "회고록" },

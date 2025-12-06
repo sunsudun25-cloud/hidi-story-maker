@@ -69,10 +69,10 @@ export default function WritingAiQuestions() {
         { question: "특별히 떠오르는 이미지나 장면이 있나요?", answer: "" },
         { question: "이 시를 통해 전하고 싶은 것은?", answer: "" }
       ],
-      fairytale: [
+      novel: [
         { question: "이야기의 주인공은 누구인가요?", answer: "" },
-        { question: "어떤 모험을 하게 되나요?", answer: "" },
-        { question: "이야기가 어떻게 끝나면 좋을까요?", answer: "" }
+        { question: "어떤 사건이 일어나나요?", answer: "" },
+        { question: "이야기의 배경은 어디인가요?", answer: "" }
       ],
       letter: [
         { question: "누구에게 편지를 쓰시나요?", answer: "" },

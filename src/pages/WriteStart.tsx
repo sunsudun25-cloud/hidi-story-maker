@@ -36,7 +36,7 @@ export default function WriteStart() {
           className="w-full py-5 bg-[#C6ECFF] rounded-2xl shadow-md text-lg font-bold 
                      flex items-center justify-center gap-3
                      hover:bg-[#A9E3FF] transition-all mb-6"
-          onClick={() => navigate("/write/direct")}
+          onClick={() => navigate("/writing/genre")}
         >
           ✍️ 직접 입력할래요
         </button>

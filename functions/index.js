@@ -29,12 +29,11 @@ admin.initializeApp();
  * }
  */
 exports.generateImage = functions
-  .region('asia-northeast1') // 서울 리전 (가장 가까운 리전)
-  .runWith({
-    timeoutSeconds: 300,     // 5분 타임아웃 (DALL-E 3 생성 시간 고려)
-    memory: '512MB'          // 메모리 할당
-  })
-  .https.onRequest((req, res) => {
+  .https.onRequest({
+    region: 'asia-northeast1',
+    timeoutSeconds: 300,
+    memory: '512MB'
+  }, (req, res) => {
     cors(req, res, async () => {
       // CORS 헤더 명시적으로 설정
       res.set('Access-Control-Allow-Origin', '*');
@@ -176,8 +175,7 @@ exports.generateImage = functions
  * @returns { status: "ok", timestamp: number }
  */
 exports.health = functions
-  .region('asia-northeast1')
-  .https.onRequest((req, res) => {
+  .https.onRequest({ region: 'asia-northeast1' }, (req, res) => {
     cors(req, res, () => {
       res.status(200).json({ 
         status: "ok", 

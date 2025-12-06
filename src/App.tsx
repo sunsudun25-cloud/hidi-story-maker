@@ -12,6 +12,8 @@ import Write from './pages/Write'
 import WriteStart from './pages/WriteStart'
 import WritingGenre from './pages/WritingGenre'
 import WritingAiQuestions from './pages/WritingAiQuestions'
+import WritingPhoto from './pages/WritingPhoto'
+import WritingVoice from './pages/WritingVoice'
 import WritingHelp from './pages/WritingHelp'
 import WritingEditor from './pages/WritingEditor'
 import WritingDetail from './pages/WritingDetail'
@@ -48,6 +50,8 @@ function App() {
           <Route path="/write/old" element={<Write />} />
           <Route path="/write" element={<WriteStart />} />
           <Route path="/writing/practice" element={<WritingPractice />} />
+          <Route path="/writing/photo" element={<WritingPhoto />} />
+          <Route path="/writing/voice" element={<WritingVoice />} />
           <Route path="/writing/genre" element={<WritingGenre />} />
           <Route path="/writing/questions" element={<WritingAiQuestions />} />
           <Route path="/writing/help" element={<WritingHelp />} />

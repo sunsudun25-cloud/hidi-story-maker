@@ -1,15 +1,15 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import * as db from '../services/dbService'
 
-// Story 타입 정의
+// Story 타입 정의 (dbService와 동일하게 유지)
 export interface Story {
   id: string
   title: string
   content: string
   image?: string        // 선택적 이미지 필드
   description?: string  // 선택적 설명 필드
-  createdAt: Date
-  updatedAt: Date
+  createdAt: Date | string
+  updatedAt: Date | string
 }
 
 // Context 타입 정의
@@ -43,7 +43,13 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
       try {
         setIsLoading(true)
         const savedStories = await db.getAllStories()
-        setStories(savedStories)
+        // Date 객체로 정규화
+        const normalizedStories = savedStories.map(story => ({
+          ...story,
+          createdAt: story.createdAt instanceof Date ? story.createdAt : new Date(story.createdAt),
+          updatedAt: story.updatedAt instanceof Date ? story.updatedAt : new Date(story.updatedAt || story.createdAt),
+        }))
+        setStories(normalizedStories)
       } catch (error) {
         console.error('⚠️ 스토리 불러오기 실패 (IndexedDB 접근 불가):', error)
         // IndexedDB 접근 불가 시 빈 배열로 계속 진행
@@ -57,17 +63,14 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
 
   // 스토리 추가
   const addStory = async (title: string, content: string) => {
-    const newStory: Story = {
-      id: Date.now().toString(),
-      title,
-      content,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    
     try {
-      await db.addStory(newStory)
-      setStories((prev) => [...prev, newStory])
+      const newStory = await db.saveStory(title, content)
+      const normalizedStory: Story = {
+        ...newStory,
+        createdAt: new Date(newStory.createdAt),
+        updatedAt: new Date(newStory.updatedAt || newStory.createdAt),
+      }
+      setStories((prev) => [...prev, normalizedStory])
     } catch (error) {
       console.error('스토리 추가 실패:', error)
       throw error
@@ -81,19 +84,14 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
     image?: string,
     description?: string
   ) => {
-    const newStory: Story = {
-      id: Date.now().toString(),
-      title,
-      content,
-      image,
-      description,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    
     try {
-      await db.addStory(newStory)
-      setStories((prev) => [...prev, newStory])
+      const newStory = await db.saveStory(title, content, image, description)
+      const normalizedStory: Story = {
+        ...newStory,
+        createdAt: new Date(newStory.createdAt),
+        updatedAt: new Date(newStory.updatedAt || newStory.createdAt),
+      }
+      setStories((prev) => [...prev, normalizedStory])
     } catch (error) {
       console.error('스토리 추가 실패:', error)
       throw error
@@ -117,7 +115,16 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
     try {
       await db.updateStory(updatedStory)
       setStories((prev) =>
-        prev.map((story) => (story.id === id ? updatedStory : story))
+        prev.map((story) => {
+          if (story.id === id) {
+            return {
+              ...updatedStory,
+              createdAt: new Date(updatedStory.createdAt),
+              updatedAt: new Date(updatedStory.updatedAt),
+            }
+          }
+          return story
+        })
       )
     } catch (error) {
       console.error('스토리 업데이트 실패:', error)
@@ -139,7 +146,7 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
   // 모든 스토리 삭제
   const clearAll = async () => {
     try {
-      await db.clearAllStories()
+      await db.clearAll()
       setStories([])
     } catch (error) {
       console.error('모든 스토리 삭제 실패:', error)

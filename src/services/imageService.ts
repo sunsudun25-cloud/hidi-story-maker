@@ -14,10 +14,10 @@ if (!API_KEY) {
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 /**
- * Imagen 모델 - 동화 이미지 생성 (텍스트 기반)
+ * 동화 이미지 생성 (DALL-E 3 via Firebase Functions)
  * @param text 페이지 내용 또는 장면 설명
  * @param options 추가 옵션 (스타일, 분위기 등)
- * @returns Base64 인코딩된 이미지 URL
+ * @returns 이미지 URL
  */
 export async function generateStoryImage(
   text: string,
@@ -29,83 +29,53 @@ export async function generateStoryImage(
   try {
     const { style = "동화 스타일", mood = "따뜻하고 부드러운" } = options || {};
 
-    // Imagen 모델 초기화
-    const imagenModel = genAI.getGenerativeModel({ model: "imagen-3.0-generate-001" });
-
     const prompt = `
 아래 동화 내용에 맞는 ${mood} 분위기의 그림을 만들어 주세요.
 어린이와 시니어가 보기 편한 ${style}로 표현해주세요.
 복잡한 배경은 피하고, 화면이 너무 어둡지 않게 구성해주세요.
+텍스트나 워터마크는 포함하지 마세요.
 
 동화 내용:
 ${text}
 `;
 
-    const result = await imagenModel.generateContent({
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: prompt }],
-        },
-      ],
+    console.log("🎨 동화 이미지 생성 중:", prompt.substring(0, 100) + "...");
+
+    // Firebase Functions 프록시를 통해 DALL-E 3 호출
+    const response = await fetch("https://us-central1-story-make-fbbd7.cloudfunctions.net/generateImage", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        size: "1024x1024",
+        quality: "standard",
+        n: 1,
+      }),
     });
 
-    // 응답에서 이미지 데이터 추출
-    const imageData = result.response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-
-    if (!imageData) {
-      throw new Error("이미지 데이터를 받지 못했습니다.");
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`이미지 생성 실패: ${response.status} - ${errorText}`);
     }
 
-    return `data:image/png;base64,${imageData}`;
-  } catch (error) {
-    console.error("동화 이미지 생성 오류:", error);
+    const data = await response.json();
     
-    // Fallback: Gemini Pro Vision API 사용
-    console.log("Fallback: Gemini Pro Vision API 사용");
-    return generateImageFallback(text, options?.style);
-  }
-}
-
-/**
- * Gemini Pro Vision API - 이미지 생성 (Fallback)
- * @param prompt 이미지 생성 프롬프트
- * @param style 스타일
- * @returns Base64 인코딩된 이미지 URL
- */
-async function generateImageFallback(prompt: string, style?: string): Promise<string> {
-  try {
-    const fullPrompt = style ? `${prompt}. 스타일: ${style}` : prompt;
-
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateImage?key=${API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: fullPrompt,
-          size: "1024x1024",
-        }),
-      }
-    );
-
-    if (!res.ok) {
-      throw new Error(`API 응답 오류: ${res.status} ${res.statusText}`);
+    if (!data.imageUrl) {
+      throw new Error("이미지 URL을 받지 못했습니다.");
     }
 
-    const data = await res.json();
-    
-    if (!data.candidates?.[0]?.image?.base64) {
-      throw new Error("이미지 데이터를 받지 못했습니다.");
-    }
-
-    const base64Image = data.candidates[0].image.base64;
-    return `data:image/png;base64,${base64Image}`;
+    console.log("✅ 동화 이미지 생성 완료:", data.imageUrl);
+    return data.imageUrl;
   } catch (error) {
-    console.error("Fallback 이미지 생성 오류:", error);
+    console.error("❌ 동화 이미지 생성 오류:", error);
     throw error;
   }
 }
+
+// Removed: generateImageFallback - no longer needed
+// All image generation now uses Firebase Functions proxy with DALL-E 3
 
 /**
  * 이미지 URL을 Blob으로 변환 (Base64 또는 HTTP URL 지원)

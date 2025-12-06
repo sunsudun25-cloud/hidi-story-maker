@@ -1,10 +1,17 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import { generateDalleImageBase64 } from "../services/dalleService";
+import { friendlyErrorMessage } from "../utils/errorHandler";
+import LoadingSpinner from "../components/LoadingSpinner";
 import "./DrawDirect.css";
 
 export default function DrawDirect() {
+  const navigate = useNavigate();
   const [description, setDescription] = useState("");
+  const [selectedStyle, setSelectedStyle] = useState<string>("기본");
   const [isListening, setIsListening] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleVoiceInput = () => {
     setIsListening(!isListening);
@@ -26,13 +33,45 @@ export default function DrawDirect() {
     }
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
+    console.log("🔵 [DrawDirect] handleGenerate 함수 호출됨!");
+    
     if (!description.trim()) {
+      console.warn("⚠️ [DrawDirect] 그림 설명이 비어있습니다");
       alert("그림 설명을 입력해주세요!");
       return;
     }
-    alert(`그림 생성 시작!\n설명: "${description}"`);
-    // TODO: AI 이미지 생성 API 호출
+
+    console.log("🚀 [DrawDirect] 이미지 생성 시작:", { description, style: selectedStyle });
+
+    setIsGenerating(true);
+
+    try {
+      const styleText = selectedStyle && selectedStyle !== "기본" ? ` (${selectedStyle} 스타일)` : "";
+      const fullPrompt = `${description}${styleText}`;
+
+      console.log("📡 [DrawDirect] generateDalleImageBase64 호출 중...", fullPrompt);
+
+      // DALL·E Base64 이미지 생성
+      const imageBase64 = await generateDalleImageBase64(fullPrompt, selectedStyle);
+
+      console.log("✅ [DrawDirect] 이미지 생성 완료, Base64 길이:", imageBase64.length);
+
+      // 결과 페이지로 이동
+      navigate("/drawing/result", {
+        state: {
+          imageBase64,
+          prompt: description,
+          style: selectedStyle,
+        },
+      });
+    } catch (err) {
+      console.error("❌ [DrawDirect] 이미지 생성 실패:", err);
+      alert(friendlyErrorMessage(err));
+    } finally {
+      console.log("🔵 [DrawDirect] setIsGenerating(false)");
+      setIsGenerating(false);
+    }
   };
 
   const handleUpload = () => {
@@ -99,30 +138,42 @@ export default function DrawDirect() {
             <label style={{ display: "block", marginBottom: "8px", fontSize: "16px" }}>
               화풍:
             </label>
-            <select style={{ 
-              width: "100%", 
-              padding: "12px", 
-              fontSize: "16px",
-              borderRadius: "var(--radius)",
-              border: "2px solid var(--secondary)"
-            }}>
-              <option>기본</option>
-              <option>수채화</option>
-              <option>유화</option>
-              <option>애니메이션</option>
-              <option>사실적</option>
+            <select 
+              style={{ 
+                width: "100%", 
+                padding: "12px", 
+                fontSize: "16px",
+                borderRadius: "var(--radius)",
+                border: "2px solid var(--secondary)"
+              }}
+              value={selectedStyle}
+              onChange={(e) => setSelectedStyle(e.target.value)}
+            >
+              <option value="기본">기본</option>
+              <option value="수채화">수채화</option>
+              <option value="동화풍">동화풍</option>
+              <option value="파스텔톤">파스텔톤</option>
+              <option value="애니메이션">애니메이션</option>
+              <option value="연필스케치">연필스케치</option>
             </select>
           </div>
         </div>
       </details>
 
+      {/* 로딩 상태 */}
+      {isGenerating && (
+        <LoadingSpinner text="AI가 멋진 그림을 그리고 있어요... 🎨" />
+      )}
+
       {/* 최종 버튼 */}
-      <button 
-        className="btn main-cta"
-        onClick={handleGenerate}
-      >
-        🚀 그림 만들기
-      </button>
+      {!isGenerating && (
+        <button 
+          className="btn main-cta"
+          onClick={handleGenerate}
+        >
+          🚀 그림 만들기
+        </button>
+      )}
     </main>
   );
 }

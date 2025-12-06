@@ -5,12 +5,15 @@
  * 이를 통해 API 키를 클라이언트에 노출하지 않고 안전하게 보호합니다.
  */
 
+// Firebase Functions 베이스 URL (프로덕션)
+const BASE_URL = "https://us-central1-story-make-fbbd7.cloudfunctions.net/api";
+
 /**
  * Firebase Functions를 통해 DALL-E 3 이미지 생성
  * 
  * @param prompt 이미지 생성 프롬프트
  * @param style 스타일 옵션 (선택)
- * @returns 생성된 이미지의 Base64 Data URL
+ * @returns 생성된 이미지 URL (HTTP URL 또는 Base64)
  */
 export async function generateImageViaFirebase(
   prompt: string,
@@ -19,8 +22,8 @@ export async function generateImageViaFirebase(
   console.log("🚀 [firebaseFunctions] generateImageViaFirebase 호출:", { prompt, style });
 
   try {
-    // Firebase Functions 엔드포인트
-    const functionUrl = '/api/generateImage';
+    // Firebase Functions 엔드포인트 (절대 URL)
+    const functionUrl = `${BASE_URL}/generateImage`;
     
     console.log("📡 [firebaseFunctions] Firebase Functions 호출:", functionUrl);
 
@@ -49,17 +52,17 @@ export async function generateImageViaFirebase(
 
     const data = await response.json();
     console.log("📦 [firebaseFunctions] 응답 데이터:", {
-      success: data.success,
-      hasImageData: !!data.imageData,
-      imageDataLength: data.imageData?.length
+      hasImageUrl: !!data.imageUrl,
+      imageUrlType: typeof data.imageUrl
     });
 
-    if (!data.success || !data.imageData) {
-      throw new Error(data.error || "이미지 데이터를 받지 못했습니다.");
+    // imageUrl 필드에서 이미지 URL 가져오기
+    if (!data.imageUrl) {
+      throw new Error(data.error || "이미지 URL을 받지 못했습니다.");
     }
 
-    console.log("✅ [firebaseFunctions] 이미지 생성 완료 (Base64 길이:", data.imageData.length, ")");
-    return data.imageData;
+    console.log("✅ [firebaseFunctions] 이미지 생성 완료:", data.imageUrl.substring(0, 50) + "...");
+    return data.imageUrl;
 
   } catch (error) {
     console.error("❌ [firebaseFunctions] 오류 발생:", error);

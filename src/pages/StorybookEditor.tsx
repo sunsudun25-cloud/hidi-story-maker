@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { generateNextPage } from "../services/geminiService";
-import { generateStoryImage } from "../services/imageService";
+import { generateImageViaFirebase } from "../services/firebaseFunctions";
 import { exportStorybookToPDF, exportEnhancedPDF } from "../services/pdfService";
 import { saveStorybook } from "../services/dbService";
 import { useStorybook } from "../context/StorybookContext";
@@ -127,13 +127,19 @@ export default function StorybookEditor() {
     setIsGeneratingImage(true);
 
     try {
-      // generateStoryImage로 이미지 생성
-      const img = await generateStoryImage(currentPageData.text, {
-        style: style || "동화 스타일",
-        mood: "따뜻하고 부드러운"
-      });
+      // 🔥 프롬프트 구성
+      const prompt = `
+동화책 장면에 어울리는 일러스트를 생성해주세요.
+스타일: ${style || "동화 스타일"}
+분위기: 따뜻하고 부드러운
+장면 설명:
+${currentPageData.text}
+`;
 
-      // 특정 페이지에 이미지 설정
+      // 🔥 Firebase Functions를 사용해 이미지 생성
+      const img = await generateImageViaFirebase(prompt);
+
+      // 페이지 이미지 저장
       setImageForPage(currentPage - 1, img);
 
       alert("🎨 페이지 이미지가 생성되었습니다!");

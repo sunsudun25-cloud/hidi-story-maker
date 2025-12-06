@@ -111,19 +111,50 @@ ${text}
 
     try {
       if (isEditMode) {
-        // 수정 모드: updateStory(id, title, content)
-        await updateStory(id, label, text);
-        alert("✅ 수정되었습니다!");
+        try {
+          // IndexedDB 저장 시도
+          await updateStory(id, label, text);
+          alert("✅ 수정되었습니다!");
+        } catch (err) {
+          console.warn("⚠ IndexedDB 수정 실패 → localStorage fallback 적용", err);
+
+          // localStorage에 백업 저장
+          const backup = { id, label, text, updatedAt: Date.now() };
+          localStorage.setItem(`story-backup-${id}`, JSON.stringify(backup));
+          
+          alert("✅ 수정되었습니다! (임시 저장)");
+        }
       } else {
-        // 새 글 작성 모드: addStory(title, content)
-        await addStory(label, text);
-        alert("✅ 저장되었습니다!");
+        try {
+          // 새 글 저장
+          await addStory(label, text);
+          alert("✅ 저장되었습니다!");
+        } catch (err) {
+          console.warn("⚠ IndexedDB 저장 실패 → localStorage fallback 적용", err);
+
+          // localStorage 임시 저장
+          const tempId = `story-temp-${Date.now()}`;
+          const backup = { id: tempId, label, text, createdAt: Date.now() };
+          localStorage.setItem(tempId, JSON.stringify(backup));
+
+          alert("✅ 저장되었습니다! (임시 저장)");
+        }
       }
 
       navigate("/gallery");
-    } catch (error) {
-      console.error("저장 오류:", error);
-      alert("저장 중 오류가 발생했습니다.");
+    } catch (err) {
+      console.error("저장 오류:", err);
+
+      alert(
+        "⚠ 저장 기능에 문제가 발생했습니다.\n작성한 글은 자동으로 보관 처리되었습니다."
+      );
+
+      // 글 유실 방지
+      const fallbackId = `story-fallback-${Date.now()}`;
+      localStorage.setItem(
+        fallbackId,
+        JSON.stringify({ label, text, createdAt: Date.now() })
+      );
     }
   };
 

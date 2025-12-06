@@ -11,21 +11,23 @@ export default function Result() {
   const prompt = state?.prompt || "AI 생성 이미지";
   const style = state?.style || "기본";
 
-  // 이미지가 생성되면 자동으로 DB에 저장
+  // 이미지가 생성되면 자동으로 DB에 저장 (한 번만 실행)
   useEffect(() => {
     if (imageUrl) {
+      console.log("💾 [Result] IndexedDB에 이미지 저장 시작...");
+      
       saveImageToDB({
         image: imageUrl,
         prompt: prompt,
         style: style,
         createdAt: new Date().toISOString()
       }).then(() => {
-        console.log("✅ 이미지가 내 작품에 저장되었습니다.");
+        console.log("✅ [Result] 이미지가 내 작품에 저장되었습니다.");
       }).catch((err) => {
-        console.error("이미지 저장 오류:", err);
+        console.error("❌ [Result] 이미지 저장 오류:", err);
       });
     }
-  }, [imageUrl, prompt, style]);
+  }, []); // 빈 의존성 배열로 한 번만 실행
 
   const handleDownload = async () => {
     if (!imageUrl) return;

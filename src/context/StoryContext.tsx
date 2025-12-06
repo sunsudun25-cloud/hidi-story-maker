@@ -37,42 +37,35 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
   const [stories, setStories] = useState<Story[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  // 컴포넌트 마운트 시 IndexedDB에서 데이터 불러오기
+  // 컴포넌트 마운트 시 데이터 불러오기 (안전 모드)
   useEffect(() => {
     const loadStories = async () => {
-      // IndexedDB 사용 가능 여부 먼저 확인
-      if (!db.isIndexedDBAvailable()) {
-        console.warn('⚠️ IndexedDB 사용 불가 - localStorage fallback 모드')
-        setStories([])
-        setIsLoading(false)
-        return
-      }
-
       try {
         setIsLoading(true)
+        
+        // getAllStories()는 이미 안전하게 처리됨
+        // (dbService.ts에서 localStorage만 사용)
         const savedStories = await db.getAllStories()
+        
         // Date 객체로 정규화
         const normalizedStories = savedStories.map(story => ({
           ...story,
           createdAt: story.createdAt instanceof Date ? story.createdAt : new Date(story.createdAt),
           updatedAt: story.updatedAt instanceof Date ? story.updatedAt : new Date(story.updatedAt || story.createdAt),
         }))
+        
         setStories(normalizedStories)
       } catch (error) {
-        console.error('⚠️ 스토리 불러오기 실패 (IndexedDB 접근 불가):', error)
-        // IndexedDB 접근 불가 시 빈 배열로 계속 진행
+        // 모든 오류를 조용히 처리
+        console.warn('⚠️ 데이터 로딩 실패 (localStorage 사용):', error)
         setStories([])
       } finally {
         setIsLoading(false)
       }
     }
     
-    // 비동기 로딩을 약간 지연시켜 초기 렌더링 차단 방지
-    const timer = setTimeout(() => {
-      loadStories()
-    }, 0)
-
-    return () => clearTimeout(timer)
+    // 즉시 실행 (지연 없음)
+    loadStories()
   }, [])
 
   // 스토리 추가

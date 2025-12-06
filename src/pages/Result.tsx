@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { saveImageAsFile, shareImage, copyImageToClipboard } from "../services/imageService";
 import { saveImageToDB } from "../services/dbService";
@@ -10,11 +10,19 @@ export default function Result() {
   const imageUrl = state?.imageUrl;
   const prompt = state?.prompt || "AI 생성 이미지";
   const style = state?.style || "기본";
+  const hasSaved = useRef(false); // 저장 플래그
 
   // 이미지가 생성되면 자동으로 DB에 저장 (한 번만 실행)
   useEffect(() => {
+    // 이미 저장했으면 스킵
+    if (hasSaved.current) {
+      console.log("⏭️ [Result] 이미 저장됨, 스킵");
+      return;
+    }
+
     if (imageUrl) {
       console.log("💾 [Result] IndexedDB에 이미지 저장 시작...");
+      hasSaved.current = true; // 저장 플래그 설정
       
       saveImageToDB({
         image: imageUrl,
@@ -25,6 +33,7 @@ export default function Result() {
         console.log("✅ [Result] 이미지가 내 작품에 저장되었습니다.");
       }).catch((err) => {
         console.error("❌ [Result] 이미지 저장 오류:", err);
+        hasSaved.current = false; // 실패 시 플래그 해제
       });
     }
   }, []); // 빈 의존성 배열로 한 번만 실행

@@ -1,11 +1,12 @@
 // src/pages/DrawingResult.tsx
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { saveImageToDB } from "../services/dbService";
 
 export default function DrawingResult() {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const hasSaved = useRef(false); // 저장 플래그
 
   // 이미지 URL 또는 Base64 확인
   const imageData = state?.imageBase64 || state?.imageUrl;
@@ -22,8 +23,15 @@ export default function DrawingResult() {
 
   // IndexedDB에 이미지 자동 저장 (한 번만 실행)
   useEffect(() => {
+    // 이미 저장했으면 스킵
+    if (hasSaved.current) {
+      console.log("⏭️ [DrawingResult] 이미 저장됨, 스킵");
+      return;
+    }
+
     if (imageData && prompt) {
       console.log("💾 [DrawingResult] IndexedDB에 이미지 저장 시작...");
+      hasSaved.current = true; // 저장 플래그 설정
       
       saveImageToDB({
         image: imageData,
@@ -35,6 +43,7 @@ export default function DrawingResult() {
         })
         .catch((err) => {
           console.error("❌ [DrawingResult] IndexedDB 저장 실패:", err);
+          hasSaved.current = false; // 실패 시 플래그 해제
         });
     }
   }, []); // 빈 의존성 배열로 한 번만 실행

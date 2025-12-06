@@ -286,6 +286,174 @@ export async function safeGeminiCall(prompt: string): Promise<string | null> {
   }
 }
 
+/**
+ * Main.js에서 가져온 함수들
+ */
+
+/**
+ * 글쓰기 주제 생성 (장르별 맞춤)
+ * @param genre 글의 장르
+ * @returns AI가 생성한 질문 목록
+ */
+export async function generateStoryPrompts(genre: string): Promise<string> {
+  console.log("🤖 [generateStoryPrompts] AI 질문 생성 시작:", genre);
+  
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const genreGuides: Record<string, string> = {
+      diary: "일기 작성을 위한 질문입니다. 오늘 하루를 돌아보며 답변할 수 있는 질문 3개를 만들어주세요.",
+      essay: "에세이 작성을 위한 질문입니다. 깊이 있는 생각을 이끌어낼 수 있는 질문 3개를 만들어주세요.",
+      poem: "시 작성을 위한 질문입니다. 감정과 이미지를 떠올릴 수 있는 질문 3개를 만들어주세요.",
+      fairytale: "동화 작성을 위한 질문입니다. 이야기의 구조를 잡을 수 있는 질문 3개를 만들어주세요.",
+      letter: "편지 작성을 위한 질문입니다. 받는 사람과 전하고 싶은 내용에 대한 질문 3개를 만들어주세요.",
+      travel: "여행기 작성을 위한 질문입니다. 여행 경험을 생생하게 떠올릴 수 있는 질문 3개를 만들어주세요.",
+      memoir: "회고록 작성을 위한 질문입니다. 과거의 기억을 떠올릴 수 있는 질문 3개를 만들어주세요.",
+      autobio: "자서전 작성을 위한 질문입니다. 인생의 중요한 순간을 회상할 수 있는 질문 3개를 만들어주세요."
+    };
+
+    const guide = genreGuides[genre] || genreGuides.diary;
+
+    const prompt = `
+당신은 글쓰기 도우미입니다.
+${guide}
+
+규칙:
+1. 각 질문은 한 줄로 작성
+2. 간단하고 명확하게
+3. 답변하기 쉬운 질문
+4. 번호나 불릿 없이 질문만
+
+예시:
+오늘 가장 기억에 남는 순간은 무엇인가요?
+어떤 감정을 느꼈나요?
+내일은 무엇을 하고 싶으신가요?
+`;
+
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+    
+    console.log("✅ [generateStoryPrompts] 질문 생성 완료");
+    return text.trim();
+  } catch (error) {
+    console.error("❌ [generateStoryPrompts] 오류:", error);
+    throw error;
+  }
+}
+
+/**
+ * 이어쓰기 샘플 생성 (여러 옵션 제공)
+ * @param currentText 현재까지 작성된 텍스트
+ * @param mood 감정/분위기
+ * @returns 3가지 이어쓰기 옵션
+ */
+export async function generateContinuationSamples(
+  currentText: string,
+  mood?: string
+): Promise<string[]> {
+  console.log("🤖 [generateContinuationSamples] 이어쓰기 샘플 생성 시작");
+  
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const moodGuide = mood 
+      ? `작성 분위기: ${mood}` 
+      : "자연스럽고 부드러운 분위기로";
+
+    const prompt = `
+당신은 글쓰기 도우미입니다.
+아래 텍스트를 자연스럽게 이어서 3가지 버전으로 작성해주세요.
+
+현재 텍스트:
+${currentText}
+
+${moodGuide}
+
+규칙:
+1. 각 버전은 2-3문장
+2. 서로 다른 방향성
+3. 자연스러운 문체
+4. 번호만 붙이고 설명 없이
+
+형식:
+1. [첫 번째 이어쓰기]
+2. [두 번째 이어쓰기]
+3. [세 번째 이어쓰기]
+`;
+
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+
+    // 숫자로 시작하는 줄만 추출
+    const samples = text
+      .split("\n")
+      .filter(line => /^\d+\./.test(line.trim()))
+      .map(line => line.replace(/^\d+\.\s*/, "").trim())
+      .slice(0, 3);
+
+    console.log("✅ [generateContinuationSamples] 샘플 생성 완료:", samples.length);
+    return samples;
+  } catch (error) {
+    console.error("❌ [generateContinuationSamples] 오류:", error);
+    throw error;
+  }
+}
+
+/**
+ * 텍스트 감정 분석 (이미지 생성을 위한)
+ * @param text 분석할 텍스트
+ * @returns 감정 분석 결과 (긍정/부정, 키워드 등)
+ */
+export async function analyzeMoodForImage(text: string): Promise<{
+  mood: string;
+  keywords: string[];
+  imagePrompt: string;
+}> {
+  console.log("🤖 [analyzeMoodForImage] 감정 분석 시작");
+  
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const prompt = `
+당신은 텍스트 감정 분석 전문가입니다.
+아래 텍스트를 분석하고, 이미지 생성에 적합한 정보를 추출해주세요.
+
+텍스트:
+${text}
+
+다음 형식으로 응답해주세요:
+
+[감정]
+(행복, 슬픔, 평화, 설렘 등 한 단어)
+
+[키워드]
+키워드1, 키워드2, 키워드3
+
+[이미지 프롬프트]
+(DALL-E로 이미지 생성에 적합한 영어 프롬프트)
+`;
+
+    const result = await model.generateContent(prompt);
+    const response = result.response.text();
+
+    // 응답 파싱
+    const moodMatch = response.match(/\[감정\]\s*([^\n]+)/);
+    const keywordsMatch = response.match(/\[키워드\]\s*([^\n]+)/);
+    const promptMatch = response.match(/\[이미지 프롬프트\]\s*([^\n]+)/);
+
+    const mood = moodMatch?.[1]?.trim() || "평화로운";
+    const keywords = keywordsMatch?.[1]?.split(",").map(k => k.trim()) || [];
+    const imagePrompt = promptMatch?.[1]?.trim() || text.substring(0, 100);
+
+    console.log("✅ [analyzeMoodForImage] 분석 완료:", { mood, keywords });
+    
+    return { mood, keywords, imagePrompt };
+  } catch (error) {
+    console.error("❌ [analyzeMoodForImage] 오류:", error);
+    throw error;
+  }
+}
+
 export default {
   generateImage,
   generateNextPage,
@@ -293,4 +461,7 @@ export default {
   suggestTopics,
   checkGrammar,
   safeGeminiCall,
+  generateStoryPrompts,
+  generateContinuationSamples,
+  analyzeMoodForImage,
 };

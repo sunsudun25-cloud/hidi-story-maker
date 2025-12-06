@@ -1,21 +1,30 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import { useStory } from "../context/StoryContext";
-import { safeGeminiCall } from "../services/geminiService";
+import { safeGeminiCall, generateContinuationSamples } from "../services/geminiService";
 
 export default function WritingEditor() {
   const location = useLocation();
   const navigate = useNavigate();
   const { addStory, updateStory } = useStory();
 
-  const { genre, label, content, id } = location.state || {};
+  const { genre, label, content, id, initialText } = location.state || {};
 
-  // 수정 모드인 경우 기존 content 로드
-  const [text, setText] = useState(content || "");
+  // 수정 모드인 경우 기존 content 로드, AI 질문에서 온 경우 initialText 사용
+  const [text, setText] = useState(content || initialText || "");
   const [loading, setLoading] = useState(false);
+  const [continuationSamples, setContinuationSamples] = useState<string[]>([]);
+  const [showSamples, setShowSamples] = useState(false);
   
   const isEditMode = !!id; // id가 있으면 수정 모드
+
+  // initialText가 있으면 자동으로 설정
+  useEffect(() => {
+    if (initialText && !content) {
+      setText(initialText);
+    }
+  }, [initialText, content]);
 
   if (!genre) {
     return (
@@ -38,7 +47,36 @@ export default function WritingEditor() {
     );
   }
 
-  // AI 이어쓰기
+  // AI 이어쓰기 샘플 생성
+  const handleGenerateSamples = async () => {
+    if (!text.trim()) {
+      alert("먼저 글을 작성해주세요.");
+      return;
+    }
+
+    setLoading(true);
+    setShowSamples(false);
+
+    try {
+      const samples = await generateContinuationSamples(text);
+      setContinuationSamples(samples);
+      setShowSamples(true);
+    } catch (error) {
+      console.error("이어쓰기 샘플 생성 오류:", error);
+      alert("이어쓰기 샘플 생성 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 샘플 선택
+  const handleSelectSample = (sample: string) => {
+    setText((prev) => prev + "\n\n" + sample);
+    setShowSamples(false);
+    setContinuationSamples([]);
+  };
+
+  // AI 이어쓰기 (기존 버전 - 바로 추가)
   const handleAiContinue = async () => {
     if (!text.trim()) {
       alert("먼저 글을 작성해주세요.");
@@ -118,10 +156,44 @@ ${text}
           "
         />
 
+        {/* 이어쓰기 샘플 표시 */}
+        {showSamples && continuationSamples.length > 0 && (
+          <div className="mt-4 p-4 bg-purple-50 rounded-xl border-2 border-purple-200">
+            <h3 className="text-lg font-bold text-purple-800 mb-3">
+              🤖 AI 이어쓰기 샘플 (선택하세요)
+            </h3>
+            <div className="space-y-2">
+              {continuationSamples.map((sample, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSelectSample(sample)}
+                  className="
+                    w-full p-3 text-left text-gray-700
+                    bg-white rounded-lg border border-purple-200
+                    hover:bg-purple-100 hover:border-purple-400
+                    transition-all duration-200
+                  "
+                >
+                  <span className="font-semibold text-purple-600">옵션 {index + 1}:</span> {sample}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => {
+                setShowSamples(false);
+                setContinuationSamples([]);
+              }}
+              className="mt-3 w-full py-2 text-sm text-gray-600 hover:text-gray-800"
+            >
+              ✕ 샘플 닫기
+            </button>
+          </div>
+        )}
+
         {/* 버튼 영역 */}
         <div className="mt-5 space-y-3">
           <button
-            onClick={handleAiContinue}
+            onClick={handleGenerateSamples}
             disabled={loading || !text.trim()}
             className="
               w-full py-4 text-xl font-bold rounded-xl
@@ -132,7 +204,22 @@ ${text}
               transition-all duration-200
             "
           >
-            {loading ? "🤖 AI가 작성 중..." : "🤖 AI 이어쓰기"}
+            {loading ? "🤖 AI가 샘플 생성 중..." : "🤖 이어쓰기 샘플 보기"}
+          </button>
+
+          <button
+            onClick={handleAiContinue}
+            disabled={loading || !text.trim()}
+            className="
+              w-full py-3 text-lg font-semibold rounded-xl
+              bg-purple-400 text-white shadow-md
+              hover:bg-purple-500
+              active:scale-95
+              disabled:bg-gray-300 disabled:cursor-not-allowed
+              transition-all duration-200
+            "
+          >
+            {loading ? "🤖 AI가 작성 중..." : "⚡ 빠른 이어쓰기"}
           </button>
 
           <button
@@ -151,7 +238,7 @@ ${text}
           </button>
 
           <button
-            onClick={() => navigate("/writing/help", { state: { genre, label } })}
+            onClick={() => navigate("/writing/genre")}
             className="
               w-full py-3 text-lg font-semibold
               bg-gray-100 text-gray-700 rounded-xl
@@ -159,7 +246,7 @@ ${text}
               transition-colors duration-200
             "
           >
-            ← 도움말 다시 보기
+            ← 장르 선택으로 돌아가기
           </button>
         </div>
       </div>

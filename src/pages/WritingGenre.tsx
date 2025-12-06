@@ -31,7 +31,7 @@ export default function WritingGenre() {
             <button
               key={g.key}
               onClick={() =>
-                navigate("/writing/help", { state: { genre: g.key, label: g.label } })
+                navigate("/writing/questions", { state: { genre: g.key, label: g.label } })
               }
               className="
                 bg-white border-2 border-gray-300 rounded-xl
@@ -44,6 +44,21 @@ export default function WritingGenre() {
               {g.label}
             </button>
           ))}
+        </div>
+
+        {/* 건너뛰기 버튼 */}
+        <div className="mt-6">
+          <button
+            onClick={() => navigate("/writing/editor", { state: { genre: "diary", label: "자유 글쓰기" } })}
+            className="
+              w-full py-3 text-lg font-semibold
+              bg-gray-100 text-gray-700 rounded-xl
+              hover:bg-gray-200
+              transition-colors duration-200
+            "
+          >
+            질문 없이 바로 쓰기 →
+          </button>
         </div>
       </div>
     </div>

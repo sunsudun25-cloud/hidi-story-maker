@@ -11,6 +11,7 @@ import DirectInput from './pages/DirectInput'
 import Write from './pages/Write'
 import WriteStart from './pages/WriteStart'
 import WritingGenre from './pages/WritingGenre'
+import WritingAiQuestions from './pages/WritingAiQuestions'
 import WritingHelp from './pages/WritingHelp'
 import WritingEditor from './pages/WritingEditor'
 import WritingDetail from './pages/WritingDetail'
@@ -48,6 +49,7 @@ function App() {
           <Route path="/write" element={<WriteStart />} />
           <Route path="/writing/practice" element={<WritingPractice />} />
           <Route path="/writing/genre" element={<WritingGenre />} />
+          <Route path="/writing/questions" element={<WritingAiQuestions />} />
           <Route path="/writing/help" element={<WritingHelp />} />
           <Route path="/writing/editor" element={<WritingEditor />} />
           <Route path="/writing/detail" element={<WritingDetail />} />

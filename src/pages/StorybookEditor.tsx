@@ -69,12 +69,10 @@ export default function StorybookEditor() {
         setCoverImageUrl(coverUrl);
       }
       
-      // 기본 페이지 설정 (storyPages가 비어있는 경우)
-      if (storyPages.length === 0 || (storyPages.length === 1 && !storyPages[0].text)) {
+      // 빈 페이지 1개로 초기화 (AI가 내용을 채울 예정)
+      if (storyPages.length === 0) {
         setStoryPages([
-          { text: "달빛을 먹으면 힘이 나는 토끼는 오늘도 친구들을 만나기 위해 숲속을 달려갑니다.", imageUrl: undefined },
-          { text: "숲속 깊은 곳에서 토끼는 이상한 빛을 발견하게 됩니다.", imageUrl: undefined },
-          { text: "그 빛을 따라가자, 놀라운 모험이 시작되는데…", imageUrl: undefined }
+          { text: "", imageUrl: undefined }
         ]);
       }
     }
@@ -108,13 +106,44 @@ export default function StorybookEditor() {
     setTextForPage(index, newText);
   };
 
-  // 페이지 자동생성 핸들러
-  const handleAutoGenerate = async () => {
+  // 현재 페이지 AI 내용 생성 핸들러 (새로 추가!)
+  const handleGenerateCurrentPageText = async () => {
+    setIsGenerating(true);
+
+    try {
+      // 현재 페이지 이전의 페이지들 (최근 2개)
+      const prevPages = storyPages.slice(0, currentPage - 1);
+      const prevTexts = prevPages.slice(-2).map(p => p.text).filter(t => t.trim());
+      
+      // Gemini API로 현재 페이지 내용 생성
+      const pageText = await generateNextPage(
+        prevTexts.length > 0 ? prevTexts : [""], // 첫 페이지면 빈 배열
+        style || "동화 스타일",
+        prompt || contextPrompt  // 주제 전달로 일관성 유지
+      );
+      
+      // 현재 페이지 텍스트 업데이트
+      setTextForPage(currentPage - 1, pageText);
+
+      alert("✨ AI가 페이지 내용을 생성했습니다!\n마음에 들지 않으면 수정하거나 다시 생성해주세요.");
+    } catch (err) {
+      console.error("페이지 생성 오류:", err);
+      
+      // 오류 시 fallback 제공
+      setTextForPage(currentPage - 1, "AI가 내용을 생성하지 못했습니다. 직접 작성해주세요.");
+      alert("⚠️ AI 생성에 실패했습니다. 직접 작성해주세요.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // 새 페이지 추가 핸들러 (기존 기능 유지)
+  const handleAddNewPage = async () => {
     setIsGenerating(true);
 
     try {
       // 최근 2페이지만 참조 (컨텍스트 최적화)
-      const prevTexts = storyPages.slice(-2).map(p => p.text);
+      const prevTexts = storyPages.slice(-2).map(p => p.text).filter(t => t.trim());
       
       // Gemini API로 다음 페이지 생성 (주제 전달)
       const nextPageText = await generateNextPage(
@@ -266,10 +295,35 @@ ${currentPageData.text}
       <div className="page-content">
         <div className="page-number">📄 {currentPage} 페이지</div>
 
+        {/* AI 내용 생성 버튼 (페이지가 비어있거나 적을 때만 표시) */}
+        {(!storyPages[currentPage - 1]?.text || storyPages[currentPage - 1]?.text.trim().length < 10) && (
+          <button
+            className="generate-text-btn"
+            onClick={handleGenerateCurrentPageText}
+            disabled={isGenerating}
+            style={{
+              width: "100%",
+              padding: "12px",
+              marginBottom: "10px",
+              backgroundColor: "#10B981",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              cursor: isGenerating ? "not-allowed" : "pointer",
+              opacity: isGenerating ? 0.6 : 1
+            }}
+          >
+            {isGenerating ? "⏳ AI가 내용 생성 중..." : "✨ AI에게 페이지 내용 추천받기"}
+          </button>
+        )}
+
         <textarea
           className="page-textarea"
           value={storyPages[currentPage - 1]?.text || ""}
           onChange={(e) => handleTextChange(currentPage - 1, e.target.value)}
+          placeholder="여기에 페이지 내용을 입력하거나, 위의 'AI에게 페이지 내용 추천받기' 버튼을 눌러주세요."
         ></textarea>
 
         {/* 페이지 이미지 */}
@@ -322,10 +376,10 @@ ${currentPageData.text}
       <div className="bottom-actions">
         <button
           className="secondary-btn"
-          onClick={handleAutoGenerate}
+          onClick={handleAddNewPage}
           disabled={isGenerating}
         >
-          {isGenerating ? "⏳ 생성 중..." : "➕ 페이지 자동생성"}
+          {isGenerating ? "⏳ 생성 중..." : "➕ 새 페이지 추가"}
         </button>
 
         <button

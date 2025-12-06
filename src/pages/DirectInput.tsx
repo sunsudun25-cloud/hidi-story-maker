@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { generateImage } from "../services/geminiService";
+import { generateDalleImageBase64 } from "../services/dalleService";  // ⭐ 변경됨
 import LoadingSpinner from "../components/LoadingSpinner";
 import { friendlyErrorMessage } from "../utils/errorHandler";
 import "./DirectInput.css";
@@ -19,11 +19,10 @@ export default function DirectInput() {
     { id: "warm", label: "따뜻한 스타일", desc: "편안하고 포근" },
   ];
 
-  // 그림 생성
   const handleGenerate = async () => {
     console.log("🔵 [DirectInput] handleGenerate 함수 호출됨!");
     
-    if (!description) {
+    if (!description.trim()) {
       console.warn("⚠️ [DirectInput] 그림 설명이 비어있습니다");
       alert("그림 설명을 입력해주세요!");
       return;
@@ -32,21 +31,25 @@ export default function DirectInput() {
     console.log("🚀 [DirectInput] 이미지 생성 시작:", { description, style: selectedStyle });
 
     setIsGenerating(true);
+
     try {
-      console.log("📡 [DirectInput] generateImage 호출 중...");
-      
-      // Gemini Service로 이미지 생성
-      const imageUrl = await generateImage(description, selectedStyle ?? "기본 스타일");
+      const styleText = selectedStyle ? ` (${selectedStyle} 스타일)` : "";
+      const fullPrompt = `${description}${styleText}`;
 
-      console.log("✅ [DirectInput] 이미지 생성 완료:", imageUrl);
+      console.log("📡 [DirectInput] generateDalleImageBase64 호출 중...", fullPrompt);
 
-      // 결과 페이지로 이동 (prompt와 style 정보도 함께 전달)
-      navigate("/result", { 
-        state: { 
-          imageUrl,
+      // ⭐ DALL·E Base64 이미지 생성
+      const imageBase64 = await generateDalleImageBase64(fullPrompt, selectedStyle ?? undefined);
+
+      console.log("✅ [DirectInput] 이미지 생성 완료, Base64 길이:", imageBase64.length);
+
+      // 결과 페이지로 이동
+      navigate("/drawing/result", {
+        state: {
+          imageBase64,
           prompt: description,
-          style: selectedStyle ?? "기본"
-        } 
+          style: selectedStyle ?? "기본",
+        },
       });
     } catch (err) {
       console.error("❌ [DirectInput] 이미지 생성 실패:", err);
@@ -59,7 +62,6 @@ export default function DirectInput() {
 
   return (
     <div className="page-container">
-      {/* 상단 헤더 */}
       <header className="page-header">
         <button className="header-btn" onClick={() => navigate(-1)}>←</button>
         <h1 className="header-title">직접 입력</h1>
@@ -69,42 +71,41 @@ export default function DirectInput() {
       {isGenerating ? (
         <LoadingSpinner text="AI가 멋진 그림을 그리고 있어요... 🎨" />
       ) : (
-      <div className="direct-page">
-        <div className="section-title">원하는 그림을 자세히 설명해주세요 😊</div>
+        <div className="direct-page">
+          <div className="section-title">원하는 그림을 자세히 설명해주세요 😊</div>
 
-        <div className="example-box">
-          <strong>예시</strong>
-          <p>초록 들판에서 고양이가 나비를 잡으려고 뛰어오르는 장면</p>
+          <div className="example-box">
+            <strong>예시</strong>
+            <p>초록 들판에서 고양이가 나비를 잡으려고 뛰어오르는 장면</p>
+          </div>
+
+          <textarea
+            className="input-area"
+            placeholder="여기에 그림 설명을 입력해주세요…"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+
+          <div className="section-title">그림 스타일 선택 (선택)</div>
+
+          <div className="style-grid">
+            {styles.map((s) => (
+              <button
+                key={s.id}
+                className={`style-card ${selectedStyle === s.id ? "selected" : ""}`}
+                onClick={() => setSelectedStyle(s.id)}
+              >
+                {s.label}
+                <br />
+                <span>{s.desc}</span>
+              </button>
+            ))}
+          </div>
+
+          <button className="big-btn primary primary-btn" onClick={handleGenerate}>
+            🚀 그림 만들기
+          </button>
         </div>
-
-        <textarea
-          className="input-area"
-          placeholder="여기에 그림 설명을 입력해주세요…"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-
-        {/* 스타일 선택 */}
-        <div className="section-title">그림 스타일 선택 (선택)</div>
-
-        <div className="style-grid">
-          {styles.map((s) => (
-            <button
-              key={s.id}
-              className={`style-card ${selectedStyle === s.id ? "selected" : ""}`}
-              onClick={() => setSelectedStyle(s.id)}
-            >
-              {s.label}
-              <br />
-              <span>{s.desc}</span>
-            </button>
-          ))}
-        </div>
-
-        <button className="big-btn primary primary-btn" onClick={handleGenerate}>
-          🚀 그림 만들기
-        </button>
-      </div>
       )}
     </div>
   );

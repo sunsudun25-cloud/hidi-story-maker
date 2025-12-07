@@ -1,48 +1,48 @@
 /**
- * geminiService.ts — Google GenAI 최신 SDK 기반 재작성
- * @google/genai (v1 API) 사용
+ * geminiService.ts — Firebase Functions 프록시 방식
+ * 모든 Gemini API 호출을 Firebase Functions를 통해 처리
  */
 
-import { GoogleGenAI } from "@google/genai";
+// Firebase Functions URL - geminiText 함수
+const FUNCTIONS_BASE_URL = "https://asia-northeast1-story-make-fbbd7.cloudfunctions.net/geminiText";
 
-// =============================================================
-// 1) API KEY 불러오기
-// =============================================================
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-
-if (!API_KEY) {
-  console.error("❌ Gemini API KEY가 설정되지 않았습니다!");
-}
-
-// 최신 SDK 클라이언트
-const genAI = new GoogleGenAI({
-  apiKey: API_KEY,
-});
-
-// 기본 모델
-const MODEL = "gemini-2.0-flash-exp"; // 가장 빠르고 최신 (실험 버전)
-
-// =============================================================
-// 2) 안전 호출 래퍼
-// =============================================================
+/**
+ * 안전한 Gemini API 호출 (Firebase Functions 프록시)
+ * @param prompt 사용자 프롬프트
+ * @returns AI 응답 텍스트 또는 null
+ */
 export async function safeGeminiCall(prompt: string): Promise<string | null> {
   try {
-    const response = await genAI.models.generateContent({
-      model: MODEL,
-      contents: prompt,
+    const response = await fetch(FUNCTIONS_BASE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt }),
     });
 
-    const text = response?.text();
-    return text?.trim() ?? null;
+    if (!response.ok) {
+      console.error("❌ Firebase Functions 오류:", response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    
+    if (!data.success || !data.text) {
+      console.error("❌ 응답 형식 오류:", data);
+      return null;
+    }
+
+    return data.text.trim();
   } catch (err) {
     console.error("❌ Gemini API 호출 오류:", err);
     return null;
   }
 }
 
-// =============================================================
-// 3) 다음 페이지 생성 (동화책용)
-// =============================================================
+/**
+ * 다음 페이지 생성 (동화책용)
+ */
 export async function generateNextPage(
   prevPages: string[],
   mainPrompt: string,
@@ -65,9 +65,9 @@ ${prevPages.join("\n")}
   return result ?? "다음 페이지를 생성할 수 없습니다.";
 }
 
-// =============================================================
-// 4) 문장 제안 (글쓰기 이어쓰기)
-// =============================================================
+/**
+ * 문장 제안 (글쓰기 이어쓰기)
+ */
 export async function suggestNextSentence(
   context: string,
   userInput: string
@@ -97,9 +97,9 @@ ${userInput}
     .map((l) => l.replace(/^\d+\.\s*/, "").trim());
 }
 
-// =============================================================
-// 5) 장르별 질문 생성 (AI 질문 3개 생성)
-// =============================================================
+/**
+ * 장르별 질문 생성
+ */
 export async function generateStoryPrompts(genre: string): Promise<string> {
   const guide: Record<string, string> = {
     diary: "오늘 하루를 돌아볼 수 있는 질문",
@@ -126,9 +126,9 @@ ${guideText} 3개를 만들어주세요.
   return result ?? "";
 }
 
-// =============================================================
-// 6) 이어쓰기 샘플 생성 (3개 버전)
-// =============================================================
+/**
+ * 이어쓰기 샘플 생성
+ */
 export async function generateContinuationSamples(
   currentText: string,
   mood?: string
@@ -157,9 +157,9 @@ ${currentText}
     .map((l) => l.replace(/^\d+\.\s*/, "").trim());
 }
 
-// =============================================================
-// 7) 감정 분석 (이미지 프롬프트 생성용)
-// =============================================================
+/**
+ * 감정 분석 (이미지 프롬프트 생성용)
+ */
 export async function analyzeMoodForImage(text: string) {
   const prompt = `
 당신은 감정 분석 전문가입니다.

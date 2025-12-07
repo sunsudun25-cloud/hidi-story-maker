@@ -6,14 +6,14 @@
  */
 
 // Firebase Functions 베이스 URL (프로덕션)
-const BASE_URL = "https://us-central1-story-make-fbbd7.cloudfunctions.net/api";
+const BASE_URL = "https://asia-northeast1-story-make-fbbd7.cloudfunctions.net";
 
 /**
  * Firebase Functions를 통해 DALL-E 3 이미지 생성
  * 
  * @param prompt 이미지 생성 프롬프트
  * @param style 스타일 옵션 (선택)
- * @returns 생성된 이미지 URL (HTTP URL 또는 Base64)
+ * @returns 생성된 이미지 URL (Base64 data URL)
  */
 export async function generateImageViaFirebase(
   prompt: string,
@@ -52,17 +52,18 @@ export async function generateImageViaFirebase(
 
     const data = await response.json();
     console.log("📦 [firebaseFunctions] 응답 데이터:", {
-      hasImageUrl: !!data.imageUrl,
-      imageUrlType: typeof data.imageUrl
+      success: data.success,
+      hasImageData: !!data.imageData,
+      imageDataLength: data.imageData?.length
     });
 
-    // imageUrl 필드에서 이미지 URL 가져오기
-    if (!data.imageUrl) {
-      throw new Error(data.error || "이미지 URL을 받지 못했습니다.");
+    // imageData 필드에서 이미지 데이터 가져오기
+    if (!data.success || !data.imageData) {
+      throw new Error(data.error || "이미지 데이터를 받지 못했습니다.");
     }
 
-    console.log("✅ [firebaseFunctions] 이미지 생성 완료:", data.imageUrl.substring(0, 50) + "...");
-    return data.imageUrl;
+    console.log("✅ [firebaseFunctions] 이미지 생성 완료");
+    return data.imageData;  // data:image/png;base64,... 형식
 
   } catch (error) {
     console.error("❌ [firebaseFunctions] 오류 발생:", error);
@@ -81,7 +82,7 @@ export async function checkFirebaseFunctionsHealth(): Promise<{
   region: string;
 }> {
   try {
-    const response = await fetch('/api/health');
+    const response = await fetch(`${BASE_URL}/health`);
     const data = await response.json();
     console.log("✅ [firebaseFunctions] 헬스체크 성공:", data);
     return data;

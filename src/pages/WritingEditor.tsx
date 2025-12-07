@@ -118,9 +118,13 @@ ${text}
         } catch (err) {
           console.warn("⚠ IndexedDB 수정 실패 → localStorage fallback 적용", err);
 
-          // localStorage에 백업 저장
-          const backup = { id, label, text, updatedAt: Date.now() };
-          localStorage.setItem(`story-backup-${id}`, JSON.stringify(backup));
+          // localStorage에 백업 저장 (안전 처리)
+          try {
+            const backup = { id, label, text, updatedAt: Date.now() };
+            localStorage.setItem(`story-backup-${id}`, JSON.stringify(backup));
+          } catch (e) {
+            console.warn("⚠️ localStorage 접근 불가 (무시)", e);
+          }
           
           alert("✅ 수정되었습니다! (임시 저장)");
         }
@@ -132,10 +136,14 @@ ${text}
         } catch (err) {
           console.warn("⚠ IndexedDB 저장 실패 → localStorage fallback 적용", err);
 
-          // localStorage 임시 저장
-          const tempId = `story-temp-${Date.now()}`;
-          const backup = { id: tempId, label, text, createdAt: Date.now() };
-          localStorage.setItem(tempId, JSON.stringify(backup));
+          // localStorage 임시 저장 (안전 처리)
+          try {
+            const tempId = `story-temp-${Date.now()}`;
+            const backup = { id: tempId, label, text, createdAt: Date.now() };
+            localStorage.setItem(tempId, JSON.stringify(backup));
+          } catch (e) {
+            console.warn("⚠️ localStorage 접근 불가 (무시)", e);
+          }
 
           alert("✅ 저장되었습니다! (임시 저장)");
         }
@@ -149,12 +157,16 @@ ${text}
         "⚠ 저장 기능에 문제가 발생했습니다.\n작성한 글은 자동으로 보관 처리되었습니다."
       );
 
-      // 글 유실 방지
-      const fallbackId = `story-fallback-${Date.now()}`;
-      localStorage.setItem(
-        fallbackId,
-        JSON.stringify({ label, text, createdAt: Date.now() })
-      );
+      // 글 유실 방지 (안전 처리)
+      try {
+        const fallbackId = `story-fallback-${Date.now()}`;
+        localStorage.setItem(
+          fallbackId,
+          JSON.stringify({ label, text, createdAt: Date.now() })
+        );
+      } catch (e) {
+        console.warn("⚠️ localStorage 접근 불가 (무시)", e);
+      }
     }
   };
 

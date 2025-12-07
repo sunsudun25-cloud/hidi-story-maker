@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { saveImageAsFile, shareImage, copyImageToClipboard } from "../services/imageService";
-import { saveImageToDB } from "../services/dbService";
+import { saveImage } from "../services/dbService";
 import "./Result.css";
 
 export default function Result() {
@@ -24,11 +24,10 @@ export default function Result() {
       console.log("💾 [Result] IndexedDB에 이미지 저장 시작...");
       hasSaved.current = true; // 저장 플래그 설정
       
-      saveImageToDB({
+      saveImage({
         image: imageUrl,
         prompt: prompt,
-        style: style,
-        createdAt: new Date().toISOString()
+        style: style
       }).then(() => {
         console.log("✅ [Result] 이미지가 내 작품에 저장되었습니다.");
       }).catch((err) => {

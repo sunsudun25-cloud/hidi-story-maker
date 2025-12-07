@@ -1,7 +1,7 @@
 // src/pages/DrawingResult.tsx
 import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { saveImageToDB } from "../services/dbService";
+import { saveImage } from "../services/dbService";
 
 export default function DrawingResult() {
   const { state } = useLocation();
@@ -33,7 +33,7 @@ export default function DrawingResult() {
       console.log("💾 [DrawingResult] IndexedDB에 이미지 저장 시작...");
       hasSaved.current = true; // 저장 플래그 설정
       
-      saveImageToDB({
+      saveImage({
         image: imageData,
         prompt: prompt,
         style: style,

@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { downloadImage } from "../../services/imageService";
-import { saveImageToDB } from "../../services/dbService";
+import { saveImage } from "../../services/dbService";
 import { useStorybook } from "../../context/StorybookContext";
 import { useState } from "react";
 import "./ImageMake.css";
@@ -48,7 +48,7 @@ export default function Result() {
   const handleSaveToDB = async () => {
     setIsSavingToDB(true);
     try {
-      await saveImageToDB({
+      await saveImage({
         image,
         prompt,
         style,

@@ -265,3 +265,86 @@ export async function getAllStorybooks(): Promise<Storybook[]> {
     }
   });
 }
+
+/* --------------------------------------------------------
+   7) 데이터 삭제 (안전)
+--------------------------------------------------------- */
+export async function deleteStory(id: string): Promise<void> {
+  const db = await openDB();
+  if (!db) return;
+
+  try {
+    db.transaction(STORE_NAME, "readwrite")
+      .objectStore(STORE_NAME)
+      .delete(id);
+  } catch (e) {
+    console.warn("⚠️ deleteStory failed:", e);
+  }
+}
+
+export async function deleteImage(id: string): Promise<void> {
+  const db = await openDB();
+  if (!db) return;
+
+  try {
+    db.transaction(IMAGE_STORE_NAME, "readwrite")
+      .objectStore(IMAGE_STORE_NAME)
+      .delete(id);
+  } catch (e) {
+    console.warn("⚠️ deleteImage failed:", e);
+  }
+}
+
+export async function deleteStorybook(id: string): Promise<void> {
+  const db = await openDB();
+  if (!db) return;
+
+  try {
+    db.transaction(STORYBOOK_STORE_NAME, "readwrite")
+      .objectStore(STORYBOOK_STORE_NAME)
+      .delete(id);
+  } catch (e) {
+    console.warn("⚠️ deleteStorybook failed:", e);
+  }
+}
+
+/* --------------------------------------------------------
+   8) 데이터 업데이트 (안전)
+--------------------------------------------------------- */
+export async function updateStory(id: string, updates: Partial<Story>): Promise<void> {
+  const db = await openDB();
+  if (!db) return;
+
+  try {
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.get(id);
+    
+    request.onsuccess = () => {
+      const story = request.result;
+      if (story) {
+        const updated = { ...story, ...updates, updatedAt: new Date().toISOString() };
+        store.put(updated);
+      }
+    };
+  } catch (e) {
+    console.warn("⚠️ updateStory failed:", e);
+  }
+}
+
+/* --------------------------------------------------------
+   9) 전체 삭제 (안전)
+--------------------------------------------------------- */
+export async function clearAll(): Promise<void> {
+  const db = await openDB();
+  if (!db) return;
+
+  try {
+    const tx = db.transaction([STORE_NAME, IMAGE_STORE_NAME, STORYBOOK_STORE_NAME], "readwrite");
+    tx.objectStore(STORE_NAME).clear();
+    tx.objectStore(IMAGE_STORE_NAME).clear();
+    tx.objectStore(STORYBOOK_STORE_NAME).clear();
+  } catch (e) {
+    console.warn("⚠️ clearAll failed:", e);
+  }
+}

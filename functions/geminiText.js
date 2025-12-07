@@ -35,9 +35,9 @@ exports.geminiText = onRequest({ region: REGION }, async (req, res) => {
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "gemini-2.0-flash-exp",
+          model: "gemini-2.5-flash",
           messages: [
-            { role: "system", content: "You are a helpful assistant." },
+            { role: "system", content: "You are a creative storytelling assistant for children's books." },
             { role: "user", content: prompt },
           ],
         }),

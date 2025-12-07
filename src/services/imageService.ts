@@ -3,16 +3,6 @@
  * 이미지 다운로드, 변환, 최적화 등 이미지 관련 유틸리티 함수
  */
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const API_KEY = import.meta.env.VITE_GEMINI_KEY || import.meta.env.VITE_GEMINI_API_KEY;
-
-if (!API_KEY) {
-  console.error("⚠️ VITE_GEMINI_KEY 또는 VITE_GEMINI_API_KEY가 설정되지 않았습니다!");
-}
-
-const genAI = new GoogleGenerativeAI(API_KEY);
-
 /**
  * 동화 이미지 생성 (DALL-E 3 via Firebase Functions)
  * @param text 페이지 내용 또는 장면 설명

@@ -51,24 +51,17 @@ export interface Storybook {
     1) IndexedDB 사용 가능 여부 체크
 ------------------------------------------------------------------ */
 export function isIndexedDBAvailable(): boolean {
-  // 환경 체크만 수행하고, 실제 DB 열기는 시도하지 않음
-  // (초기 렌더링 시 Storage 오류 방지)
+  // 환경 체크만 수행 - Storage 접근 시도하지 않음
+  // iframe/차단된 환경에서도 오류 없이 false 반환
   try {
     if (typeof window === "undefined") return false;
     if (!("indexedDB" in window)) return false;
     if (!window.indexedDB) return false;
     
-    // localStorage도 사용 가능한지 확인
-    try {
-      localStorage.setItem("__test__", "1");
-      localStorage.removeItem("__test__");
-    } catch {
-      console.warn("⚠️ localStorage 접근 불가");
-    }
-    
+    // ⚠️ localStorage 테스트 제거: iframe 환경에서 오류 발생 방지
     return true;
   } catch (err) {
-    console.warn("⚠️ Storage 사용 불가:", err);
+    // 조용히 실패 - 오류 로그만 출력
     return false;
   }
 }

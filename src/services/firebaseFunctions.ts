@@ -6,7 +6,9 @@
  */
 
 // Firebase Functions 베이스 URL (프로덕션)
-const BASE_URL = "https://asia-northeast1-story-make-fbbd7.cloudfunctions.net";
+// Cloud Run URLs from Firebase Functions v2
+const GENERATE_IMAGE_URL = "https://generateimage-igb7tmigxa-an.a.run.app";
+const HEALTH_URL = "https://health-igb7tmigxa-an.a.run.app";
 
 /**
  * Firebase Functions를 통해 DALL-E 3 이미지 생성
@@ -22,8 +24,8 @@ export async function generateImageViaFirebase(
   console.log("🚀 [firebaseFunctions] generateImageViaFirebase 호출:", { prompt, style });
 
   try {
-    // Firebase Functions 엔드포인트 (절대 URL)
-    const functionUrl = `${BASE_URL}/generateImage`;
+    // Firebase Functions 엔드포인트 (Cloud Run URL)
+    const functionUrl = GENERATE_IMAGE_URL;
     
     console.log("📡 [firebaseFunctions] Firebase Functions 호출:", functionUrl);
 
@@ -82,7 +84,7 @@ export async function checkFirebaseFunctionsHealth(): Promise<{
   region: string;
 }> {
   try {
-    const response = await fetch(`${BASE_URL}/health`);
+    const response = await fetch(HEALTH_URL);
     const data = await response.json();
     console.log("✅ [firebaseFunctions] 헬스체크 성공:", data);
     return data;

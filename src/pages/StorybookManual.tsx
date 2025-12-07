@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { generateImageViaFirebase } from "../services/firebaseFunctions";
+import { safeGeminiCall } from "../services/geminiService";
 import { useStorybook } from "../context/StorybookContext";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { friendlyErrorMessage } from "../utils/errorHandler";
 import "./Storybook/Storybook.css";
 
 export default function StorybookManual() {
@@ -33,6 +32,12 @@ export default function StorybookManual() {
     { id: "warm", label: "따뜻한 느낌", desc: "햇살 같은 분위기" },
   ];
 
+  /** 
+   * 🔥 핵심 변경 포인트:
+   * - 표지 생성 ❌ 제거
+   * - 본문 3페이지 초안 생성 ✅ 추가
+   * - Editor로 pages 배열 전달 ✅
+   */
   const handleCreateStorybook = async () => {
     if (!storyTitle.trim()) {
       alert("동화책 제목을 입력해주세요!");
@@ -43,39 +48,80 @@ export default function StorybookManual() {
       return;
     }
 
-    console.log("📘 동화책 생성:", { title: storyTitle, prompt: storyPrompt, style: selectedStyle });
+    console.log("📘 동화책 초안 생성:", { title: storyTitle, prompt: storyPrompt, style: selectedStyle });
 
     setIsGenerating(true);
     try {
-      // Firebase Functions를 통해 DALL-E 3로 표지 이미지 생성
-      const coverPrompt = `
-동화책 표지 일러스트를 생성해주세요.
-제목: ${storyTitle}
-내용: ${storyPrompt}
-스타일: ${selectedStyle ?? "동화 스타일"}
-따뜻하고 친근한 분위기로 어린이가 좋아할 만한 그림을 그려주세요.
-`;
-      const coverImageUrl = await generateImageViaFirebase(coverPrompt);
+      // ------------------------------
+      // 1) Gemini AI로 3페이지 초안 생성
+      // ------------------------------
+      const generationPrompt = `
+당신은 어린이를 위한 동화책 작가입니다.
+사용자의 줄거리를 기반으로 초안 3페이지를 작성하세요.
 
-      // Context에 저장
+제목: ${storyTitle}
+줄거리: ${storyPrompt}
+
+각 페이지는 3~5문장으로 구성하세요.
+따뜻하고 희망적인 이야기로 작성해주세요.
+
+출력 형식:
+[page1]
+내용...
+
+[page2]
+내용...
+
+[page3]
+내용...
+      `;
+
+      const raw = await safeGeminiCall(generationPrompt);
+
+      // ------------------------------
+      // 2) 페이지 분리 및 파싱
+      // ------------------------------
+      const pages = [];
+      const blocks = raw.split(/\[page\d+\]/);
+      
+      blocks.forEach(block => {
+        const text = block.trim();
+        if (text && text.length > 10) {
+          pages.push({ text });
+        }
+      });
+
+      // 최소 1페이지는 보장
+      if (pages.length === 0) {
+        pages.push({ text: "동화책의 첫 페이지입니다. 내용을 수정해주세요." });
+      }
+
+      console.log("✅ 생성된 페이지:", pages.length);
+
+      // ------------------------------
+      // 3) Context에 저장
+      // ------------------------------
+      storybookContext.resetStorybook();
       storybookContext.setTitle(storyTitle);
       storybookContext.setPrompt(storyPrompt);
       storybookContext.setStyle(selectedStyle || "동화 스타일");
-      storybookContext.setCoverImageUrl(coverImageUrl);
-      storybookContext.resetStorybook(); // 페이지 초기화
+      storybookContext.setStoryPages(pages);
 
-      // 다음 단계(편집기 페이지)로 이동
+      // ------------------------------
+      // 4) Editor로 이동 (pages 전달)
+      // ------------------------------
       navigate("/storybook-editor", {
         state: {
           title: storyTitle,
           prompt: storyPrompt,
-          style: selectedStyle,
-          coverImageUrl,
+          style: selectedStyle || "동화 스타일",
+          pages,
         },
       });
+
     } catch (err) {
-      console.error("표지 생성 오류:", err);
-      alert(friendlyErrorMessage(err));
+      console.error("초안 생성 오류:", err);
+      alert("동화책 초안 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
       setIsGenerating(false);
     }
@@ -91,7 +137,7 @@ export default function StorybookManual() {
       </header>
 
       {isGenerating ? (
-        <LoadingSpinner text="동화책 표지를 그리고 있어요... 📚✨" />
+        <LoadingSpinner text="AI가 동화책 초안을 만드는 중이에요... 📚✨" />
       ) : (
         <div className="storybook-page">
           {/* AI 추천에서 왔을 경우 안내 */}

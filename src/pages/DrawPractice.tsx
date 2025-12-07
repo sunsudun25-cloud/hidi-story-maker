@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { generateStoryImage } from "../services/imageService";
+import { generateImageViaFirebase } from "../services/firebaseFunctions";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { friendlyErrorMessage } from "../utils/errorHandler";
 import "./DrawPractice.css";
@@ -126,7 +126,7 @@ export default function DrawPractice() {
     setIsGenerating(true);
     try {
       // Firebase Functions로 이미지 생성
-      const imageUrl = await generateStoryImage(description, selectedStyle ?? "기본 스타일");
+      const imageUrl = await generateImageViaFirebase(description, selectedStyle ?? "기본 스타일");
 
       // 결과 페이지로 이동 (prompt와 style 정보도 함께 전달)
       navigate("/result", { 

@@ -27,7 +27,7 @@ exports.geminiText = onRequest({ region: REGION }, async (req, res) => {
     }
 
     const ai = new GoogleGenerativeAI(apiKey);
-    const model = ai.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = ai.getGenerativeModel({ model: "gemini-pro" });
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();

@@ -110,7 +110,7 @@ export async function generateNextPage(
   mainPrompt?: string
 ): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
 당신은 동화책 작가입니다.
@@ -149,7 +149,7 @@ ${prevPages.map((p, i) => `페이지 ${i + 1}:\n${p}\n`).join("")}
  */
 export async function suggestNextSentence(context: string, userInput: string): Promise<string[]> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
 당신은 글쓰기 도우미입니다.
@@ -191,7 +191,7 @@ ${userInput}
  */
 export async function suggestTopics(genre: string): Promise<string[]> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
 당신은 고령친화형 글쓰기 도우미입니다.
@@ -234,7 +234,7 @@ export async function checkGrammar(text: string): Promise<{
   suggestions: string[];
 }> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
 당신은 한국어 문법 및 맞춤법 검사 도우미입니다.
@@ -286,7 +286,7 @@ ${text}
  */
 export async function safeGeminiCall(prompt: string): Promise<string | null> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent(prompt);
     const text = result.response.text();
     return text.trim();
@@ -310,7 +310,7 @@ export async function generateStoryPrompts(genre: string): Promise<string> {
   console.log("🤖 [generateStoryPrompts] AI 질문 생성 시작:", genre);
   
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const genreGuides: Record<string, string> = {
       diary: "일기 작성을 위한 질문입니다. 오늘 하루를 돌아보며 답변할 수 있는 질문 3개를 만들어주세요.",
@@ -365,7 +365,7 @@ export async function generateContinuationSamples(
   console.log("🤖 [generateContinuationSamples] 이어쓰기 샘플 생성 시작");
   
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const moodGuide = mood 
       ? `작성 분위기: ${mood}` 
@@ -423,7 +423,7 @@ export async function analyzeMoodForImage(text: string): Promise<{
   console.log("🤖 [analyzeMoodForImage] 감정 분석 시작");
   
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
 당신은 텍스트 감정 분석 전문가입니다.

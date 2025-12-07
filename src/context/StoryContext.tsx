@@ -56,8 +56,7 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
         
         setStories(normalizedStories)
       } catch (error) {
-        // 모든 오류를 조용히 처리
-        console.warn('⚠️ 데이터 로딩 실패 (localStorage 사용):', error)
+        // 모든 오류를 조용히 처리 (에러 로깅 완전 제거)
         setStories([])
       } finally {
         setIsLoading(false)

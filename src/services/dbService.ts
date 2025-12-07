@@ -51,29 +51,24 @@ export interface Storybook {
     1) IndexedDB 사용 가능 여부 체크
 ------------------------------------------------------------------ */
 export function isIndexedDBAvailable(): boolean {
-  // 긴급 수정: IndexedDB 완전 비활성화 (오류 방지)
-  // localStorage만 사용하도록 강제
-  return false;
-  
-  /* 원래 코드 (주석 처리)
   try {
-    // 시크릿 모드 감지
-    if (typeof indexedDB === "undefined") {
-      return false;
-    }
-    
-    // 실제 IndexedDB 접근 가능 여부 테스트
+    // SSR 환경 방지
+    if (typeof window === "undefined") return false;
+
+    // 브라우저가 IndexedDB 지원하는지 확인
+    if (!("indexedDB" in window)) return false;
+
+    // 실제 동작 테스트 (시크릿 모드 감지)
     try {
-      const testDB = indexedDB.open("__test__");
-      testDB.onerror = () => false;
+      const test = indexedDB.open("__test__");
       return true;
     } catch {
       return false;
     }
-  } catch {
+  } catch (err) {
+    console.warn("IndexedDB 사용 불가:", err);
     return false;
   }
-  */
 }
 
 /* ------------------------------------------------------------------

@@ -79,21 +79,24 @@ export default function StorybookManual() {
       const raw = await safeGeminiCall(generationPrompt);
 
       // ------------------------------
-      // 2) 페이지 분리 및 파싱
+      // 2) 페이지 분리 및 파싱 (null 체크 추가)
       // ------------------------------
-      const pages = [];
-      const blocks = raw.split(/\[page\d+\]/);
-      
-      blocks.forEach(block => {
-        const text = block.trim();
-        if (text && text.length > 10) {
-          pages.push({ text });
-        }
-      });
+      let pages: any[] = [];
 
-      // 최소 1페이지는 보장
+      if (raw && typeof raw === "string") {
+        const blocks = raw.split(/\[page\d+\]/);
+        
+        blocks.forEach(block => {
+          const text = block.trim();
+          if (text && text.length > 10) {
+            pages.push({ text });
+          }
+        });
+      }
+
+      // 최소 1페이지는 보장 (fallback)
       if (pages.length === 0) {
-        pages.push({ text: "동화책의 첫 페이지입니다. 내용을 수정해주세요." });
+        pages.push({ text: "AI가 내용을 생성하지 못했습니다. 다시 시도해주세요." });
       }
 
       console.log("✅ 생성된 페이지:", pages.length);

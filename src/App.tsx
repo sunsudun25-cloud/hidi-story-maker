@@ -19,6 +19,8 @@ import WritingEditor from './pages/WritingEditor'
 import WritingDetail from './pages/WritingDetail'
 import WritingPractice from './pages/WritingPractice'
 import Storybook from './pages/Storybook'
+import StorybookManual from './pages/StorybookManual'
+import StorybookAISuggestion from './pages/StorybookAISuggestion'
 import StorybookEditor from './pages/StorybookEditor'
 import StorybookExport from './pages/StorybookExport'
 import MyWorks from './pages/MyWorks'
@@ -58,6 +60,8 @@ function App() {
           <Route path="/writing/editor" element={<WritingEditor />} />
           <Route path="/writing/detail" element={<WritingDetail />} />
           <Route path="/storybook" element={<Storybook />} />
+          <Route path="/storybook-manual" element={<StorybookManual />} />
+          <Route path="/storybook-ai-suggestion" element={<StorybookAISuggestion />} />
           <Route path="/storybook-editor" element={<StorybookEditor />} />
           <Route path="/storybook-export" element={<StorybookExport />} />
           <Route path="/export" element={<StorybookExport />} />

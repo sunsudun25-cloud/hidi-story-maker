@@ -51,22 +51,24 @@ export interface Storybook {
     1) IndexedDB 사용 가능 여부 체크
 ------------------------------------------------------------------ */
 export function isIndexedDBAvailable(): boolean {
+  // 환경 체크만 수행하고, 실제 DB 열기는 시도하지 않음
+  // (초기 렌더링 시 Storage 오류 방지)
   try {
-    // SSR 환경 방지
     if (typeof window === "undefined") return false;
-
-    // 브라우저가 IndexedDB 지원하는지 확인
     if (!("indexedDB" in window)) return false;
-
-    // 실제 동작 테스트 (시크릿 모드 감지)
+    if (!window.indexedDB) return false;
+    
+    // localStorage도 사용 가능한지 확인
     try {
-      const test = indexedDB.open("__test__");
-      return true;
+      localStorage.setItem("__test__", "1");
+      localStorage.removeItem("__test__");
     } catch {
-      return false;
+      console.warn("⚠️ localStorage 접근 불가");
     }
+    
+    return true;
   } catch (err) {
-    console.warn("IndexedDB 사용 불가:", err);
+    console.warn("⚠️ Storage 사용 불가:", err);
     return false;
   }
 }
@@ -75,18 +77,25 @@ export function isIndexedDBAvailable(): boolean {
     2) Fallback 저장소 (localStorage 기반)
 ------------------------------------------------------------------ */
 function saveFallback(key: string, data: any) {
+  // localStorage 접근이 차단된 환경에서는 조용히 실패
   try {
+    if (typeof window === "undefined") return;
+    if (!window.localStorage) return;
     localStorage.setItem(key, JSON.stringify(data));
   } catch (err) {
-    console.warn("⚠️ localStorage 저장 실패:", err);
+    // Storage 접근 불가 시 조용히 무시 (오류 발생 방지)
+    console.warn("⚠️ localStorage 저장 실패 (차단된 환경):", err);
   }
 }
 
 function loadFallback(key: string) {
   try {
+    if (typeof window === "undefined") return null;
+    if (!window.localStorage) return null;
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : null;
-  } catch {
+  } catch (err) {
+    console.warn("⚠️ localStorage 읽기 실패 (차단된 환경):", err);
     return null;
   }
 }

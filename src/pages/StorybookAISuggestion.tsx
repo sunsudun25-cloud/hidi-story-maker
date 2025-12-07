@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { safeGeminiCall } from "../services/geminiService";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useStorybook } from "../context/StorybookContext";
 import "./Storybook/Storybook.css";
 
 type PlotSuggestion = {
@@ -12,12 +13,16 @@ type PlotSuggestion = {
 
 export default function StorybookAISuggestion() {
   const navigate = useNavigate();
+  const storybookContext = useStorybook();
 
   const [suggestions, setSuggestions] = useState<PlotSuggestion[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [isCreatingDraft, setIsCreatingDraft] = useState(false);
 
-  // AI에게 여러 줄거리 추천 받기
+  // -----------------------------
+  // 1) AI에게 3개 줄거리 추천 받기
+  // -----------------------------
   const handleGenerateSuggestions = async () => {
     setIsGenerating(true);
     try {
@@ -101,8 +106,10 @@ export default function StorybookAISuggestion() {
     return suggestions.slice(0, 3); // 최대 3개
   };
 
-  // 선택한 줄거리로 직접 입력 페이지로 이동
-  const handleSelectSuggestion = () => {
+  // -----------------------------
+  // 2) 추천 선택 → 초안 생성 → Editor 이동
+  // -----------------------------
+  const handleSelectSuggestion = async () => {
     if (selectedId === null) {
       alert("줄거리를 선택해주세요!");
       return;
@@ -111,13 +118,84 @@ export default function StorybookAISuggestion() {
     const selected = suggestions.find(s => s.id === selectedId);
     if (!selected) return;
 
-    // 선택한 줄거리를 StorybookManual로 전달
-    navigate("/storybook-manual", {
-      state: {
-        title: selected.title,
-        prompt: selected.plot
+    console.log("📘 선택된 줄거리:", selected.title);
+
+    setIsCreatingDraft(true);
+
+    try {
+      // ------------------------------
+      // Gemini AI로 3페이지 초안 생성
+      // ------------------------------
+      const draftPrompt = `
+당신은 어린이를 위한 동화책 작가입니다.
+아래 줄거리를 기반으로 동화책 초안 3페이지를 작성하세요.
+
+제목: ${selected.title}
+줄거리: ${selected.plot}
+
+각 페이지는 3~5문장으로 구성하세요.
+따뜻하고 희망적인 이야기로 작성해주세요.
+
+출력 형식:
+[page1]
+내용...
+
+[page2]
+내용...
+
+[page3]
+내용...
+      `;
+
+      const raw = await safeGeminiCall(draftPrompt);
+
+      // ------------------------------
+      // 페이지 분리 및 파싱
+      // ------------------------------
+      const pages: { text: string }[] = [];
+      const blocks = raw.split(/\[page\d+\]/);
+      
+      blocks.forEach(block => {
+        const text = block.trim();
+        if (text && text.length > 10) {
+          pages.push({ text });
+        }
+      });
+
+      // 최소 1페이지는 보장
+      if (pages.length === 0) {
+        pages.push({ text: "동화책의 첫 페이지입니다. 내용을 수정해주세요." });
       }
-    });
+
+      console.log("✅ 생성된 페이지:", pages.length);
+
+      // ------------------------------
+      // Context에 저장
+      // ------------------------------
+      storybookContext.resetStorybook();
+      storybookContext.setTitle(selected.title);
+      storybookContext.setPrompt(selected.plot);
+      storybookContext.setStyle("동화 스타일");
+      storybookContext.setStoryPages(pages);
+
+      // ------------------------------
+      // Editor로 이동 (pages 전달)
+      // ------------------------------
+      navigate("/storybook-editor", {
+        state: {
+          title: selected.title,
+          prompt: selected.plot,
+          style: "동화 스타일",
+          pages,
+        },
+      });
+
+    } catch (err) {
+      console.error("초안 생성 오류:", err);
+      alert("동화책 초안 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsCreatingDraft(false);
+    }
   };
 
   return (
@@ -129,8 +207,12 @@ export default function StorybookAISuggestion() {
         <button className="header-btn" onClick={() => navigate("/home")}>🏠</button>
       </header>
 
-      {isGenerating ? (
-        <LoadingSpinner text="AI가 재미있는 이야기를 생각하고 있어요... 🤖✨" />
+      {isGenerating || isCreatingDraft ? (
+        <LoadingSpinner text={
+          isGenerating 
+            ? "AI가 재미있는 이야기를 생각하고 있어요... 🤖✨" 
+            : "AI가 동화책 초안을 만드는 중이에요... 📚✨"
+        } />
       ) : (
         <div className="storybook-page">
           {suggestions.length === 0 ? (
@@ -263,7 +345,7 @@ export default function StorybookAISuggestion() {
                     cursor: selectedId !== null ? "pointer" : "not-allowed"
                   }}
                 >
-                  ✨ 선택하기
+                  ✨ 선택하고 동화책 만들기
                 </button>
               </div>
             </>

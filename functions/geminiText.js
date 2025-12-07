@@ -1,5 +1,4 @@
 const { onRequest } = require("firebase-functions/v2/https");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const REGION = "asia-northeast1";
 
@@ -26,11 +25,37 @@ exports.geminiText = onRequest({ region: REGION }, async (req, res) => {
       return res.status(400).json({ success: false, error: "Prompt is required" });
     }
 
-    const ai = new GoogleGenerativeAI(apiKey);
-    const model = ai.getGenerativeModel({ model: "gemini-pro" });
+    // Use OpenAI-compatible endpoint with Gemini API
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gemini-2.0-flash-exp",
+          messages: [
+            { role: "system", content: "You are a helpful assistant." },
+            { role: "user", content: prompt },
+          ],
+        }),
+      }
+    );
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    if (!response.ok) {
+      const error = await response.text();
+      console.error("❌ Gemini API Error:", error);
+      return res.status(response.status).json({ success: false, error });
+    }
+
+    const data = await response.json();
+    const text = data.choices?.[0]?.message?.content;
+
+    if (!text) {
+      return res.status(500).json({ success: false, error: "No response from Gemini" });
+    }
 
     return res.json({ success: true, text });
   } catch (err) {

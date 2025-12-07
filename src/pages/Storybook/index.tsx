@@ -1,15 +1,8 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { safeGeminiCall } from "../../services/geminiService";
-import { generateImageViaFirebase } from "../../services/firebaseFunctions";
-import { useStorybook } from "../../context/StorybookContext";
-import LoadingSpinner from "../../components/LoadingSpinner";
-import { friendlyErrorMessage } from "../../utils/errorHandler";
 import "./Storybook.css";
 
 export default function Storybook() {
   const navigate = useNavigate();
-  const storybookContext = useStorybook();
 
   // AI 추천 페이지로 이동
   const handleGoToAISuggestion = () => {

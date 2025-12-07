@@ -1,85 +1,90 @@
 /**
- * geminiService.ts — Firebase Functions 프록시 전용
- * (프론트엔드에서 API KEY 사용 없음)
+ * geminiService.ts - Firebase Functions 프록시 전용
+ * 프론트엔드에서는 절대 Gemini SDK를 직접 호출하지 않는다!
  */
 
-const FUNCTIONS_TEXT_URL =
-  "https://asia-northeast1-story-make-fbbd7.cloudfunctions.net/geminiText";
+const REGION = "asia-northeast1"; 
+const PROJECT_ID = "story-make-fbbd7";
 
-/**
- * 기본 Gemini 호출 함수
- */
-export async function callGemini(prompt: string): Promise<string> {
+export const FUNCTIONS_URL = {
+  text: `https://${REGION}-${PROJECT_ID}.cloudfunctions.net/geminiText`,
+  image: `https://${REGION}-${PROJECT_ID}.cloudfunctions.net/generateImage`
+};
+
+/** Firebase Functions POST 호출 */
+async function callFunction(url: string, payload: any) {
   try {
-    const res = await fetch(FUNCTIONS_TEXT_URL, {
+    const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
-      console.error("❌ Firebase Functions 오류:", res.status);
-      return "서버 오류가 발생했습니다 (Functions 오류).";
+      console.error("❌ Functions 오류:", res.status, url);
+      return null;
     }
 
     const data = await res.json();
-
     if (!data.success) {
-      console.error("❌ Gemini Error:", data.error);
-      return "AI가 응답하지 못했습니다.";
+      console.error("❌ Functions 응답 오류:", data);
+      return null;
     }
-
-    return data.text.trim();
-  } catch (e) {
-    console.error("❌ Gemini Fetch Error:", e);
-    return "네트워크 오류로 AI 호출이 실패했습니다.";
+    return data.text ?? data.imageUrl ?? null;
+  } catch (err) {
+    console.error("❌ 네트워크 오류:", err);
+    return null;
   }
 }
 
-/**
- * 하위 호환성을 위한 별칭
- */
-export const safeGeminiCall = callGemini;
+/** 텍스트 생성 */
+export async function generateText(prompt: string): Promise<string | null> {
+  return await callFunction(FUNCTIONS_URL.text, { prompt });
+}
 
-/* ---------------------------
-   동화책 다음 페이지 생성
----------------------------- */
+/** 이미지 생성 */
+export async function generateImage(prompt: string, style?: string): Promise<string | null> {
+  return await callFunction(FUNCTIONS_URL.image, { prompt, style });
+}
+
+/** 하위 호환성을 위한 별칭들 */
+export const callGemini = generateText;
+export const safeGeminiCall = generateText;
+
+/** 동화책 – 다음 페이지 생성 */
 export async function generateNextPage(
-  pages: string[], 
+  prevPages: string[], 
   mainPrompt: string, 
   style: string
-): Promise<string> {
+): Promise<string | null> {
   const prompt = `
-당신은 동화책 작가입니다.
+당신은 어린이 동화책 작가입니다.
 
 전체 줄거리:
 ${mainPrompt}
 
-이전 페이지:
-${pages.join("\n\n")}
+이전 페이지 내용:
+${prevPages.join("\n")}
 
-다음 페이지를 3~5문장으로 자연스럽게 이어주세요.
+다음 내용을 3~5문장으로 자연스럽게 이어서 작성하세요.
 스타일: ${style}
 `;
 
-  return await callGemini(prompt);
+  return await generateText(prompt);
 }
 
-/* ---------------------------
-   문장 제안 (글쓰기 이어쓰기)
----------------------------- */
+/** 글쓰기 이어쓰기 */
 export async function suggestNextSentence(
-  context: string,
+  context: string, 
   userInput: string
 ): Promise<string[]> {
   const prompt = `
-당신은 글쓰기 도우미입니다.
-아래 내용을 보고 자연스럽게 이어질 문장을 3개 제안하세요.
+아래 문장을 자연스럽게 이어질 3개의 문장을 제안하세요.
 
-전체 문맥:
+문맥:
 ${context}
 
-현재 입력:
+입력:
 ${userInput}
 
 형식:
@@ -88,18 +93,16 @@ ${userInput}
 3. 문장3
 `;
 
-  const text = await callGemini(prompt);
+  const text = await generateText(prompt);
   if (!text) return [];
 
   return text
     .split("\n")
-    .filter((l) => /^\d+\./.test(l.trim()))
+    .filter((l) => /^\d+\./.test(l))
     .map((l) => l.replace(/^\d+\.\s*/, "").trim());
 }
 
-/* ---------------------------
-   장르별 질문 생성
----------------------------- */
+/** 장르별 질문 생성 */
 export async function generateStoryPrompts(genre: string): Promise<string> {
   const guide: Record<string, string> = {
     diary: "오늘 하루를 돌아볼 수 있는 질문",
@@ -122,12 +125,10 @@ ${guideText} 3개를 만들어주세요.
 불릿, 숫자 없이 한 줄 질문 3개만 출력하세요.
 `;
 
-  return await callGemini(prompt);
+  return await generateText(prompt) ?? "";
 }
 
-/* ---------------------------
-   이어쓰기 샘플 생성
----------------------------- */
+/** 이어쓰기 샘플 생성 */
 export async function generateContinuationSamples(
   currentText: string,
   mood?: string
@@ -147,7 +148,7 @@ ${currentText}
 3. 이어쓰기3
 `;
 
-  const text = await callGemini(prompt);
+  const text = await generateText(prompt);
   if (!text) return [];
 
   return text
@@ -156,9 +157,7 @@ ${currentText}
     .map((l) => l.replace(/^\d+\.\s*/, "").trim());
 }
 
-/* ---------------------------
-   감정 분석 (이미지 프롬프트 생성용)
----------------------------- */
+/** 감정 분석 (이미지 프롬프트 생성용) */
 export async function analyzeMoodForImage(text: string) {
   const prompt = `
 당신은 감정 분석 전문가입니다.
@@ -178,7 +177,7 @@ ${text}
 프롬프트
 `;
 
-  const result = await callGemini(prompt);
+  const result = await generateText(prompt);
   if (!result) {
     return {
       mood: "평온",
@@ -197,9 +196,7 @@ ${text}
   return { mood, keywords, imagePrompt };
 }
 
-/* ---------------------------
-   동화책 줄거리 추천
----------------------------- */
+/** 동화책 줄거리 추천 */
 export async function suggestStoryPlots(genre: string = "동화"): Promise<string[]> {
   const prompt = `
 어린이를 위한 ${genre} 줄거리를 3개 추천해주세요.
@@ -211,7 +208,7 @@ export async function suggestStoryPlots(genre: string = "동화"): Promise<strin
 3. 세 번째 줄거리
 `;
 
-  const text = await callGemini(prompt);
+  const text = await generateText(prompt);
   if (!text) return ["줄거리를 생성할 수 없습니다"];
 
   const plots = text
@@ -223,9 +220,7 @@ export async function suggestStoryPlots(genre: string = "동화"): Promise<strin
   return plots.length > 0 ? plots.slice(0, 3) : ["줄거리 생성 실패"];
 }
 
-/* ---------------------------
-   동화책 초안 생성 (3페이지)
----------------------------- */
+/** 동화책 초안 생성 (3페이지) */
 export async function generateStoryPages(
   title: string,
   plotSummary: string,
@@ -257,7 +252,7 @@ export async function generateStoryPages(
 세 번째 페이지 내용...
 `;
 
-  const raw = await callGemini(prompt);
+  const raw = await generateText(prompt);
   if (!raw) {
     console.warn("⚠ Gemini returned empty response");
     return ["내용 생성 실패"];
@@ -286,9 +281,7 @@ export async function generateStoryPages(
   return pages.slice(0, 3); // 최대 3페이지만 반환
 }
 
-/* ---------------------------
-   주제 제안 (시니어 친화적)
----------------------------- */
+/** 주제 제안 (시니어 친화적) */
 export async function suggestTopics(genre: string): Promise<string[]> {
   const prompt = `
 시니어 분들이 쉽게 작성할 수 있는 ${genre} 주제를 5개 추천해주세요.
@@ -302,7 +295,7 @@ export async function suggestTopics(genre: string): Promise<string[]> {
 5. 다섯 번째 주제
 `;
 
-  const text = await callGemini(prompt);
+  const text = await generateText(prompt);
   if (!text) return ["주제를 생성할 수 없습니다"];
 
   const topics = text
@@ -314,9 +307,7 @@ export async function suggestTopics(genre: string): Promise<string[]> {
   return topics.length > 0 ? topics.slice(0, 5) : ["주제 생성 실패"];
 }
 
-/* ---------------------------
-   문법 및 맞춤법 검사
----------------------------- */
+/** 문법 및 맞춤법 검사 */
 export async function checkGrammar(text: string): Promise<{
   corrected: string;
   suggestions: string[];
@@ -336,7 +327,7 @@ ${text}
 2. 두 번째 제안
 `;
 
-  const raw = await callGemini(prompt);
+  const raw = await generateText(prompt);
   if (!raw) {
     return {
       corrected: text,
@@ -365,6 +356,8 @@ ${text}
 export default {
   callGemini,
   safeGeminiCall,
+  generateText,
+  generateImage,
   generateNextPage,
   suggestNextSentence,
   generateStoryPrompts,

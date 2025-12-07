@@ -20,31 +20,44 @@ export interface Work {
 }
 
 /**
- * IndexedDB 초기화
+ * IndexedDB 초기화 (안전)
  */
-function openDB(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+function openDB(): Promise<IDBDatabase | null> {
+  // iframe/차단 환경 체크
+  try {
+    if (typeof window === "undefined") return Promise.resolve(null);
+    if (!("indexedDB" in window)) return Promise.resolve(null);
+    if (!window.indexedDB) return Promise.resolve(null);
+  } catch {
+    return Promise.resolve(null);
+  }
 
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
+  return new Promise((resolve) => {
+    try {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
+      request.onerror = () => resolve(null);
+      request.onsuccess = () => resolve(request.result);
 
-      // 스토어가 없으면 생성
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        const objectStore = db.createObjectStore(STORE_NAME, {
-          keyPath: "id",
-          autoIncrement: true,
-        });
+      request.onupgradeneeded = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
 
-        // 인덱스 생성
-        objectStore.createIndex("genre", "genre", { unique: false });
-        objectStore.createIndex("contentType", "contentType", { unique: false });
-        objectStore.createIndex("createdAt", "createdAt", { unique: false });
-      }
-    };
+        // 스토어가 없으면 생성
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          const objectStore = db.createObjectStore(STORE_NAME, {
+            keyPath: "id",
+            autoIncrement: true,
+          });
+
+          // 인덱스 생성
+          objectStore.createIndex("genre", "genre", { unique: false });
+          objectStore.createIndex("contentType", "contentType", { unique: false });
+          objectStore.createIndex("createdAt", "createdAt", { unique: false });
+        }
+      };
+    } catch {
+      resolve(null);
+    }
   });
 }
 
@@ -60,6 +73,7 @@ export async function addWork(
   imageBase64?: string
 ): Promise<number> {
   const db = await openDB();
+  if (!db) return Promise.reject(new Error("Storage not available"));
 
   const work: Work = {
     title,
@@ -91,6 +105,7 @@ export async function updateWork(
   content: string
 ): Promise<void> {
   const db = await openDB();
+  if (!db) return Promise.reject(new Error("Storage not available"));
 
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([STORE_NAME], "readwrite");
@@ -121,6 +136,7 @@ export async function updateWork(
  */
 export async function deleteWork(id: number): Promise<void> {
   const db = await openDB();
+  if (!db) return Promise.reject(new Error("Storage not available"));
 
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([STORE_NAME], "readwrite");
@@ -137,6 +153,7 @@ export async function deleteWork(id: number): Promise<void> {
  */
 export async function getAllWorks(): Promise<Work[]> {
   const db = await openDB();
+  if (!db) return [];
 
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([STORE_NAME], "readonly");
@@ -161,6 +178,7 @@ export async function getAllWorks(): Promise<Work[]> {
  */
 export async function getWorkById(id: number): Promise<Work | null> {
   const db = await openDB();
+  if (!db) return null;
 
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([STORE_NAME], "readonly");
@@ -177,6 +195,7 @@ export async function getWorkById(id: number): Promise<Work | null> {
  */
 export async function getWorksByGenre(genre: string): Promise<Work[]> {
   const db = await openDB();
+  if (!db) return [];
 
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([STORE_NAME], "readonly");
@@ -201,6 +220,7 @@ export async function getWorksByGenre(genre: string): Promise<Work[]> {
  */
 export async function getWorksByType(contentType: "text" | "image"): Promise<Work[]> {
   const db = await openDB();
+  if (!db) return [];
 
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([STORE_NAME], "readonly");
@@ -225,6 +245,7 @@ export async function getWorksByType(contentType: "text" | "image"): Promise<Wor
  */
 export async function clearAllWorks(): Promise<void> {
   const db = await openDB();
+  if (!db) return Promise.reject(new Error("Storage not available"));
 
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([STORE_NAME], "readwrite");

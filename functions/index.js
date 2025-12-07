@@ -173,5 +173,5 @@ exports.health = onRequest(
 /**
  * Gemini 텍스트 생성 API
  */
-const { geminiText } = require('./geminiText');
-exports.geminiText = geminiText;
+const geminiTextModule = require('./geminiText');
+exports.geminiText = geminiTextModule.geminiText;

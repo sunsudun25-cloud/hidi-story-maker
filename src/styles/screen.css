@@ -1,0 +1,101 @@
+@import "./design-system.css";
+
+/* ===== 공통 페이지 래퍼 ===== */
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* 섹션 제목 */
+.screen-title {
+  font-size: var(--font-large);
+  font-weight: 700;
+  color: var(--text-title);
+  margin-bottom: var(--space-sm);
+}
+
+.screen-subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+/* ===== 옵션 카드 (캔바 스타일 타일) ===== */
+.option-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  margin-bottom: var(--space-md);
+}
+
+.option-card.primary {
+  background: var(--bg-soft-yellow);
+}
+
+.option-card.secondary {
+  background: var(--bg-soft-mint);
+}
+
+.option-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.option-emoji {
+  font-size: 40px;
+}
+
+.option-title {
+  font-size: var(--font-large);
+  font-weight: 700;
+}
+
+.option-desc {
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+/* ===== 공통 큰 버튼 ===== */
+.primary-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: #4caf50;
+  color: #fff;
+  font-size: var(--font-base);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.15s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+}
+
+.secondary-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: #ffffff;
+  color: var(--text-primary);
+  font-size: var(--font-base);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease;
+}
+
+.secondary-btn:hover {
+  transform: translateY(-2px);
+}

@@ -4,6 +4,8 @@ import App from './App'
 import { StoryProvider } from './context/StoryContext'
 import { StorybookProvider } from './context/StorybookContext'
 import { FontSizeProvider } from './context/FontSizeContext'
+import './styles/design-system.css'  // ⭐ 디자인 시스템 최우선
+import './styles/screen.css'         // ⭐ 공통 페이지 스타일
 import './styles/theme.css'
 import './styles/global.css'
 import './styles/canva-theme.css'

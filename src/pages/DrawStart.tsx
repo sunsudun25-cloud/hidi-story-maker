@@ -1,39 +1,31 @@
 import { useNavigate } from "react-router-dom";
-import "./DrawStart.css";
+import Header from "../components/Header";
 
 export default function DrawStart() {
   const navigate = useNavigate();
 
   return (
-    <div className="draw-start-container">
-      <p className="draw-start-subtitle">
-        어떤 방식으로 그림을 만드시겠어요?
-      </p>
+    <div className="screen">
+      <Header title="그림" />
 
-      <div className="draw-start-buttons">
+      <div className="screen-title">어떤 방식으로 그림을 만드시겠어요?</div>
 
-          {/* 연습하기 */}
-          <button
-            className="draw-mode-btn"
-            style={{ backgroundColor: "#FFF4C7" }}
-            onClick={() => navigate("/drawing/practice")}
-          >
-            <span className="btn-emoji">🎨</span>
-            <span className="btn-label">연습하기</span>
-            <span className="btn-desc">AI가 주제를 제안해드려요</span>
-          </button>
+      <div
+        className="option-card primary"
+        onClick={() => navigate("/drawing/practice")}
+      >
+        <div className="option-emoji">🎨</div>
+        <div className="option-title">연습하기</div>
+        <div className="option-desc">AI가 주제를 제안해드려요</div>
+      </div>
 
-          {/* 직접입력 */}
-          <button
-            className="draw-mode-btn"
-            style={{ backgroundColor: "#DFFFE2" }}
-            onClick={() => navigate("/drawing/direct")}
-          >
-            <span className="btn-emoji">✏️</span>
-            <span className="btn-label">직접입력</span>
-            <span className="btn-desc">원하는 그림을 직접 설명해보세요</span>
-          </button>
-
+      <div
+        className="option-card secondary"
+        onClick={() => navigate("/drawing/direct")}
+      >
+        <div className="option-emoji">✏️</div>
+        <div className="option-title">직접입력</div>
+        <div className="option-desc">원하는 그림을 직접 설명해보세요</div>
       </div>
     </div>
   );

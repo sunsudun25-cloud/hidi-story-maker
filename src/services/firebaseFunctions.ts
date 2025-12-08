@@ -7,8 +7,11 @@
 
 // Firebase Functions 베이스 URL (프로덕션)
 // Cloud Run URLs from Firebase Functions v2
-const GENERATE_IMAGE_URL = "https://generateimage-igb7tmigxa-an.a.run.app";
-const HEALTH_URL = "https://health-igb7tmigxa-an.a.run.app";
+// 자동으로 올바른 리전의 함수를 호출합니다
+const FIREBASE_PROJECT_ID = "story-make-fbbd7";
+const FIREBASE_REGION = "asia-northeast1";
+const GENERATE_IMAGE_URL = `https://${FIREBASE_REGION}-${FIREBASE_PROJECT_ID}.cloudfunctions.net/generateImage`;
+const HEALTH_URL = `https://${FIREBASE_REGION}-${FIREBASE_PROJECT_ID}.cloudfunctions.net/health`;
 
 /**
  * Firebase Functions를 통해 DALL-E 3 이미지 생성

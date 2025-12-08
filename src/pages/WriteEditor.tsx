@@ -28,6 +28,7 @@ export default function WriteEditor() {
   // AI 도우미 상태
   const [isAiHelping, setIsAiHelping] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [showAdvancedMenu, setShowAdvancedMenu] = useState(false); // AI 보조작가 메뉴 표시 여부
   
   // 이미지 상태
   const [storyImages, setStoryImages] = useState<StoryImage[]>([]);
@@ -797,96 +798,116 @@ ${content}
           </button>
         </div>
 
-        {/* 고급 AI 보조작가 메뉴 (자유 글쓰기 모드) - 항상 표시 */}
+        {/* AI 보조작가 (고급) - 자유 글쓰기 전용 */}
         {!genre && (
-          <div style={{
-            marginBottom: "15px",
-          }}>
-            <div style={{
-              fontSize: "16px",
-              fontWeight: "600",
-              color: "#EC4899",
-              marginBottom: "10px",
-            }}>
-              ✨ AI 보조작가 (고급)
-            </div>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
-              gap: "10px",
-            }}>
-              <button
-                onClick={handleAiStructureSuggest}
-                disabled={isAiHelping}
-                style={{
-                  padding: "16px",
-                  fontSize: "16px",
-                  backgroundColor: isAiHelping ? "#ccc" : "#8B5CF6",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "12px",
-                  cursor: isAiHelping ? "not-allowed" : "pointer",
-                  fontWeight: "600",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                }}
-              >
-                📊 글 구성 제안
-              </button>
-              
-              <button
-                onClick={handleAiPolish}
-                disabled={isAiHelping}
-                style={{
-                  padding: "16px",
-                  fontSize: "16px",
-                  backgroundColor: isAiHelping ? "#ccc" : "#EC4899",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "12px",
-                  cursor: isAiHelping ? "not-allowed" : "pointer",
-                  fontWeight: "600",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                }}
-              >
-                ✨ 문장 다듬기
-              </button>
-              
-              <button
-                onClick={handleAiAnalyze}
-                disabled={isAiHelping}
-                style={{
-                  padding: "16px",
-                  fontSize: "16px",
-                  backgroundColor: isAiHelping ? "#ccc" : "#F59E0B",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "12px",
-                  cursor: isAiHelping ? "not-allowed" : "pointer",
-                  fontWeight: "600",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                }}
-              >
-                📊 글 분석
-              </button>
+          <div style={{ marginBottom: "15px" }}>
+            {/* AI 보조작가 메뉴 토글 버튼 */}
+            <button
+              onClick={() => setShowAdvancedMenu(!showAdvancedMenu)}
+              style={{
+                width: "100%",
+                padding: "16px",
+                fontSize: "16px",
+                backgroundColor: showAdvancedMenu ? "#EC4899" : "#F3E5F5",
+                color: showAdvancedMenu ? "white" : "#EC4899",
+                border: "2px solid #EC4899",
+                borderRadius: "12px",
+                cursor: "pointer",
+                fontWeight: "600",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+              }}
+            >
+              <span>✨ AI 보조작가 (고급)</span>
+              <span style={{ fontSize: "12px" }}>
+                {showAdvancedMenu ? "▲" : "▼"}
+              </span>
+            </button>
 
-              <button
-                onClick={handleAiTitleSuggest}
-                disabled={isAiHelping}
-                style={{
-                  padding: "16px",
-                  fontSize: "16px",
-                  backgroundColor: isAiHelping ? "#ccc" : "#10B981",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "12px",
-                  cursor: isAiHelping ? "not-allowed" : "pointer",
-                  fontWeight: "600",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                }}
-              >
-                📝 제목 추천
-              </button>
-            </div>
+            {/* AI 보조작가 메뉴 (펼쳤을 때만 표시) */}
+            {showAdvancedMenu && (
+              <div style={{
+                marginTop: "10px",
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "10px",
+              }}>
+                <button
+                  onClick={handleAiStructureSuggest}
+                  disabled={isAiHelping}
+                  style={{
+                    padding: "16px",
+                    fontSize: "16px",
+                    backgroundColor: isAiHelping ? "#ccc" : "#8B5CF6",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "12px",
+                    cursor: isAiHelping ? "not-allowed" : "pointer",
+                    fontWeight: "600",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  📊 글 구성 제안
+                </button>
+                
+                <button
+                  onClick={handleAiPolish}
+                  disabled={isAiHelping}
+                  style={{
+                    padding: "16px",
+                    fontSize: "16px",
+                    backgroundColor: isAiHelping ? "#ccc" : "#EC4899",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "12px",
+                    cursor: isAiHelping ? "not-allowed" : "pointer",
+                    fontWeight: "600",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  ✨ 문장 다듬기
+                </button>
+                
+                <button
+                  onClick={handleAiAnalyze}
+                  disabled={isAiHelping}
+                  style={{
+                    padding: "16px",
+                    fontSize: "16px",
+                    backgroundColor: isAiHelping ? "#ccc" : "#F59E0B",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "12px",
+                    cursor: isAiHelping ? "not-allowed" : "pointer",
+                    fontWeight: "600",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  📊 글 분석
+                </button>
+
+                <button
+                  onClick={handleAiTitleSuggest}
+                  disabled={isAiHelping}
+                  style={{
+                    padding: "16px",
+                    fontSize: "16px",
+                    backgroundColor: isAiHelping ? "#ccc" : "#10B981",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "12px",
+                    cursor: isAiHelping ? "not-allowed" : "pointer",
+                    fontWeight: "600",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  📝 제목 추천
+                </button>
+              </div>
+            )}
           </div>
         )}
 

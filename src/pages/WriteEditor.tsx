@@ -192,7 +192,7 @@ ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""
 `;
 
       const continuation = await safeGeminiCall(prompt);
-      setContent(content + "\n\n" + continuation);
+      setContent(content + "\n" + continuation);
       alert("✨ AI가 내용을 이어줬어요! 마음에 들지 않으면 자유롭게 수정하세요.");
     } catch (error) {
       console.error("AI 이어쓰기 오류:", error);

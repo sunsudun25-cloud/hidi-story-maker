@@ -29,6 +29,13 @@ import StorybookEditor from './pages/StorybookEditor'
 import StorybookEditorModify from './pages/StorybookEditorModify'
 import StorybookExport from './pages/StorybookExport'
 import MyWorks from './pages/MyWorks'
+import MyWorksHome from './pages/MyWorksHome'
+import MyWorksImages from './pages/MyWorksImages'
+import MyWorksImageDetail from './pages/MyWorksImageDetail'
+import MyWorksStories from './pages/MyWorksStories'
+import MyWorksStoryDetail from './pages/MyWorksStoryDetail'
+import MyWorksStorybooks from './pages/MyWorksStorybooks'
+import MyWorksStorybookDetail from './pages/MyWorksStorybookDetail'
 import Goods from './pages/Goods'
 import Result from './pages/Result'
 import TestButtons from './pages/TestButtons'
@@ -87,7 +94,13 @@ function AppContent() {
           <Route path="/writing/detail" element={<WritingDetail />} />
 
           {/* 🏆 내 작품 */}
-          <Route path="/my-works" element={<MyWorks />} />
+          <Route path="/my-works" element={<MyWorksHome />} />
+          <Route path="/my-works/images" element={<MyWorksImages />} />
+          <Route path="/my-works/images/:id" element={<MyWorksImageDetail />} />
+          <Route path="/my-works/stories" element={<MyWorksStories />} />
+          <Route path="/my-works/stories/:id" element={<MyWorksStoryDetail />} />
+          <Route path="/my-works/storybooks" element={<MyWorksStorybooks />} />
+          <Route path="/my-works/storybooks/:id" element={<MyWorksStorybookDetail />} />
 
           {/* 🎁 나만의 굿즈 */}
           <Route path="/goods" element={<Goods />} />

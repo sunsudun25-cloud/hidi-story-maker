@@ -77,9 +77,22 @@ export default function StorybookEditor() {
   const prompt = contextPrompt || state?.prompt || "";
   const style = contextStyle || state?.style || "동화 스타일";
 
-  const handlePageChange = (newPage: number) => {
-    if (newPage < 1 || newPage > storyPages.length) return;
-    setCurrentPage(newPage);
+  const handlePageChange = (direction: 'prev' | 'next') => {
+    if (direction === 'prev') {
+      if (currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      }
+    } else {
+      // 다음 페이지로 이동
+      if (currentPage < storyPages.length) {
+        // 기존 페이지가 있으면 이동
+        setCurrentPage(currentPage + 1);
+      } else {
+        // 마지막 페이지면 새 빈 페이지 추가
+        addNewPage("");
+        setCurrentPage(storyPages.length + 1);
+      }
+    }
   };
 
   const handleTextChange = (index: number, newText: string) => {
@@ -220,7 +233,7 @@ ${current.text}
           }}
         />
 
-        {/* AI 도움 버튼 */}
+        {/* AI 이어쓰기 버튼 */}
         <button
           onClick={handleAiAssist}
           disabled={isAiHelping}
@@ -235,7 +248,7 @@ ${current.text}
             cursor: isAiHelping ? "not-allowed" : "pointer",
           }}
         >
-          {isAiHelping ? "⏳ 생성 중..." : "🤖 AI에게 도움받기"}
+          {isAiHelping ? "⏳ AI가 쓰는 중..." : "✨ AI가 이어서 쓰기"}
         </button>
 
         {/* 이미지 */}
@@ -282,10 +295,10 @@ ${current.text}
           </button>
         )}
 
-        {/* 페이지 이동 */}
+        {/* 페이지 이동 (책처럼) */}
         <div style={{ display: "flex", gap: 10 }}>
           <button
-            onClick={() => handlePageChange(currentPage - 1)}
+            onClick={() => handlePageChange('prev')}
             disabled={currentPage === 1}
             style={{
               flex: 1,
@@ -302,41 +315,22 @@ ${current.text}
             ← 이전
           </button>
           <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === storyPages.length}
+            onClick={() => handlePageChange('next')}
             style={{
               flex: 1,
               padding: 12,
-              background: currentPage === storyPages.length ? "#D1D5DB" : "#6B7280",
+              background: "#6B7280",
               color: "white",
               border: "none",
               borderRadius: 8,
               fontSize: 16,
               fontWeight: 600,
-              cursor: currentPage === storyPages.length ? "not-allowed" : "pointer",
+              cursor: "pointer",
             }}
           >
             다음 →
           </button>
         </div>
-
-        {/* 페이지 추가 */}
-        <button
-          onClick={handleAutoGenerate}
-          disabled={isGenerating}
-          style={{
-            padding: 15,
-            background: isGenerating ? "#D1D5DB" : "#3B82F6",
-            color: "white",
-            border: "none",
-            borderRadius: 8,
-            fontSize: 16,
-            fontWeight: 600,
-            cursor: isGenerating ? "not-allowed" : "pointer",
-          }}
-        >
-          {isGenerating ? "⏳ 생성 중..." : "➕ 다음 페이지 자동 생성"}
-        </button>
 
         {/* 저장 */}
         <button

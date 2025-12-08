@@ -27,6 +27,37 @@
 - **Repository**: https://github.com/sunsudun25-cloud/hidi-story-maker
 - **Actions**: https://github.com/sunsudun25-cloud/hidi-story-maker/actions
 
+## ✨ 최신 업데이트 (2024-12-08)
+
+### 글쓰기 모듈 완성 ✅
+1. **3가지 글쓰기 시작 모드**
+   - 연습하기 (주제 추천)
+   - 장르 선택하기 (6개 장르)
+   - 자유롭게 쓰기 (AI 보조작가)
+
+2. **6개 장르 시스템**
+   - 📝 일기 / 💌 편지 / 📖 수필
+   - 🎭 시 / 📚 소설 / 📔 자서전
+   - 장르별 가이드 및 예시 문장
+   - 시/소설: AI 질문 → 초고 생성
+
+3. **AI 글쓰기 도우미**
+   - 기본: 이어쓰기, 문법교정, 감정강화, 음성입력
+   - 고급: 구성제안, 문장다듬기, 텍스트분석, 제목추천
+
+4. **이미지 생성 기능 🎨**
+   - 글 내용 기반 AI 이미지 생성
+   - 장르별 맞춤 스타일 적용
+   - 기본 1개 + 추가 생성 가능
+   - DALL-E 3 via Firebase Functions
+
+### 진행 상황
+- ✅ 그림 그리기 모듈 (100%)
+- ✅ 동화책 만들기 모듈 (100%)
+- ✅ 글쓰기 모듈 (100%)
+- 🔄 작품 관리 모듈 (50%)
+- ⏳ 굿즈 만들기 모듈 (0%)
+
 ## Data Architecture
 - **Data Models**: Story (id, title, content, createdAt, updatedAt)
 - **Storage Services**: IndexedDB (dbService) - 브라우저 로컬 스토리지

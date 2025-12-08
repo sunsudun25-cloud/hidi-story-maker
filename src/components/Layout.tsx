@@ -1,15 +1,13 @@
+// src/components/Layout.tsx
+
 import { Outlet } from "react-router-dom";
 import "./Layout.css";
 
-interface LayoutProps {
-  children?: React.ReactNode;
-}
-
-export default function Layout({ children }: LayoutProps) {
+export default function Layout() {
   return (
     <div className="layout-wrapper">
       <div className="layout-inner">
-        {children || <Outlet />}
+        <Outlet />
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import { getHeaderColor } from "../styles/colors";
 
 export default function WriteStart() {
   const navigate = useNavigate();
@@ -8,7 +7,7 @@ export default function WriteStart() {
   return (
     <div className="min-h-screen bg-[#FFF9E9] flex flex-col items-center">
       
-      <Header title="글쓰기" color={getHeaderColor("글쓰기")} />
+      <Header title="글쓰기" />
 
       <div className="w-full max-w-[480px] mt-8 px-6 text-center">
 

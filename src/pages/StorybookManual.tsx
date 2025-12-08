@@ -5,6 +5,7 @@ import { useStorybook } from "../context/StorybookContext";
 import LoadingSpinner from "../components/LoadingSpinner";
 import StorybookLayout from "../components/storybook/StorybookLayout";
 import "./Storybook/Storybook.css";
+import "./StorybookManual.css";
 
 export default function StorybookManual() {
   const navigate = useNavigate();
@@ -19,12 +20,59 @@ export default function StorybookManual() {
   const [storyPrompt, setStoryPrompt] = useState(receivedPrompt);
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showAiModal, setShowAiModal] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
 
   // 전달받은 데이터가 있으면 설정
   useEffect(() => {
     if (receivedTitle) setStoryTitle(receivedTitle);
     if (receivedPrompt) setStoryPrompt(receivedPrompt);
   }, [receivedTitle, receivedPrompt]);
+
+  // AI 줄거리 추천 받기
+  const handleAiSuggestion = async () => {
+    setShowAiModal(true);
+    setIsLoadingAI(true);
+    try {
+      const prompt = `
+당신은 어린이 동화책 작가입니다.
+흥미롭고 교육적이며 따뜻한 동화책 줄거리 3가지를 추천해주세요.
+
+각 줄거리는:
+- 2~3문장으로 간결하게
+- 어린이가 공감할 수 있는 주제
+- 긍정적이고 희망적인 메시지
+
+출력 형식:
+1. [제목] 줄거리 내용
+2. [제목] 줄거리 내용
+3. [제목] 줄거리 내용
+      `.trim();
+
+      const response = await safeGeminiCall(prompt);
+      
+      // 응답 파싱
+      const suggestions = response
+        .split(/\d+\.\s*/)
+        .filter((s: string) => s.trim().length > 10)
+        .slice(0, 3);
+
+      setAiSuggestions(suggestions.length > 0 ? suggestions : ["AI가 줄거리를 생성하지 못했습니다."]);
+    } catch (err) {
+      console.error("AI 줄거리 추천 오류:", err);
+      alert("AI 줄거리 추천 중 오류가 발생했습니다.");
+      setShowAiModal(false);
+    } finally {
+      setIsLoadingAI(false);
+    }
+  };
+
+  // 줄거리 선택
+  const handleSelectSuggestion = (suggestion: string) => {
+    setStoryPrompt(suggestion);
+    setShowAiModal(false);
+  };
 
   const styles = [
     { id: "fairytale", label: "동화 스타일", desc: "아이 책 느낌" },
@@ -136,79 +184,112 @@ export default function StorybookManual() {
       {isGenerating ? (
         <LoadingSpinner text="AI가 동화책 초안을 만드는 중이에요... 📚✨" />
       ) : (
-        <div className="storybook-page">
-          {/* AI 추천에서 왔을 경우 안내 */}
-          {receivedPrompt && (
-            <div style={{
-              backgroundColor: "#D1FAE5",
-              border: "2px solid #10B981",
-              borderRadius: "12px",
-              padding: "15px",
-              marginBottom: "20px"
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                <span style={{ fontSize: "24px" }}>✨</span>
-                <strong style={{ color: "#065F46" }}>AI가 추천한 줄거리가 입력되었습니다!</strong>
-              </div>
-              <p style={{ fontSize: "14px", color: "#047857", margin: 0 }}>
-                마음에 들지 않으면 수정하거나 새로 작성하셔도 좋습니다.
-              </p>
-            </div>
-          )}
-
-          {/* 제목 입력 */}
-          <div className="section-title">📘 동화책 제목</div>
-          <input
-            className="input-field"
-            placeholder="예: '달빛을 먹는 토끼'"
-            value={storyTitle}
-            onChange={(e) => setStoryTitle(e.target.value)}
-          />
-
-          {/* 줄거리 입력 */}
-          <div className="section-title">📖 줄거리를 간단히 설명해주세요</div>
-          <div className="example-box">
-            <strong>예시</strong>
-            <p>달빛을 먹으면 힘이 나는 토끼가 친구들과 모험하는 이야기</p>
+        <div className="storybook-manual-page">
+          {/* 제목 입력 (크게) */}
+          <div className="manual-section">
+            <label className="manual-label">📘 동화책 제목</label>
+            <input
+              className="manual-title-input"
+              placeholder="예: 달빛을 먹는 토끼"
+              value={storyTitle}
+              onChange={(e) => setStoryTitle(e.target.value)}
+            />
           </div>
 
-          <textarea
-            className="input-area"
-            placeholder="동화책 줄거리를 간단히 입력해주세요…"
-            value={storyPrompt}
-            onChange={(e) => setStoryPrompt(e.target.value)}
-            rows={6}
-          />
+          {/* 줄거리 입력 영역 */}
+          <div className="manual-section">
+            <label className="manual-label">📖 줄거리</label>
+            <textarea
+              className="manual-plot-textarea"
+              placeholder="동화책 줄거리를 입력하거나 아래 버튼으로 AI 추천을 받아보세요..."
+              value={storyPrompt}
+              onChange={(e) => setStoryPrompt(e.target.value)}
+              rows={8}
+            />
+          </div>
+
+          {/* 줄거리 입력 방법 선택 버튼 */}
+          <div className="manual-input-methods">
+            <button 
+              className="method-btn direct"
+              onClick={() => {
+                // 텍스트 에리어에 포커스
+                const textarea = document.querySelector('.manual-plot-textarea') as HTMLTextAreaElement;
+                textarea?.focus();
+              }}
+            >
+              <span className="method-icon">📝</span>
+              <span className="method-text">줄거리 직접 입력하기</span>
+            </button>
+            
+            <button 
+              className="method-btn ai"
+              onClick={handleAiSuggestion}
+            >
+              <span className="method-icon">✨</span>
+              <span className="method-text">AI에게 줄거리 추천받기</span>
+            </button>
+          </div>
 
           {/* 스타일 선택 */}
-          <div className="section-title">🎨 그림 스타일 선택 (선택사항)</div>
-
-          <div className="style-grid">
-            {styles.map((s) => (
-              <button
-                key={s.id}
-                className={`style-card ${selectedStyle === s.id ? "selected" : ""}`}
-                onClick={() => setSelectedStyle(s.id)}
-              >
-                {s.label}
-                <br />
-                <span>{s.desc}</span>
-              </button>
-            ))}
+          <div className="manual-section">
+            <label className="manual-label">🎨 그림 스타일 (선택사항)</label>
+            <div className="style-grid">
+              {styles.map((s) => (
+                <button
+                  key={s.id}
+                  className={`style-card ${selectedStyle === s.id ? "selected" : ""}`}
+                  onClick={() => setSelectedStyle(s.id)}
+                >
+                  {s.label}
+                  <br />
+                  <span>{s.desc}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* 동화책 생성 버튼 */}
+          {/* 동화책 만들기 버튼 */}
           <button 
-            className="big-btn primary primary-btn" 
+            className="manual-create-btn" 
             onClick={handleCreateStorybook}
             disabled={!storyTitle.trim() || !storyPrompt.trim()}
-            style={{
-              opacity: (!storyTitle.trim() || !storyPrompt.trim()) ? 0.5 : 1,
-              cursor: (!storyTitle.trim() || !storyPrompt.trim()) ? "not-allowed" : "pointer"
-            }}
           >
             🚀 동화책 만들기 시작
           </button>
+        </div>
+      )}
+
+      {/* AI 추천 모달 */}
+      {showAiModal && (
+        <div className="ai-modal-overlay" onClick={() => setShowAiModal(false)}>
+          <div className="ai-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="ai-modal-header">
+              <h3>✨ AI 줄거리 추천</h3>
+              <button className="ai-modal-close" onClick={() => setShowAiModal(false)}>✕</button>
+            </div>
+            
+            {isLoadingAI ? (
+              <div className="ai-modal-loading">
+                <div className="spinner"></div>
+                <p>AI가 줄거리를 생각하고 있어요...</p>
+              </div>
+            ) : (
+              <div className="ai-modal-content">
+                <p className="ai-modal-desc">마음에 드는 줄거리를 선택하면 자동으로 입력됩니다</p>
+                {aiSuggestions.map((suggestion, idx) => (
+                  <button
+                    key={idx}
+                    className="ai-suggestion-card"
+                    onClick={() => handleSelectSuggestion(suggestion)}
+                  >
+                    <span className="suggestion-number">{idx + 1}</span>
+                    <span className="suggestion-text">{suggestion}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </StorybookLayout>

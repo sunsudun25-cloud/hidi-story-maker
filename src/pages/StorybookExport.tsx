@@ -151,8 +151,16 @@ export default function StorybookExport({
   );
 
   return (
-    <div className="redesign-container">
-      {/* ===== 상단 단계 안내 ===== */}
+    <>
+      {/* 📚 동화책 전용 파란 헤더 */}
+      <div className="storybook-header">
+        <button className="storybook-back" onClick={() => navigate(-1)}>←</button>
+        <h1 className="storybook-title">📚 동화책 PDF 만들기</h1>
+        <button className="storybook-home" onClick={() => navigate("/home")}>🏠</button>
+      </div>
+
+      <div className="redesign-container">
+        {/* ===== 상단 단계 안내 ===== */}
       <div className="step-indicator">
         <div className={`step-item ${step === 1 ? "active" : ""}`}>
           1. 제목/저자
@@ -307,6 +315,13 @@ export default function StorybookExport({
           </StepCard>
         </>
       )}
-    </div>
+      </div>
+
+      {/* 공통 푸터 */}
+      <footer className="layout-footer">
+        <div className="company-name">HI-DI Edu</div>
+        <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
+      </footer>
+    </>
   );
 }

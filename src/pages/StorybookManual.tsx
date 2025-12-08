@@ -132,6 +132,13 @@ export default function StorybookManual() {
 
   return (
     <>
+      {/* 📚 동화책 전용 파란 헤더 */}
+      <div className="storybook-header">
+        <button className="storybook-back" onClick={() => navigate(-1)}>←</button>
+        <h1 className="storybook-title">📚 동화책 만들기</h1>
+        <button className="storybook-home" onClick={() => navigate("/home")}>🏠</button>
+      </div>
+
       {isGenerating ? (
         <LoadingSpinner text="AI가 동화책 초안을 만드는 중이에요... 📚✨" />
       ) : (
@@ -210,6 +217,12 @@ export default function StorybookManual() {
           </button>
         </div>
       )}
+
+      {/* 공통 푸터 */}
+      <footer className="layout-footer">
+        <div className="company-name">HI-DI Edu</div>
+        <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
+      </footer>
     </>
   );
 }

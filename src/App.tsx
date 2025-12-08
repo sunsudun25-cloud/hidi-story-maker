@@ -45,14 +45,12 @@ function App() {
         <Route path="/onboarding" element={<OnboardingLogin />} />
         <Route path="/home" element={<Home />} />
 
-        {/* 📚 동화책 관련 페이지 */}
-        <Route element={<Layout title="📚 동화책" color="#D8E9FF" />}>
-          <Route path="/storybook" element={<Storybook />} />
-          <Route path="/storybook-manual" element={<StorybookManual />} />
-          <Route path="/storybook-ai-suggestion" element={<StorybookAISuggestion />} />
-          <Route path="/storybook-editor" element={<StorybookEditor />} />
-          <Route path="/storybook-export" element={<StorybookExport />} />
-        </Route>
+        {/* 📚 동화책 관련 페이지 (개별 파란 헤더 사용) */}
+        <Route path="/storybook" element={<Storybook />} />
+        <Route path="/storybook-manual" element={<StorybookManual />} />
+        <Route path="/storybook-ai-suggestion" element={<StorybookAISuggestion />} />
+        <Route path="/storybook-editor" element={<StorybookEditor />} />
+        <Route path="/storybook-export" element={<StorybookExport />} />
 
         {/* 🎨 그림 관련 페이지 */}
         <Route element={<Layout title="🎨 그림" color="#C8F3DC" />}>

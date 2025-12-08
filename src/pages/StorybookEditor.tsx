@@ -468,9 +468,17 @@ ${page.text}
   const currentPageData = storyPages[currentPage - 1] || { text: "", imageUrl: undefined };
 
   return (
-    <div className="editor-container">
-      {/* 제목 */}
-      <h2 className="book-title">{title}</h2>
+    <>
+      {/* 📚 동화책 전용 파란 헤더 */}
+      <div className="storybook-header">
+        <button className="storybook-back" onClick={() => navigate(-1)}>←</button>
+        <h1 className="storybook-title">📚 동화책 편집</h1>
+        <button className="storybook-home" onClick={() => navigate("/home")}>🏠</button>
+      </div>
+
+      <div className="editor-container">
+        {/* 제목 */}
+        <h2 className="book-title">{title}</h2>
 
       {/* ❌ 표지 이미지는 이 화면에서 보여주지 않습니다 (본문 편집 전용) */}
 
@@ -999,6 +1007,13 @@ ${page.text}
           </div>
         </div>
       )}
-    </div>
+      </div>
+
+      {/* 공통 푸터 */}
+      <footer className="layout-footer">
+        <div className="company-name">HI-DI Edu</div>
+        <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
+      </footer>
+    </>
   );
 }

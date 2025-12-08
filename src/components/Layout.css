@@ -1,14 +1,118 @@
-/* Layout.css - Canva 스타일 레이아웃 */
+/* ================================
+   🟡 전체 앱 공통 배경 통일
+================================ */
+html, body, #root {
+  background: #F7F3EB !important;
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
 
-/* 페이지 컨테이너 */
+/* Layout 전체 */
+.layout-container {
+  min-height: 100vh;
+  background: #F7F3EB !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* 본문 컨테이너 */
+.layout-inner {
+  flex: 1;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ================================
+   🟡 공통 Footer (모든 페이지 공통)
+================================ */
+.layout-footer {
+  text-align: center;
+  padding: 20px 0 32px;
+  background: transparent;
+}
+
+.company-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #444;
+}
+
+.company-slogan {
+  font-size: 13px;
+  color: #777;
+  margin-top: 4px;
+}
+
+/* ================================
+   🟡 헤더 아래 너무 붙는 문제 해결
+   (동화책, 글쓰기, 그림 등)
+================================ */
+.page-with-header {
+  margin-top: 30px !important;
+}
+
+/* ================================
+   🟡 시니어 친화 버튼 스타일 통일
+================================ */
+.big-button {
+  width: 100%;
+  max-width: 480px;
+  padding: 20px;
+  border-radius: 20px;
+  background: #FFE9A8;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 14px auto;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  display: block;
+}
+
+.big-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
+
+.big-button:active {
+  transform: translateY(-1px);
+}
+
+/* ================================
+   🟡 동화책 메뉴 버튼 간격 개선
+================================ */
+.storybook-menu-wrapper {
+  margin-top: 40px;
+}
+
+/* ================================
+   🟡 페이지 컨테이너 (기존 호환성)
+================================ */
 .page-container {
   min-height: 100vh;
-  background: #FAF7F2 !important;
+  background: #F7F3EB !important;
   display: flex;
   flex-direction: column;
 }
 
-/* 고정 헤더 래퍼 */
+.page-content {
+  flex: 1;
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ================================
+   🟡 고정 헤더 (Fixed Header)
+================================ */
 .header-wrapper {
   position: fixed;
   top: 0;
@@ -21,37 +125,9 @@
   justify-content: space-between;
   padding: 0 20px;
   z-index: 999;
-}
-
-/* 내부 컨텐츠 영역 */
-.page-content {
-  margin-top: 80px; /* Header 공간 확보 */
-  padding-bottom: 80px;
-  width: 100%;
-  max-width: 600px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-left: auto;
-  margin-right: auto;
   box-sizing: border-box;
 }
 
-/* 푸터 */
-.layout-footer {
-  width: 100%;
-  padding: 24px 0;
-  text-align: center;
-  color: #555;
-  font-size: 14px;
-  opacity: 0.8;
-}
-
-.company-name {
-  font-weight: 700;
-  margin-bottom: 4px;
-  font-size: 14px;
-}
-
-.company-slogan {
-  font-size: 12px;
+.header-wrapper ~ .page-content {
+  margin-top: 80px;
 }

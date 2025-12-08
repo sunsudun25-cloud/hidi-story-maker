@@ -1,13 +1,15 @@
-import { Outlet } from "react-router-dom";
+import { ReactNode } from "react";
 import "./Layout.css";
 
-export default function Layout() {
+interface LayoutProps {
+  children?: ReactNode;
+}
+
+export default function Layout({ children }: LayoutProps) {
   return (
-    <div className="page-container">
-      
-      {/* 페이지 내용 */}
-      <div className="page-content">
-        <Outlet />   {/* ← 여기로 자식 페이지가 렌더링됨 */}
+    <div className="layout-container">
+      <div className="layout-inner">
+        {children}
       </div>
 
       {/* 공통 푸터 */}

@@ -1,6 +1,5 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import Layout from '../components/Layout'
 import './OnboardingLogin.css'
 
 const OnboardingLogin: React.FC = () => {
@@ -21,8 +20,7 @@ const OnboardingLogin: React.FC = () => {
   }
 
   return (
-    <Layout>
-      <div className="onboarding-container">
+    <div className="onboarding-container">
       <div className="onboarding-content">
         <div className="onboarding-header">
           <h1 className="onboarding-title">환영합니다!</h1>
@@ -73,8 +71,7 @@ const OnboardingLogin: React.FC = () => {
           <p className="footer-text">모든 세대를 잇는 AI 스토리 플랫폼</p>
         </div>
       </div>
-      </div>
-    </Layout>
+    </div>
   )
 }
 

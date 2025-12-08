@@ -1,13 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import Layout from "../components/Layout";
 import "./Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <Layout>
-      <div className="home-container">
+    <div className="home-container">
         {/* 타이틀 */}
         <div className="home-title-box">
           <h1 className="home-title">무엇을 만들어볼까요?</h1>
@@ -61,6 +59,5 @@ export default function Home() {
           <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
         </div>
       </div>
-    </Layout>
   );
 }

@@ -1,13 +1,32 @@
-/* Layout.css - Canva 스타일 푸터 */
+/* Layout.css - Canva 스타일 레이아웃 */
 
+/* 페이지 컨테이너 */
+.page-container {
+  min-height: 100vh; /* 화면 전체 높이 확보 */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 위는 내용, 아래는 푸터 */
+  align-items: center;
+  background: #f5f0e8;
+  padding: 0;
+}
+
+/* 내부 컨텐츠 영역 */
+.page-container > div {
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* 푸터 */
 .layout-footer {
   width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 12px 4px 18px;
+  padding: 24px 0;
   text-align: center;
-  color: #777;
-  font-size: 13px;
+  color: #555;
+  font-size: 14px;
+  opacity: 0.8;
 }
 
 .company-name {

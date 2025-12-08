@@ -4,13 +4,15 @@ import { useNavigate } from "react-router-dom";
 export default function MyWorksHome() {
   const navigate = useNavigate();
 
+  console.log("🔥🔥🔥 MyWorksHome NEW VERSION LOADED 🔥🔥🔥");
+  
   return (
-    <div className="screen">
+    <div className="screen" style={{ backgroundColor: '#FFF9F0' }}>
       <div className="screen-body p-5">
 
         {/* 제목 */}
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          📂 내 작품 관리
+        <h1 className="text-2xl font-bold mb-6 text-center" style={{ color: '#333' }}>
+          📂 내 작품 관리 (NEW)
         </h1>
 
         {/* 메뉴 3개 */}

@@ -396,6 +396,16 @@ export default function MyWorks() {
           )}
         </div>
       )}
+
+      {/* 회사 정보 푸터 */}
+      <div className="mt-10 p-8 bg-gray-100 rounded-xl text-center">
+        <div className="text-xl font-bold text-gray-800 mb-2">
+          HI-DI Edu
+        </div>
+        <div className="text-sm text-gray-600">
+          모든 세대를 잇는 AI 스토리 플랫폼
+        </div>
+      </div>
     </div>
   );
 }

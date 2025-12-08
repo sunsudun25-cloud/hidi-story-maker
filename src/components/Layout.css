@@ -1,39 +1,32 @@
-@import "../styles/design-system.css";
-
-/* 전체 앱 기본 배경 (캔바톤 아이보리) */
-.page-container {
+/* ===== 전체 앱 공통 레이아웃 ===== */
+.layout-wrapper {
   min-height: 100vh;
-  background-color: #faf7f1;
   display: flex;
   flex-direction: column;
+  background: #f8f5ef; /* 전체 배경 통일 */
 }
 
-/* 헤더 아래 공간 자동 확보 */
-.page-content {
+/* 페이지 본문 */
+.layout-content {
   flex: 1;
   padding: 20px;
-  padding-top: 100px; /* 헤더 높이만큼 여백 */
-  max-width: 520px;
-  margin: 0 auto;
-  width: 100%;
-  box-sizing: border-box;
+  padding-top: 40px; /* 헤더와 겹치지 않도록 */
 }
 
-/* 캔바 스타일 푸터 */
+/* 공통 푸터 */
 .layout-footer {
-  padding: 20px 0;
   text-align: center;
-  color: #666;
+  padding: 20px 0;
   font-size: 14px;
-  margin-top: 40px;
+  opacity: 0.8;
+  color: #444;
 }
 
 .company-name {
-  font-weight: 600;
+  font-weight: bold;
   margin-bottom: 4px;
 }
 
 .company-slogan {
   font-size: 13px;
-  opacity: 0.8;
 }

@@ -1,25 +1,13 @@
-import { Outlet, useLocation } from "react-router-dom";
-import Header from "./Header";
+// 📁 src/components/Layout.tsx
+
+import { Outlet } from "react-router-dom";
 import "./Layout.css";
 
 export default function Layout() {
-  const location = useLocation();
-
-  // 헤더가 필요 없는 페이지 목록 (로그인/온보딩만)
-  const showHeader = ![
-    "/", 
-    "/login", 
-    "/onboarding"
-  ].includes(location.pathname);
-
   return (
-    <div className="page-container">
-      
-      {/* 공통 헤더 */}
-      {showHeader && <Header />}
-
-      {/* 본문 */}
-      <main className="page-content">
+    <div className="layout-wrapper">
+      {/* 페이지 본문 */}
+      <main className="layout-content">
         <Outlet />
       </main>
 

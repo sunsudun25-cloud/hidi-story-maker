@@ -552,8 +552,8 @@ ${content}
           : "오늘의 이야기를 자유롭게 써보세요"}
       </p>
 
-      {/* 주제 선택 (장르가 없을 때만 표시) */}
-      {!genre && (
+      {/* 주제 선택 (장르가 없고 자유 모드가 아닐 때만 표시) */}
+      {!genre && mode !== "free" && (
         <div style={{
           padding: "20px",
           backgroundColor: "white",

@@ -259,74 +259,68 @@ export default function MyWorks() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {stories.map((story) => (
                 <div
                   key={story.id}
-                  className="border rounded-xl p-4 bg-white shadow hover:shadow-lg transition"
+                  className="relative group bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all"
                 >
-                  {/* 제목 */}
-                  <h3 className="text-[20px] font-bold mb-2">{story.title}</h3>
-
-                  {/* 내용 미리보기 */}
-                  <p className="text-[16px] text-gray-700 mb-3 line-clamp-3">
-                    {story.content}
-                  </p>
-
-                  {/* 이미지 미리보기 */}
-                  {story.images && story.images.length > 0 && (
-                    <div className="mb-3">
-                      <div className="text-[14px] text-purple-600 font-semibold mb-2">
-                        📸 이미지 {story.images.length}개
-                      </div>
-                      <div className="flex gap-2 overflow-x-auto">
-                        {story.images.map((img) => (
-                          <img
-                            key={img.id}
-                            src={img.url}
-                            alt="Story image"
-                            className="w-20 h-20 object-cover rounded-lg border-2 border-purple-200"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 메타 정보 */}
-                  <div className="text-[14px] text-gray-500 mb-3">
-                    <p>글자 수: {story.content.length}자</p>
-                    <p>
-                      작성일:{" "}
-                      {new Date(story.createdAt).toLocaleString("ko-KR", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                  {/* 글 내용 카드 (노트 스타일) */}
+                  <div className="relative aspect-[3/4] bg-gradient-to-br from-green-50 to-green-100 p-4 overflow-hidden">
+                    {/* 노트 라인 효과 */}
+                    <div className="absolute top-0 left-12 w-px h-full bg-red-200"></div>
+                    
+                    {/* 제목 */}
+                    <h3 className="text-[16px] font-bold text-gray-800 mb-2 relative z-10">
+                      {story.title}
+                    </h3>
+                    
+                    {/* 내용 미리보기 */}
+                    <p className="text-[13px] text-gray-700 leading-relaxed relative z-10"
+                       style={{ 
+                         display: '-webkit-box',
+                         WebkitLineClamp: 8,
+                         WebkitBoxOrient: 'vertical',
+                         overflow: 'hidden'
+                       }}>
+                      {story.content}
                     </p>
+
+                    {/* 액션 버튼 - 우측 상단 */}
+                    <div className="absolute top-2 right-2 flex flex-col gap-2 z-20">
+                      {/* 보기/수정 버튼 */}
+                      <button
+                        className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-green-500 hover:text-white transition-all"
+                        onClick={() =>
+                          navigate("/write/editor", {
+                            state: {
+                              title: story.title,
+                              initialContent: story.content,
+                            },
+                          })
+                        }
+                        title="보기/수정"
+                      >
+                        <span className="text-[18px]">👁️</span>
+                      </button>
+
+                      {/* 삭제 버튼 */}
+                      <button
+                        className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
+                        onClick={() => story.id && handleDeleteStory(story.id)}
+                        title="삭제"
+                      >
+                        <span className="text-[18px]">🗑️</span>
+                      </button>
+                    </div>
                   </div>
 
-                  {/* 액션 버튼 */}
-                  <div className="flex gap-2">
-                    <button
-                      className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg text-[16px] font-semibold"
-                      onClick={() =>
-                        navigate("/write/editor", {
-                          state: {
-                            title: story.title,
-                            initialContent: story.content,
-                          },
-                        })
-                      }
-                    >
-                      ✏️ 수정하기
-                    </button>
-
-                    <button
-                      className="px-4 py-2 bg-red-500 text-white rounded-lg text-[16px] font-semibold"
-                      onClick={() => story.id && handleDeleteStory(story.id)}
-                    >
-                      🗑️
-                    </button>
+                  {/* 정보 패널 */}
+                  <div className="p-3">
+                    <p className="text-[12px] text-gray-500">
+                      {story.content.length}자
+                      {story.images && story.images.length > 0 && ` · 📸 ${story.images.length}개`}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -351,47 +345,56 @@ export default function MyWorks() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {images.map((item) => (
                 <div
                   key={item.id}
-                  className="border rounded-xl p-3 bg-white shadow hover:shadow-lg transition"
+                  className="relative group bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all"
                 >
-                  <img
-                    src={item.image}
-                    alt="저장된 이미지"
-                    className="w-full h-40 object-cover rounded-xl mb-2 cursor-pointer"
-                    onClick={() => window.open(item.image, "_blank")}
-                  />
+                  {/* 이미지 */}
+                  <div className="relative aspect-square bg-gray-100">
+                    <img
+                      src={item.image}
+                      alt="저장된 이미지"
+                      className="w-full h-full object-cover cursor-pointer"
+                      onClick={() => window.open(item.image, "_blank")}
+                    />
 
-                  <p className="text-[14px] text-gray-700 mb-2 line-clamp-2">
-                    {item.prompt}
-                  </p>
+                    {/* 액션 버튼 - 우측 상단 */}
+                    <div className="absolute top-2 right-2 flex flex-col gap-2">
+                      {/* 다운로드 버튼 */}
+                      <button
+                        className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-blue-500 hover:text-white transition-all"
+                        onClick={() => {
+                          const link = document.createElement("a");
+                          link.href = item.image;
+                          link.download = `ai-image-${item.id || Date.now()}.png`;
+                          link.click();
+                        }}
+                        title="다운로드"
+                      >
+                        <span className="text-[18px]">📥</span>
+                      </button>
 
-                  <p className="text-[12px] text-gray-400 mb-2">
-                    {new Date(item.createdAt).toLocaleDateString("ko-KR")}
-                  </p>
+                      {/* 삭제 버튼 */}
+                      <button
+                        className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
+                        onClick={() => item.id && handleDeleteImage(item.id)}
+                        title="삭제"
+                      >
+                        <span className="text-[18px]">🗑️</span>
+                      </button>
+                    </div>
+                  </div>
 
-                  {/* 액션 버튼 */}
-                  <div className="flex gap-2">
-                    <button
-                      className="flex-1 px-3 py-1.5 bg-blue-500 text-white rounded-lg text-[14px] font-semibold"
-                      onClick={() => {
-                        const link = document.createElement("a");
-                        link.href = item.image;
-                        link.download = `ai-image-${item.id || Date.now()}.png`;
-                        link.click();
-                      }}
-                    >
-                      📥
-                    </button>
-
-                    <button
-                      className="flex-1 px-3 py-1.5 bg-red-500 text-white rounded-lg text-[14px] font-semibold"
-                      onClick={() => item.id && handleDeleteImage(item.id)}
-                    >
-                      🗑️
-                    </button>
+                  {/* 정보 패널 */}
+                  <div className="p-3">
+                    <p className="text-[13px] text-gray-700 line-clamp-2 mb-1">
+                      {item.prompt}
+                    </p>
+                    <p className="text-[11px] text-gray-400">
+                      {new Date(item.createdAt).toLocaleDateString("ko-KR")}
+                    </p>
                   </div>
                 </div>
               ))}

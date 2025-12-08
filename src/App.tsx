@@ -9,6 +9,7 @@ import DrawDirect from './pages/DrawDirect'
 import DrawingResult from './pages/DrawingResult'
 import DirectInput from './pages/DirectInput'
 import Write from './pages/Write'
+import WriteStart from './pages/WriteStart'
 import WriteEditor from './pages/WriteEditor'
 import WritingPracticeNew from './pages/WritingPracticeNew'
 import WritingGenre from './pages/WritingGenre'
@@ -62,6 +63,7 @@ function App() {
 
         {/* ✏️ 글쓰기 관련 페이지 */}
         <Route element={<Layout title="✏️ 글쓰기" color="#FFF2A8" />}>
+          <Route path="/write/start" element={<WriteStart />} />
           <Route path="/write" element={<Write />} />
           <Route path="/write/practice" element={<WritingPracticeNew />} />
           <Route path="/write/editor" element={<WriteEditor />} />

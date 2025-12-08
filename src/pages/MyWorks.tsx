@@ -76,18 +76,12 @@ export default function MyWorks() {
 
   if (isLoading) {
     return (
-      <>
-        <Header title="🏆 내 작품" color="#FFE1D1" />
-        <Layout>
-          <p className="text-[18px] text-center text-gray-600">불러오는 중...</p>
-        </Layout>
-      </>
+      <p className="text-[18px] text-center text-gray-600">불러오는 중...</p>
     );
   }
 
   return (
-    <Layout title="🏆 내 작품" color="#FFE1D1">
-      <div>
+    <div>
 
       {/* 탭 전환 */}
       <div className="flex gap-2 mb-6">
@@ -382,13 +376,6 @@ export default function MyWorks() {
             </div>
           )}
         </div>
-      )}
-
-    </div>
-    </Layout>
-  );
-}
-
       )}
 
     </div>

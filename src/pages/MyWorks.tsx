@@ -162,40 +162,58 @@ export default function MyWorks() {
               {storybooks.map((book) => (
                 <div
                   key={book.id}
-                  className="border rounded-xl p-4 bg-white shadow hover:shadow-lg transition"
+                  className="border-2 border-gray-200 rounded-2xl p-5 bg-white shadow-sm hover:shadow-md transition"
                 >
                   {/* 커버 이미지 */}
                   {book.coverImageUrl && (
                     <img
                       src={book.coverImageUrl}
                       alt={book.title}
-                      className="w-full h-48 object-cover rounded-xl mb-3 cursor-pointer"
+                      className="w-full h-48 object-cover rounded-xl mb-4 cursor-pointer"
                       onClick={() => window.open(book.coverImageUrl, "_blank")}
                     />
                   )}
 
                   {/* 제목 */}
-                  <h3 className="text-[20px] font-bold mb-2">{book.title}</h3>
+                  <h3 className="text-[22px] font-bold text-gray-800 mb-3">{book.title}</h3>
 
-                  {/* 메타 정보 */}
-                  <div className="text-[14px] text-gray-500 mb-2 space-y-1">
-                    {book.style && <p>스타일: {book.style}</p>}
-                    <p>페이지 수: {book.pages.length}페이지</p>
-                    <p>
-                      생성일:{" "}
-                      {new Date(book.createdAt).toLocaleString("ko-KR", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </p>
+                  {/* 메타 정보 - 박스 형태 */}
+                  <div className="bg-gray-50 rounded-xl p-3 mb-3 space-y-2">
+                    {book.style && (
+                      <div className="flex items-center gap-2 text-[14px]">
+                        <span className="text-purple-600 font-semibold">스타일:</span>
+                        <span className="text-gray-700">{book.style}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 text-[14px]">
+                      <span className="text-purple-600 font-semibold">페이지 수:</span>
+                      <span className="text-gray-700">{book.pages.length}페이지</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[14px]">
+                      <span className="text-purple-600 font-semibold">생성일:</span>
+                      <span className="text-gray-700">
+                        {new Date(book.createdAt).toLocaleString("ko-KR", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* 첫 페이지 미리보기 */}
+                  {/* 첫 페이지 미리보기 - 제한된 높이 */}
                   {book.pages[0]?.text && (
-                    <p className="text-[16px] text-gray-700 mb-3 line-clamp-2">
-                      "{book.pages[0].text}"
-                    </p>
+                    <div className="bg-purple-50 rounded-xl p-3 mb-4">
+                      <p className="text-[15px] text-gray-700 leading-relaxed overflow-hidden" 
+                         style={{ 
+                           display: '-webkit-box',
+                           WebkitLineClamp: 3,
+                           WebkitBoxOrient: 'vertical',
+                           maxHeight: '4.5em'
+                         }}>
+                        "{book.pages[0].text.substring(0, 150)}{book.pages[0].text.length > 150 ? '...' : ''}"
+                      </p>
+                    </div>
                   )}
 
                   {/* 액션 버튼 */}

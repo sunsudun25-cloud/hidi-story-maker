@@ -515,39 +515,6 @@ ${content}
 
   return (
     <main style={{ padding: "20px", maxWidth: "900px", margin: "0 auto" }}>
-      {/* 헤더 */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-        <button
-          onClick={() => navigate(-1)}
-          style={{
-            padding: "12px 20px",
-            fontSize: "18px",
-            backgroundColor: "#ddd",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-          }}
-        >
-          ← 뒤로
-        </button>
-        <h1 style={{ fontSize: "28px", fontWeight: "bold", margin: 0 }}>
-          {genreLabel || "✍️ 글쓰기"}
-        </h1>
-        <button
-          onClick={() => navigate("/home")}
-          style={{
-            padding: "12px 20px",
-            fontSize: "18px",
-            backgroundColor: "#ddd",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-          }}
-        >
-          🏠
-        </button>
-      </div>
-
       {/* 장르 가이드 (장르가 있을 경우만 표시) */}
       {genre && genreGuide && (
         <div style={{

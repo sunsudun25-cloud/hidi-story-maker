@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { safeGeminiCall } from "../services/geminiService";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useStorybook } from "../context/StorybookContext";
+import StorybookLayout from "../components/StorybookLayout";
 import "./Storybook/Storybook.css";
 
 type PlotSuggestion = {
@@ -199,14 +200,7 @@ export default function StorybookAISuggestion() {
   };
 
   return (
-    <>
-      {/* 📚 동화책 전용 파란 헤더 */}
-      <div className="storybook-header">
-        <button className="storybook-back" onClick={() => navigate(-1)}>←</button>
-        <h1 className="storybook-title">📚 AI 줄거리 추천</h1>
-        <button className="storybook-home" onClick={() => navigate("/home")}>🏠</button>
-      </div>
-
+    <StorybookLayout title="📚 AI 줄거리 추천">
       {isGenerating || isCreatingDraft ? (
         <LoadingSpinner text={
           isGenerating 
@@ -352,12 +346,6 @@ export default function StorybookAISuggestion() {
           )}
         </div>
       )}
-
-      {/* 공통 푸터 */}
-      <footer className="layout-footer">
-        <div className="company-name">HI-DI Edu</div>
-        <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
-      </footer>
-    </>
+    </StorybookLayout>
   );
 }

@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { exportEnhancedPDF } from "../services/pdfService";
 import { generateStoryImage } from "../services/imageService";
+import StorybookLayout from "../components/StorybookLayout";
 import "./StorybookExport.css";
 
 type PageData = {
@@ -151,14 +152,7 @@ export default function StorybookExport({
   );
 
   return (
-    <>
-      {/* 📚 동화책 전용 파란 헤더 */}
-      <div className="storybook-header">
-        <button className="storybook-back" onClick={() => navigate(-1)}>←</button>
-        <h1 className="storybook-title">📚 동화책 PDF 만들기</h1>
-        <button className="storybook-home" onClick={() => navigate("/home")}>🏠</button>
-      </div>
-
+    <StorybookLayout title="📚 동화책 PDF 만들기">
       <div className="redesign-container">
         {/* ===== 상단 단계 안내 ===== */}
       <div className="step-indicator">
@@ -316,12 +310,6 @@ export default function StorybookExport({
         </>
       )}
       </div>
-
-      {/* 공통 푸터 */}
-      <footer className="layout-footer">
-        <div className="company-name">HI-DI Edu</div>
-        <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
-      </footer>
-    </>
+    </StorybookLayout>
   );
 }

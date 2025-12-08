@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import StorybookLayout from "../../components/StorybookLayout";
 
 export default function Storybook() {
   const navigate = useNavigate();
@@ -14,14 +15,7 @@ export default function Storybook() {
   };
 
   return (
-    <>
-      {/* 📚 동화책 전용 파란 헤더 */}
-      <div className="storybook-header">
-        <button className="storybook-back" onClick={() => navigate(-1)}>←</button>
-        <h1 className="storybook-title">📚 동화책 만들기</h1>
-        <button className="storybook-home" onClick={() => navigate("/home")}>🏠</button>
-      </div>
-
+    <StorybookLayout title="📚 동화책 만들기">
       <div className="page-section">
         <h2 className="page-title">동화책 만들기를 어떻게 시작할까요?</h2>
 
@@ -43,12 +37,6 @@ export default function Storybook() {
           <div className="desc">AI가 준비한 재미있는 아이디어</div>
         </button>
       </div>
-
-      {/* 공통 푸터 */}
-      <footer className="layout-footer">
-        <div className="company-name">HI-DI Edu</div>
-        <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
-      </footer>
-    </>
+    </StorybookLayout>
   );
 }

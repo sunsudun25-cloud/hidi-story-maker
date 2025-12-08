@@ -5,6 +5,7 @@ import { generateImageViaFirebase } from "../services/firebaseFunctions";
 import { exportStorybookToPDF, exportEnhancedPDF } from "../services/pdfService";
 import { saveStorybook } from "../services/dbService";
 import { useStorybook } from "../context/StorybookContext";
+import StorybookLayout from "../components/StorybookLayout";
 import "./StorybookEditor.css";
 
 /**
@@ -468,14 +469,7 @@ ${page.text}
   const currentPageData = storyPages[currentPage - 1] || { text: "", imageUrl: undefined };
 
   return (
-    <>
-      {/* 📚 동화책 전용 파란 헤더 */}
-      <div className="storybook-header">
-        <button className="storybook-back" onClick={() => navigate(-1)}>←</button>
-        <h1 className="storybook-title">📚 동화책 편집</h1>
-        <button className="storybook-home" onClick={() => navigate("/home")}>🏠</button>
-      </div>
-
+    <StorybookLayout title="📚 동화책 편집">
       <div className="editor-container">
         {/* 제목 */}
         <h2 className="book-title">{title}</h2>
@@ -1008,12 +1002,6 @@ ${page.text}
         </div>
       )}
       </div>
-
-      {/* 공통 푸터 */}
-      <footer className="layout-footer">
-        <div className="company-name">HI-DI Edu</div>
-        <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
-      </footer>
-    </>
+    </StorybookLayout>
   );
 }

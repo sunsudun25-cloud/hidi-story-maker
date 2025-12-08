@@ -20,7 +20,7 @@ export default function MyWorksHome() {
         textAlign: 'center',
         color: '#333'
       }}>
-        📂 내 작품 관리 (NEW VERSION)
+        내 작품 관리
       </h1>
 
       {/* 메뉴 3개 */}

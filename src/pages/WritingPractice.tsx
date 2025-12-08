@@ -26,7 +26,7 @@ export default function WritingPractice() {
             <button
               key={index}
               className="wp-card"
-              onClick={() => navigate("/write/editor", { state: { topic: t.title } })}
+              onClick={() => navigate("/write/editor", { state: { mode: "practice", title: t.title } })}
             >
               <div className="wp-icon">{t.icon}</div>
               <div className="wp-card-content">

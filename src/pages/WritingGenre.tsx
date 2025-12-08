@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import "./WritingGenre.css";
 
 export default function WritingGenre() {
   const navigate = useNavigate();
@@ -43,19 +44,18 @@ export default function WritingGenre() {
   ];
 
   return (
-    <div className="pb-24">
-
-      <div className="p-5">
-        <h2 className="text-2xl font-bold mb-4">글쓰기 장르 선택</h2>
-
-        <p className="text-gray-700 mb-6 leading-relaxed text-lg">
+    <div className="screen">
+      <div className="genre-container">
+        <h2 className="screen-title">글쓰기 장르 선택</h2>
+        <p className="screen-subtitle">
           어떤 종류의 글을 작성할지 선택하세요.
         </p>
 
-        <div className="grid grid-cols-1 gap-4">
+        <div className="genre-list">
           {genres.map((g) => (
             <button
               key={g.key}
+              className="genre-card"
               onClick={() => {
                 // 시와 소설은 질문 페이지로, 나머지는 바로 편집기로
                 if (g.key === "poem" || g.key === "novel") {
@@ -76,45 +76,17 @@ export default function WritingGenre() {
                   });
                 }
               }}
-              className="
-                bg-white border-2 border-gray-300 rounded-xl
-                p-6 text-left shadow-sm
-                hover:border-emerald-500 hover:bg-emerald-50
-                transition-all duration-200
-                active:scale-95
-              "
             >
-              <div className="text-2xl font-bold mb-2">{g.label}</div>
-              <div className="text-gray-600 text-lg mb-2">{g.desc}</div>
-              <div className="text-emerald-600 text-base">💡 {g.guide}</div>
+              <div className="genre-label">{g.label}</div>
+              <div className="genre-desc">{g.desc}</div>
+              <div className="genre-guide">💡 {g.guide}</div>
             </button>
           ))}
         </div>
 
-        {/* 뒤로가기 버튼 */}
-        <div className="mt-6">
-          <button
-            onClick={() => navigate("/write")}
-            className="
-              w-full py-4 text-xl font-semibold
-              bg-gray-100 text-gray-700 rounded-xl
-              hover:bg-gray-200
-              transition-colors duration-200
-            "
-          >
-            ← 이전으로
-          </button>
-        </div>
-
-        {/* 회사 정보 푸터 */}
-        <div className="mt-10 p-8 bg-gray-100 rounded-xl text-center">
-          <div className="text-xl font-bold text-gray-800 mb-2">
-            HI-DI Edu
-          </div>
-          <div className="text-sm text-gray-600">
-            모든 세대를 잇는 AI 스토리 플랫폼
-          </div>
-        </div>
+        <button onClick={() => navigate("/write")} className="btn-secondary btn-large">
+          ← 이전으로
+        </button>
       </div>
     </div>
   );

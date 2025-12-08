@@ -11,53 +11,27 @@
       "**/node_modules/**"
     ],
     "rewrites": [
-      {
-        "source": "/api/generateImage",
-        "function": "generateImage"
-      },
-      {
-        "source": "/api/health",
-        "function": "health"
-      },
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
+      { "source": "/api/generateImage", "function": "generateImage" },
+      { "source": "/api/health", "function": "health" },
+      { "source": "**", "destination": "/index.html" }
     ],
     "headers": [
       {
-        "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|ico)",
+        "source": "/service-worker.js",
         "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "max-age=7200"
-          }
+          { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }
         ]
       },
       {
         "source": "**/*.@(js|css)",
         "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "max-age=604800"
-          }
+          { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
         ]
       },
       {
         "source": "**",
         "headers": [
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "X-XSS-Protection",
-            "value": "1; mode=block"
-          },
-          {
-            "key": "Permissions-Policy",
-            "value": "storage-access=*, browsing-topics=()"
-          }
+          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
         ]
       }
     ]

@@ -263,7 +263,44 @@ ${current.text}
           }}
         />
 
-        {/* AI 이어쓰기 버튼 */}
+        {/* 1. 페이지 이동 (최상단) */}
+        <div style={{ display: "flex", gap: 10 }}>
+          <button
+            onClick={() => handlePageChange('prev')}
+            disabled={currentPage === 1}
+            style={{
+              flex: 1,
+              padding: 12,
+              background: currentPage === 1 ? "#D1D5DB" : "#6B7280",
+              color: "white",
+              border: "none",
+              borderRadius: 8,
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: currentPage === 1 ? "not-allowed" : "pointer",
+            }}
+          >
+            ← 이전
+          </button>
+          <button
+            onClick={() => handlePageChange('next')}
+            style={{
+              flex: 1,
+              padding: 12,
+              background: "#6B7280",
+              color: "white",
+              border: "none",
+              borderRadius: 8,
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            다음 →
+          </button>
+        </div>
+
+        {/* 2. AI 이어쓰기 */}
         <button
           onClick={handleAiAssist}
           disabled={isAiHelping}
@@ -281,7 +318,7 @@ ${current.text}
           {isAiHelping ? "⏳ AI가 쓰는 중..." : "✨ AI가 이어서 쓰기"}
         </button>
 
-        {/* 이미지 */}
+        {/* 3. 삽화 만들기 */}
         {currentPageData.imageUrl ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             <img
@@ -325,44 +362,7 @@ ${current.text}
           </button>
         )}
 
-        {/* 페이지 이동 (책처럼) */}
-        <div style={{ display: "flex", gap: 10 }}>
-          <button
-            onClick={() => handlePageChange('prev')}
-            disabled={currentPage === 1}
-            style={{
-              flex: 1,
-              padding: 12,
-              background: currentPage === 1 ? "#D1D5DB" : "#6B7280",
-              color: "white",
-              border: "none",
-              borderRadius: 8,
-              fontSize: 16,
-              fontWeight: 600,
-              cursor: currentPage === 1 ? "not-allowed" : "pointer",
-            }}
-          >
-            ← 이전
-          </button>
-          <button
-            onClick={() => handlePageChange('next')}
-            style={{
-              flex: 1,
-              padding: 12,
-              background: "#6B7280",
-              color: "white",
-              border: "none",
-              borderRadius: 8,
-              fontSize: 16,
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
-            다음 →
-          </button>
-        </div>
-
-        {/* 저장 */}
+        {/* 4. 저장하기 */}
         <button
           onClick={handleSave}
           style={{
@@ -379,7 +379,7 @@ ${current.text}
           💾 저장하기 ({storyPages.length}페이지)
         </button>
 
-        {/* PDF 설정 페이지로 이동 */}
+        {/* 5. PDF 설정 페이지로 이동 (최하단) */}
         <button
           onClick={() =>
             navigate("/storybook-export", {

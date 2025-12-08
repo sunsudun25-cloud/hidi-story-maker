@@ -638,7 +638,6 @@ ${content}
           }}>
             🤖 기본 도우미
           </div>
-          <(
           <div style={{
             display: "grid",
             gridTemplateColumns: "repeat(2, 1fr)",

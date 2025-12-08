@@ -65,6 +65,7 @@ body,
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  overflow-x: hidden; /* ⭐ 가로 스크롤 제거 */
   background-color: var(--bg-page);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans KR",
     "Apple SD Gothic Neo", sans-serif;

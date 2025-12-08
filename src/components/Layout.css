@@ -1,25 +1,25 @@
-/* ===== 전체 앱 중앙 고정 (520px) + 스크롤 제어 ===== */
+/* ===== 전체 화면 기준으로 헤더 중앙정렬 유지 ===== */
 .page-container {
+  min-height: 100vh;
+  overflow-y: auto; /* ⭐ 하나만 스크롤 */
   display: flex;
   flex-direction: column;
-  align-items: center;
-  height: 100vh; /* min-height → height */
-  overflow-y: auto; /* ⭐ 화면 전체 스크롤을 이쪽에서만 처리 */
-  position: relative;
-  background: #f8f5ef;
+  background: #f8f5ef; 
+  align-items: center; /* ⭐ 중앙정렬 핵심 */
 }
 
-/* 페이지 내용 공통 폭 제한 */
+/* 콘텐츠 고정 폭 */
 .page-content {
   flex: 1;
   width: 100%;
-  max-width: 520px;
-  padding: 90px 20px 40px 20px;  /* 헤더와 정확히 안 겹치는 여백 */
-  margin: 0 auto;
+  max-width: 520px;  /* ⭐ 전 화면 폭 통일 */
+  padding: 90px 20px 40px; /* 헤더 높이 공간 확보 */
   box-sizing: border-box;
+  overflow-y: visible !important; /* ⭐ 이중 스크롤 방지 */
+  height: auto !important;
 }
 
-/* 공통 Footer */
+/* 푸터 역시 폭 고정 */
 .layout-footer {
   width: 100%;
   max-width: 520px;
@@ -28,6 +28,11 @@
   font-size: 14px;
   opacity: 0.8;
   color: #444;
+}
+
+/* 페이지 섹션 공통 간격 */
+.page-section {
+  margin-top: 10px; /* 헤더 붙어있는 느낌 제거 */
 }
 
 .company-name {

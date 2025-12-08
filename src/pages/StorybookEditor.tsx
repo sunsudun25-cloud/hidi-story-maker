@@ -119,16 +119,45 @@ export default function StorybookEditor() {
     const pageIndex = currentPage - 1;
     const current = storyPages[pageIndex];
 
-    if (!current || !current.text.trim()) {
-      alert("먼저 이 페이지의 내용을 입력해주세요!");
-      return;
-    }
-
     setIsAiHelping(true);
     try {
-      const aiPrompt = `
+      let aiPrompt = "";
+
+      // 현재 페이지가 비어있는 경우 → 이전 페이지들을 참고해서 이어쓰기
+      if (!current || !current.text.trim()) {
+        // 이전 페이지들의 내용 수집
+        const previousPages = storyPages
+          .slice(0, pageIndex)
+          .filter(p => p.text && p.text.trim())
+          .map((p, idx) => `[${idx + 1}페이지]\n${p.text}`)
+          .join("\n\n");
+
+        if (!previousPages) {
+          alert("이전 페이지에 내용이 없습니다. 먼저 1페이지를 작성해주세요!");
+          setIsAiHelping(false);
+          return;
+        }
+
+        aiPrompt = `
 당신은 어린이를 위한 동화책 작가입니다.
-아래 내용을 자연스럽게 이어서 2~4문장 제안해주세요.
+아래 이전 페이지들의 내용을 자연스럽게 이어서 새로운 페이지를 작성해주세요.
+
+제목: ${title}
+줄거리: ${prompt}
+
+${previousPages}
+
+위 내용을 이어서 3~5문장으로 다음 페이지를 작성해주세요.
+`;
+
+        const newPageText = await safeGeminiCall(aiPrompt);
+        setTextForPage(pageIndex, newPageText.trim());
+        alert("✨ AI가 이어서 새 페이지를 작성했어요!");
+      } else {
+        // 현재 페이지에 내용이 있는 경우 → 현재 페이지 내용을 확장
+        aiPrompt = `
+당신은 어린이를 위한 동화책 작가입니다.
+아래 내용을 자연스럽게 이어서 2~4문장 추가해주세요.
 
 제목: ${title}
 줄거리: ${prompt}
@@ -137,10 +166,11 @@ export default function StorybookEditor() {
 ${current.text}
 `;
 
-      const suggestion = await safeGeminiCall(aiPrompt);
-      const newText = `${current.text.trim()}\n\n${suggestion.trim()}`;
-      setTextForPage(pageIndex, newText);
-      alert("🤖 AI가 내용을 이어줬어요!");
+        const suggestion = await safeGeminiCall(aiPrompt);
+        const newText = `${current.text.trim()}\n\n${suggestion.trim()}`;
+        setTextForPage(pageIndex, newText);
+        alert("✨ AI가 내용을 추가했어요!");
+      }
     } catch (err) {
       console.error("AI 도움 오류:", err);
       alert("AI 도움 중 오류가 발생했습니다.");

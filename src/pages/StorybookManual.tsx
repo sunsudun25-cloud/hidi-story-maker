@@ -90,10 +90,6 @@ export default function StorybookManual() {
    * - Editor로 pages 배열 전달 ✅
    */
   const handleCreateStorybook = async () => {
-    if (!storyTitle.trim()) {
-      alert("동화책 제목을 입력해주세요!");
-      return;
-    }
     if (!storyPrompt.trim()) {
       alert("동화책 줄거리를 입력해주세요!");
       return;

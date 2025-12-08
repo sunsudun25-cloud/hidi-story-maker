@@ -63,54 +63,39 @@
   box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.1);
 }
 
-/* 줄거리 입력 방법 버튼 */
-.manual-input-methods {
+/* AI 줄거리 추천 버튼 (전체 너비) */
+.ai-suggest-btn {
+  width: 100%;
   display: flex;
-  gap: 12px;
-  margin-bottom: 30px;
-}
-
-.method-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 20px 16px;
-  border: 2px solid transparent;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  border: 2px solid #9C27B0;
   border-radius: 12px;
-  background: #fff;
+  background: linear-gradient(135deg, #E1BEE7 0%, #CE93D8 100%);
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.2);
 }
 
-.method-btn.direct {
-  border-color: #4CAF50;
-  background: linear-gradient(135deg, #C8E6C9 0%, #A5D6A7 100%);
-}
-
-.method-btn.ai {
-  border-color: #9C27B0;
-  background: linear-gradient(135deg, #E1BEE7 0%, #CE93D8 100%);
-}
-
-.method-btn:hover {
+.ai-suggest-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 16px rgba(156, 39, 176, 0.3);
 }
 
-.method-btn:active {
+.ai-suggest-btn:active {
   transform: translateY(-1px);
 }
 
-.method-icon {
-  font-size: 32px;
+.ai-suggest-icon {
+  font-size: 28px;
 }
 
-.method-text {
-  font-size: 16px;
-  font-weight: 600;
+.ai-suggest-text {
+  font-size: 18px;
+  font-weight: 700;
   color: #2c3e50;
 }
 
@@ -334,22 +319,16 @@
 
 /* 반응형 */
 @media (max-width: 640px) {
-  .manual-input-methods {
-    flex-direction: column;
+  .ai-suggest-btn {
+    padding: 18px;
   }
 
-  .method-btn {
-    flex-direction: row;
-    justify-content: center;
-    padding: 16px;
+  .ai-suggest-icon {
+    font-size: 24px;
   }
 
-  .method-icon {
-    font-size: 28px;
-  }
-
-  .method-text {
-    font-size: 15px;
+  .ai-suggest-text {
+    font-size: 16px;
   }
 
   .style-grid {

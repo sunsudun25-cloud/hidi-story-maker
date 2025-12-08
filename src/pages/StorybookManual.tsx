@@ -210,28 +210,14 @@ export default function StorybookManual() {
             />
           </div>
 
-          {/* 줄거리 입력 방법 선택 버튼 */}
-          <div className="manual-input-methods">
-            <button 
-              className="method-btn direct"
-              onClick={() => {
-                // 텍스트 에리어에 포커스
-                const textarea = document.querySelector('.manual-plot-textarea') as HTMLTextAreaElement;
-                textarea?.focus();
-              }}
-            >
-              <span className="method-icon">📝</span>
-              <span className="method-text">줄거리 직접 입력하기</span>
-            </button>
-            
-            <button 
-              className="method-btn ai"
-              onClick={handleAiSuggestion}
-            >
-              <span className="method-icon">✨</span>
-              <span className="method-text">AI에게 줄거리 추천받기</span>
-            </button>
-          </div>
+          {/* AI 줄거리 추천 버튼 */}
+          <button 
+            className="ai-suggest-btn"
+            onClick={handleAiSuggestion}
+          >
+            <span className="ai-suggest-icon">✨</span>
+            <span className="ai-suggest-text">AI에게 줄거리 추천받기</span>
+          </button>
 
           {/* 스타일 선택 */}
           <div className="manual-section">

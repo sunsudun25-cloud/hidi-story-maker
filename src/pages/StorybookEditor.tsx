@@ -318,16 +318,23 @@ ${page.text}
     }
   };
 
-  // 💾 저장 (최소 10페이지 검증)
+  // 💾 저장 (1페이지 이상이면 저장 가능 - 중간 저장 지원)
   const handleSave = async () => {
-    // 최소 10페이지 검증
-    if (storyPages.length < 10) {
-      alert(
-        `⚠️ 동화책은 최소 10페이지 이상이어야 저장할 수 있습니다!\n\n` +
-        `현재 페이지: ${storyPages.length}페이지\n` +
-        `필요한 페이지: ${10 - storyPages.length}페이지 더 추가하세요.`
-      );
+    // 최소 1페이지 검증
+    if (storyPages.length < 1) {
+      alert('⚠️ 최소 1페이지 이상 작성해야 저장할 수 있습니다!');
       return;
+    }
+
+    // 10페이지 미만일 경우 안내 메시지
+    if (storyPages.length < 10) {
+      const confirmed = window.confirm(
+        `📝 중간 저장하시겠습니까?\n\n` +
+        `현재 페이지: ${storyPages.length}페이지\n` +
+        `권장 페이지: 최소 10페이지\n\n` +
+        `중간 저장 후 나중에 이어서 작성할 수 있습니다.`
+      );
+      if (!confirmed) return;
     }
 
     try {
@@ -536,12 +543,12 @@ ${page.text}
           }}
         >
           <p style={{ fontSize: "16px", fontWeight: "bold", marginBottom: "10px" }}>
-            ⚠️ 동화책은 최소 10페이지 이상이어야 저장/PDF 생성이 가능합니다!
+            ⚠️ PDF 생성은 최소 10페이지 이상 필요합니다!
           </p>
           <p style={{ fontSize: "14px", color: "#666" }}>
-            현재: {storyPages.length}페이지 / 최소: 10페이지
+            현재: {storyPages.length}페이지 / 권장: 10페이지 이상
             <br />
-            (필요: {10 - storyPages.length}페이지 더 추가)
+            💾 중간 저장은 1페이지 이상이면 가능합니다!
           </p>
         </div>
       )}
@@ -605,10 +612,10 @@ ${page.text}
         <button
           className="primary-btn"
           onClick={handleSave}
-          disabled={storyPages.length < 10}
+          disabled={storyPages.length < 1}
           style={{
-            backgroundColor: storyPages.length < 10 ? "#ccc" : undefined,
-            cursor: storyPages.length < 10 ? "not-allowed" : "pointer",
+            backgroundColor: storyPages.length < 1 ? "#ccc" : undefined,
+            cursor: storyPages.length < 1 ? "not-allowed" : "pointer",
           }}
         >
           💾 저장하기 {storyPages.length < 10 && `(${storyPages.length}/10)`}

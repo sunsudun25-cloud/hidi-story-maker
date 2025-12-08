@@ -38,6 +38,7 @@ export default function MyWorksImages() {
 
   return (
     <div style={{ padding: "20px", minHeight: "100vh", backgroundColor: "#FFF9F0" }}>
+      <div style={{ maxWidth: "480px", margin: "0 auto" }}>
       {/* 헤더 */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
         <button
@@ -177,6 +178,7 @@ export default function MyWorksImages() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

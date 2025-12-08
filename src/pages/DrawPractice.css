@@ -1,87 +1,44 @@
-/* DrawPractice.css - 깔끔하고 senior-friendly한 그린 테마 */
+/* DrawPractice.css - 통일된 디자인 시스템 */
 
-/* 페이지 컨테이너 */
-.draw-page-container {
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 20px;
-  padding-top: 0; /* Layout.css에서 padding-top: 92px 이미 처리됨 */
-}
-
-/* 상단 헤더 (deprecated - use CommonHeader) */
-.page-header {
-  background: #b7d4ff;
-  padding: 10px 16px;
-  border-radius: 0 0 14px 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-}
-
-.header-btn {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: white;
-  border: none;
-  font-size: 22px;
+/* ===========================
+   레이아웃
+=========================== */
+.screen {
   display: flex;
   justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
+  padding-top: 0; /* Layout.css에서 padding-top: 80px 처리됨 */
 }
 
-.header-btn:hover {
-  background: #f5f5f5;
-  transform: translateY(-1px);
+.draw-page-container {
+  width: 100%;
+  max-width: 520px;
+  padding: 0; /* Layout.css에서 padding 처리됨 */
 }
 
-.header-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a1a1a;
-}
-
-/* 페이지 전체 여백 */
+/* 제목 섹션과 첫 박스 사이 간격 */
 .practice-page {
-  padding: 0 0 60px 0;
+  margin-top: 0;
 }
 
-/* 섹션 제목 */
-.section-title {
-  margin-top: 22px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-  padding: 0 16px;
-}
-
-/* 빠른 예시 박스 */
+/* ===========================
+   박스
+=========================== */
 .practice-box {
-  background: white;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 16px;
-  margin: 12px 16px 20px 16px;
+  background: #ffffffcc;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
 .practice-subtitle {
   font-size: 16px;
   font-weight: 600;
-  color: #555;
   margin-bottom: 12px;
+  color: #333;
 }
 
-/* 예시 칩들 */
+/* 예시 칩 */
 .example-chips {
   display: flex;
   flex-wrap: wrap;
@@ -89,40 +46,40 @@
 }
 
 .example-chip {
-  padding: 10px 16px;
-  background: #fffbe8;
-  border: 1.5px solid #f5d38a;
-  border-radius: 18px;
+  background: #fff7d6;
+  border: 2px solid #ffe7a3;
+  padding: 8px 14px;
+  border-radius: 14px;
   font-size: 14px;
-  color: #333;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: 0.2s;
 }
 
 .example-chip:hover {
-  background: #fff9e0;
-  border-color: #e6c070;
+  background: #fff0b8;
+  border-color: #f5d38a;
   transform: translateY(-1px);
 }
 
-/* 섹션 간격 */
+/* ===========================
+   섹션
+=========================== */
 .practice-section {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .practice-label {
   font-size: 18px;
   font-weight: 600;
   color: #333;
-  padding: 0 16px;
   margin-bottom: 12px;
 }
 
 /* 텍스트 입력 영역 */
 .practice-textarea {
-  width: calc(100% - 32px);
+  width: 100%;
   min-height: 120px;
-  margin: 0 16px 16px 16px;
+  margin-bottom: 16px;
   padding: 12px;
   border-radius: 10px;
   border: 1.5px solid #ccc;
@@ -136,12 +93,12 @@
 
 .practice-textarea:focus {
   outline: none;
-  border-color: #50b36b;
+  border-color: #2ecc71;
 }
 
 /* 팁 박스 */
 .tip-box {
-  margin: 0 16px 16px 16px;
+  margin-bottom: 16px;
   padding: 10px 14px;
   background: #fffbe8;
   border: 1.5px solid #f0dba5;
@@ -151,12 +108,13 @@
   line-height: 1.5;
 }
 
-/* 스타일 선택 그리드 */
+/* ===========================
+   스타일 선택 그리드
+=========================== */
 .style-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  padding: 0 16px;
   margin-bottom: 20px;
 }
 
@@ -174,15 +132,15 @@
 }
 
 .style-card:hover {
-  border-color: #50b36b;
+  border-color: #2ecc71;
   transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(80, 179, 107, 0.15);
+  box-shadow: 0 3px 8px rgba(46, 204, 113, 0.15);
 }
 
-/* 🎨 선택된 스타일 카드 효과 */
+/* 선택된 스타일 카드 */
 .style-card.selected {
   background: #d4ffe2;
-  border-color: #31c46a;
+  border-color: #2ecc71;
   box-shadow: 0 0 0 3px #a7f5c5 inset;
   font-weight: 600;
   transform: scale(1.03);
@@ -194,29 +152,39 @@
   color: #666;
 }
 
-/* 음성 입력 버튼 */
-.voice-button {
-  width: calc(100% - 32px);
-  margin: 10px 16px;
-  padding: 14px;
-  font-size: 16px;
+/* ===========================
+   버튼 (통일된 시스템 사용)
+=========================== */
+
+/* 음성 입력 버튼 - Tertiary 스타일 기반 */
+.btn-voice {
+  background: #eaf1ff;
+  color: #3b6bf0;
+  border: 2px solid #3b6bf0;
+  padding: 14px 20px;
+  border-radius: 14px;
+  font-size: 17px;
   font-weight: 600;
-  color: white;
-  background: #667eea;
-  border: none;
-  border-radius: 12px;
+  width: 100%;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: 0.15s ease;
+  margin-bottom: 16px;
 }
 
-.voice-button:hover {
-  background: #5568d3;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+.btn-voice:hover {
+  background: #d7e6ff;
+  transform: translateY(-1px);
 }
 
-.voice-button--active {
+.btn-voice:active {
+  transform: translateY(0);
+}
+
+/* 음성 입력 활성화 상태 */
+.btn-voice.voice-button--active {
   background: #ff6b6b;
+  color: white;
+  border-color: #ff6b6b;
   animation: pulse 1.5s infinite;
 }
 
@@ -233,48 +201,22 @@
 .practice-actions {
   display: flex;
   gap: 12px;
-  padding: 0 16px;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
+/* 주요 액션: Primary 버튼 사용 */
 .main-action {
   flex: 2;
-  padding: 16px 28px;
-  font-size: 17px;
-  font-weight: 700;
-  color: white;
-  background: #25c56e;
-  border: none;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
 
-.main-action:hover {
-  background: #1bb173;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 14px rgba(37, 197, 110, 0.3);
-}
-
+/* 보조 액션: Secondary 버튼 사용 */
 .sub-action {
   flex: 1;
-  padding: 16px 20px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #666;
-  background: white;
-  border: 2px solid #50b36b;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
 
-.sub-action:hover {
-  background: #f5f5f5;
-  border-color: #3a8f56;
-}
-
-/* 태블릿 */
+/* ===========================
+   반응형
+=========================== */
 @media (max-width: 768px) {
   .style-grid {
     grid-template-columns: 1fr;
@@ -290,12 +232,7 @@
   }
 }
 
-/* 모바일 */
 @media (max-width: 480px) {
-  .section-title {
-    font-size: 16px;
-  }
-
   .practice-label {
     font-size: 16px;
   }
@@ -305,18 +242,8 @@
     min-height: 100px;
   }
 
-  .voice-button {
+  .btn-voice {
     font-size: 15px;
     padding: 12px;
-  }
-
-  .main-action {
-    font-size: 16px;
-    padding: 14px 24px;
-  }
-
-  .sub-action {
-    font-size: 14px;
-    padding: 14px 18px;
   }
 }

@@ -196,44 +196,50 @@ export default function DrawPractice() {
           </div>
         </section>
 
-        {/* 스타일 선택 */}
-        <div className="section-title">그림 스타일을 골라보세요 (선택)</div>
-        <div className="style-grid">
-          {STYLES.map((style) => (
-            <button
-              key={style.id}
-              type="button"
-              className={
-                "style-card" + (selectedStyle === style.id ? " selected" : "")
-              }
-              onClick={() => handleStyleClick(style.id)}
-            >
-              {style.label}
-              <br />
-              <span>{style.description}</span>
-            </button>
-          ))}
-        </div>
+        {/* 음성 입력 버튼 */}
+        <button
+          type="button"
+          className={"btn-voice" + (isListening ? " voice-button--active" : "")}
+          onClick={handleVoiceInput}
+        >
+          {isListening ? "🎤 듣는 중... 한 번 더 누르면 종료" : "🎤 말로 설명하기"}
+        </button>
 
-        {/* 음성 입력 */}
+        {/* 스타일 선택 */}
         <section className="practice-section">
-          <button
-            type="button"
-            className={
-              "voice-button" + (isListening ? " voice-button--active" : "")
-            }
-            onClick={handleVoiceInput}
-          >
-            {isListening ? "🎤 듣는 중... 한 번 더 누르면 종료" : "🎤 말로 설명하기"}
-          </button>
+          <div className="practice-label">그림 스타일을 골라보세요 (선택)</div>
+          <div className="style-grid">
+            {STYLES.map((style) => (
+              <button
+                key={style.id}
+                type="button"
+                className={
+                  "style-card" + (selectedStyle === style.id ? " selected" : "")
+                }
+                onClick={() => handleStyleClick(style.id)}
+              >
+                {style.label}
+                <br />
+                <span>{style.description}</span>
+              </button>
+            ))}
+          </div>
         </section>
 
         {/* 액션 버튼 */}
         <div className="practice-actions">
-          <button type="button" className="big-btn primary main-action" onClick={handleGenerate}>
+          <button 
+            type="button" 
+            className="btn-primary main-action" 
+            onClick={handleGenerate}
+          >
             🎨 그림 만들기
           </button>
-          <button type="button" className="big-btn secondary sub-action" onClick={handleHelp}>
+          <button 
+            type="button" 
+            className="btn-secondary sub-action" 
+            onClick={handleHelp}
+          >
             💡 도움말
           </button>
         </div>

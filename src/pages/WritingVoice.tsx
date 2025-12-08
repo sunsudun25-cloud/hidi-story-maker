@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import CommonHeader from "../components/CommonHeader";
+import CanvaHeader from "../components/CanvaHeader";
 
 export default function WritingVoice() {
   const navigate = useNavigate();
@@ -108,7 +108,7 @@ export default function WritingVoice() {
   if (!isSupported) {
     return (
       <div className="pb-24">
-        <CommonHeader title="말로 입력하기" color="#FFF2A8" />
+        <CanvaHeader title="말로 입력하기" color="var(--canva-yellow)" />
         <div className="p-5">
           <div className="bg-red-50 border border-red-300 rounded-xl p-6 text-center">
             <p className="text-xl text-red-600 font-semibold mb-4">
@@ -131,7 +131,7 @@ export default function WritingVoice() {
 
   return (
     <div className="pb-24">
-      <CommonHeader title="말로 입력하기" color="#FFF2A8" />
+      <CanvaHeader title="말로 입력하기" color="var(--canva-yellow)" />
 
       <div className="p-5">
         <h2 className="text-2xl font-bold mb-4">🎤 음성으로 글쓰기</h2>

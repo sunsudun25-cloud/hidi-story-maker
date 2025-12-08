@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import CommonHeader from "../components/CommonHeader";
+import CanvaHeader from "../components/CanvaHeader";
 import { useStory } from "../context/StoryContext";
 
 export default function WritingDetail() {
@@ -13,7 +13,7 @@ export default function WritingDetail() {
   if (!story) {
     return (
       <div className="pb-24">
-        <CommonHeader title="글 상세보기" color="#FFF2A8" />
+        <CanvaHeader title="글 상세보기" color="var(--canva-yellow)" />
         <div className="p-5">
           <div className="bg-red-50 border border-red-300 rounded-xl p-6 text-center">
             <p className="text-xl text-red-600 font-semibold mb-4">
@@ -52,7 +52,7 @@ export default function WritingDetail() {
 
   return (
     <div className="pb-28">
-      <CommonHeader title="글 상세보기" color="#FFF2A8" />
+      <CanvaHeader title="글 상세보기" color="var(--canva-yellow)" />
 
       <div className="p-5">
         {/* 제목 */}

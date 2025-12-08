@@ -1,103 +1,21 @@
-/* ========================================
-   📐 레이아웃 시스템 (Layout System)
-   - Layout이 Header를 포함
-   - 모든 페이지 480px 기준 중앙 정렬
-   ======================================== */
+/* Layout.css - Canva 스타일 푸터 */
 
-.layout-wrapper {
-  width: 100%;
-  min-height: 100vh;
-  background: #faf7ef;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.layout-inner {
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 24px;
-  padding-top: 32px;  /* Header 아래 일정 간격 */
-  padding-bottom: 40px;
-  box-sizing: border-box;
-}
-
-/* Header 버튼 스타일 */
-.header-btn {
-  width: 42px;
-  height: 42px;
-  background: white;
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.header-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-/* 공통 푸터 */
 .layout-footer {
   width: 100%;
   max-width: 480px;
+  margin: 0 auto;
+  padding: 12px 4px 18px;
   text-align: center;
-  padding: 30px 20px;
-  margin-top: auto;
+  color: #777;
+  font-size: 13px;
 }
 
 .company-name {
-  font-size: 18px;
   font-weight: 700;
-  color: #222;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+  font-size: 14px;
 }
 
 .company-slogan {
-  font-size: 14px;
-  color: #666;
-  font-weight: 400;
-}
-
-/* 태블릿 (720px 미만) */
-@media (max-width: 720px) {
-  .layout-inner {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  
-  .header-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
-  }
-}
-
-/* 모바일 */
-@media (max-width: 480px) {
-  .layout-inner {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  
-  .header-btn {
-    width: 38px;
-    height: 38px;
-    font-size: 18px;
-  }
-  
-  .company-name {
-    font-size: 16px;
-  }
-  
-  .company-slogan {
-    font-size: 13px;
-  }
+  font-size: 12px;
 }

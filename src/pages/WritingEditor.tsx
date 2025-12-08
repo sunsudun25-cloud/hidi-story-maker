@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import CommonHeader from "../components/CommonHeader";
+import CanvaHeader from "../components/CanvaHeader";
 import { useStory } from "../context/StoryContext";
 import { safeGeminiCall, generateContinuationSamples } from "../services/geminiService";
 import { safeStorageSet } from "../utils/safeStorage";
@@ -30,7 +30,7 @@ export default function WritingEditor() {
   if (!genre) {
     return (
       <div className="pb-24">
-        <CommonHeader title="글쓰기" color="#FFF2A8" />
+        <CanvaHeader title="글쓰기" color="var(--canva-yellow)" />
         <div className="p-5">
           <div className="bg-red-50 border border-red-300 rounded-xl p-6 text-center">
             <p className="text-xl text-red-600 font-semibold mb-4">
@@ -158,7 +158,7 @@ ${text}
 
   return (
     <div className="pb-28">
-      <CommonHeader title={isEditMode ? `${label} 수정` : `${label} 쓰기`} />
+      <CanvaHeader title={isEditMode ? `${label} 수정` : `${label} 쓰기`} />
 
       {/* 메인 영역 */}
       <div className="p-5">

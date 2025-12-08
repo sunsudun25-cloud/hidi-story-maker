@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { generateImageViaFirebase } from "../services/firebaseFunctions";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { friendlyErrorMessage } from "../utils/errorHandler";
-import CommonHeader from "../components/CommonHeader";
+import CanvaHeader from "../components/CanvaHeader";
 import "./DrawPractice.css";
 
 type ExamplePrompt = {
@@ -156,7 +156,7 @@ export default function DrawPractice() {
 
   return (
     <>
-      <CommonHeader title="연습하기" color="#C8F3DC" />
+      <CanvaHeader title="연습하기" color="var(--canva-green)" />
       
       <div className="draw-page-container">
         {isGenerating ? (

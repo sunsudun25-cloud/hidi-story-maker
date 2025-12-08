@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import CommonHeader from "../components/CommonHeader";
+import CanvaHeader from "../components/CanvaHeader";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { generateStoryPrompts } from "../services/geminiService";
 
@@ -133,7 +133,7 @@ export default function WritingAiQuestions() {
   if (loading) {
     return (
       <div className="pb-24">
-        <CommonHeader title="AI 질문" color="#FFF2A8" />
+        <CanvaHeader title="AI 질문" color="var(--canva-yellow)" />
         <div className="flex flex-col items-center justify-center h-[60vh]">
           <LoadingSpinner />
           <p className="mt-4 text-gray-600">AI가 질문을 준비하고 있어요...</p>
@@ -146,7 +146,7 @@ export default function WritingAiQuestions() {
 
   return (
     <div className="pb-24">
-      <CommonHeader title={`${label} 쓰기`} />
+      <CanvaHeader title={`${label} 쓰기`} />
 
       <div className="p-5">
         {/* 진행 상황 */}

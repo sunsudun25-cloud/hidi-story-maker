@@ -4,6 +4,7 @@ import App from './App'
 import { StoryProvider } from './context/StoryContext'
 import { StorybookProvider } from './context/StorybookContext'
 import './styles/global.css'
+import './styles/canva-theme.css'
 import './index.css'
 
 // 환경변수 디버깅

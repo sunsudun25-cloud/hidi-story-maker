@@ -1,0 +1,174 @@
+/* ---------------------------------------------
+   HI-DI EDU · CANVA STYLE DESIGN SYSTEM
+----------------------------------------------*/
+
+/* 🎨 파스텔 컬러 팔레트 */
+:root {
+  --bg-light: #FAF8F3;
+  --bg-white: #FFFFFF;
+
+  --canva-yellow: #FFF4C7;
+  --canva-green: #C8F3DC;
+  --canva-blue:  #D7E8FF;
+  --canva-purple:#F1E5FF;
+  --canva-pink:  #FFE5EF;
+  --canva-gray:  #F5F5F7;
+
+  --text-main: #333333;
+  --text-soft: #555555;
+
+  --radius-card: 22px;
+  --radius-btn: 18px;
+
+  --shadow-card: 0 3px 8px rgba(0,0,0,0.08);
+  --shadow-btn:  0 2px 5px rgba(0,0,0,0.10);
+
+  --max-width: 480px;
+}
+
+/* 전체 배경 & 폰트 */
+body {
+  background: var(--bg-light);
+  font-family: "Pretendard", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-main);
+}
+
+/* ---------------------------------------------
+   공통 페이지 컨테이너 (모든 화면 기본틀)
+----------------------------------------------*/
+.page-container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 24px 20px 90px; /* 위·옆 여백 + 아래 푸터 공간 */
+  box-sizing: border-box;
+}
+
+/* ---------------------------------------------
+   공통 헤더 (Canva 상단바)
+----------------------------------------------*/
+.canva-header {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0 0 20px 20px;
+  box-shadow: var(--shadow-card);
+}
+
+.canva-header-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.header-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.header-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.header-btn:active {
+  transform: translateY(0);
+}
+
+/* ---------------------------------------------
+   공통 카드 / 버튼 / 제목 / 입력칸
+----------------------------------------------*/
+.canva-card {
+  background: white;
+  border-radius: var(--radius-card);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 16px;
+}
+
+.canva-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text-main);
+}
+
+.canva-subtitle {
+  font-size: 17px;
+  color: var(--text-soft);
+  margin-bottom: 20px;
+}
+
+.canva-btn {
+  width: 100%;
+  padding: 18px;
+  border-radius: var(--radius-btn);
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: 0.2s ease;
+  box-shadow: var(--shadow-btn);
+  background: white;
+  color: var(--text-main);
+}
+
+.canva-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.canva-btn:active {
+  transform: translateY(0);
+}
+
+/* Primary 버튼 */
+.canva-btn-primary {
+  background: #00C49A;
+  color: white;
+}
+
+.canva-btn-primary:hover {
+  background: #00B089;
+}
+
+/* 입력칸 */
+.canva-input,
+.canva-textarea {
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--radius-btn);
+  border: 2px solid #E0E0E0;
+  font-size: 17px;
+  background: white;
+  box-sizing: border-box;
+  font-family: "Pretendard", system-ui, sans-serif;
+  transition: 0.2s ease;
+}
+
+.canva-input:focus,
+.canva-textarea:focus {
+  outline: none;
+  border-color: #00C49A;
+  box-shadow: 0 0 0 3px rgba(0,196,154,0.2);
+}
+
+.canva-textarea {
+  resize: vertical;
+  min-height: 120px;
+}

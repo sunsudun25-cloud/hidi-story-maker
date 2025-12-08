@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CommonHeader from "../components/CommonHeader";
+import CanvaHeader from "../components/CanvaHeader";
 import { generateImageViaFirebase } from "../services/firebaseFunctions";
 import { friendlyErrorMessage } from "../utils/errorHandler";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -81,7 +81,7 @@ export default function DrawDirect() {
 
   return (
     <>
-      <CommonHeader title="직접 입력" color="#C8F3DC" />
+      <CanvaHeader title="직접 입력" color="var(--canva-green)" />
       
       <div className="draw-page-container">
         {/* 설명 안내 */}

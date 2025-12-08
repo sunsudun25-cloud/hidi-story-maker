@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import CommonHeader from "../components/CommonHeader";
+import CanvaHeader from "../components/CanvaHeader";
 import "./DrawStart.css";
 
 export default function DrawStart() {
@@ -7,7 +7,7 @@ export default function DrawStart() {
 
   return (
     <>
-      <CommonHeader title="그림" color="#C8F3DC" />
+      <CanvaHeader title="그림" color="var(--canva-green)" />
 
       <div className="draw-page-container">
         <p className="draw-start-subtitle">

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import CommonHeader from "../components/CommonHeader";
+import CanvaHeader from "../components/CanvaHeader";
 import "./Home.css";
 
 export default function Home() {
@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <>
       {/* 홈 전용 파스텔 파랑 헤더 */}
-      <CommonHeader title="무엇을 만들어볼까요?" color="#D8E9FF" />
+      <CanvaHeader title="무엇을 만들어볼까요?" color="var(--canva-blue)" />
 
       <div className="home-container">
         <div className="home-grid-menu">

@@ -3,8 +3,9 @@
 .app-header {
   position: fixed;
   top: 0;
-  left: 50%;                /* ⭐ 화면 가운데를 기준으로 배치 */
-  transform: translateX(-50%); /* ⭐ 정확히 중앙 고정 */
+  left: 0;
+  right: 0;
+  margin: 0 auto;           /* ⭐ 좌우 자동 마진으로 중앙 고정 */
 
   width: 100%;
   max-width: 520px;

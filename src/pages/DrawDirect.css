@@ -31,51 +31,27 @@
   border-color: var(--primary);
 }
 
-.btn-secondary {
-  width: 100%;
-  background: #e7f0ff;
-  padding: 16px;
-  border-radius: var(--radius);
-  font-size: 18px;
-  border: none;
-  margin-bottom: 10px;
-  box-shadow: var(--shadow-sm);
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.btn-secondary:hover {
-  background: #d0e3ff;
-}
-
-.btn-secondary:active {
-  transform: scale(0.98);
-}
-
 .button-group {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.button-group .btn-secondary {
-  margin-bottom: 0;
+  margin-top: 16px;
 }
 
 /* 고급 옵션 */
 .advanced {
   margin: 20px 0;
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   overflow: hidden;
 }
 
 .advanced summary {
   padding: 16px;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
-  color: var(--text);
+  color: #333;
   cursor: pointer;
   user-select: none;
   background: #f5f5f5;
@@ -89,34 +65,10 @@
 .advanced-box {
   padding: 20px;
   font-size: 16px;
-  color: var(--text);
+  color: #333;
 }
 
 .advanced-box p {
   margin-bottom: 12px;
-  color: var(--text-light);
-}
-
-/* 메인 CTA 버튼 */
-.main-cta {
-  margin-top: 20px;
-  padding: 20px;
-  font-size: 20px;
-  width: 100%;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius);
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
-}
-
-.main-cta:hover {
-  background: var(--primary-light);
-}
-
-.main-cta:active {
-  transform: scale(0.98);
+  color: #666;
 }

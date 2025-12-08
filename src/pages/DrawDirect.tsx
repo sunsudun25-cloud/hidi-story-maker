@@ -99,19 +99,16 @@ export default function DrawDirect() {
         onChange={(e) => setDescription(e.target.value)}
       />
 
-      {/* 업로드 버튼 */}
-      <button 
-        className="btn-secondary" 
-        style={{ marginTop: "16px" }}
-        onClick={handleUpload}
-      >
-        📤 사진 또는 그림 업로드
-      </button>
-
       {/* 기능 버튼들 */}
       <div className="button-group">
         <button 
-          className="btn-secondary"
+          className="btn-tertiary"
+          onClick={handleUpload}
+        >
+          📤 사진 또는 그림 업로드
+        </button>
+        <button 
+          className="btn-tertiary"
           onClick={handleVoiceInput}
         >
           🎤 말로 입력
@@ -169,7 +166,8 @@ export default function DrawDirect() {
       {/* 최종 버튼 */}
       {!isGenerating && (
         <button 
-          className="btn main-cta"
+          className="btn-primary"
+          style={{ marginTop: "20px" }}
           onClick={handleGenerate}
         >
           🚀 그림 만들기

@@ -326,3 +326,103 @@ body,
     font-size: 16px;
   }
 }
+
+/* ========================================
+   🎨 통일된 버튼 시스템
+   ======================================== */
+
+/* ---------------------------
+   🟢 Primary Button (강조)
+--------------------------- */
+.btn-primary {
+  background: #2ecc71; /* 그린 */
+  color: white;
+  padding: 14px 20px;
+  border-radius: 14px;
+  border: none;
+  font-size: 17px;
+  font-weight: 600;
+  width: 100%;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  transition: 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: #27ae60;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* ---------------------------
+   ⚪ Secondary Button (테두리)
+--------------------------- */
+.btn-secondary {
+  background: white;
+  color: #2ecc71;
+  border: 2px solid #2ecc71;
+  padding: 14px 20px;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  width: 100%;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: #f0fff5;
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* ---------------------------
+   🔵 Tertiary Button (선명한 포인트)
+--------------------------- */
+.btn-tertiary {
+  background: #eaf1ff;
+  color: #3b6bf0;
+  border: 2px solid #3b6bf0;
+  padding: 14px 20px;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  width: 100%;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.btn-tertiary:hover {
+  background: #d7e6ff;
+  transform: translateY(-1px);
+}
+
+.btn-tertiary:active {
+  transform: translateY(0);
+}
+
+/* ---------------------------
+   📐 버튼 크기 변형
+--------------------------- */
+.btn-small {
+  padding: 10px 16px;
+  font-size: 15px;
+}
+
+.btn-large {
+  padding: 16px 24px;
+  font-size: 18px;
+}
+
+/* 인라인 버튼 (자동 폭) */
+.btn-inline {
+  width: auto;
+  display: inline-block;
+}

@@ -35,6 +35,16 @@ export default function Home() {
         <div className="home-big-tile" onClick={() => navigate("/goods")}>
           <span className="big-tile-icon">🎁</span>
           <span className="big-tile-text">나만의 굿즈 만들기</span>
+        </div>
+
+      {/* 추가 메뉴 */}
+      <div className="home-extra-menu">
+        <button className="extra-menu-item" onClick={() => alert('설정 기능 준비중입니다.')}>
+          ⚙️ 설정
+        </button>
+        <button className="extra-menu-item" onClick={() => alert('다른 기기에서 보기 기능 준비중입니다.')}>
+          📱 다른 기기에서 보기
+        </button>
       </div>
     </div>
   );

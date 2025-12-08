@@ -1,0 +1,145 @@
+/* ===========================
+   Write Page
+=========================== */
+.write-container {
+  width: 100%;
+  max-width: 520px;
+  padding: 20px;
+  margin: 0 auto;
+}
+
+/* ===========================
+   Options List
+=========================== */
+.write-options {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+/* ===========================
+   Option Card Base
+=========================== */
+.write-option {
+  background: #ffffffcc;
+  border: 2px solid;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.write-option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.write-option:active {
+  transform: translateY(0);
+}
+
+/* ===========================
+   Color Variants
+=========================== */
+.write-option-green {
+  border-color: #4CAF50;
+  background: #E8F5E9;
+}
+
+.write-option-green:hover {
+  background: #C8E6C9;
+}
+
+.write-option-green .option-title {
+  color: #2E7D32;
+}
+
+.write-option-blue {
+  border-color: #2196F3;
+  background: #E3F2FD;
+}
+
+.write-option-blue:hover {
+  background: #BBDEFB;
+}
+
+.write-option-blue .option-title {
+  color: #1565C0;
+}
+
+.write-option-purple {
+  border-color: #9C27B0;
+  background: #F3E5F5;
+}
+
+.write-option-purple:hover {
+  background: #E1BEE7;
+}
+
+.write-option-purple .option-title {
+  color: #6A1B9A;
+}
+
+/* ===========================
+   Option Content
+=========================== */
+.option-icon {
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.option-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.option-desc {
+  font-size: 17px;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+/* ===========================
+   Badge Buttons
+=========================== */
+.option-badge {
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+}
+
+.option-badge-green {
+  background: #4CAF50;
+}
+
+.option-badge-blue {
+  background: #2196F3;
+}
+
+.option-badge-purple {
+  background: #9C27B0;
+}
+
+/* ===========================
+   Bottom Tip
+=========================== */
+.write-tip {
+  margin-top: 20px;
+  padding: 16px;
+  background: #FFF3CD;
+  border: 2px solid #FFC107;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 15px;
+  color: #666;
+  line-height: 1.5;
+}

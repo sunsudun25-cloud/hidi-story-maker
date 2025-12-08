@@ -63,6 +63,15 @@ function AppContent() {
         <Route path="/" element={<Welcome />} />
         <Route path="/onboarding" element={<OnboardingLogin />} />
 
+        {/* 🏆 내 작품 관리 - Layout 없이 독립 렌더링 */}
+        <Route path="/my-works" element={<MyWorksHome />} />
+        <Route path="/my-works/images" element={<MyWorksImages />} />
+        <Route path="/my-works/images/:id" element={<MyWorksImageDetail />} />
+        <Route path="/my-works/stories" element={<MyWorksStories />} />
+        <Route path="/my-works/stories/:id" element={<MyWorksStoryDetail />} />
+        <Route path="/my-works/storybooks" element={<MyWorksStorybooks />} />
+        <Route path="/my-works/storybooks/:id" element={<MyWorksStorybookDetail />} />
+
         {/* ⭐ 모든 페이지는 Layout 포함 (Footer 통일) */}
         <Route element={<Layout />}>
           {/* 🏠 홈 */}
@@ -94,15 +103,6 @@ function AppContent() {
           <Route path="/writing/help" element={<WritingHelp />} />
           <Route path="/writing/editor" element={<WritingEditor />} />
           <Route path="/writing/detail" element={<WritingDetail />} />
-
-          {/* 🏆 내 작품 */}
-          <Route path="/my-works" element={<MyWorksHome />} />
-          <Route path="/my-works/images" element={<MyWorksImages />} />
-          <Route path="/my-works/images/:id" element={<MyWorksImageDetail />} />
-          <Route path="/my-works/stories" element={<MyWorksStories />} />
-          <Route path="/my-works/stories/:id" element={<MyWorksStoryDetail />} />
-          <Route path="/my-works/storybooks" element={<MyWorksStorybooks />} />
-          <Route path="/my-works/storybooks/:id" element={<MyWorksStorybookDetail />} />
 
           {/* 🎁 나만의 굿즈 */}
           <Route path="/goods" element={<Goods />} />

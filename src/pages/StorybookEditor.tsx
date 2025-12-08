@@ -25,12 +25,15 @@ export default function StorybookEditor() {
     setPrompt,
     style: contextStyle,
     setStyle,
+    coverImageUrl,
+    setCoverImageUrl,
   } = useStorybook();
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [isAiHelping, setIsAiHelping] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [isGeneratingCover, setIsGeneratingCover] = useState(false);
 
   useEffect(() => {
     if (state) {
@@ -230,6 +233,38 @@ ${current.text}
     }
   };
 
+  const handleGenerateCover = async () => {
+    if (!title || !prompt) {
+      alert("제목과 줄거리가 필요합니다!");
+      return;
+    }
+
+    setIsGeneratingCover(true);
+    try {
+      const coverPrompt = `
+동화책 표지 이미지 생성
+제목: ${title}
+줄거리: ${prompt}
+스타일: ${style}
+
+표지 디자인 요구사항:
+- 동화책 표지로 적합한 구도
+- 제목과 주요 캐릭터가 돋보이도록
+- 어린이에게 친근한 느낌
+- 그림 안에 텍스트 넣지 말기 (텍스트는 나중에 추가)
+`;
+
+      const coverImageDataUrl = await generateImageViaFirebase(coverPrompt, style);
+      setCoverImageUrl(coverImageDataUrl);
+      alert("📕 표지가 생성되었습니다!");
+    } catch (err) {
+      console.error("표지 생성 오류:", err);
+      alert("표지 생성 중 오류가 발생했습니다.");
+    } finally {
+      setIsGeneratingCover(false);
+    }
+  };
+
   const handleSave = async () => {
     if (storyPages.length < 1) {
       alert("최소 1페이지 이상 작성해야 저장할 수 있습니다!");
@@ -241,7 +276,7 @@ ${current.text}
         title,
         prompt,
         style,
-        coverImageUrl: "",
+        coverImageUrl: coverImageUrl || "",
         pages: storyPages,
         createdAt: new Date().toISOString(),
       });
@@ -261,8 +296,83 @@ ${current.text}
       <div style={{ display: "flex", flexDirection: "column", gap: 15 }}>
         {/* 제목 */}
         <h2 style={{ fontSize: 20, fontWeight: 700, textAlign: "center", margin: 0 }}>
-          {title}
+          {title || "제목 없음"}
         </h2>
+
+        {/* 표지 섹션 */}
+        <div style={{ 
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", 
+          borderRadius: 12, 
+          padding: 20,
+          color: "white"
+        }}>
+          <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 10px 0" }}>📕 동화책 표지</h3>
+          {coverImageUrl ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <img
+                src={coverImageUrl}
+                alt="표지"
+                style={{ width: "100%", borderRadius: 8, border: "3px solid white" }}
+              />
+              <button
+                onClick={handleGenerateCover}
+                disabled={isGeneratingCover}
+                style={{
+                  padding: 12,
+                  background: "rgba(255, 255, 255, 0.2)",
+                  color: "white",
+                  border: "2px solid white",
+                  borderRadius: 8,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: isGeneratingCover ? "not-allowed" : "pointer",
+                }}
+              >
+                {isGeneratingCover ? "⏳ 생성 중..." : "🔄 표지 다시 만들기"}
+              </button>
+            </div>
+          ) : (
+            <div>
+              <p style={{ fontSize: 14, margin: "0 0 10px 0", opacity: 0.9 }}>
+                동화책의 첫인상을 결정하는 표지를 만들어보세요!
+              </p>
+              <button
+                onClick={handleGenerateCover}
+                disabled={isGeneratingCover}
+                style={{
+                  width: "100%",
+                  padding: 15,
+                  background: "white",
+                  color: "#667eea",
+                  border: "none",
+                  borderRadius: 8,
+                  fontSize: 16,
+                  fontWeight: 700,
+                  cursor: isGeneratingCover ? "not-allowed" : "pointer",
+                  opacity: isGeneratingCover ? 0.7 : 1,
+                }}
+              >
+                {isGeneratingCover ? "⏳ 생성 중..." : "✨ 표지 만들기"}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* 보조작가 모드 안내 */}
+        <div style={{ 
+          background: "#F0F9FF", 
+          border: "2px solid #3B82F6", 
+          borderRadius: 12, 
+          padding: 15
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+            <span style={{ fontSize: 24 }}>🤖</span>
+            <strong style={{ fontSize: 16, color: "#1E40AF" }}>AI 보조작가 모드</strong>
+          </div>
+          <p style={{ fontSize: 14, color: "#1E40AF", margin: 0, lineHeight: 1.5 }}>
+            빈 페이지에서 <strong>"✨ AI가 이어서 쓰기"</strong>를 누르면 AI가 이전 페이지를 기억하고 자동으로 이어서 작성해줍니다.
+          </p>
+        </div>
 
         {/* 페이지 번호 */}
         <div style={{ textAlign: "center", fontSize: 14, color: "#666" }}>

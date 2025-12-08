@@ -12,7 +12,8 @@
   font-size: var(--font-large);
   font-weight: 700;
   color: var(--text-title);
-  margin-bottom: var(--space-sm);
+  margin-top: 0; /* ⭐ 위쪽 여백 제거 */
+  margin-bottom: 12px; /* ⭐ 아래 여백만 유지 */
 }
 
 .screen-subtitle {
@@ -30,11 +31,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center; /* ⭐ 카드 내부 세로 중앙 정렬 */
   text-align: center;
   gap: 8px;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   margin-bottom: var(--space-md);
+  min-height: 160px; /* ⭐ 최소 높이로 크기 통일 */
 }
 
 .option-card.primary {

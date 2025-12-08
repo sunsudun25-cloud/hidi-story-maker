@@ -38,6 +38,8 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   margin-bottom: var(--space-md);
   min-height: 160px; /* ⭐ 최소 높이로 크기 통일 */
+  width: 100%; /* ⭐ 가로 크기 통일 */
+  max-width: 100%; /* ⭐ 최대 너비 제한 */
 }
 
 .option-card.primary {

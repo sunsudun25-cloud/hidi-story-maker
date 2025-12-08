@@ -1,4 +1,5 @@
-import CanvaHeader from "../components/CanvaHeader";
+import Layout from "../components/Layout";
+import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
 
 export default function WritingGenre() {
@@ -45,7 +46,7 @@ export default function WritingGenre() {
 
   return (
     <div className="pb-24">
-      <CanvaHeader title="글쓰기" color="var(--canva-yellow)" />
+      <Header title="글쓰기" />
 
       <div className="p-5">
         <h2 className="text-2xl font-bold mb-4">글쓰기 장르 선택</h2>

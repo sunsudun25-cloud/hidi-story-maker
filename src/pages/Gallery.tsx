@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useStory } from "../context/StoryContext";
-import CanvaHeader from "../components/CanvaHeader";
+import Layout from "../components/Layout";
+import Header from "../components/Header";
 import StoryCard from "../components/StoryCard";
 import { useState } from "react";
 
@@ -19,8 +20,11 @@ export default function Gallery() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FFF9E9] pb-28">
-      <CanvaHeader title="내 작품 보기" color="var(--canva-pink)" />
+    <Layout>
+      <div className="screen">
+        <Header title="내 작품 보기" />
+        
+        <div className="screen-body">
 
       {/* 작품 없는 경우 */}
       {stories.length === 0 ? (
@@ -60,6 +64,8 @@ export default function Gallery() {
           </div>
         </>
       )}
-    </div>
+        </div>
+      </div>
+    </Layout>
   );
 }

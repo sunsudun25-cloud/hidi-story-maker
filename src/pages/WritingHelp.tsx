@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import CanvaHeader from "../components/CanvaHeader";
+import Layout from "../components/Layout";
+import Header from "../components/Header";
 
 export default function WritingHelp() {
   const location = useLocation();
@@ -10,7 +11,7 @@ export default function WritingHelp() {
   if (!genre) {
     return (
       <div className="pb-24">
-        <CanvaHeader title="글쓰기 안내" color="var(--canva-yellow)" />
+        <Header title="글쓰기 안내" />
         <div className="p-5">
           <div className="bg-red-50 border border-red-300 rounded-xl p-6 text-center">
             <p className="text-xl text-red-600 font-semibold mb-4">
@@ -76,7 +77,7 @@ export default function WritingHelp() {
 
   return (
     <div className="pb-24">
-      <CanvaHeader title="글쓰기 안내" color="var(--canva-yellow)" />
+      <Header title="글쓰기 안내" />
 
       <div className="p-5">
         {/* 장르 제목 */}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CanvaHeader from "../components/CanvaHeader";
+import Layout from "../components/Layout";
+import Header from "../components/Header";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { safeGeminiCall } from "../services/geminiService";
 
@@ -77,7 +78,7 @@ export default function WritingPhoto() {
 
   return (
     <div className="pb-24">
-      <CanvaHeader title="사진으로 올리기" color="var(--canva-yellow)" />
+      <Header title="사진으로 올리기" />
 
       <div className="p-5">
         <h2 className="text-2xl font-bold mb-4">📷 사진으로 글쓰기</h2>

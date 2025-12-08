@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import CanvaHeader from "../components/CanvaHeader";
+import Layout from "../components/Layout";
+import Header from "../components/Header";
 
 export default function WritingPractice() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ export default function WritingPractice() {
 
   return (
     <div className="pb-24">
-      <CanvaHeader title="연습하기" color="var(--canva-yellow)" />
+      <Header title="연습하기" />
 
       <div className="p-5">
         <h2 className="text-2xl font-bold mb-3">주제를 선택하세요</h2>

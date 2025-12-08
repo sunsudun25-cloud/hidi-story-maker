@@ -1,6 +1,7 @@
 // src/pages/DrawingPractice.tsx
 import { useState } from "react";
-import CanvaHeader from "../components/CanvaHeader";
+import Layout from "../components/Layout";
+import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
 import { generateImageViaFirebase } from "../services/firebaseFunctions";  // ⭐ Firebase Functions 프록시 사용
 
@@ -42,7 +43,7 @@ export default function DrawingPractice() {
 
   return (
     <div className="pb-24">
-      <CanvaHeader title="연습하기" color="var(--canva-green)" />
+      <Header title="연습하기" />
 
       <div className="p-5">
         <h2 className="text-2xl font-bold mb-3">원하는 그림을 연습해봐요</h2>

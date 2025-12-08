@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CanvaHeader from "../components/CanvaHeader";
+import Layout from "../components/Layout";
+import Header from "../components/Header";
 import { generateImageViaFirebase } from "../services/firebaseFunctions";
 import { friendlyErrorMessage } from "../utils/errorHandler";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -80,10 +81,11 @@ export default function DrawDirect() {
   };
 
   return (
-    <>
-      <CanvaHeader title="직접 입력" color="var(--canva-green)" />
-      
-      <div className="draw-page-container">
+    <Layout>
+      <div className="screen">
+        <Header title="직접 입력" />
+        
+        <div className="screen-body draw-page-container">
         {/* 설명 안내 */}
         <p className="guide-text">
         원하는 그림을 자세히 설명해주세요 😊
@@ -176,7 +178,8 @@ export default function DrawDirect() {
           🚀 그림 만들기
         </button>
       )}
+        </div>
       </div>
-    </>
+    </Layout>
   );
 }

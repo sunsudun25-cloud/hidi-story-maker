@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CanvaHeader from "../components/CanvaHeader";
+import Layout from "../components/Layout";
+import Header from "../components/Header";
 
 export default function DrawingDirect() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function DrawingDirect() {
 
   return (
     <div className="pb-24">
-      <CanvaHeader title="그림 만들기" color="var(--canva-green)" />
+      <Header title="그림 만들기" />
 
       <div className="p-5">
         <h2 className="text-2xl font-bold mb-6">어떤 그림을 만들까요?</h2>

@@ -42,6 +42,13 @@ function App() {
         <Route path="/onboarding" element={<OnboardingLogin />} />
         <Route path="/home" element={<Home />} />
 
+        {/* Storybook 페이지들 (Layout 없이 독립 실행) */}
+        <Route path="/storybook" element={<Storybook />} />
+        <Route path="/storybook-manual" element={<StorybookManual />} />
+        <Route path="/storybook-ai-suggestion" element={<StorybookAISuggestion />} />
+        <Route path="/storybook-editor" element={<StorybookEditor />} />
+        <Route path="/storybook-export" element={<StorybookExport />} />
+
         {/* 나머지 페이지는 Layout으로 감싸기 */}
         <Route element={<Layout />}>
           <Route path="/drawing/start" element={<DrawStart />} />
@@ -59,11 +66,6 @@ function App() {
           <Route path="/writing/help" element={<WritingHelp />} />
           <Route path="/writing/editor" element={<WritingEditor />} />
           <Route path="/writing/detail" element={<WritingDetail />} />
-          <Route path="/storybook" element={<Storybook />} />
-          <Route path="/storybook-manual" element={<StorybookManual />} />
-          <Route path="/storybook-ai-suggestion" element={<StorybookAISuggestion />} />
-          <Route path="/storybook-editor" element={<StorybookEditor />} />
-          <Route path="/storybook-export" element={<StorybookExport />} />
           <Route path="/export" element={<StorybookExport />} />
           <Route path="/image/practice" element={<ImageMakePractice />} />
           <Route path="/image/custom" element={<ImageMakeCustom />} />

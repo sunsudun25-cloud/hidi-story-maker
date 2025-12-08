@@ -42,7 +42,7 @@ function App() {
         <Route path="/onboarding" element={<OnboardingLogin />} />
         <Route path="/home" element={<Home />} />
 
-        {/* Storybook 페이지들 (Layout 없이 독립 실행) */}
+        {/* Storybook 페이지들 (헤더 자체 포함, Layout 불필요) */}
         <Route path="/storybook" element={<Storybook />} />
         <Route path="/storybook-manual" element={<StorybookManual />} />
         <Route path="/storybook-ai-suggestion" element={<StorybookAISuggestion />} />

@@ -172,3 +172,23 @@ body {
   resize: vertical;
   min-height: 120px;
 }
+
+/* ---------------------------------------------
+   페이지 본문 & 버튼 그룹
+----------------------------------------------*/
+.page-body {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 40px;
+}

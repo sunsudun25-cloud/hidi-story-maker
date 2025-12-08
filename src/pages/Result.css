@@ -1,32 +1,26 @@
-/* Result.css - 결과 페이지 스타일 */
+@import "../styles/design-system.css";
+
+/* ⭐ Layout에서 header 처리, 여기서는 컨텐츠만 */
 
 .result-page {
-  padding: 20px 16px 60px 16px;
-}
-
-/* 페이지 제목 */
-.result-page h1 {
-  font-size: 24px;
-  font-weight: 700;
-  color: #333;
-  margin-bottom: 20px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
 }
 
 /* 이미지 컨테이너 */
 .result-image-container {
-  background: white;
-  border: 2px solid #e0e0e0;
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: var(--bg-card);
+  border: 2px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-md);
 }
 
 .result-image {
   width: 100%;
   height: auto;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   display: block;
 }
 
@@ -37,9 +31,9 @@
 }
 
 .result-empty p {
-  font-size: 18px;
-  color: #666;
-  margin-bottom: 24px;
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
   line-height: 1.6;
 }
 
@@ -47,18 +41,18 @@
 .result-actions {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: var(--space-sm);
 }
 
 .action-btn {
   padding: 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
+  box-shadow: var(--shadow-sm);
 }
 
 .action-btn.primary {
@@ -69,113 +63,79 @@
 .action-btn.primary:hover {
   background: #1bb173;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37, 197, 110, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
 .action-btn.secondary {
-  background: white;
-  color: #333;
+  background: var(--bg-card);
+  color: var(--text-primary);
   border: 2px solid #50b36b;
 }
 
 .action-btn.secondary:hover {
   background: #f5f5f5;
   border-color: #3a8f56;
+  transform: translateY(-2px);
 }
 
-/* 다시 만들기 버튼 */
-.result-retry {
+/* 다시 만들기/갤러리/홈 버튼 */
+.result-retry,
+.result-gallery,
+.result-home {
   width: 100%;
   padding: 16px;
-  margin-bottom: 12px;
-  border-radius: 12px;
-  background: white;
-  border: 2px solid #667eea;
-  color: #667eea;
-  font-size: 16px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.result-retry {
+  background: var(--bg-card);
+  border: 2px solid #667eea;
+  color: #667eea;
+  margin-bottom: var(--space-sm);
 }
 
 .result-retry:hover {
   background: #667eea;
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
-/* 갤러리 버튼 */
 .result-gallery {
-  width: 100%;
-  padding: 16px;
-  margin-bottom: 12px;
-  border-radius: 12px;
-  background: white;
+  background: var(--bg-card);
   border: 2px solid #ffa726;
   color: #ffa726;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  margin-bottom: var(--space-sm);
 }
 
 .result-gallery:hover {
   background: #ffa726;
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
-/* 홈으로 버튼 */
 .result-home {
-  width: 100%;
-  padding: 18px;
-  border-radius: 12px;
   background: #4CAF50;
   border: none;
   color: white;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  margin-top: var(--space-sm);
 }
 
 .result-home:hover {
   background: #45a049;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+  box-shadow: var(--shadow-md);
 }
 
 /* 반응형 */
 @media (max-width: 768px) {
   .result-actions {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .result-page {
-    padding: 16px 12px 50px 12px;
-  }
-
-  .result-page h1 {
-    font-size: 22px;
-  }
-
-  .action-btn {
-    font-size: 15px;
-    padding: 14px;
-  }
-
-  .result-retry,
-  .result-gallery {
-    font-size: 15px;
-    padding: 14px;
-  }
-
-  .result-empty p {
-    font-size: 16px;
   }
 }

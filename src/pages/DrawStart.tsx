@@ -1,13 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 
 export default function DrawStart() {
   const navigate = useNavigate();
 
   return (
     <div className="screen">
-      <Header title="그림" />
-
       <div className="screen-title">어떤 방식으로 그림을 만드시겠어요?</div>
 
       <div

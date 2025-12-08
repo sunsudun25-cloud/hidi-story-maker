@@ -3,16 +3,15 @@
 .app-header {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 999; /* ⭐ 최상위 레이어 */
   background: var(--bg-soft-blue);
-  padding: 14px 18px;
-  margin: -28px -20px 24px;  /* page-content padding 보정 */
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-
+  padding: 14px 20px;
+  
   display: flex;
   align-items: center;
   justify-content: space-between;
   box-shadow: var(--shadow-sm);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
 .header-btn {

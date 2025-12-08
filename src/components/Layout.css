@@ -4,15 +4,15 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--bg-page); /* 전체 배경 하나로 통일 */
+  background: var(--bg-page); /* 전체 배경 통일 */
 }
 
 .page-content {
   flex: 1;
   width: 100%;
-  max-width: 520px;           /* 모바일·태블릿 공통 폭 */
+  max-width: 520px;
   margin: 0 auto;
-  padding: var(--space-lg) var(--space-md) var(--space-md);
+  padding: 24px 20px 20px; /* 상단 24px(헤더 아래), 좌우 20px, 하단 20px */
   box-sizing: border-box;
 }
 
@@ -28,4 +28,10 @@
 .company-name {
   font-weight: 600;
   margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
+.company-slogan {
+  font-size: 11px;
+  color: var(--text-secondary);
 }

@@ -1,69 +1,27 @@
-/* DirectInput.css - DrawPractice와 동일한 스타일 */
+@import "../styles/design-system.css";
 
-/* 상단 헤더 */
-.page-header {
-  background: #b7d4ff;
-  padding: 10px 16px;
-  border-radius: 0 0 14px 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-}
+/* ⭐ Layout에서 header 처리, 여기서는 컨텐츠만 */
 
-.header-btn {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: white;
-  border: none;
-  font-size: 22px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-}
-
-.header-btn:hover {
-  background: #f5f5f5;
-  transform: translateY(-1px);
-}
-
-.header-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a1a1a;
-}
-
-/* 페이지 여백 */
 .direct-page {
-  padding: 0 0 60px 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
 }
 
 /* 섹션 제목 */
 .section-title {
-  margin-top: 22px;
-  font-size: 18px;
+  font-size: var(--font-large);
   font-weight: 600;
-  color: #333;
-  padding: 0 16px;
-  margin-bottom: 12px;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
 }
 
 /* 예시 박스 */
 .example-box {
   background: #fffdf3;
   border: 1.8px solid #f0e6b2;
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin: 12px 16px;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
 }
 
 .example-box strong {
@@ -73,19 +31,18 @@
 
 .example-box p {
   margin: 6px 0 0 0;
-  color: #444;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.45;
 }
 
 /* 텍스트 입력 */
 .input-area {
-  width: calc(100% - 32px);
+  width: 100%;
   height: 120px;
-  margin: 0 16px 16px 16px;
-  border-radius: 10px;
-  border: 1.5px solid #ccc;
-  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-soft);
+  padding: var(--space-sm);
   font-size: 15px;
   resize: none;
   outline: none;
@@ -103,89 +60,59 @@
 .style-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  padding: 0 16px;
-  margin-bottom: 20px;
+  gap: var(--space-sm);
 }
 
 .style-card {
-  padding: 14px;
-  background: white;
+  padding: var(--space-md);
+  background: var(--bg-card);
   border: 2px solid #a3d9b1;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
   font-size: 15px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .style-card:hover {
   border-color: #50b36b;
-  transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(80, 179, 107, 0.15);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-/* 🎨 선택된 스타일 카드 효과 */
+/* 선택된 스타일 */
 .style-card.selected {
   background: #d4ffe2;
   border-color: #31c46a;
   box-shadow: 0 0 0 3px #a7f5c5 inset;
-  font-weight: 600;
   transform: scale(1.03);
 }
 
 .style-card span {
   font-size: 12px;
   font-weight: 400;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* 최종 버튼 */
 .primary-btn {
-  width: calc(100% - 32px);
-  margin: 20px 16px 40px 16px;
+  width: 100%;
   padding: 16px;
-  border-radius: 14px;
-  font-size: 17px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
   background: #25c56e;
   color: white;
   border: none;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md);
 }
 
 .primary-btn:hover {
   background: #1bb173;
   transform: translateY(-2px);
-  box-shadow: 0 5px 14px rgba(37, 197, 110, 0.3);
-}
-
-/* 반응형 */
-@media (max-width: 768px) {
-  .style-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .direct-page {
-    padding: 0 0 50px 0;
-  }
-
-  .section-title {
-    font-size: 16px;
-  }
-
-  .input-area {
-    font-size: 14px;
-    height: 100px;
-  }
-
-  .primary-btn {
-    font-size: 16px;
-    padding: 14px;
-  }
+  box-shadow: var(--shadow-lg);
 }

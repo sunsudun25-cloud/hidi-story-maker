@@ -1,13 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 
 export default function WriteStart() {
   const navigate = useNavigate();
 
   return (
     <div className="screen">
-      <Header title="글쓰기" />
-
       <div className="screen-title">어떤 방법으로 글을 쓰시겠어요?</div>
       <div className="screen-subtitle">
         시니어를 위한 세 가지 글쓰기 방법

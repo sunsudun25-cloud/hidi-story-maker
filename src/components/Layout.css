@@ -1,9 +1,11 @@
-/* ===== 전체 앱 중앙 고정 (520px) ===== */
+/* ===== 전체 앱 중앙 고정 (520px) + 스크롤 제어 ===== */
 .page-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
+  height: 100vh; /* min-height → height */
+  overflow-y: auto; /* ⭐ 화면 전체 스크롤을 이쪽에서만 처리 */
+  position: relative;
   background: #f8f5ef;
 }
 

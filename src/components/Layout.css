@@ -19,15 +19,18 @@
   height: auto !important;
 }
 
-/* 푸터 역시 폭 고정 */
+/* 푸터 - 헤더와 동일한 중앙 박스 */
 .layout-footer {
-  width: 100%;
-  max-width: 520px;
   text-align: center;
   padding: 20px 0;
   font-size: 14px;
   opacity: 0.8;
   color: #444;
+
+  max-width: 520px;       /* ⭐ 헤더와 동일한 중앙 박스 */
+  margin: 0 auto;         /* ⭐ 가운데 정렬 */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* 페이지 섹션 공통 간격 */

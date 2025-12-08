@@ -3,24 +3,23 @@
 .app-header {
   position: fixed;
   top: 0;
-  left: 50%; /* ⭐ 반응형 중앙 anchor */
-  transform: translateX(-50%); /* ⭐ 중앙 정확히 맞춤 */
-  
+  left: 50%;                /* ⭐ 화면 가운데를 기준으로 배치 */
+  transform: translateX(-50%); /* ⭐ 정확히 중앙 고정 */
+
   width: 100%;
-  max-width: 520px; /* 콘텐츠와 동일한 폭 */
-  height: 70px;
-
+  max-width: 520px;
   background: var(--bg-soft-blue);
-  padding: 14px 20px;
-  box-sizing: border-box;
 
+  padding: 14px 20px;
+  box-shadow: var(--shadow-sm);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+
+  z-index: 999;
+  box-sizing: border-box;
+  
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  border-radius: 0 0 16px 16px;
-  z-index: 9999; /* ⭐ 드래그 시 뒤로 안 가도록 */
-  box-shadow: var(--shadow-sm);
 }
 
 .header-btn {

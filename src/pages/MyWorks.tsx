@@ -87,10 +87,8 @@ export default function MyWorks() {
   }
 
   return (
-    <>
-      <Header title="🏆 내 작품" color="#FFE1D1" />
-      <Layout>
-        <div>
+    <Layout title="🏆 내 작품" color="#FFE1D1">
+      <div>
 
       {/* 탭 전환 */}
       <div className="flex gap-2 mb-6">
@@ -387,7 +385,7 @@ export default function MyWorks() {
         </div>
       )}
 
-      </div>
+    </div>
     </Layout>
   );
 }

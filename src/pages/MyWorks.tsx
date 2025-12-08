@@ -91,37 +91,54 @@ export default function MyWorks() {
       <div className="screen">
         <div className="screen-body">
 
-      {/* 탭 전환 */}
-      <div className="flex gap-2 mb-6">
+      {/* 탭 전환 - 박스 형태 */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        {/* 동화책 */}
         <button
-          className={`flex-1 py-3 rounded-xl text-[18px] font-semibold transition ${
+          className={`flex flex-col items-center justify-center p-4 rounded-2xl transition-all ${
             activeTab === "storybooks"
-              ? "bg-purple-500 text-white"
-              : "bg-gray-200 text-gray-700"
+              ? "bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow-lg scale-105"
+              : "bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-300"
           }`}
           onClick={() => setActiveTab("storybooks")}
         >
-          📕 동화책 ({storybooks.length})
+          <div className="text-[36px] mb-2">📕</div>
+          <div className="text-[15px] font-bold">동화책</div>
+          <div className={`text-[13px] mt-1 ${activeTab === "storybooks" ? "text-white" : "text-gray-500"}`}>
+            {storybooks.length}개
+          </div>
         </button>
+
+        {/* 글쓰기 */}
         <button
-          className={`flex-1 py-3 rounded-xl text-[18px] font-semibold transition ${
+          className={`flex flex-col items-center justify-center p-4 rounded-2xl transition-all ${
             activeTab === "stories"
-              ? "bg-green-500 text-white"
-              : "bg-gray-200 text-gray-700"
+              ? "bg-gradient-to-br from-green-400 to-green-600 text-white shadow-lg scale-105"
+              : "bg-white border-2 border-gray-200 text-gray-700 hover:border-green-300"
           }`}
           onClick={() => setActiveTab("stories")}
         >
-          📝 글쓰기 ({stories.length})
+          <div className="text-[36px] mb-2">📝</div>
+          <div className="text-[15px] font-bold">글쓰기</div>
+          <div className={`text-[13px] mt-1 ${activeTab === "stories" ? "text-white" : "text-gray-500"}`}>
+            {stories.length}개
+          </div>
         </button>
+
+        {/* 이미지 */}
         <button
-          className={`flex-1 py-3 rounded-xl text-[18px] font-semibold transition ${
+          className={`flex flex-col items-center justify-center p-4 rounded-2xl transition-all ${
             activeTab === "images"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700"
+              ? "bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-lg scale-105"
+              : "bg-white border-2 border-gray-200 text-gray-700 hover:border-blue-300"
           }`}
           onClick={() => setActiveTab("images")}
         >
-          🎨 이미지 ({images.length})
+          <div className="text-[36px] mb-2">🎨</div>
+          <div className="text-[15px] font-bold">이미지</div>
+          <div className={`text-[13px] mt-1 ${activeTab === "images" ? "text-white" : "text-gray-500"}`}>
+            {images.length}개
+          </div>
         </button>
       </div>
 

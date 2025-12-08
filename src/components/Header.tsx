@@ -1,53 +1,44 @@
-// src/components/Header.tsx
-
 import { useNavigate } from "react-router-dom";
-import { headerColors } from "../styles/headerColors";
 
 interface HeaderProps {
   title: string;
+  color: string;
 }
 
-export default function Header({ title }: HeaderProps) {
+export default function Header({ title, color }: HeaderProps) {
   const navigate = useNavigate();
-
-  const color = headerColors[title] || "#FFD84D";
 
   return (
     <header
-      className="
-        w-full fixed top-0 left-0 z-50
-        flex items-center justify-between
-        px-6 py-4 shadow-md
-        rounded-b-[32px]
-      "
-      style={{ backgroundColor: color }}
+      className="w-full shadow-sm rounded-b-3xl"
+      style={{
+        backgroundColor: color,
+        padding: "16px 0",
+      }}
     >
-      {/* Back */}
-      <button
-        onClick={() => navigate(-1)}
-        className="
-          w-12 h-12 bg-white rounded-full shadow
-          flex items-center justify-center text-2xl
-        "
-      >
-        ←
-      </button>
+      <div className="max-w-[480px] mx-auto px-4 flex items-center justify-between">
+        
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="header-btn"
+        >
+          ←
+        </button>
 
-      {/* Title */}
-      <h1 className="text-2xl font-bold text-gray-900">
-        {title}
-      </h1>
+        {/* Title */}
+        <h1 className="text-xl font-bold text-gray-800">
+          {title}
+        </h1>
 
-      {/* Home */}
-      <button
-        onClick={() => navigate("/home")}
-        className="
-          w-12 h-12 bg-white rounded-full shadow
-          flex items-center justify-center text-2xl
-        "
-      >
-        🏠
-      </button>
+        {/* Home Button */}
+        <button
+          onClick={() => navigate("/home")}
+          className="header-btn"
+        >
+          🏠
+        </button>
+      </div>
     </header>
   );
 }

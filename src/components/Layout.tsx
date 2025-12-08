@@ -1,36 +1,30 @@
-// src/components/Layout.tsx
-
-import { Outlet } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { ReactNode } from "react";
+import Header from "./Header";
 import "./Layout.css";
 
-export default function Layout() {
-  const navigate = useNavigate();
+interface LayoutProps {
+  title: string;
+  color: string;
+  children: ReactNode;
+}
 
+export default function Layout({ title, color, children }: LayoutProps) {
   return (
     <div className="layout-wrapper">
+      
+      {/* 헤더가 이제 Layout 안으로 들어옵니다 */}
+      <Header title={title} color={color} />
+
+      {/* 본문 */}
       <div className="layout-inner">
-        <Outlet />
-
-        {/* 공통 하단 메뉴 */}
-        <div className="footer">
-          <button className="footer-btn" onClick={() => navigate("/help")}>
-            📄 도움말
-          </button>
-          <button className="footer-btn" onClick={() => navigate("/settings")}>
-            ⚙️ 설정
-          </button>
-          <button className="footer-btn" onClick={() => navigate("/qr")}>
-            📱 다른 기기에서 보기
-          </button>
-        </div>
-
-        {/* 회사 정보 */}
-        <div className="footer-company">
-          <div className="company-name">HI-DI Edu</div>
-          <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
-        </div>
+        {children}
       </div>
+
+      {/* 공통 푸터 */}
+      <footer className="layout-footer">
+        <div className="company-name">HI-DI Edu</div>
+        <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
+      </footer>
     </div>
   );
 }

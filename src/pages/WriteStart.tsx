@@ -1,16 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
+import Layout from "../components/Layout";
 
 export default function WriteStart() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#FFF9E9] flex flex-col items-center">
-      
-      <Header title="글쓰기" />
-
-      <div className="w-full max-w-[480px] mt-8 px-6 text-center">
-
+    <Layout title="글쓰기" color="#FFF2A8">
+      <div className="text-center">
         <div className="text-4xl mb-4">✨</div>
 
         <h2 className="text-xl font-bold text-gray-800 mb-2">
@@ -70,6 +66,6 @@ export default function WriteStart() {
           </p>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }

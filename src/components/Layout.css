@@ -1,61 +1,55 @@
-/* src/components/Layout.css */
-
 /* ========================================
    📐 레이아웃 시스템 (Layout System)
-   - 전체 구조: <Header /> + <Layout><PageContent /></Layout>
+   - Layout이 Header를 포함
    - 모든 페이지 480px 기준 중앙 정렬
-   - Header는 full width, 콘텐츠는 inner만 제한
    ======================================== */
 
 .layout-wrapper {
   width: 100%;
   min-height: 100vh;
-  background: var(--bg-color, #faf7ef);
+  background: #faf7ef;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .layout-inner {
   width: 100%;
   max-width: 480px;
+  padding: 20px;
   padding-top: 120px;    /* Header 여백 확보 */
-  padding-left: 20px;
-  padding-right: 20px;
   padding-bottom: 40px;
   box-sizing: border-box;
 }
 
-/* 하단 메뉴 */
-.footer {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 40px;
-  padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
-}
-
-.footer-btn {
-  background: none;
+/* Header 버튼 스타일 */
+.header-btn {
+  width: 42px;
+  height: 42px;
+  background: white;
   border: none;
-  font-size: 14px;
-  color: #666;
-  padding: 8px 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.2s;
 }
 
-.footer-btn:hover {
-  color: #222;
+.header-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* 회사 정보 */
-.footer-company {
+/* 공통 푸터 */
+.layout-footer {
+  width: 100%;
+  max-width: 480px;
   text-align: center;
-  margin-top: 30px;
-  padding: 20px;
-  background: #f5f5f5;
-  border-radius: 16px;
+  padding: 30px 20px;
+  margin-top: auto;
 }
 
 .company-name {
@@ -68,6 +62,7 @@
 .company-slogan {
   font-size: 14px;
   color: #666;
+  font-weight: 400;
 }
 
 /* 태블릿 (720px 미만) */
@@ -77,15 +72,31 @@
     padding-right: 16px;
   }
   
-  .footer-btn {
-    font-size: 13px;
-    padding: 6px 10px;
+  .header-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
   }
 }
 
-/* 데스크탑 (앱 스타일 유지, max-width 그대로) */
-@media (min-width: 721px) {
+/* 모바일 */
+@media (max-width: 480px) {
   .layout-inner {
-    max-width: 480px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  .header-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
+  
+  .company-name {
+    font-size: 16px;
+  }
+  
+  .company-slogan {
+    font-size: 13px;
   }
 }

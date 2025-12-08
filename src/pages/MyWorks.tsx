@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
+import Layout from "../components/Layout";
 import { getAllStorybooks, deleteStorybook, getAllImages, deleteImage, getAllStories, deleteStory, type Storybook, type SavedImage, type Story } from "../services/dbService";
 
 type TabType = "storybooks" | "stories" | "images";
@@ -77,19 +77,15 @@ export default function MyWorks() {
 
   if (isLoading) {
     return (
-      <>
-        <Header title="내 작품" />
-        <div className="p-6 max-w-[800px] mx-auto" style={{ paddingTop: "120px" }}>
-          <p className="text-[18px] text-center text-gray-600">불러오는 중...</p>
-        </div>
-      </>
+      <Layout title="내 작품" color="#FFE1D1">
+        <p className="text-[18px] text-center text-gray-600">불러오는 중...</p>
+      </Layout>
     );
   }
 
   return (
-    <>
-      <Header title="내 작품" />
-      <div className="p-6 max-w-[800px] mx-auto" style={{ paddingTop: "120px" }}>
+    <Layout title="내 작품" color="#FFE1D1">
+      <div>
 
       {/* 탭 전환 */}
       <div className="flex gap-2 mb-6">
@@ -386,8 +382,7 @@ export default function MyWorks() {
         </div>
       )}
 
-      {/* 회사 정보는 Layout에서 공통 처리 */}
     </div>
-    </>
+    </Layout>
   );
 }

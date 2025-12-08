@@ -1,6 +1,15 @@
 /* DrawPractice.css - 깔끔하고 senior-friendly한 그린 테마 */
 
-/* 상단 헤더 */
+/* 페이지 컨테이너 */
+.draw-page-container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px;
+  padding-top: 24px;
+}
+
+/* 상단 헤더 (deprecated - use CommonHeader) */
 .page-header {
   background: #b7d4ff;
   padding: 10px 16px;

@@ -1,0 +1,75 @@
+.draw-page-container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px;
+  padding-top: 24px; /* 헤더 바로 아래 적당한 간격 */
+}
+
+.draw-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.draw-start-subtitle {
+  font-size: 17px;
+  font-weight: 600;
+  color: #444;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.draw-start-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.draw-mode-btn {
+  width: 100%;
+  padding: 22px 18px;
+  border-radius: 20px;
+  border: none;
+  background: white;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.draw-mode-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+}
+
+.draw-mode-btn:active {
+  transform: translateY(-1px);
+}
+
+.btn-emoji {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.btn-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.btn-desc {
+  font-size: 14px;
+  color: #777;
+}

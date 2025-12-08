@@ -83,7 +83,7 @@ export default function DrawDirect() {
     <>
       <CommonHeader title="직접 입력" color="#C8F3DC" />
       
-      <main>
+      <div className="draw-page-container">
         {/* 설명 안내 */}
         <p className="guide-text">
         원하는 그림을 자세히 설명해주세요 😊
@@ -176,7 +176,7 @@ export default function DrawDirect() {
           🚀 그림 만들기
         </button>
       )}
-      </main>
+      </div>
     </>
   );
 }

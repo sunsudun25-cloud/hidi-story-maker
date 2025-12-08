@@ -1,5 +1,14 @@
 /* DrawDirect 페이지 전용 스타일 */
 
+/* 페이지 컨테이너 */
+.draw-page-container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px;
+  padding-top: 24px;
+}
+
 .guide-text {
   font-size: 18px;
   line-height: 1.5;

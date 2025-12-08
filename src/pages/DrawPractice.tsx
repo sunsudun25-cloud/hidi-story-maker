@@ -158,7 +158,7 @@ export default function DrawPractice() {
     <>
       <CommonHeader title="연습하기" color="#C8F3DC" />
       
-      <div className="page-container">
+      <div className="draw-page-container">
         {isGenerating ? (
         <LoadingSpinner text="AI가 그림을 그리고 있어요... 잠시만 기다려주세요 🎨" />
       ) : (

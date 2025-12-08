@@ -70,16 +70,6 @@ export default function WriteEditor() {
       "20대 청년이 되어 서울로 상경했을 때가 기억난다."
     ]
   };
-
-  const suggestions = [
-    "오늘 있었던 일",
-    "가족에게 하고 싶은 말", 
-    "어린 시절 추억",
-    "좋아하는 계절 이야기",
-    "내가 좋아하는 것들",
-    "소중한 사람에게"
-  ];
-
   // 📂 저장된 글 목록 불러오기
   useEffect(() => {
     loadStories();
@@ -176,39 +166,6 @@ export default function WriteEditor() {
       const exampleText = examples.join("\n\n");
       setContent(content + (content ? "\n\n" : "") + exampleText);
       alert(`📝 ${genreLabel} 예시 문장이 추가되었습니다! 자유롭게 수정하세요.`);
-    }
-  };
-
-  // 🤖 AI 주제 제안
-  const handleAiSuggestTopic = async () => {
-    setIsAiHelping(true);
-    try {
-      const genreContext = genre 
-        ? `\n\n참고: 사용자가 선택한 장르는 "${genreLabel}"입니다. 이 장르에 적합한 주제를 제안해주세요.`
-        : "";
-
-      const prompt = `
-노인 사용자를 위한 글쓰기 주제를 3개 제안해주세요.
-각 주제는 간단하고 친근하며, 개인적인 경험을 떠올릴 수 있는 것이어야 합니다.${genreContext}
-
-형식:
-1. 주제명
-2. 주제명
-3. 주제명
-
-예시:
-1. 내가 가장 행복했던 순간
-2. 손주에게 들려주고 싶은 이야기
-3. 젊었을 때의 꿈
-`;
-
-      const suggestion = await safeGeminiCall(prompt);
-      alert(`💡 AI가 제안하는 주제:\n\n${suggestion}\n\n마음에 드는 주제를 제목에 입력해보세요!`);
-    } catch (error) {
-      console.error("AI 주제 제안 오류:", error);
-      alert("주제 제안 중 오류가 발생했습니다.");
-    } finally {
-      setIsAiHelping(false);
     }
   };
 
@@ -551,65 +508,6 @@ ${content}
           ? `${genreLabel} 형식에 맞춰 자유롭게 써보세요` 
           : "오늘의 이야기를 자유롭게 써보세요"}
       </p>
-
-      {/* 주제 선택 (장르가 없을 때만 표시) */}
-      {!genre && (
-        <div style={{
-          padding: "20px",
-          backgroundColor: "white",
-          borderRadius: "12px",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          marginBottom: "20px",
-        }}>
-          <h3 style={{ fontSize: "20px", marginBottom: "12px", fontWeight: "600" }}>
-            💡 주제 선택 (선택사항)
-          </h3>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
-            {suggestions.map((suggestion, index) => (
-              <button
-                key={index}
-                onClick={() => setTitle(suggestion)}
-                style={{
-                  padding: "10px 16px",
-                  fontSize: "16px",
-                  backgroundColor: "#E3F2FD",
-                  border: "1px solid #2196F3",
-                  borderRadius: "20px",
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#2196F3";
-                  e.currentTarget.style.color = "white";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#E3F2FD";
-                  e.currentTarget.style.color = "black";
-                }}
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
-          
-          <button
-            onClick={handleAiSuggestTopic}
-            disabled={isAiHelping}
-            style={{
-              padding: "12px 20px",
-              fontSize: "16px",
-              backgroundColor: isAiHelping ? "#ccc" : "#FF6B6B",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: isAiHelping ? "not-allowed" : "pointer",
-              fontWeight: "bold",
-            }}
-          >
-            {isAiHelping ? "⏳ AI 생각 중..." : "🤖 AI에게 주제 추천받기"}
-          </button>
-        </div>
-      )}
 
       {/* 제목 */}
       <div style={{

@@ -42,16 +42,7 @@ export default function Home() {
           <span className="big-tile-text">나만의 굿즈 만들기</span>
         </div>
 
-        <div className="home-footer-menu">
-          <button className="footer-menu-btn" onClick={() => navigate("/help")}>📄 도움말</button>
-          <button className="footer-menu-btn" onClick={() => navigate("/settings")}>⚙️ 설정</button>
-          <button className="footer-menu-btn" onClick={() => navigate("/qr")}>📱 다른 기기에서 보기</button>
-        </div>
-
-        <div className="home-company-footer">
-          <div className="company-name">HI-DI Edu</div>
-          <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
-        </div>
+        {/* 하단 메뉴와 회사 정보는 Layout에서 공통 처리 */}
       </div>
     </>
   );

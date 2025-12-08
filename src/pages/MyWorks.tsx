@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 import { getAllStorybooks, deleteStorybook, getAllImages, deleteImage, getAllStories, deleteStory, type Storybook, type SavedImage, type Story } from "../services/dbService";
 
 type TabType = "storybooks" | "stories" | "images";
@@ -76,31 +77,19 @@ export default function MyWorks() {
 
   if (isLoading) {
     return (
-      <div className="p-6 max-w-[800px] mx-auto">
-        <h1 className="text-[26px] font-bold mb-6 text-center">📚 내 작품 보기</h1>
-        <p className="text-[18px] text-center text-gray-600">불러오는 중...</p>
-      </div>
+      <>
+        <Header title="내 작품" />
+        <div className="p-6 max-w-[800px] mx-auto" style={{ paddingTop: "120px" }}>
+          <p className="text-[18px] text-center text-gray-600">불러오는 중...</p>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="p-6 max-w-[800px] mx-auto">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between mb-6">
-        <button
-          className="text-[18px] text-gray-600"
-          onClick={() => navigate(-1)}
-        >
-          ← 뒤로
-        </button>
-        <h1 className="text-[26px] font-bold">📚 내 작품 보기</h1>
-        <button
-          className="text-[18px] text-gray-600"
-          onClick={() => navigate("/")}
-        >
-          🏠
-        </button>
-      </div>
+    <>
+      <Header title="내 작품" />
+      <div className="p-6 max-w-[800px] mx-auto" style={{ paddingTop: "120px" }}>
 
       {/* 탭 전환 */}
       <div className="flex gap-2 mb-6">
@@ -397,15 +386,8 @@ export default function MyWorks() {
         </div>
       )}
 
-      {/* 회사 정보 푸터 */}
-      <div className="mt-10 p-8 bg-gray-100 rounded-xl text-center">
-        <div className="text-xl font-bold text-gray-800 mb-2">
-          HI-DI Edu
-        </div>
-        <div className="text-sm text-gray-600">
-          모든 세대를 잇는 AI 스토리 플랫폼
-        </div>
-      </div>
+      {/* 회사 정보는 Layout에서 공통 처리 */}
     </div>
+    </>
   );
 }

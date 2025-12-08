@@ -12,8 +12,6 @@
   gap: 20px;
 }
 
-
-
 /* 2x2 메뉴 그리드 */
 .home-grid-menu {
   width: 100%;
@@ -101,54 +99,6 @@
   color: #1a1a1a;
 }
 
-/* 하단 작은 메뉴 */
-.home-footer-menu {
-  width: 100%;
-  max-width: 460px;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-
-.footer-menu-btn {
-  background: none;
-  border: none;
-  font-size: 14px;
-  color: #666;
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: color 0.2s;
-  font-weight: 500;
-}
-
-.footer-menu-btn:hover {
-  color: #333;
-}
-
-/* 회사 정보 푸터 */
-.home-company-footer {
-  width: 100%;
-  max-width: 460px;
-  text-align: center;
-  margin-top: 20px;
-  padding-bottom: 20px;
-}
-
-.company-name {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 6px;
-}
-
-.company-slogan {
-  font-size: 14px;
-  color: #666;
-  font-weight: 400;
-}
-
 /* 태블릿 */
 @media (max-width: 768px) {
   .home-title {
@@ -169,18 +119,6 @@
 
   .big-tile-text {
     font-size: 21px;
-  }
-
-  .footer-menu-btn {
-    font-size: 13px;
-  }
-
-  .company-name {
-    font-size: 17px;
-  }
-
-  .company-slogan {
-    font-size: 13px;
   }
 }
 
@@ -220,22 +158,5 @@
 
   .big-tile-text {
     font-size: 20px;
-  }
-
-  .home-footer-menu {
-    gap: 16px;
-  }
-
-  .footer-menu-btn {
-    font-size: 12px;
-    padding: 6px 10px;
-  }
-
-  .company-name {
-    font-size: 16px;
-  }
-
-  .company-slogan {
-    font-size: 12px;
   }
 }

@@ -1,25 +1,22 @@
 @import "../styles/design-system.css";
 
 .app-header {
-  position: fixed; /* ⭐ 화면 최상단 고정 */
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  z-index: 999; /* ⭐ 최상위 레이어 */
-  
+  width: 100%;      /* ⭐ 헤더는 항상 전체폭 */
+  z-index: 9999;    /* ⭐ 절대 위 */
+
   background: var(--bg-soft-blue);
   padding: 14px 20px;
-  
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   box-shadow: var(--shadow-sm);
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  
-  /* 중앙 정렬을 위한 max-width */
-  max-width: 520px;
-  margin: 0 auto;
-  width: 100%;
+
   box-sizing: border-box;
 }
 
@@ -27,8 +24,8 @@
   width: 40px;
   height: 40px;
   border-radius: 999px;
+  background: #fff;
   border: none;
-  background: #ffffff;
   box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;

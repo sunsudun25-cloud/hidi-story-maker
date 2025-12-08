@@ -3,14 +3,14 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f8f5ef; /* 전체 배경 통일 */
+  background: #f8f5ef; 
 }
 
-/* 페이지 본문 */
+/* 페이지 본문 — 헤더 공간 확보 필수 */
 .layout-content {
   flex: 1;
   padding: 20px;
-  padding-top: 40px; /* 헤더와 겹치지 않도록 */
+  padding-top: 100px;  /* ⭐ 헤더 침범 방지 핵심 */
 }
 
 /* 공통 푸터 */

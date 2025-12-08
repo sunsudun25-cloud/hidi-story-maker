@@ -3,7 +3,7 @@
   max-width: 480px;
   margin: 0 auto;
   padding: 20px;
-  padding-top: 24px; /* 헤더 바로 아래 적당한 간격 */
+  padding-top: 0; /* Layout.css에서 padding-top: 92px 이미 처리됨 */
 }
 
 .draw-title {

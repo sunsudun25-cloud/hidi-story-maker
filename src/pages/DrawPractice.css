@@ -6,7 +6,7 @@
   max-width: 480px;
   margin: 0 auto;
   padding: 20px;
-  padding-top: 24px;
+  padding-top: 0; /* Layout.css에서 padding-top: 92px 이미 처리됨 */
 }
 
 /* 상단 헤더 (deprecated - use CommonHeader) */

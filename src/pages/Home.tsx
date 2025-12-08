@@ -7,70 +7,40 @@ export default function Home() {
 
   return (
     <Layout>
-      <div className="page-container">
-      <h1 className="big-title" style={{ textAlign: 'left', marginBottom: '30px' }}>
-        무엇을<br />만들어볼까요?
-      </h1>
-
-      {/* 메뉴 2x2 그리드 */}
-      <div className="grid-menu">
-        <div className="menu-tile" onClick={() => navigate("/drawing/start")}>
-          <span className="emoji">🌈</span>
-          <span className="label">그림 만들기</span>
+      <div className="home-container">
+        {/* 타이틀 */}
+        <div className="home-title-box">
+          <h1 className="home-title">무엇을 만들어볼까요?</h1>
         </div>
 
-        <div className="menu-tile" onClick={() => navigate("/write")}>
-          <span className="emoji">✍️</span>
-          <span className="label">글쓰기</span>
+        {/* 메뉴 2x2 그리드 */}
+        <div className="home-grid-menu">
+          <div className="home-menu-tile green" onClick={() => navigate("/write")}>
+            <div className="tile-icon">📝</div>
+            <div className="tile-label">글쓰기</div>
+          </div>
+
+          <div className="home-menu-tile yellow" onClick={() => navigate("/drawing/start")}>
+            <div className="tile-icon">🌈</div>
+            <div className="tile-label">그림</div>
+          </div>
+
+          <div className="home-menu-tile cyan" onClick={() => navigate("/storybook")}>
+            <div className="tile-icon">📚</div>
+            <div className="tile-label">동화책</div>
+          </div>
+
+          <div className="home-menu-tile blue" onClick={() => navigate("/my-works")}>
+            <div className="tile-icon">🏆</div>
+            <div className="tile-label">내 작품</div>
+          </div>
         </div>
 
-        <div className="menu-tile" onClick={() => navigate("/storybook")}>
-          <span className="emoji">📚</span>
-          <span className="label">동화책 만들기</span>
+        {/* 하단 큰 타일 */}
+        <div className="home-big-tile" onClick={() => navigate("/goods")}>
+          <span className="big-tile-icon">🎁</span>
+          <span className="big-tile-text">나만의 굿즈</span>
         </div>
-
-        <div className="menu-tile" onClick={() => navigate("/my-works")}>
-          <span className="emoji">🏆</span>
-          <span className="label">내 작품 보기</span>
-        </div>
-      </div>
-
-      {/* 하단 큰 타일 */}
-      <div className="big-tile" onClick={() => navigate("/goods")}>
-        🎁 나만의 굿즈 만들기
-      </div>
-
-      {/* 하단 작은 메뉴 */}
-      <div className="footer-menu">
-        <button onClick={() => navigate("/help")}>📄 도움말</button>
-        <button onClick={() => navigate("/settings")}>⚙️ 설정</button>
-        <button onClick={() => navigate("/qr")}>📱 다른 기기에서 보기</button>
-      </div>
-
-      {/* 회사 정보 푸터 */}
-      <div style={{
-        marginTop: "40px",
-        padding: "30px 20px",
-        backgroundColor: "#f5f5f5",
-        borderRadius: "12px",
-        textAlign: "center",
-      }}>
-        <div style={{
-          fontSize: "20px",
-          fontWeight: "bold",
-          color: "#333",
-          marginBottom: "8px",
-        }}>
-          HI-DI Edu
-        </div>
-        <div style={{
-          fontSize: "14px",
-          color: "#666",
-          lineHeight: "1.6",
-        }}>
-          모든 세대를 잇는 AI 스토리 플랫폼
-        </div>
-      </div>
       </div>
     </Layout>
   );

@@ -30,6 +30,9 @@ import StorybookEditorModify from './pages/StorybookEditorModify'
 import StorybookExport from './pages/StorybookExport'
 import MyWorksHome from './pages/MyWorksHome'
 import MyWorksImages from './pages/MyWorksImages'
+
+// 🔥 Debug log
+console.log("🔥 MyWorksHome component loaded:", MyWorksHome)
 import MyWorksImageDetail from './pages/MyWorksImageDetail'
 import MyWorksStories from './pages/MyWorksStories'
 import MyWorksStoryDetail from './pages/MyWorksStoryDetail'

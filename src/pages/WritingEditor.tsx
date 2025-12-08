@@ -157,8 +157,10 @@ ${text}
   };
 
   return (
-    <div className="pb-28">
-      <CanvaHeader title={isEditMode ? `${label} 수정` : `${label} 쓰기`} />
+    <div className="screen">
+      <Header title={isEditMode ? `${label} 수정` : `${label} 쓰기`} />
+      
+      <div className="screen-body pb-28">
 
       {/* 메인 영역 */}
       <div className="p-5">
@@ -278,6 +280,7 @@ ${text}
             ← 장르 선택으로 돌아가기
           </button>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -145,10 +145,11 @@ export default function WritingAiQuestions() {
   const currentQuestion = questions[currentIndex];
 
   return (
-    <div className="pb-24">
-      <CanvaHeader title={`${label} 쓰기`} />
-
-      <div className="p-5">
+    <div className="screen">
+      <Header title={`${label} 쓰기`} />
+      
+      <div className="screen-body pb-24">
+        <div className="p-5">
         {/* 진행 상황 */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
@@ -245,6 +246,7 @@ export default function WritingAiQuestions() {
           <p className="text-sm text-blue-800">
             💡 <strong>Tip:</strong> 짧게 답변해도 괜찮아요! AI가 이 답변을 바탕으로 글쓰기를 도와드립니다.
           </p>
+        </div>
         </div>
       </div>
     </div>

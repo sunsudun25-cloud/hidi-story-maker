@@ -104,53 +104,35 @@ export default function StorybookManual() {
     setIsGenerating(true);
     try {
       // ------------------------------
-      // 1) Gemini AI로 3페이지 초안 생성
+      // 1) Gemini AI로 1페이지만 생성
       // ------------------------------
       const generationPrompt = `
 당신은 어린이를 위한 동화책 작가입니다.
-사용자의 줄거리를 기반으로 초안 3페이지를 작성하세요.
+사용자의 줄거리를 기반으로 동화책의 첫 페이지를 작성하세요.
 
 제목: ${storyTitle}
 줄거리: ${storyPrompt}
 
-각 페이지는 3~5문장으로 구성하세요.
-따뜻하고 희망적인 이야기로 작성해주세요.
-
-출력 형식:
-[page1]
-내용...
-
-[page2]
-내용...
-
-[page3]
-내용...
+첫 페이지는 3~5문장으로 구성하세요.
+이야기의 시작 부분으로 독자의 흥미를 끌어주세요.
+따뜻하고 희망적인 도입부로 작성해주세요.
       `;
 
-      const raw = await safeGeminiCall(generationPrompt);
+      const firstPageText = await safeGeminiCall(generationPrompt);
 
       // ------------------------------
-      // 2) 페이지 분리 및 파싱 (null 체크 추가)
+      // 2) 1페이지만 배열에 담기
       // ------------------------------
       let pages: any[] = [];
 
-      if (raw && typeof raw === "string") {
-        const blocks = raw.split(/\[page\d+\]/);
-        
-        blocks.forEach(block => {
-          const text = block.trim();
-          if (text && text.length > 10) {
-            pages.push({ text });
-          }
-        });
-      }
-
-      // 최소 1페이지는 보장 (fallback)
-      if (pages.length === 0) {
+      if (firstPageText && typeof firstPageText === "string" && firstPageText.trim().length > 10) {
+        pages.push({ text: firstPageText.trim() });
+      } else {
+        // Fallback
         pages.push({ text: "AI가 내용을 생성하지 못했습니다. 다시 시도해주세요." });
       }
 
-      console.log("✅ 생성된 페이지:", pages.length);
+      console.log("✅ 생성된 첫 페이지:", pages[0].text.substring(0, 50) + "...");
 
       // ------------------------------
       // 3) Context에 저장

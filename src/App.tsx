@@ -52,8 +52,8 @@ function App() {
         <Route path="/storybook-editor" element={<StorybookEditor />} />
         <Route path="/storybook-export" element={<StorybookExport />} />
 
-        {/* 🎨 그림 관련 페이지 */}
-        <Route element={<Layout title="🎨 그림" color="#C8F3DC" />}>
+        {/* 🎨 그림 관련 페이지 (CommonHeader 사용) */}
+        <Route element={<Layout />}>
           <Route path="/drawing/start" element={<DrawStart />} />
           <Route path="/drawing/practice" element={<DrawPractice />} />
           <Route path="/drawing/direct" element={<DrawDirect />} />
@@ -62,7 +62,7 @@ function App() {
         </Route>
 
         {/* ✏️ 글쓰기 관련 페이지 */}
-        <Route element={<Layout title="✏️ 글쓰기" color="#FFF2A8" />}>
+        <Route element={<Layout />}>
           <Route path="/write/start" element={<WriteStart />} />
           <Route path="/write" element={<Write />} />
           <Route path="/write/practice" element={<WritingPracticeNew />} />
@@ -81,12 +81,12 @@ function App() {
 
 
         {/* 🏆 내 작품 */}
-        <Route element={<Layout title="🏆 내 작품" color="#FFE1D1" />}>
+        <Route element={<Layout />}>
           <Route path="/my-works" element={<MyWorks />} />
         </Route>
 
         {/* 🎁 나만의 굿즈 */}
-        <Route element={<Layout title="🎁 나만의 굿즈" color="#EAD8FF" />}>
+        <Route element={<Layout />}>
           <Route path="/goods" element={<Goods />} />
         </Route>
 

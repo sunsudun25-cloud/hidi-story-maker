@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
+import CommonHeader from "../components/CommonHeader";
 import { generateImageViaFirebase } from "../services/firebaseFunctions";
 import { friendlyErrorMessage } from "../utils/errorHandler";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -80,10 +80,12 @@ export default function DrawDirect() {
   };
 
   return (
-    <main>
-      <Header title="직접 입력" />
-      {/* 설명 안내 */}
-      <p className="guide-text">
+    <>
+      <CommonHeader title="직접 입력" color="#C8F3DC" />
+      
+      <main>
+        {/* 설명 안내 */}
+        <p className="guide-text">
         원하는 그림을 자세히 설명해주세요 😊
         <br />
         예) 파란 하늘 아래 초록 들판에서 고양이가 나비와 놀고 있는 모습
@@ -174,6 +176,7 @@ export default function DrawDirect() {
           🚀 그림 만들기
         </button>
       )}
-    </main>
+      </main>
+    </>
   );
 }

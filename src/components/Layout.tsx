@@ -1,19 +1,9 @@
 import { Outlet } from "react-router-dom";
-import Header from "./Header";
 import "./Layout.css";
 
-interface LayoutProps {
-  title?: string;
-  color?: string;
-}
-
-export default function Layout({ title, color }: LayoutProps) {
+export default function Layout() {
   return (
     <div className="layout-wrapper">
-      
-      {/* 페이지별 헤더 (값이 있을 때만 렌더) */}
-      {title && <Header title={title} color={color} />}
-
       {/* 실제 페이지 내용이 렌더되는 위치 */}
       <div className="layout-inner">
         <Outlet />

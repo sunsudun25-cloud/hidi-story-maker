@@ -1,10 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import CommonHeader from "../components/CommonHeader";
 
 export default function DrawStart() {
   const navigate = useNavigate();
 
   return (
-    <div className="page-section">
+    <>
+      <CommonHeader title="🎨 그림" color="#C8F3DC" />
+      <div className="page-section">
 
       {/* 제목 + 부제목 */}
       <h2 className="page-title">어떤 방식으로 시작하시겠어요?</h2>
@@ -33,5 +36,6 @@ export default function DrawStart() {
       </button>
 
     </div>
+    </>
   );
 }

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { generateImageViaFirebase } from "../services/firebaseFunctions";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { friendlyErrorMessage } from "../utils/errorHandler";
+import CommonHeader from "../components/CommonHeader";
 import "./DrawPractice.css";
 
 type ExamplePrompt = {
@@ -154,15 +155,11 @@ export default function DrawPractice() {
   };
 
   return (
-    <div className="page-container">
-      {/* 상단 헤더 */}
-      <header className="page-header">
-        <button className="header-btn" onClick={() => navigate(-1)}>←</button>
-        <h1 className="header-title">연습하기</h1>
-        <button className="header-btn" onClick={() => navigate("/home")}>🏠</button>
-      </header>
-
-      {isGenerating ? (
+    <>
+      <CommonHeader title="연습하기" color="#C8F3DC" />
+      
+      <div className="page-container">
+        {isGenerating ? (
         <LoadingSpinner text="AI가 그림을 그리고 있어요... 잠시만 기다려주세요 🎨" />
       ) : (
       <div className="practice-page">
@@ -243,6 +240,7 @@ export default function DrawPractice() {
         </div>
       </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

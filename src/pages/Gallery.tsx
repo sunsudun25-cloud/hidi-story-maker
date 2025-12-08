@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useStory } from "../context/StoryContext";
-import Header from "../components/Header";
+import CommonHeader from "../components/CommonHeader";
 import StoryCard from "../components/StoryCard";
 import { useState } from "react";
 
@@ -20,7 +20,7 @@ export default function Gallery() {
 
   return (
     <div className="min-h-screen bg-[#FFF9E9] pb-28">
-      <Header title="내 작품 보기" />
+      <CommonHeader title="내 작품 보기" color="#FFE1D1" />
 
       {/* 작품 없는 경우 */}
       {stories.length === 0 ? (

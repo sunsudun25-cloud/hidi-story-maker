@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import Header from "../components/Header";
+import CommonHeader from "../components/CommonHeader";
 
 export default function WritingPractice() {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ export default function WritingPractice() {
 
   return (
     <div className="pb-24">
-      <Header title="연습하기" />
+      <CommonHeader title="연습하기" color="#FFF2A8" />
 
       <div className="p-5">
         <h2 className="text-2xl font-bold mb-3">주제를 선택하세요</h2>

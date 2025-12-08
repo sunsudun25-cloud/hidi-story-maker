@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
+import CommonHeader from "../components/CommonHeader";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { safeGeminiCall } from "../services/geminiService";
 
@@ -77,7 +77,7 @@ export default function WritingPhoto() {
 
   return (
     <div className="pb-24">
-      <Header title="사진으로 올리기" />
+      <CommonHeader title="사진으로 올리기" color="#FFF2A8" />
 
       <div className="p-5">
         <h2 className="text-2xl font-bold mb-4">📷 사진으로 글쓰기</h2>

@@ -40,21 +40,21 @@ function App() {
   return (
     <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
       <Routes>
-        {/* 헤더가 필요 없는 페이지 */}
+        {/* 헤더/Footer가 필요 없는 페이지 (Welcome, Onboarding만) */}
         <Route path="/" element={<Welcome />} />
         <Route path="/onboarding" element={<OnboardingLogin />} />
 
-        {/* ⭐ 동화책 전용: Layout 없이 독립 (StorybookLayout 사용) */}
-        <Route path="/storybook" element={<Storybook />} />
-        <Route path="/storybook-manual" element={<StorybookManual />} />
-        <Route path="/storybook-ai-suggestion" element={<StorybookAISuggestion />} />
-        <Route path="/storybook-editor" element={<StorybookEditor />} />
-        <Route path="/storybook-export" element={<StorybookExport />} />
-
-        {/* ⭐ 다른 모든 페이지는 Layout 포함 (Header + Footer) */}
+        {/* ⭐ 모든 페이지는 Layout 포함 (Header + Footer 통일) */}
         <Route element={<Layout />}>
           {/* 🏠 홈 */}
           <Route path="/home" element={<Home />} />
+          
+          {/* 📚 동화책 */}
+          <Route path="/storybook" element={<Storybook />} />
+          <Route path="/storybook-manual" element={<StorybookManual />} />
+          <Route path="/storybook-ai-suggestion" element={<StorybookAISuggestion />} />
+          <Route path="/storybook-editor" element={<StorybookEditor />} />
+          <Route path="/storybook-export" element={<StorybookExport />} />
           {/* 🎨 그림 */}
           <Route path="/drawing/start" element={<DrawStart />} />
           <Route path="/drawing/practice" element={<DrawPractice />} />

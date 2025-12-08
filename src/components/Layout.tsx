@@ -28,6 +28,13 @@ export default function Layout() {
     "/writing/detail": "글 상세",
     "/writing/help": "도움말",
     
+    // 동화책
+    "/storybook": "동화책 만들기",
+    "/storybook-manual": "직접 줄거리 입력",
+    "/storybook-ai-suggestion": "AI 줄거리 추천",
+    "/storybook-editor": "동화책 편집",
+    "/storybook-export": "동화책 내보내기",
+    
     // 작품
     "/my-works": "내 작품",
     "/gallery": "갤러리",

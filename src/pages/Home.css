@@ -8,23 +8,24 @@
   gap: 20px;
 }
 
-/* 기존 home-grid-menu, home-menu-tile 등은 색상만 변수 사용으로 맞춰주면 됩니다 */
+/* 3개 카드 레이아웃 - 더 넓게 */
 .home-grid-menu {
   width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
   margin-bottom: 10px;
 }
 
 .home-menu-tile {
-  aspect-ratio: 1;
+  width: 100%;
+  padding: 32px 20px;
   border-radius: var(--card-radius);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
+  justify-content: flex-start;
+  gap: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: var(--card-shadow);
@@ -56,13 +57,14 @@
 }
 
 .tile-icon {
-  font-size: 48px;
+  font-size: 52px;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .tile-label {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
   color: var(--text-main);
 }
 

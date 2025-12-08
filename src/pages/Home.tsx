@@ -13,19 +13,13 @@ export default function Home() {
             <div className="tile-label">그림</div>
           </div>
 
-          {/* 두 번째: 글쓰기 */}
-          <div className="home-menu-tile yellow" onClick={() => navigate("/write")}>
-            <div className="tile-icon">📝</div>
-            <div className="tile-label">글쓰기</div>
-          </div>
-
-          {/* 세 번째: 동화책 */}
+          {/* 두 번째: 동화책 */}
           <div className="home-menu-tile cyan" onClick={() => navigate("/storybook")}>
             <div className="tile-icon">📚</div>
             <div className="tile-label">동화책</div>
           </div>
 
-          {/* 네 번째: 내 작품 */}
+          {/* 세 번째: 내 작품 */}
           <div className="home-menu-tile blue" onClick={() => navigate("/my-works")}>
             <div className="tile-icon">🏆</div>
             <div className="tile-label">내 작품</div>

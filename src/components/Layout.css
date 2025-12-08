@@ -16,8 +16,9 @@
 .layout-inner {
   width: 100%;
   max-width: 480px;
-  padding: 20px;
-  padding-top: 100px;    /* Header 여백 확보 (80→100px로 조정) */
+  margin: 0 auto;
+  padding: 24px;
+  padding-top: 32px;  /* Header 아래 일정 간격 */
   padding-bottom: 40px;
   box-sizing: border-box;
 }

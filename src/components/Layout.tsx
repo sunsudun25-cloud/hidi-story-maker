@@ -1,13 +1,20 @@
 import { ReactNode } from "react";
+import Header from "./Header";
 import "./Layout.css";
 
 interface LayoutProps {
   children: ReactNode;
+  title: string;
+  color?: string;
 }
 
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children, title, color }: LayoutProps) {
   return (
     <div className="layout-wrapper">
+      
+      {/* 모든 페이지 공통 Header */}
+      <Header title={title} color={color} />
+
       {/* 본문 */}
       <div className="layout-inner">
         {children}

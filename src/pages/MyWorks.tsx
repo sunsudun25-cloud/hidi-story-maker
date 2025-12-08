@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import Layout from "../components/Layout";
 import { getAllStorybooks, deleteStorybook, getAllImages, deleteImage, getAllStories, deleteStory, type Storybook, type SavedImage, type Story } from "../services/dbService";
 
@@ -389,7 +388,6 @@ export default function MyWorks() {
       )}
 
       </div>
-      </Layout>
-    </>
+    </Layout>
   );
 }

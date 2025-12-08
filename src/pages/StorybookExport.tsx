@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { exportEnhancedPDF } from "../services/pdfService";
 import { generateStoryImage } from "../services/imageService";
-import StorybookLayout from "../components/StorybookLayout";
+import StorybookLayout from "../components/storybook/StorybookLayout";
 import "./StorybookExport.css";
 
 type PageData = {

@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { safeGeminiCall } from "../services/geminiService";
 import { useStorybook } from "../context/StorybookContext";
 import LoadingSpinner from "../components/LoadingSpinner";
-import StorybookLayout from "../components/StorybookLayout";
+import StorybookLayout from "../components/storybook/StorybookLayout";
 import "./Storybook/Storybook.css";
 
 export default function StorybookManual() {

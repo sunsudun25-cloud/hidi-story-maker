@@ -17,7 +17,6 @@ export default function StorybookHeader({ title }: { title: string }) {
         margin: "0 auto",
       }}
     >
-      {/* Back */}
       <button
         onClick={() => navigate(-1)}
         style={{
@@ -33,10 +32,8 @@ export default function StorybookHeader({ title }: { title: string }) {
         ←
       </button>
 
-      {/* Title */}
       <h1 style={{ fontSize: "20px", fontWeight: "700" }}>{title}</h1>
 
-      {/* Home */}
       <button
         onClick={() => navigate("/home")}
         style={{

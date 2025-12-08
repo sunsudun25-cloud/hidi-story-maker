@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import StorybookLayout from "../../components/StorybookLayout";
+import StorybookLayout from "../../components/storybook/StorybookLayout";
 
 export default function Storybook() {
   const navigate = useNavigate();

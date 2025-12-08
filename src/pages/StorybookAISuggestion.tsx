@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { safeGeminiCall } from "../services/geminiService";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useStorybook } from "../context/StorybookContext";
-import StorybookLayout from "../components/StorybookLayout";
+import StorybookLayout from "../components/storybook/StorybookLayout";
 import "./Storybook/Storybook.css";
 
 type PlotSuggestion = {

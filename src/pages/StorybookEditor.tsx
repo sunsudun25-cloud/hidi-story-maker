@@ -5,7 +5,7 @@ import { generateImageViaFirebase } from "../services/firebaseFunctions";
 import { exportStorybookToPDF, exportEnhancedPDF } from "../services/pdfService";
 import { saveStorybook } from "../services/dbService";
 import { useStorybook } from "../context/StorybookContext";
-import StorybookLayout from "../components/StorybookLayout";
+import StorybookLayout from "../components/storybook/StorybookLayout";
 import "./StorybookEditor.css";
 
 /**

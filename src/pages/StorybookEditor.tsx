@@ -50,6 +50,9 @@ export default function StorybookEditor() {
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [showPageExtensionModal, setShowPageExtensionModal] = useState(false); // 페이지 확장 모달
   const [isAutoGeneratingImages, setIsAutoGeneratingImages] = useState(false); // 전체 이미지 자동 생성
+  const [showCoverModal, setShowCoverModal] = useState(false);       // 표지 생성 모달
+  const [isGeneratingCover, setIsGeneratingCover] = useState(false); // 표지 생성 중
+  const [hasSuggestedCover, setHasSuggestedCover] = useState(false); // 표지 생성 제안 여부
   const [pdfOptions, setPdfOptions] = useState({
     author: "익명",
     layout: "vertical" as "vertical" | "horizontal",
@@ -89,6 +92,14 @@ export default function StorybookEditor() {
       setCurrentPage(1);
     }
   }, [state]);
+
+  // 📖 10페이지 완성 시 표지 생성 제안
+  useEffect(() => {
+    if (storyPages.length === 10 && !hasSuggestedCover && !contextCoverImageUrl) {
+      setShowCoverModal(true);
+      setHasSuggestedCover(true);
+    }
+  }, [storyPages.length, hasSuggestedCover, contextCoverImageUrl]);
 
   // state도 없고 페이지도 없다면 에러 안내
   if (!state && storyPages.length === 0) {
@@ -315,6 +326,38 @@ ${page.text}
       alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
       setIsAutoGeneratingImages(false);
+    }
+  };
+
+  // 📖 표지 생성
+  const handleGenerateCover = async () => {
+    setIsGeneratingCover(true);
+    try {
+      const coverPrompt = `
+동화책 표지 디자인을 생성해주세요.
+
+제목: ${title}
+줄거리: ${prompt}
+스타일: ${style || "동화 스타일"}
+
+조건:
+- 표지는 책의 첫인상을 결정하는 중요한 요소입니다
+- 제목과 줄거리의 핵심 내용을 담은 아름다운 일러스트
+- 어린이가 보기에 매력적이고 따뜻한 느낌
+- 그림 안에 텍스트나 글자는 넣지 마세요 (표지 디자인만)
+`;
+
+      const coverImage = await generateImageViaFirebase(coverPrompt, style);
+      setCoverImageUrl(coverImage);
+      
+      alert("📖 표지가 생성되었습니다!\n\n만족스럽지 않다면 다시 생성할 수 있습니다.");
+      setShowCoverModal(false);
+      
+    } catch (err) {
+      console.error("표지 생성 오류:", err);
+      alert("표지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsGeneratingCover(false);
     }
   };
 
@@ -610,6 +653,15 @@ ${page.text}
         </button>
 
         <button
+          className="secondary-btn"
+          onClick={() => setShowCoverModal(true)}
+          disabled={isGeneratingCover}
+          style={{ backgroundColor: "#FF6B6B", color: "white" }}
+        >
+          {isGeneratingCover ? "⏳ 생성 중..." : contextCoverImageUrl ? "📖 표지 재생성" : "📖 표지 만들기"}
+        </button>
+
+        <button
           className="primary-btn"
           onClick={handleSave}
           disabled={storyPages.length < 1}
@@ -710,6 +762,84 @@ ${page.text}
                 취소
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 📖 표지 생성 모달 */}
+      {showCoverModal && (
+        <div className="modal-overlay" onClick={() => setShowCoverModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ marginBottom: "20px", fontSize: "22px", fontWeight: "bold", textAlign: "center" }}>
+              🎉 10페이지 완성을 축하합니다!
+            </h3>
+
+            <p style={{ textAlign: "center", color: "#666", marginBottom: "30px", fontSize: "16px", lineHeight: "1.6" }}>
+              동화책의 <strong>표지 이미지</strong>를 만들어볼까요?<br />
+              AI가 제목과 줄거리를 바탕으로<br />
+              아름다운 표지를 디자인해드립니다.
+            </p>
+
+            {contextCoverImageUrl && (
+              <div style={{ textAlign: "center", marginBottom: "20px" }}>
+                <img 
+                  src={contextCoverImageUrl} 
+                  alt="현재 표지" 
+                  style={{ 
+                    maxWidth: "200px", 
+                    maxHeight: "200px", 
+                    borderRadius: "12px",
+                    border: "2px solid #ddd"
+                  }} 
+                />
+                <p style={{ fontSize: "14px", color: "#666", marginTop: "10px" }}>
+                  현재 표지
+                </p>
+              </div>
+            )}
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+              {/* 표지 생성 */}
+              <button
+                onClick={handleGenerateCover}
+                disabled={isGeneratingCover}
+                style={{
+                  padding: "20px",
+                  backgroundColor: isGeneratingCover ? "#ccc" : "#FF6B6B",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  cursor: isGeneratingCover ? "not-allowed" : "pointer",
+                }}
+              >
+                {isGeneratingCover ? "⏳ 표지 생성 중..." : "📖 표지 만들기"}
+                <div style={{ fontSize: "14px", fontWeight: "normal", marginTop: "8px" }}>
+                  AI가 제목과 줄거리 기반으로 표지를 디자인합니다 (약 30초)
+                </div>
+              </button>
+
+              {/* 나중에 만들기 */}
+              <button
+                onClick={() => setShowCoverModal(false)}
+                style={{
+                  padding: "12px",
+                  backgroundColor: "#ddd",
+                  color: "#333",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                }}
+              >
+                나중에 만들기
+              </button>
+            </div>
+
+            <p style={{ fontSize: "12px", color: "#999", marginTop: "15px", textAlign: "center" }}>
+              💡 표지는 언제든지 저장 버튼 옆의 "📖 표지 만들기" 버튼으로 생성/재생성할 수 있습니다.
+            </p>
           </div>
         </div>
       )}

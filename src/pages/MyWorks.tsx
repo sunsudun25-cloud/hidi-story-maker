@@ -177,11 +177,12 @@ export default function MyWorks() {
                             prompt: book.prompt,
                             style: book.style,
                             coverImageUrl: book.coverImageUrl,
+                            pages: book.pages,  // ✅ 페이지 데이터 추가 (이어서 쓰기)
                           },
                         })
                       }
                     >
-                      📝 편집
+                      📝 이어서 쓰기
                     </button>
 
                     <button

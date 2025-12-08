@@ -186,13 +186,24 @@ ${content}
 
 ---
 
-위 내용을 자연스럽게 이어서 2-3문장 정도 작성해주세요.
+**중요: 위 내용을 반복하지 마세요. 새로 이어질 내용만 작성하세요.**
+
+위 내용 다음에 자연스럽게 이어질 2-3문장을 작성해주세요.
 ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""}
 노인 사용자가 쓴 것처럼 편안하고 따뜻한 어조로 작성해주세요.
+
+기존 내용("${content}")은 절대 포함하지 말고, 오직 새로운 문장만 출력하세요.
 `;
 
       const continuation = await safeGeminiCall(prompt);
-      setContent(content + "\n" + continuation);
+      
+      // 혹시 AI가 기존 내용을 포함했다면 제거
+      let newContent = continuation.trim();
+      if (newContent.startsWith(content.trim())) {
+        newContent = newContent.substring(content.trim().length).trim();
+      }
+      
+      setContent(content + "\n" + newContent);
       alert("✨ AI가 이어쓴 내용이 추가되었습니다.\n\n마음에 들지 않으면 자유롭게 수정하세요.");
     } catch (error) {
       console.error("AI 이어쓰기 오류:", error);

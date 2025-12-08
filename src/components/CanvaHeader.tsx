@@ -13,8 +13,8 @@ export default function CanvaHeader({
 
   return (
     <header
-      className="canva-header"
-      style={{ backgroundColor: color }}
+      className="header-wrapper"
+      style={{ "--header-color": color } as React.CSSProperties}
     >
       <button className="header-btn" onClick={() => navigate(-1)}>
         ←

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { safeGeminiCall } from "../services/geminiService";
-import { saveStory, getAllStories, type Story } from "../services/dbService";
+import { saveStory, getAllStories, type Story, type StoryImage } from "../services/dbService";
+import { generateStoryImage } from "../services/imageService";
 
 export default function WriteEditor() {
   const navigate = useNavigate();
@@ -27,6 +28,10 @@ export default function WriteEditor() {
   // AI 도우미 상태
   const [isAiHelping, setIsAiHelping] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  
+  // 이미지 상태
+  const [storyImages, setStoryImages] = useState<StoryImage[]>([]);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   
   // 자동 저장
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -97,6 +102,69 @@ export default function WriteEditor() {
   };
 
   // 💾 저장하기
+  // 🎨 이미지 생성
+  const handleGenerateImage = async () => {
+    if (!content.trim()) {
+      alert("먼저 글을 작성해주세요!");
+      return;
+    }
+
+    setIsGeneratingImage(true);
+    try {
+      // AI에게 이미지 프롬프트 생성 요청
+      const promptRequest = `
+다음 글 내용을 읽고, DALL-E로 이미지를 생성하기 위한 영문 프롬프트를 작성해주세요.
+
+글 내용:
+${content}
+
+요구사항:
+- 노인 분들이 보시기 편한 따뜻하고 부드러운 스타일
+- 동화책 삽화 같은 느낌
+- 글의 핵심 장면이나 감정을 표현
+- 영문으로 작성
+- 50단어 이내로 간결하게
+
+프롬프트만 출력하세요 (설명 불필요):
+`;
+
+      const imagePrompt = await safeGeminiCall(promptRequest);
+      
+      console.log("🎨 생성된 이미지 프롬프트:", imagePrompt);
+      
+      // 이미지 생성
+      const imageUrl = await generateStoryImage(content, {
+        style: "동화 스타일",
+        mood: "따뜻하고 부드러운"
+      });
+      
+      // 생성된 이미지 추가
+      const newImage: StoryImage = {
+        id: crypto.randomUUID(),
+        url: imageUrl,
+        prompt: imagePrompt,
+        createdAt: new Date().toISOString()
+      };
+      
+      setStoryImages([...storyImages, newImage]);
+      alert("✨ 이미지가 생성되었습니다!");
+      
+    } catch (error) {
+      console.error("이미지 생성 오류:", error);
+      alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
+  // 🗑️ 이미지 삭제
+  const handleDeleteImage = (imageId: string) => {
+    if (window.confirm("이 이미지를 삭제하시겠습니까?")) {
+      setStoryImages(storyImages.filter(img => img.id !== imageId));
+      alert("🗑️ 이미지가 삭제되었습니다.");
+    }
+  };
+
   const handleSave = async () => {
     if (!title.trim() || !content.trim()) {
       alert("제목과 내용을 모두 입력해주세요!");
@@ -107,6 +175,8 @@ export default function WriteEditor() {
       await saveStory({
         title: title.trim(),
         content: content.trim(),
+        genre: genre || undefined,
+        images: storyImages.length > 0 ? storyImages : undefined,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
@@ -726,6 +796,27 @@ ${content}
               {isListening ? "👂 듣는 중..." : "🎤 음성 입력"}
             </button>
           </div>
+          
+          {/* 이미지 생성 버튼 */}
+          <button
+            onClick={handleGenerateImage}
+            disabled={isGeneratingImage || !content.trim()}
+            style={{
+              width: "100%",
+              marginTop: "10px",
+              padding: "16px",
+              fontSize: "16px",
+              backgroundColor: isGeneratingImage ? "#ccc" : content.trim() ? "#9C27B0" : "#ddd",
+              color: "white",
+              border: "none",
+              borderRadius: "12px",
+              cursor: isGeneratingImage || !content.trim() ? "not-allowed" : "pointer",
+              fontWeight: "600",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+          >
+            {isGeneratingImage ? "🎨 이미지 생성 중..." : storyImages.length > 0 ? "➕ 이미지 추가" : "🎨 이미지 만들기"}
+          </button>
         </div>
 
         {/* 고급 AI 보조작가 메뉴 (자유 글쓰기 모드) - 항상 표시 */}
@@ -817,6 +908,80 @@ ${content}
               >
                 📝 제목 추천
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* 생성된 이미지 표시 */}
+        {storyImages.length > 0 && (
+          <div style={{
+            marginBottom: "20px",
+            padding: "15px",
+            backgroundColor: "#F3E5F5",
+            borderRadius: "12px",
+            border: "2px solid #9C27B0",
+          }}>
+            <div style={{
+              fontSize: "18px",
+              fontWeight: "600",
+              color: "#7B1FA2",
+              marginBottom: "15px",
+            }}>
+              📸 생성된 이미지 ({storyImages.length}개)
+            </div>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+              gap: "15px",
+            }}>
+              {storyImages.map((image) => (
+                <div
+                  key={image.id}
+                  style={{
+                    position: "relative",
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <img
+                    src={image.url}
+                    alt="생성된 이미지"
+                    style={{
+                      width: "100%",
+                      height: "200px",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <button
+                    onClick={() => handleDeleteImage(image.id)}
+                    style={{
+                      position: "absolute",
+                      top: "8px",
+                      right: "8px",
+                      padding: "8px 12px",
+                      fontSize: "14px",
+                      backgroundColor: "rgba(244, 67, 54, 0.9)",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                      fontWeight: "600",
+                    }}
+                  >
+                    🗑️ 삭제
+                  </button>
+                  <div style={{
+                    padding: "10px",
+                    fontSize: "12px",
+                    color: "#666",
+                    backgroundColor: "#f5f5f5",
+                  }}>
+                    {new Date(image.createdAt).toLocaleString('ko-KR')}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}

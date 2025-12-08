@@ -270,6 +270,25 @@ export default function MyWorks() {
                     {story.content}
                   </p>
 
+                  {/* 이미지 미리보기 */}
+                  {story.images && story.images.length > 0 && (
+                    <div className="mb-3">
+                      <div className="text-[14px] text-purple-600 font-semibold mb-2">
+                        📸 이미지 {story.images.length}개
+                      </div>
+                      <div className="flex gap-2 overflow-x-auto">
+                        {story.images.map((img) => (
+                          <img
+                            key={img.id}
+                            src={img.url}
+                            alt="Story image"
+                            className="w-20 h-20 object-cover rounded-lg border-2 border-purple-200"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* 메타 정보 */}
                   <div className="text-[14px] text-gray-500 mb-3">
                     <p>글자 수: {story.content.length}자</p>

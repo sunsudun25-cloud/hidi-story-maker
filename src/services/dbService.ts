@@ -14,11 +14,20 @@ const STORYBOOK_STORE_NAME = "storybooks";
 /* --------------------------------------------------------
    TypeScript 타입 정의
 --------------------------------------------------------- */
+export interface StoryImage {
+  id: string;
+  url: string;
+  prompt: string;
+  createdAt: string;
+}
+
 export interface Story {
   id: string;
   title: string;
   content: string;
+  genre?: string;
   image?: string;
+  images?: StoryImage[];  // 여러 이미지 지원
   description?: string;
   createdAt: string | Date;
   updatedAt?: string | Date;

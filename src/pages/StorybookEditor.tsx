@@ -500,6 +500,29 @@ ${page.text}
         </button>
       </div>
 
+      {/* 🆕 3페이지 완성 후 안내 메시지 */}
+      {storyPages.length === 3 && currentPage === 3 && (
+        <div
+          style={{
+            padding: "20px",
+            margin: "20px 0",
+            backgroundColor: "#E3F2FD",
+            border: "2px solid #2196F3",
+            borderRadius: "12px",
+            textAlign: "center",
+          }}
+        >
+          <p style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "15px", color: "#1976D2" }}>
+            🎉 3페이지 초안이 완성되었습니다!
+          </p>
+          <p style={{ fontSize: "16px", color: "#333", lineHeight: "1.6" }}>
+            동화책을 계속 작성하시겠어요?<br />
+            아래 <strong>"➕ 페이지 추가하기"</strong> 버튼을 눌러<br />
+            <strong>AI가 이어서 쓰기</strong> 또는 <strong>직접 쓰기</strong>를 선택하세요!
+          </p>
+        </div>
+      )}
+
       {/* 🆕 페이지 확장 가이드 (10페이지 미만 시) */}
       {storyPages.length < 10 && (
         <div

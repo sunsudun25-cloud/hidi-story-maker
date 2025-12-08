@@ -1,15 +1,11 @@
 // 📁 src/components/Layout.tsx
 
 import { Outlet } from "react-router-dom";
-import Header from "./Header";
 import "./Layout.css";
 
 export default function Layout() {
   return (
     <div className="page-container">
-      {/* 공통 헤더 */}
-      <Header />
-
       {/* 페이지 본문 */}
       <main className="page-content">
         <Outlet />

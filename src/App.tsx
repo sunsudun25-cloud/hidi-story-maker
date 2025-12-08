@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import Layout from './components/Layout'
+import Header from './components/Header'
 import Welcome from './pages/Welcome'
 import OnboardingLogin from './pages/OnboardingLogin'
 import Home from './pages/Home'
@@ -36,15 +37,23 @@ import ImageMakeResult from './pages/ImageMake/Result'
 import Gallery from './pages/Gallery'
 import './App.css'
 
-function App() {
+// Header를 조건부로 렌더링하는 래퍼 컴포넌트
+function AppContent() {
+  const location = useLocation();
+  const hideHeaderPaths = ['/', '/onboarding'];
+  const shouldShowHeader = !hideHeaderPaths.includes(location.pathname);
+
   return (
-    <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+    <>
+      {/* ⭐ Header를 Layout 외부에서 전역으로 렌더링 */}
+      {shouldShowHeader && <Header />}
+      
       <Routes>
         {/* 헤더/Footer가 필요 없는 페이지 (Welcome, Onboarding만) */}
         <Route path="/" element={<Welcome />} />
         <Route path="/onboarding" element={<OnboardingLogin />} />
 
-        {/* ⭐ 모든 페이지는 Layout 포함 (Header + Footer 통일) */}
+        {/* ⭐ 모든 페이지는 Layout 포함 (Footer 통일) */}
         <Route element={<Layout />}>
           {/* 🏠 홈 */}
           <Route path="/home" element={<Home />} />
@@ -92,8 +101,16 @@ function App() {
           <Route path="/test-buttons" element={<TestButtons />} />
         </Route>
       </Routes>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+      <AppContent />
     </BrowserRouter>
-  )
+  );
 }
 
 export default App

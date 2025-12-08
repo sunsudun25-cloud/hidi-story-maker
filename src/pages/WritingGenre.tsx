@@ -30,16 +30,16 @@ export default function WritingGenre() {
       guide: "느낌과 감정을 자유롭게 표현하세요"
     },
     { 
-      key: "autobio", 
-      label: "📚 자서전", 
-      desc: "내 인생 이야기를 기록해요",
-      guide: "어린 시절 → 청년기 → 현재 순으로"
+      key: "novel", 
+      label: "📚 소설", 
+      desc: "상상력으로 이야기를 만들어요",
+      guide: "등장인물 → 배경 → 사건 → 결말 순으로"
     },
     { 
-      key: "memoir", 
-      label: "💭 회고록", 
-      desc: "특별했던 순간을 되돌아봐요",
-      guide: "기억나는 장면 → 당시 감정 → 현재 생각"
+      key: "autobio", 
+      label: "📜 자서전", 
+      desc: "내 인생 이야기를 기록해요",
+      guide: "어린 시절 → 청년기 → 현재 순으로"
     },
   ];
 

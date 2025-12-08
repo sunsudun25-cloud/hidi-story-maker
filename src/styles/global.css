@@ -165,4 +165,90 @@ body {
   transform: translateY(-2px);
 }
 
+/* ========================================
+   🟡 컴포넌트 스타일 가이드
+   ======================================== */
+
+/* 5-1) 헤더 (Header)
+   - 높이: 70-90px
+   - 아래 모서리: radius 32px
+   - 텍스트: 24px, bold
+   - 양쪽 버튼: 48px, 흰색, 둥근
+   - full-width 고정
+*/
+
+/* 5-2) 버튼 (Button)
+   - 배경: Primary Green #21C884
+   - 글자: white
+   - 그림자: shadow-sm
+   - 크기: 높이 52-60px
+   - Radius: 14px
+*/
+.primary-btn {
+  background: var(--success);
+  color: white;
+  height: 56px;
+  padding: 0 24px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  font-size: 20px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.primary-btn:active {
+  transform: translateY(0);
+}
+
+/* 5-3) 타일 (Tile)
+   - aspect-ratio: 1
+   - min-height: 150px
+   - radius: 24px
+   - 그림자: shadow-sm
+   - 아이콘: 48-64px
+   - 텍스트: 20-24px
+*/
+.tile {
+  aspect-ratio: 1;
+  min-height: 150px;
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tile:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.tile-icon {
+  font-size: 56px;
+}
+
+.tile-label {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* 5-4) 카드 (Card)
+   - 배경색: white
+   - radius: 16px
+   - padding: 20px
+   - 그림자: shadow-sm
+*/
+
 /* 절대 금지였던 max-width 설정 제거됨 */

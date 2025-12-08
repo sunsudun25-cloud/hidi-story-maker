@@ -57,11 +57,11 @@
 }
 
 .home-menu-tile.green {
-  background: #b8e6c9;
+  background: #C8F3DC; /* 🌈 그림 - 파스텔 민트 */
 }
 
 .home-menu-tile.yellow {
-  background: #fff4b3;
+  background: #FFF2A8; /* 📝 글쓰기 - 파스텔 레몬 */
 }
 
 .home-menu-tile.cyan {

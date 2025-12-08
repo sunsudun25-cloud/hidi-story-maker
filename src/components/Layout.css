@@ -1,5 +1,12 @@
 /* src/components/Layout.css */
 
+/* ========================================
+   📐 레이아웃 시스템 (Layout System)
+   - 전체 구조: <Header /> + <Layout><PageContent /></Layout>
+   - 모든 페이지 480px 기준 중앙 정렬
+   - Header는 full width, 콘텐츠는 inner만 제한
+   ======================================== */
+
 .layout-wrapper {
   width: 100%;
   min-height: 100vh;
@@ -11,6 +18,24 @@
 .layout-inner {
   width: 100%;
   max-width: 480px;
-  padding: 120px 20px 40px; /* 헤더 공간 확보 */
+  padding-top: 120px;    /* Header 여백 확보 */
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 40px;
   box-sizing: border-box;
+}
+
+/* 태블릿 (720px 미만) */
+@media (max-width: 720px) {
+  .layout-inner {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+/* 데스크탑 (앱 스타일 유지, max-width 그대로) */
+@media (min-width: 721px) {
+  .layout-inner {
+    max-width: 480px;
+  }
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 import Layout from "../components/Layout";
 import { getAllStorybooks, deleteStorybook, getAllImages, deleteImage, getAllStories, deleteStory, type Storybook, type SavedImage, type Story } from "../services/dbService";
 
@@ -77,15 +78,20 @@ export default function MyWorks() {
 
   if (isLoading) {
     return (
-      <Layout title="내 작품" color="#FFE1D1">
-        <p className="text-[18px] text-center text-gray-600">불러오는 중...</p>
-      </Layout>
+      <>
+        <Header title="🏆 내 작품" color="#FFE1D1" />
+        <Layout>
+          <p className="text-[18px] text-center text-gray-600">불러오는 중...</p>
+        </Layout>
+      </>
     );
   }
 
   return (
-    <Layout title="내 작품" color="#FFE1D1">
-      <div>
+    <>
+      <Header title="🏆 내 작품" color="#FFE1D1" />
+      <Layout>
+        <div>
 
       {/* 탭 전환 */}
       <div className="flex gap-2 mb-6">

@@ -17,7 +17,7 @@
   width: 100%;
   max-width: 480px;
   padding: 20px;
-  padding-top: 120px;    /* Header 여백 확보 */
+  padding-top: 100px;    /* Header 여백 확보 (80→100px로 조정) */
   padding-bottom: 40px;
   box-sizing: border-box;
 }

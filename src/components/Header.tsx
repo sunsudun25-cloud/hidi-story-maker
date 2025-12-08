@@ -1,11 +1,12 @@
+// src/components/Header.tsx
 import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   title: string;
-  color: string;
+  color?: string;   // 페이지별 배경색 (없으면 기본색)
 }
 
-export default function Header({ title, color }: HeaderProps) {
+export default function Header({ title, color = "#D8E9FF" }: HeaderProps) {
   const navigate = useNavigate();
 
   return (
@@ -17,8 +18,7 @@ export default function Header({ title, color }: HeaderProps) {
       }}
     >
       <div className="max-w-[480px] mx-auto px-4 flex items-center justify-between">
-        
-        {/* Back Button */}
+        {/* 뒤로가기 버튼 (동그라미 고정) */}
         <button
           onClick={() => navigate(-1)}
           className="header-btn"
@@ -26,12 +26,12 @@ export default function Header({ title, color }: HeaderProps) {
           ←
         </button>
 
-        {/* Title */}
+        {/* 가운데 제목 */}
         <h1 className="text-xl font-bold text-gray-800">
           {title}
         </h1>
 
-        {/* Home Button */}
+        {/* 홈 버튼 (동그라미 고정) */}
         <button
           onClick={() => navigate("/home")}
           className="header-btn"

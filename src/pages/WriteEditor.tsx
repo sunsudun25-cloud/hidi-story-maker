@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { safeGeminiCall } from "../services/geminiService";
 import { saveStory, getAllStories, type Story, type StoryImage } from "../services/dbService";
-import { generateStoryImage } from "../services/imageService";
+import { generateWritingImage } from "../services/imageService";
 
 export default function WriteEditor() {
   const navigate = useNavigate();
@@ -111,38 +111,16 @@ export default function WriteEditor() {
 
     setIsGeneratingImage(true);
     try {
-      // AI에게 이미지 프롬프트 생성 요청
-      const promptRequest = `
-다음 글 내용을 읽고, DALL-E로 이미지를 생성하기 위한 영문 프롬프트를 작성해주세요.
-
-글 내용:
-${content}
-
-요구사항:
-- 노인 분들이 보시기 편한 따뜻하고 부드러운 스타일
-- 동화책 삽화 같은 느낌
-- 글의 핵심 장면이나 감정을 표현
-- 영문으로 작성
-- 50단어 이내로 간결하게
-
-프롬프트만 출력하세요 (설명 불필요):
-`;
-
-      const imagePrompt = await safeGeminiCall(promptRequest);
+      console.log("🎨 이미지 생성 시작:", { genre: genreLabel, contentLength: content.length });
       
-      console.log("🎨 생성된 이미지 프롬프트:", imagePrompt);
-      
-      // 이미지 생성
-      const imageUrl = await generateStoryImage(content, {
-        style: "동화 스타일",
-        mood: "따뜻하고 부드러운"
-      });
+      // 글쓰기 전용 이미지 생성 (장르 정보 포함)
+      const imageUrl = await generateWritingImage(content, genreLabel || undefined);
       
       // 생성된 이미지 추가
       const newImage: StoryImage = {
         id: crypto.randomUUID(),
         url: imageUrl,
-        prompt: imagePrompt,
+        prompt: `${genreLabel || "글쓰기"} - ${content.substring(0, 50)}...`,
         createdAt: new Date().toISOString()
       };
       

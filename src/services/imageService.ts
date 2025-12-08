@@ -64,6 +64,67 @@ ${text}
   }
 }
 
+/**
+ * 글쓰기 이미지 생성 (DALL-E 3 via Firebase Functions)
+ * @param text 글 내용
+ * @param genre 장르 (일기, 편지, 수필, 시, 소설, 자서전)
+ * @returns 이미지 URL
+ */
+export async function generateWritingImage(
+  text: string,
+  genre?: string
+): Promise<string> {
+  try {
+    const genreStyle = genre 
+      ? `${genre} 장르에 어울리는` 
+      : "글 내용에 맞는";
+
+    const prompt = `
+${genreStyle} 따뜻하고 감성적인 일러스트를 만들어 주세요.
+시니어 분들이 보시기 편한 부드럽고 차분한 스타일로 표현해주세요.
+복잡하지 않고 깔끔한 구도로, 밝고 따뜻한 색감을 사용해주세요.
+글의 핵심 감정과 분위기를 시각적으로 표현해주세요.
+텍스트나 워터마크는 포함하지 마세요.
+
+글 내용:
+${text}
+`;
+
+    console.log("🎨 글쓰기 이미지 생성 중:", prompt.substring(0, 100) + "...");
+
+    // Firebase Functions 프록시를 통해 DALL-E 3 호출
+    const response = await fetch("https://us-central1-story-make-fbbd7.cloudfunctions.net/api/generateImage", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        size: "1024x1024",
+        quality: "standard",
+        n: 1,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`이미지 생성 실패: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.imageUrl) {
+      throw new Error("이미지 URL을 받지 못했습니다.");
+    }
+
+    console.log("✅ 글쓰기 이미지 생성 완료:", data.imageUrl);
+    return data.imageUrl;
+  } catch (error) {
+    console.error("❌ 글쓰기 이미지 생성 오류:", error);
+    throw error;
+  }
+}
+
 // Removed: generateImageFallback - no longer needed
 // All image generation now uses Firebase Functions proxy with DALL-E 3
 
@@ -529,6 +590,7 @@ export async function downloadImagesAsZip(
 
 export default {
   generateStoryImage,
+  generateWritingImage,
   imageUrlToBlob,
   base64ToBlob,
   downloadImage,

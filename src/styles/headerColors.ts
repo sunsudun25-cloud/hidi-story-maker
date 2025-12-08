@@ -2,6 +2,7 @@
 // 🌈 기능별 헤더 테마 색상 (Feature Theme Colors)
 
 export const headerColors: Record<string, string> = {
+  "무엇을 만들어볼까요?": "#D8E9FF", // 🏠 홈 - 베이비 블루
   "그림": "#C8F3DC",       // 🎨 파스텔 민트
   "글쓰기": "#FFF2A8",     // ✍️ 파스텔 레몬
   "동화책": "#D8E9FF",     // 📚 베이비 블루

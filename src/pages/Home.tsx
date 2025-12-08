@@ -1,17 +1,16 @@
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 import "./Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="home-container">
-        {/* 타이틀 */}
-        <div className="home-title-box">
-          <h1 className="home-title">무엇을 만들어볼까요?</h1>
-        </div>
+    <>
+      {/* 홈 전용 파스텔 파랑 헤더 */}
+      <Header title="무엇을 만들어볼까요?" />
 
-        {/* 메뉴 2x2 그리드 */}
+      <div className="home-container">
         <div className="home-grid-menu">
           {/* 첫 번째: 그림 */}
           <div className="home-menu-tile green" onClick={() => navigate("/drawing/start")}>
@@ -38,30 +37,22 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 하단 큰 타일 */}
         <div className="home-big-tile" onClick={() => navigate("/goods")}>
           <span className="big-tile-icon">🎁</span>
           <span className="big-tile-text">나만의 굿즈 만들기</span>
         </div>
 
-        {/* 하단 작은 메뉴 */}
         <div className="home-footer-menu">
-          <button className="footer-menu-btn" onClick={() => navigate("/help")}>
-            📄 도움말
-          </button>
-          <button className="footer-menu-btn" onClick={() => navigate("/settings")}>
-            ⚙️ 설정
-          </button>
-          <button className="footer-menu-btn" onClick={() => navigate("/qr")}>
-            📱 다른 기기에서 보기
-          </button>
+          <button className="footer-menu-btn" onClick={() => navigate("/help")}>📄 도움말</button>
+          <button className="footer-menu-btn" onClick={() => navigate("/settings")}>⚙️ 설정</button>
+          <button className="footer-menu-btn" onClick={() => navigate("/qr")}>📱 다른 기기에서 보기</button>
         </div>
 
-        {/* 회사 정보 푸터 */}
         <div className="home-company-footer">
           <div className="company-name">HI-DI Edu</div>
           <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
         </div>
       </div>
+    </>
   );
 }

@@ -63,18 +63,19 @@ body,
   position: sticky;
   top: 0;
   z-index: 9999; /* 어떤 화면도 헤더 위로 못 올라가게 */
-  width: 100%;
-  max-width: 480px;
-  height: 60px;
-  margin: 0 auto;
+  
+  height: 72px;
+  padding: 0 20px;
+  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
   background: #dbe8ff;
   backdrop-filter: blur(8px); /* 캔바 느낌 */
-  border-radius: var(--header-radius);
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border-radius: 0 0 16px 16px;
 }
 
 .app-header-title {
@@ -84,16 +85,16 @@ body,
 }
 
 .header-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   border: none;
   background: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 20px;
   cursor: pointer;
   transition: all 0.2s ease;
 }

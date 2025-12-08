@@ -1,9 +1,32 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import Header from "./Header"; 
 import "./Layout.css";
 
 export default function Layout() {
+  const location = useLocation();
+
+  // 헤더 제목 자동 매핑 (필요 시 확장 가능)
+  const pageTitleMap: Record<string, string> = {
+    "/home": "무엇을 만들어볼까요?",
+    "/drawing/start": "그림",
+    "/drawing/practice": "연습하기",
+    "/drawing/direct": "직접입력",
+    "/write": "글쓰기",
+    "/write/start": "글쓰기",
+    "/writing/genre": "장르 선택",
+    "/writing/practice": "글쓰기 연습",
+    "/writing/editor": "글쓰기",
+    "/my-works": "내 작품",
+    "/goods": "나만의 굿즈 만들기",
+    "/gallery": "갤러리",
+  };
+
+  const title = pageTitleMap[location.pathname] || "";
+
   return (
     <div className="page-container">
+      {title && <Header title={title} />}
+
       <main className="page-content">
         <Outlet />
       </main>

@@ -1,28 +1,30 @@
 .page-container {
   min-height: 100vh;
-  background-color: var(--bg-main);
+  background: #F4EFE6; /* 캔바 스타일 배경 */
   display: flex;
   flex-direction: column;
 }
 
 .page-content {
   flex: 1;
+  padding: 20px;
+  padding-top: 24px; /* 헤더 아래 자연스러운 간격 */
   display: flex;
   justify-content: center;
-  /* 헤더와 같은 폭으로 중앙 정렬 */
 }
 
 .page-content > * {
-  /* 각 페이지에서 .screen을 쓰면 그대로 들어감 */
   width: 100%;
+  max-width: 480px; /* 중앙 정렬 */
 }
 
 /* 공통 푸터 */
 .layout-footer {
-  padding: 12px 16px 18px;
   text-align: center;
-  font-size: 12px;
-  color: #777;
+  padding: 20px 0;
+  font-size: 14px;
+  color: #555;
+  opacity: 0.7;
   background-color: transparent;
 }
 

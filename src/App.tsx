@@ -9,7 +9,7 @@ import DrawDirect from './pages/DrawDirect'
 import DrawingResult from './pages/DrawingResult'
 import DirectInput from './pages/DirectInput'
 import Write from './pages/Write'
-import WriteStart from './pages/WriteStart'
+import WriteEditor from './pages/WriteEditor'
 import WritingGenre from './pages/WritingGenre'
 import WritingAiQuestions from './pages/WritingAiQuestions'
 import WritingPhoto from './pages/WritingPhoto'
@@ -56,8 +56,8 @@ function App() {
           <Route path="/drawing/direct" element={<DrawDirect />} />
           <Route path="/drawing/result" element={<DrawingResult />} />
           <Route path="/direct-input" element={<DirectInput />} />
-          <Route path="/write/old" element={<Write />} />
-          <Route path="/write" element={<WriteStart />} />
+          <Route path="/write" element={<Write />} />
+          <Route path="/write/editor" element={<WriteEditor />} />
           <Route path="/writing/practice" element={<WritingPractice />} />
           <Route path="/writing/photo" element={<WritingPhoto />} />
           <Route path="/writing/voice" element={<WritingVoice />} />

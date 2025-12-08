@@ -45,24 +45,23 @@ function App() {
         <Route path="/onboarding" element={<OnboardingLogin />} />
         <Route path="/home" element={<Home />} />
 
-        {/* 📚 동화책 관련 페이지 (개별 파란 헤더 사용) */}
+        {/* ⭐ 동화책 전용: Layout 없이 독립 (StorybookLayout 사용) */}
         <Route path="/storybook" element={<Storybook />} />
         <Route path="/storybook-manual" element={<StorybookManual />} />
         <Route path="/storybook-ai-suggestion" element={<StorybookAISuggestion />} />
         <Route path="/storybook-editor" element={<StorybookEditor />} />
         <Route path="/storybook-export" element={<StorybookExport />} />
 
-        {/* 🎨 그림 관련 페이지 (CommonHeader 사용) */}
+        {/* ⭐ 다른 모든 페이지는 Layout 포함 (CommonHeader 사용) */}
         <Route element={<Layout />}>
+          {/* 🎨 그림 */}
           <Route path="/drawing/start" element={<DrawStart />} />
           <Route path="/drawing/practice" element={<DrawPractice />} />
           <Route path="/drawing/direct" element={<DrawDirect />} />
           <Route path="/drawing/result" element={<DrawingResult />} />
           <Route path="/direct-input" element={<DirectInput />} />
-        </Route>
 
-        {/* ✏️ 글쓰기 관련 페이지 */}
-        <Route element={<Layout />}>
+          {/* ✏️ 글쓰기 */}
           <Route path="/write/start" element={<WriteStart />} />
           <Route path="/write" element={<Write />} />
           <Route path="/write/practice" element={<WritingPracticeNew />} />
@@ -76,22 +75,14 @@ function App() {
           <Route path="/writing/help" element={<WritingHelp />} />
           <Route path="/writing/editor" element={<WritingEditor />} />
           <Route path="/writing/detail" element={<WritingDetail />} />
-        </Route>
 
-
-
-        {/* 🏆 내 작품 */}
-        <Route element={<Layout />}>
+          {/* 🏆 내 작품 */}
           <Route path="/my-works" element={<MyWorks />} />
-        </Route>
 
-        {/* 🎁 나만의 굿즈 */}
-        <Route element={<Layout />}>
+          {/* 🎁 나만의 굿즈 */}
           <Route path="/goods" element={<Goods />} />
-        </Route>
 
-        {/* 기타 페이지 (헤더 없음) */}
-        <Route element={<Layout />}>
+          {/* 기타 페이지 */}
           <Route path="/image/practice" element={<ImageMakePractice />} />
           <Route path="/image/custom" element={<ImageMakeCustom />} />
           <Route path="/image/result" element={<ImageMakeResult />} />

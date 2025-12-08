@@ -6,13 +6,13 @@ interface CommonHeaderProps {
   color?: string;
 }
 
-export default function CommonHeader({ title, color = "#C8F3DC" }: CommonHeaderProps) {
+export default function CommonHeader({ title, color }: CommonHeaderProps) {
   const navigate = useNavigate();
 
   return (
     <header
       className="common-header"
-      style={{ backgroundColor: color }}
+      style={{ backgroundColor: color || "#FFEFB3" }}
     >
       <button className="header-btn" onClick={() => navigate(-1)}>←</button>
 

@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import AppHeader from "../components/AppHeader";
 
 export default function WriteStart() {
   const navigate = useNavigate();
 
   return (
-    <div className="page-section">
+    <div className="page-with-header">
+      <AppHeader title="✏️ 글쓰기" tone="yellow" />
 
       {/* 제목 + 부제목 */}
       <h2 className="page-title">어떤 방법으로 글을 쓰시겠어요?</h2>

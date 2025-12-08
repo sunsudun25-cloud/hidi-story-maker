@@ -38,6 +38,13 @@
 }
 
 /* 🔤 타이포그래피 시스템 */
+body, html, #root {
+  background-color: #F6F2E8 !important;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
 body {
   background: var(--bg-color);
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -375,3 +382,26 @@ body {
 */
 
 /* 절대 금지였던 max-width 설정 제거됨 */
+
+/* ========================================
+   📱 AppHeader 스타일 (Sticky 헤더)
+   ======================================== */
+.header {
+  position: sticky;
+  top: 0;
+  background: #DDEAFF;
+  padding: 14px 20px;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 0 0 18px 18px;
+}
+
+/* Storybook 메뉴용 여백 */
+.storybook-menu {
+  margin-top: 40px; /* 기존보다 크게 */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}

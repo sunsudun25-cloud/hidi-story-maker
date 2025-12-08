@@ -68,3 +68,54 @@
   box-shadow: none;
   cursor: default;
 }
+
+/* 글자 크기 조절 토글 */
+.font-size-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 4px;
+  border-radius: 20px;
+}
+
+.font-toggle-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.font-toggle-btn.active {
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+.font-toggle-btn:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.7);
+  color: #333;
+}
+
+/* 크기별 글자 크기 차별화 */
+.font-toggle-btn:nth-child(1) {
+  font-size: 12px; /* 작은 '가' */
+}
+
+.font-toggle-btn:nth-child(2) {
+  font-size: 16px; /* 중간 '가' */
+}
+
+.font-toggle-btn:nth-child(3) {
+  font-size: 20px; /* 큰 '가' */
+}

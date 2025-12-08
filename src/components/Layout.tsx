@@ -10,16 +10,14 @@ export default function Layout({ children }: LayoutProps) {
   const { sizeClass } = useContext(FontSizeContext);
 
   return (
-    <div className={`layout-root ${sizeClass}`}>
-      <div className="layout-inner">
+    <div className={`page-container ${sizeClass}`}>
+      <main className="page-content">
         {children}
-      </div>
-
+      </main>
+      
       <footer className="layout-footer">
-        <div className="company-name">HI-DI Edu</div>
-        <div className="company-slogan">
-          모든 세대를 잇는 AI 스토리 플랫폼
-        </div>
+        HI-DI Edu<br/>
+        모든 세대를 잇는 AI 스토리 플랫폼
       </footer>
     </div>
   );

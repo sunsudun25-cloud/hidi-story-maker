@@ -20,20 +20,14 @@
 
 /* 공통 Footer */
 .layout-footer {
+  width: 100%;
+  padding: 24px 0;
   text-align: center;
-  padding: 16px 0 28px;
-}
-
-.company-name {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #444;
-}
-
-.company-slogan {
-  font-size: 0.8rem;
-  color: #777;
-  margin-top: 4px;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  border-top: 1px solid #e0e0e0;
+  background: #ffffff;
 }
 
 /* 헤더 밑에 붙는 페이지 컨테이너 기본 간격 */
@@ -78,21 +72,16 @@
   margin-top: 40px;
 }
 
-/* 기존 page-container/page-content (호환성) */
+/* 메인 레이아웃 컨테이너 */
 .page-container {
   min-height: 100vh;
-  background: var(--bg-app);
   display: flex;
   flex-direction: column;
 }
 
 .page-content {
   flex: 1;
-  width: 100%;
-  max-width: 600px;
-  padding: 20px;
-  margin: 0 auto;
-  box-sizing: border-box;
+  padding-bottom: 80px; /* footer 공간 확보 */
 }
 
 /* 고정 헤더 (CanvaHeader용) */

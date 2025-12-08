@@ -11,12 +11,12 @@ export default function Write() {
     // 각 옵션별로 다른 state를 전달하여 WriteEditor로 이동
     if (option === "practice") {
       // 연습하기: 연습 화면으로 이동
-      navigate("/write/practice");
+      navigate("/writing/practice");
     } else if (option === "select") {
-      // 선택하기: 카테고리 선택 모드
-      navigate("/write/editor", { state: { mode: "select" } });
+      // 선택하기: 장르 선택 페이지로 이동
+      navigate("/writing/genre");
     } else if (option === "free") {
-      // 작성하기: 자유 작성 모드
+      // 작성하기: 자유 작성 모드 (AI 보조작가 고급 기능 제공)
       navigate("/write/editor", { state: { mode: "free" } });
     }
   };
@@ -174,6 +174,7 @@ export default function Write() {
             color: "#555",
             lineHeight: "1.6",
           }}>
+            일기, 편지, 수필 등<br />
             장르를 선택하고 글을 시작해보세요
           </p>
           <div style={{
@@ -226,7 +227,8 @@ export default function Write() {
             color: "#555",
             lineHeight: "1.6",
           }}>
-            장르 구분 없이 편안하게 써보세요
+            장르 구분 없이 편안하게 써보세요<br />
+            <strong>AI 보조작가가 전문적으로 도와드립니다</strong>
           </p>
           <div style={{
             marginTop: "15px",

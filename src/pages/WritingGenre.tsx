@@ -5,14 +5,42 @@ export default function WritingGenre() {
   const navigate = useNavigate();
 
   const genres = [
-    { key: "diary", label: "일기" },
-    { key: "essay", label: "에세이" },
-    { key: "poem", label: "시" },
-    { key: "novel", label: "소설" },
-    { key: "letter", label: "편지" },
-    { key: "travel", label: "여행기" },
-    { key: "memoir", label: "회고록" },
-    { key: "autobio", label: "자서전" },
+    { 
+      key: "diary", 
+      label: "📝 일기", 
+      desc: "오늘 있었던 일을 기록해요",
+      guide: "시간-장소-사건 순으로 써보세요"
+    },
+    { 
+      key: "letter", 
+      label: "💌 편지", 
+      desc: "가족이나 친구에게 마음을 전해요",
+      guide: "안부 인사 → 하고 싶은 말 → 마무리 인사"
+    },
+    { 
+      key: "essay", 
+      label: "📖 수필", 
+      desc: "일상의 생각과 감정을 표현해요",
+      guide: "경험한 일 → 느낀 점 → 배운 점"
+    },
+    { 
+      key: "poem", 
+      label: "🎭 시", 
+      desc: "감성적으로 마음을 표현해요",
+      guide: "느낌과 감정을 자유롭게 표현하세요"
+    },
+    { 
+      key: "autobio", 
+      label: "📚 자서전", 
+      desc: "내 인생 이야기를 기록해요",
+      guide: "어린 시절 → 청년기 → 현재 순으로"
+    },
+    { 
+      key: "memoir", 
+      label: "💭 회고록", 
+      desc: "특별했던 순간을 되돌아봐요",
+      guide: "기억나는 장면 → 당시 감정 → 현재 생각"
+    },
   ];
 
   return (
@@ -26,38 +54,46 @@ export default function WritingGenre() {
           어떤 종류의 글을 작성할지 선택하세요.
         </p>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {genres.map((g) => (
             <button
               key={g.key}
               onClick={() =>
-                navigate("/writing/questions", { state: { genre: g.key, label: g.label } })
+                navigate("/write/editor", { 
+                  state: { 
+                    genre: g.key, 
+                    genreLabel: g.label,
+                    genreGuide: g.guide 
+                  } 
+                })
               }
               className="
                 bg-white border-2 border-gray-300 rounded-xl
-                py-6 text-xl font-bold shadow-sm
+                p-6 text-left shadow-sm
                 hover:border-emerald-500 hover:bg-emerald-50
                 transition-all duration-200
                 active:scale-95
               "
             >
-              {g.label}
+              <div className="text-2xl font-bold mb-2">{g.label}</div>
+              <div className="text-gray-600 text-lg mb-2">{g.desc}</div>
+              <div className="text-emerald-600 text-base">💡 {g.guide}</div>
             </button>
           ))}
         </div>
 
-        {/* 건너뛰기 버튼 */}
+        {/* 뒤로가기 버튼 */}
         <div className="mt-6">
           <button
-            onClick={() => navigate("/writing/editor", { state: { genre: "diary", label: "자유 글쓰기" } })}
+            onClick={() => navigate("/write")}
             className="
-              w-full py-3 text-lg font-semibold
+              w-full py-4 text-xl font-semibold
               bg-gray-100 text-gray-700 rounded-xl
               hover:bg-gray-200
               transition-colors duration-200
             "
           >
-            질문 없이 바로 쓰기 →
+            ← 이전으로
           </button>
         </div>
       </div>

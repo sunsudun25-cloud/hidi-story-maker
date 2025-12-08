@@ -6,8 +6,19 @@ import { saveStory, getAllStories, type Story } from "../services/dbService";
 export default function WriteEditor() {
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as { mode?: string; title?: string; initialContent?: string } | undefined;
-  const mode = state?.mode || "free"; // practice, select, free
+  const state = location.state as { 
+    mode?: string; 
+    title?: string; 
+    initialContent?: string;
+    genre?: string;
+    genreLabel?: string;
+    genreGuide?: string;
+  } | undefined;
+  
+  const mode = state?.mode || "free";
+  const genre = state?.genre || null;
+  const genreLabel = state?.genreLabel || null;
+  const genreGuide = state?.genreGuide || null;
   
   const [title, setTitle] = useState(state?.title || "");
   const [content, setContent] = useState(state?.initialContent || "");
@@ -16,10 +27,45 @@ export default function WriteEditor() {
   // AI 도우미 상태
   const [isAiHelping, setIsAiHelping] = useState(false);
   const [showAiMenu, setShowAiMenu] = useState(false);
+  const [showAdvancedAi, setShowAdvancedAi] = useState(false);
   const [isListening, setIsListening] = useState(false);
   
   // 자동 저장
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+  // 장르별 예시 문장
+  const genreExamples: { [key: string]: string[] } = {
+    diary: [
+      "오늘 아침 7시에 일어났다. 날씨가 맑았다.",
+      "점심에는 손주들이 놀러 왔다.",
+      "저녁 산책을 하며 많은 생각이 들었다."
+    ],
+    letter: [
+      "사랑하는 OO에게,\n\n잘 지내고 있니? 오랜만에 편지를 쓰네.",
+      "요즘 날씨가 추워졌구나. 건강 조심하렴.",
+      "다음에 시간 되면 한번 보자. 건강하게 잘 지내길 바란다.\n\n사랑을 담아, ○○○ 올림"
+    ],
+    essay: [
+      "문득 창밖을 바라보니 가을이 깊어가고 있었다.",
+      "나는 항상 아침에 일찍 일어나는 것을 좋아한다.",
+      "인생을 돌아보면 후회보다는 감사할 일이 더 많았던 것 같다."
+    ],
+    poem: [
+      "가을 하늘 맑고 푸르네\n바람 불어 낙엽 지네",
+      "어린 시절 그리워\n고향집 마당가의 감나무",
+      "세월은 흘러가도\n그대와의 추억은 남아"
+    ],
+    autobio: [
+      "나는 1950년 경상남도 작은 마을에서 태어났다.",
+      "어린 시절, 우리 집은 가난했지만 행복했다.",
+      "20대 청년이 되어 서울로 상경했을 때가 기억난다."
+    ],
+    memoir: [
+      "그날의 기억은 아직도 선명하다.",
+      "30년 전 그때, 나는 처음으로 바다를 봤다.",
+      "지금 생각해보니 그것이 인생의 전환점이었다."
+    ]
+  };
 
   const suggestions = [
     "오늘 있었던 일",
@@ -35,41 +81,13 @@ export default function WriteEditor() {
     loadStories();
   }, []);
 
-  // 🎯 모드에 따른 초기 설정
+  // 🎯 장르별 초기 설정
   useEffect(() => {
-    if (mode === "practice") {
-      // 연습하기 모드: AI 주제 자동 제안
-      handleAiSuggestTopicAuto();
-    } else if (mode === "select") {
-      // 선택하기 모드: 주제 선택 강조
-      // UI에서 주제 선택 영역 하이라이트 (이미 구현됨)
+    if (genre && genreExamples[genre]) {
+      // 장르가 있으면 자동으로 예시 문장 표시
+      console.log(`장르: ${genreLabel}, 가이드: ${genreGuide}`);
     }
-    // free 모드는 아무 것도 하지 않음
-  }, [mode]);
-
-  // 🤖 AI 주제 자동 제안 (연습하기 모드용)
-  const handleAiSuggestTopicAuto = async () => {
-    setIsAiHelping(true);
-    try {
-      const prompt = `
-노인 사용자를 위한 간단한 글쓰기 주제를 1개만 제안해주세요.
-개인적인 경험을 떠올릴 수 있는 따뜻하고 쉬운 주제여야 합니다.
-
-형식: 주제명만 출력 (번호나 설명 없이)
-
-예시:
-내가 가장 행복했던 순간
-`;
-
-      const suggestion = await safeGeminiCall(prompt);
-      setTitle(suggestion.trim());
-      alert(`💡 AI가 추천하는 주제:\n\n"${suggestion.trim()}"\n\n이 주제로 편하게 써보세요!`);
-    } catch (error) {
-      console.error("AI 주제 자동 제안 오류:", error);
-    } finally {
-      setIsAiHelping(false);
-    }
-  };
+  }, [genre]);
 
   const loadStories = async () => {
     try {
@@ -104,13 +122,27 @@ export default function WriteEditor() {
     }
   };
 
+  // 🤖 장르별 AI 예시 문장 삽입
+  const handleInsertGenreExample = () => {
+    if (genre && genreExamples[genre]) {
+      const examples = genreExamples[genre];
+      const exampleText = examples.join("\n\n");
+      setContent(content + (content ? "\n\n" : "") + exampleText);
+      alert(`📝 ${genreLabel} 예시 문장이 추가되었습니다! 자유롭게 수정하세요.`);
+    }
+  };
+
   // 🤖 AI 주제 제안
   const handleAiSuggestTopic = async () => {
     setIsAiHelping(true);
     try {
+      const genreContext = genre 
+        ? `\n\n참고: 사용자가 선택한 장르는 "${genreLabel}"입니다. 이 장르에 적합한 주제를 제안해주세요.`
+        : "";
+
       const prompt = `
 노인 사용자를 위한 글쓰기 주제를 3개 제안해주세요.
-각 주제는 간단하고 친근하며, 개인적인 경험을 떠올릴 수 있는 것이어야 합니다.
+각 주제는 간단하고 친근하며, 개인적인 경험을 떠올릴 수 있는 것이어야 합니다.${genreContext}
 
 형식:
 1. 주제명
@@ -130,7 +162,6 @@ export default function WriteEditor() {
       alert("주제 제안 중 오류가 발생했습니다.");
     } finally {
       setIsAiHelping(false);
-      setShowAiMenu(false);
     }
   };
 
@@ -143,10 +174,14 @@ export default function WriteEditor() {
 
     setIsAiHelping(true);
     try {
+      const genreContext = genre 
+        ? `\n장르: ${genreLabel}\n장르 가이드: ${genreGuide}`
+        : "";
+
       const prompt = `
 다음은 사용자가 작성 중인 글입니다:
 
-제목: ${title || "(제목 없음)"}
+제목: ${title || "(제목 없음)"}${genreContext}
 
 내용:
 ${content}
@@ -154,6 +189,7 @@ ${content}
 ---
 
 위 내용을 자연스럽게 이어서 2-3문장 정도 작성해주세요.
+${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""}
 노인 사용자가 쓴 것처럼 편안하고 따뜻한 어조로 작성해주세요.
 `;
 
@@ -251,6 +287,145 @@ ${content}
     }
   };
 
+  // 🤖 고급 AI 기능: 글 구성 제안
+  const handleAiStructureSuggest = async () => {
+    setIsAiHelping(true);
+    try {
+      const prompt = `
+사용자가 다음 주제로 글을 쓰려고 합니다:
+
+제목: ${title || "(제목 없음)"}
+${genre ? `장르: ${genreLabel}` : ""}
+
+이 주제에 대한 글 구성(개요)을 제안해주세요.
+서론-본론-결론 또는 적절한 단락 구성을 제시해주세요.
+
+형식:
+1. 도입부: (어떤 내용으로 시작할지)
+2. 전개부: (어떤 내용을 다룰지)
+3. 마무리: (어떻게 끝낼지)
+`;
+
+      const structure = await safeGeminiCall(prompt);
+      alert(`📊 AI가 제안하는 글 구성:\n\n${structure}\n\n이 구성을 참고하여 글을 써보세요!`);
+    } catch (error) {
+      console.error("AI 구성 제안 오류:", error);
+      alert("구성 제안 중 오류가 발생했습니다.");
+    } finally {
+      setIsAiHelping(false);
+      setShowAdvancedAi(false);
+    }
+  };
+
+  // 🤖 고급 AI 기능: 문장 다듬기
+  const handleAiPolish = async () => {
+    if (!content.trim()) {
+      alert("다듬을 내용이 없습니다!");
+      return;
+    }
+
+    setIsAiHelping(true);
+    try {
+      const prompt = `
+다음 글을 더 세련되고 문학적으로 다듬어주세요.
+비유, 은유, 수사적 표현을 적절히 사용하되, 원래의 의미는 유지해주세요.
+
+---
+${content}
+---
+
+다듬어진 버전만 출력해주세요.
+`;
+
+      const polished = await safeGeminiCall(prompt);
+      
+      const confirmed = window.confirm(
+        "✨ 문장이 다듬어졌습니다!\n\n" +
+        "다듬어진 내용으로 바꾸시겠습니까?\n\n" +
+        "(취소를 누르면 원래 내용을 유지합니다)"
+      );
+      
+      if (confirmed) {
+        setContent(polished);
+        alert("✨ 글이 더 세련되어졌습니다!");
+      }
+    } catch (error) {
+      console.error("AI 다듬기 오류:", error);
+      alert("다듬기 중 오류가 발생했습니다.");
+    } finally {
+      setIsAiHelping(false);
+      setShowAdvancedAi(false);
+    }
+  };
+
+  // 🤖 고급 AI 기능: 글 분석
+  const handleAiAnalyze = async () => {
+    if (!content.trim()) {
+      alert("분석할 내용이 없습니다!");
+      return;
+    }
+
+    setIsAiHelping(true);
+    try {
+      const prompt = `
+다음 글을 분석해주세요:
+
+---
+${content}
+---
+
+다음 항목을 분석해서 알려주세요:
+1. 전체적인 어조 (따뜻함, 슬픔, 기쁨 등)
+2. 주요 감정
+3. 가독성 수준
+4. 개선할 점 1-2가지
+5. 잘 쓰인 부분 1-2가지
+`;
+
+      const analysis = await safeGeminiCall(prompt);
+      alert(`📊 AI 글 분석 결과:\n\n${analysis}`);
+    } catch (error) {
+      console.error("AI 분석 오류:", error);
+      alert("분석 중 오류가 발생했습니다.");
+    } finally {
+      setIsAiHelping(false);
+      setShowAdvancedAi(false);
+    }
+  };
+
+  // 🤖 고급 AI 기능: 제목 추천
+  const handleAiTitleSuggest = async () => {
+    if (!content.trim()) {
+      alert("내용을 먼저 작성해주세요!");
+      return;
+    }
+
+    setIsAiHelping(true);
+    try {
+      const prompt = `
+다음 글의 내용을 읽고 적절한 제목을 3개 제안해주세요:
+
+---
+${content}
+---
+
+형식:
+1. 제목1
+2. 제목2
+3. 제목3
+`;
+
+      const titles = await safeGeminiCall(prompt);
+      alert(`📝 AI가 제안하는 제목:\n\n${titles}\n\n마음에 드는 제목을 선택해보세요!`);
+    } catch (error) {
+      console.error("AI 제목 제안 오류:", error);
+      alert("제목 제안 중 오류가 발생했습니다.");
+    } finally {
+      setIsAiHelping(false);
+      setShowAdvancedAi(false);
+    }
+  };
+
   // 🎤 음성 입력
   const handleVoiceInput = () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -304,7 +479,9 @@ ${content}
         >
           ← 뒤로
         </button>
-        <h1 style={{ fontSize: "28px", fontWeight: "bold", margin: 0 }}>✍️ 글쓰기</h1>
+        <h1 style={{ fontSize: "28px", fontWeight: "bold", margin: 0 }}>
+          {genreLabel || "✍️ 글쓰기"}
+        </h1>
         <button
           onClick={() => navigate("/home")}
           style={{
@@ -320,66 +497,101 @@ ${content}
         </button>
       </div>
 
-      <p style={{ fontSize: "18px", color: "#666", textAlign: "center", marginBottom: "30px" }}>
-        오늘의 이야기를 자유롭게 써보세요
-      </p>
-
-      {/* 주제 선택 */}
-      <div style={{
-        padding: "20px",
-        backgroundColor: "white",
-        borderRadius: "12px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        marginBottom: "20px",
-      }}>
-        <h3 style={{ fontSize: "20px", marginBottom: "12px", fontWeight: "600" }}>
-          💡 주제 선택 (선택사항)
-        </h3>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
-          {suggestions.map((suggestion, index) => (
+      {/* 장르 가이드 (장르가 있을 경우만 표시) */}
+      {genre && genreGuide && (
+        <div style={{
+          padding: "15px 20px",
+          backgroundColor: "#E8F5E9",
+          border: "2px solid #4CAF50",
+          borderRadius: "8px",
+          marginBottom: "20px",
+          fontSize: "16px",
+        }}>
+          💡 <strong>{genreLabel} 작성 가이드:</strong> {genreGuide}
+          {genre && genreExamples[genre] && (
             <button
-              key={index}
-              onClick={() => setTitle(suggestion)}
+              onClick={handleInsertGenreExample}
               style={{
-                padding: "10px 16px",
-                fontSize: "16px",
-                backgroundColor: "#E3F2FD",
-                border: "1px solid #2196F3",
-                borderRadius: "20px",
+                marginLeft: "15px",
+                padding: "8px 12px",
+                fontSize: "14px",
+                backgroundColor: "#4CAF50",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
                 cursor: "pointer",
-                transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#2196F3";
-                e.currentTarget.style.color = "white";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "#E3F2FD";
-                e.currentTarget.style.color = "black";
               }}
             >
-              {suggestion}
+              📝 예시 문장 추가
             </button>
-          ))}
+          )}
         </div>
-        
-        <button
-          onClick={handleAiSuggestTopic}
-          disabled={isAiHelping}
-          style={{
-            padding: "12px 20px",
-            fontSize: "16px",
-            backgroundColor: isAiHelping ? "#ccc" : "#FF6B6B",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: isAiHelping ? "not-allowed" : "pointer",
-            fontWeight: "bold",
-          }}
-        >
-          {isAiHelping ? "⏳ AI 생각 중..." : "🤖 AI에게 주제 추천받기"}
-        </button>
-      </div>
+      )}
+
+      <p style={{ fontSize: "18px", color: "#666", textAlign: "center", marginBottom: "30px" }}>
+        {genre 
+          ? `${genreLabel} 형식에 맞춰 자유롭게 써보세요` 
+          : "오늘의 이야기를 자유롭게 써보세요"}
+      </p>
+
+      {/* 주제 선택 (장르가 없을 때만 표시) */}
+      {!genre && (
+        <div style={{
+          padding: "20px",
+          backgroundColor: "white",
+          borderRadius: "12px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          marginBottom: "20px",
+        }}>
+          <h3 style={{ fontSize: "20px", marginBottom: "12px", fontWeight: "600" }}>
+            💡 주제 선택 (선택사항)
+          </h3>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+            {suggestions.map((suggestion, index) => (
+              <button
+                key={index}
+                onClick={() => setTitle(suggestion)}
+                style={{
+                  padding: "10px 16px",
+                  fontSize: "16px",
+                  backgroundColor: "#E3F2FD",
+                  border: "1px solid #2196F3",
+                  borderRadius: "20px",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#2196F3";
+                  e.currentTarget.style.color = "white";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#E3F2FD";
+                  e.currentTarget.style.color = "black";
+                }}
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+          
+          <button
+            onClick={handleAiSuggestTopic}
+            disabled={isAiHelping}
+            style={{
+              padding: "12px 20px",
+              fontSize: "16px",
+              backgroundColor: isAiHelping ? "#ccc" : "#FF6B6B",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: isAiHelping ? "not-allowed" : "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            {isAiHelping ? "⏳ AI 생각 중..." : "🤖 AI에게 주제 추천받기"}
+          </button>
+        </div>
+      )}
 
       {/* 제목 */}
       <div style={{
@@ -419,34 +631,55 @@ ${content}
         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
         marginBottom: "20px",
       }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", gap: "10px" }}>
           <h3 style={{ fontSize: "20px", fontWeight: "600", margin: 0 }}>
             ✏️ 내용
           </h3>
           
-          {/* AI 도우미 버튼 */}
-          <button
-            onClick={() => setShowAiMenu(!showAiMenu)}
-            style={{
-              padding: "8px 16px",
-              fontSize: "16px",
-              backgroundColor: "#8B5CF6",
-              color: "white",
-              border: "none",
-              borderRadius: "20px",
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
-          >
-            🤖 AI 도우미 {showAiMenu ? "▲" : "▼"}
-          </button>
+          {/* AI 도우미 버튼들 */}
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button
+              onClick={() => setShowAiMenu(!showAiMenu)}
+              style={{
+                padding: "8px 16px",
+                fontSize: "16px",
+                backgroundColor: "#8B5CF6",
+                color: "white",
+                border: "none",
+                borderRadius: "20px",
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              🤖 기본 도우미 {showAiMenu ? "▲" : "▼"}
+            </button>
+
+            {/* 자유 글쓰기 모드에서만 고급 AI 표시 */}
+            {!genre && (
+              <button
+                onClick={() => setShowAdvancedAi(!showAdvancedAi)}
+                style={{
+                  padding: "8px 16px",
+                  fontSize: "16px",
+                  backgroundColor: "#EC4899",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "20px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                ✨ AI 보조작가 {showAdvancedAi ? "▲" : "▼"}
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* AI 도우미 메뉴 */}
+        {/* 기본 AI 도우미 메뉴 */}
         {showAiMenu && (
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
             gap: "10px",
             marginBottom: "15px",
             padding: "15px",
@@ -518,7 +751,89 @@ ${content}
                 fontWeight: "500",
               }}
             >
-              {isListening ? "🎤 듣는 중..." : "🎤 음성 입력"}
+              {isListening ? "👂 듣는 중..." : "🎤 음성 입력"}
+            </button>
+          </div>
+        )}
+
+        {/* 고급 AI 보조작가 메뉴 (자유 글쓰기 모드) */}
+        {!genre && showAdvancedAi && (
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+            gap: "10px",
+            marginBottom: "15px",
+            padding: "15px",
+            backgroundColor: "#FDF2F8",
+            borderRadius: "8px",
+            border: "2px dashed #EC4899",
+          }}>
+            <button
+              onClick={handleAiStructureSuggest}
+              disabled={isAiHelping}
+              style={{
+                padding: "12px",
+                fontSize: "14px",
+                backgroundColor: isAiHelping ? "#ccc" : "#8B5CF6",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: isAiHelping ? "not-allowed" : "pointer",
+                fontWeight: "500",
+              }}
+            >
+              📊 글 구성 제안
+            </button>
+            
+            <button
+              onClick={handleAiPolish}
+              disabled={isAiHelping}
+              style={{
+                padding: "12px",
+                fontSize: "14px",
+                backgroundColor: isAiHelping ? "#ccc" : "#EC4899",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: isAiHelping ? "not-allowed" : "pointer",
+                fontWeight: "500",
+              }}
+            >
+              ✨ 문장 다듬기
+            </button>
+            
+            <button
+              onClick={handleAiAnalyze}
+              disabled={isAiHelping}
+              style={{
+                padding: "12px",
+                fontSize: "14px",
+                backgroundColor: isAiHelping ? "#ccc" : "#F59E0B",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: isAiHelping ? "not-allowed" : "pointer",
+                fontWeight: "500",
+              }}
+            >
+              📊 글 분석
+            </button>
+
+            <button
+              onClick={handleAiTitleSuggest}
+              disabled={isAiHelping}
+              style={{
+                padding: "12px",
+                fontSize: "14px",
+                backgroundColor: isAiHelping ? "#ccc" : "#10B981",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: isAiHelping ? "not-allowed" : "pointer",
+                fontWeight: "500",
+              }}
+            >
+              📝 제목 추천
             </button>
           </div>
         )}
@@ -526,7 +841,9 @@ ${content}
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="자유롭게 글을 써보세요..."
+          placeholder={genre 
+            ? `${genreLabel} 형식에 맞춰 자유롭게 글을 써보세요...` 
+            : "자유롭게 글을 써보세요... AI 보조작가가 도와드립니다!"}
           style={{
             width: "100%",
             padding: "16px",
@@ -562,7 +879,9 @@ ${content}
         marginBottom: "20px",
         fontSize: "16px",
       }}>
-        💡 <strong>도움말:</strong> 부담 갖지 마세요! 떠오르는 대로 편하게 써보세요. AI 도우미가 언제든 도와드립니다.
+        💡 <strong>도움말:</strong> {!genre 
+          ? "자유 글쓰기 모드에서는 AI 보조작가가 글 구성부터 문장 다듬기까지 모든 과정을 도와드립니다!" 
+          : `${genreLabel}의 형식을 참고하여 자유롭게 표현해보세요. AI가 언제든 도와드립니다.`}
       </div>
 
       {/* 저장 버튼 */}

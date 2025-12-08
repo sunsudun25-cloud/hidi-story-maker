@@ -1,9 +1,12 @@
 @import "../styles/design-system.css";
 
 .app-header {
-  position: sticky;
+  position: fixed; /* ⭐ 화면 최상단 고정 */
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 999; /* ⭐ 최상위 레이어 */
+  
   background: var(--bg-soft-blue);
   padding: 14px 20px;
   
@@ -12,6 +15,12 @@
   justify-content: space-between;
   box-shadow: var(--shadow-sm);
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  
+  /* 중앙 정렬을 위한 max-width */
+  max-width: 520px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-btn {

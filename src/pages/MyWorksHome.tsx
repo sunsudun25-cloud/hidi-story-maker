@@ -22,7 +22,7 @@ export default function MyWorksHome() {
           {/* 이미지 */}
           <button
             className="flex items-center gap-4 p-6 bg-gradient-to-br from-pink-50 to-pink-100 border-2 border-pink-400 rounded-2xl text-left hover:shadow-lg hover:scale-[1.02] transition-all"
-            onClick={() => navigate("/myworks/images")}
+            onClick={() => navigate("/my-works/images")}
           >
             <div className="text-[48px]">🎨</div>
             <div>
@@ -34,7 +34,7 @@ export default function MyWorksHome() {
           {/* 글쓰기 */}
           <button
             className="flex items-center gap-4 p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-400 rounded-2xl text-left hover:shadow-lg hover:scale-[1.02] transition-all"
-            onClick={() => navigate("/myworks/stories")}
+            onClick={() => navigate("/my-works/stories")}
           >
             <div className="text-[48px]">📝</div>
             <div>
@@ -46,7 +46,7 @@ export default function MyWorksHome() {
           {/* 동화책 */}
           <button
             className="flex items-center gap-4 p-6 bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-400 rounded-2xl text-left hover:shadow-lg hover:scale-[1.02] transition-all"
-            onClick={() => navigate("/myworks/storybooks")}
+            onClick={() => navigate("/my-works/storybooks")}
           >
             <div className="text-[48px]">📕</div>
             <div>

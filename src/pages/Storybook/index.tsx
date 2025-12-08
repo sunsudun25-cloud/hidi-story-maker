@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import Layout from "../../components/Layout";
 import "./Storybook.css";
 
 export default function Storybook() {
@@ -15,14 +16,7 @@ export default function Storybook() {
   };
 
   return (
-    <div className="page-container">
-      {/* 상단 헤더 */}
-      <header className="page-header">
-        <button className="header-btn" onClick={() => navigate(-1)}>←</button>
-        <h1 className="header-title">동화책 만들기</h1>
-        <button className="header-btn" onClick={() => navigate("/home")}>🏠</button>
-      </header>
-
+    <Layout title="동화책" color="#D8E9FF">
       <div className="storybook-page">
         {/* 시작 안내 */}
         <div style={{ 
@@ -30,14 +24,13 @@ export default function Storybook() {
           fontSize: "20px", 
           fontWeight: "bold",
           marginBottom: "30px",
-          marginTop: "40px",
           color: "#374151"
         }}>
           동화책 만들기를 어떻게 시작할까요?
         </div>
 
         {/* 선택 버튼 */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "15px", padding: "0 20px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
           {/* 직접 입력하기 버튼 */}
           <button
             onClick={handleGoToManualInput}
@@ -105,6 +98,6 @@ export default function Storybook() {
           </button>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }

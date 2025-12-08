@@ -12,7 +12,7 @@
 }
 
 /* 내부 컨텐츠 영역 */
-.page-container > div {
+.page-content {
   width: 100%;
   max-width: 600px;
   padding: 20px;

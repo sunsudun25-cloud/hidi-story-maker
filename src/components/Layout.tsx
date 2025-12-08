@@ -6,12 +6,12 @@ import "./Layout.css";
 
 export default function Layout() {
   return (
-    <div className="layout-wrapper">
+    <div className="page-container">
       {/* 공통 헤더 */}
       <Header />
 
       {/* 페이지 본문 */}
-      <main className="layout-content">
+      <main className="page-content">
         <Outlet />
       </main>
 

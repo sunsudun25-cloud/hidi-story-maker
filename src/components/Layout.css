@@ -1,23 +1,25 @@
-/* ===== 전체 앱 공통 레이아웃 (중앙 520px 고정) ===== */
-.layout-wrapper {
-  min-height: 100vh;
+/* ===== 전체 앱 중앙 고정 (520px) ===== */
+.page-container {
   display: flex;
   flex-direction: column;
-  align-items: center;   /* ⭐ 가운데 정렬 */
-  background: #f8f5ef; 
+  align-items: center;
+  min-height: 100vh;
+  background: #f8f5ef;
 }
 
-/* 페이지 본문 — 헤더 공간 확보 필수 */
-.layout-content {
+/* 페이지 내용 공통 폭 제한 */
+.page-content {
   flex: 1;
   width: 100%;
-  max-width: 520px;      /* ⭐ 앱 전체가 520px 기준 */
-  padding: 90px 20px 20px 20px;  /* ⭐ 헤더 높이 보정 (90px) */
+  max-width: 520px;
+  padding: 90px 20px 40px 20px; /* 헤더 간섭 방지 */
   box-sizing: border-box;
 }
 
-/* 공통 푸터 */
+/* 공통 Footer */
 .layout-footer {
+  width: 100%;
+  max-width: 520px;
   text-align: center;
   padding: 20px 0;
   font-size: 14px;

@@ -152,17 +152,6 @@ export default function StorybookExport({
 
   return (
     <div className="redesign-container">
-      {/* 상단 헤더 */}
-      <div className="redesign-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>
-          ← 뒤로
-        </button>
-        <h1 className="redesign-title">📘 동화책 PDF 만들기</h1>
-        <button className="home-btn" onClick={() => navigate("/")}>
-          🏠
-        </button>
-      </div>
-
       {/* ===== 상단 단계 안내 ===== */}
       <div className="step-indicator">
         <div className={`step-item ${step === 1 ? "active" : ""}`}>

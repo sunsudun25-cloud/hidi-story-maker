@@ -131,14 +131,7 @@ export default function StorybookManual() {
   };
 
   return (
-    <div className="page-container">
-      {/* 상단 헤더 */}
-      <header className="page-header">
-        <button className="header-btn" onClick={() => navigate(-1)}>←</button>
-        <h1 className="header-title">동화책 만들기</h1>
-        <button className="header-btn" onClick={() => navigate("/home")}>🏠</button>
-      </header>
-
+    <>
       {isGenerating ? (
         <LoadingSpinner text="AI가 동화책 초안을 만드는 중이에요... 📚✨" />
       ) : (
@@ -217,6 +210,6 @@ export default function StorybookManual() {
           </button>
         </div>
       )}
-    </div>
+    </>
   );
 }

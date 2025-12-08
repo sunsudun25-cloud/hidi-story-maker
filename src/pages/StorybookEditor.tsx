@@ -469,17 +469,6 @@ ${page.text}
 
   return (
     <div className="editor-container">
-      {/* 🔵 상단 헤더 */}
-      <header className="editor-header">
-        <button className="header-btn" onClick={() => navigate(-1)}>
-          ←
-        </button>
-        <h1 className="editor-title">동화책 편집</h1>
-        <button className="header-btn" onClick={() => navigate("/home")}>
-          🏠
-        </button>
-      </header>
-
       {/* 제목 */}
       <h2 className="book-title">{title}</h2>
 

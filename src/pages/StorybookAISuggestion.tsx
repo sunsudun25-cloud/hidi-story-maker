@@ -199,14 +199,7 @@ export default function StorybookAISuggestion() {
   };
 
   return (
-    <div className="page-container">
-      {/* 상단 헤더 */}
-      <header className="page-header">
-        <button className="header-btn" onClick={() => navigate(-1)}>←</button>
-        <h1 className="header-title">AI 줄거리 추천</h1>
-        <button className="header-btn" onClick={() => navigate("/home")}>🏠</button>
-      </header>
-
+    <>
       {isGenerating || isCreatingDraft ? (
         <LoadingSpinner text={
           isGenerating 
@@ -352,6 +345,6 @@ export default function StorybookAISuggestion() {
           )}
         </div>
       )}
-    </div>
+    </>
   );
 }

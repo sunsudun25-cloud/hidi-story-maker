@@ -45,12 +45,14 @@ function App() {
         <Route path="/onboarding" element={<OnboardingLogin />} />
         <Route path="/home" element={<Home />} />
 
-        {/* Storybook 페이지들 (헤더 자체 포함, Layout 불필요) */}
-        <Route path="/storybook" element={<Storybook />} />
-        <Route path="/storybook-manual" element={<StorybookManual />} />
-        <Route path="/storybook-ai-suggestion" element={<StorybookAISuggestion />} />
-        <Route path="/storybook-editor" element={<StorybookEditor />} />
-        <Route path="/storybook-export" element={<StorybookExport />} />
+        {/* 📚 동화책 관련 페이지 */}
+        <Route element={<Layout title="📚 동화책" color="#D8E9FF" />}>
+          <Route path="/storybook" element={<Storybook />} />
+          <Route path="/storybook-manual" element={<StorybookManual />} />
+          <Route path="/storybook-ai-suggestion" element={<StorybookAISuggestion />} />
+          <Route path="/storybook-editor" element={<StorybookEditor />} />
+          <Route path="/storybook-export" element={<StorybookExport />} />
+        </Route>
 
         {/* 🎨 그림 관련 페이지 */}
         <Route element={<Layout title="🎨 그림" color="#C8F3DC" />}>
@@ -78,10 +80,7 @@ function App() {
           <Route path="/writing/detail" element={<WritingDetail />} />
         </Route>
 
-        {/* 📚 동화책 관련 페이지 (헤더 필요한 것들만) */}
-        <Route element={<Layout title="📚 동화책" color="#D8E9FF" />}>
-          <Route path="/storybook" element={<Storybook />} />
-        </Route>
+
 
         {/* 🏆 내 작품 */}
         <Route element={<Layout title="🏆 내 작품" color="#FFE1D1" />}>

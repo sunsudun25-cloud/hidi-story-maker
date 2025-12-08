@@ -109,14 +109,7 @@ export default function Result() {
   };
 
   return (
-    <div className="page-container">
-      {/* 상단 헤더 */}
-      <header className="page-header">
-        <button className="header-btn" onClick={() => navigate(-1)}>←</button>
-        <h1 className="header-title">결과 보기</h1>
-        <button className="header-btn" onClick={() => navigate("/home")}>🏠</button>
-      </header>
-
+    <>
       <div className="result-page">
         {imageUrl ? (
           <>
@@ -171,6 +164,6 @@ export default function Result() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }

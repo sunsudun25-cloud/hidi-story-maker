@@ -1,26 +1,61 @@
 /* ========================================
    🎨 HI-DI EDU · 캔바 스타일 디자인 시스템
    - 파스텔 톤, 시니어 친화적 UI
-   - 480px 중앙 정렬, 큰 버튼, 명확한 계층
+   - 500px 중앙 정렬, 큰 버튼, 명확한 계층
    ======================================== */
 
 :root {
-  /* 🌈 메인 톤 */
-  --bg-main: #f6f2e8;
+  /* ===== Color System (Pastel Canva Style) ===== */
+  --bg-page: #f8f4ec;
+  --bg-card: #ffffff;
+  --bg-soft-blue: #dce9ff;
+  --bg-soft-yellow: #ffefb3;
+  --bg-soft-green: #d7f4e3;
+  --bg-soft-mint: #c8f3dc;
+  --bg-soft-purple: #ecd9ff;
+  --bg-soft-pink: #ffe7ef;
 
-  --card-radius: 24px;
-  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --header-bg: #dbe8ff;
-  --header-radius: 0 0 18px 18px;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-title: #222222;
 
-  --text-main: #222222;
+  --border-soft: #e5e5e5;
+
+  /* ===== Shadow System ===== */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 6px 18px rgba(0, 0, 0, 0.16);
+
+  /* ===== Radius ===== */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+
+  /* ===== Spacing ===== */
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 20px;
+  --space-lg: 28px;
+  --space-xl: 40px;
+
+  /* ===== Font Size (Senior-friendly Scaling) ===== */
+  --font-base: 18px;
+  --font-large: 20px;
+  --font-title: 22px;
+
+  /* ===== Legacy Support (기존 변수와의 호환성) ===== */
+  --bg-main: #f8f4ec;
+  --card-radius: 20px;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --header-bg: #dce9ff;
+  --header-radius: 0 0 28px 28px;
+  --text-main: #333333;
   --text-muted: #666666;
-
-  --brand-green: #c8f3dc;
-  --brand-yellow: #fff2a8;
-  --brand-blue: #c5e3f0;
-  --brand-cyan: #b3f0f0;
-  --brand-purple: #e8d4f0;
+  --brand-green: #d7f4e3;
+  --brand-yellow: #ffefb3;
+  --brand-blue: #dce9ff;
+  --brand-cyan: #c8f3dc;
+  --brand-purple: #ecd9ff;
 }
 
 /* 📄 기본 바닥색 + 리셋 */
@@ -30,9 +65,11 @@ body,
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background-color: var(--bg-main);
+  background-color: var(--bg-page);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans KR",
     "Apple SD Gothic Neo", sans-serif;
+  font-size: var(--font-base);
+  color: var(--text-primary);
 }
 
 * {
@@ -58,30 +95,30 @@ body,
   padding: 0 0 20px; /* 하단 여백 */
 }
 
-/* 공통 헤더(캔바 스타일) */
+/* 공통 헤더(캔바 스타일) - Layout에서만 사용 */
 .app-header {
   position: sticky;
   top: 0;
-  z-index: 9999; /* 어떤 화면도 헤더 위로 못 올라가게 */
+  z-index: 100;
   
   height: 72px;
-  padding: 0 20px;
+  padding: 16px var(--space-md);
   
   display: flex;
   justify-content: space-between;
   align-items: center;
   
-  background: #dbe8ff;
-  backdrop-filter: blur(8px); /* 캔바 느낌 */
+  background: var(--bg-soft-blue);
+  backdrop-filter: blur(8px);
   
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  border-radius: 0 0 16px 16px;
+  box-shadow: var(--shadow-sm);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
 .app-header-title {
-  font-size: 18px;
+  font-size: var(--font-title);
   font-weight: 700;
-  color: #222;
+  color: var(--text-title);
 }
 
 .header-btn {
@@ -89,19 +126,19 @@ body,
   height: 44px;
   border-radius: 50%;
   border: none;
-  background: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .header-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .header-btn:active {

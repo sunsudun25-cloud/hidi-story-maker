@@ -61,13 +61,7 @@ export default function DirectInput() {
   };
 
   return (
-    <div className="page-container">
-      <header className="page-header">
-        <button className="header-btn" onClick={() => navigate(-1)}>←</button>
-        <h1 className="header-title">직접 입력</h1>
-        <button className="header-btn" onClick={() => navigate("/home")}>🏠</button>
-      </header>
-
+    <>
       {isGenerating ? (
         <LoadingSpinner text="AI가 멋진 그림을 그리고 있어요... 🎨" />
       ) : (
@@ -107,6 +101,6 @@ export default function DirectInput() {
           </button>
         </div>
       )}
-    </div>
+    </>
   );
 }

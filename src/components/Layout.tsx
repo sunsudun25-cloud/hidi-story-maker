@@ -38,6 +38,7 @@ export default function Layout() {
     // 작품
     "/my-works": "내 작품",
     "/gallery": "갤러리",
+    "/image": "이미지",
     
     // 굿즈
     "/goods": "나만의 굿즈 만들기",

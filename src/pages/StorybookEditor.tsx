@@ -221,7 +221,7 @@ ${current.text}
         <textarea
           value={currentPageData.text}
           onChange={(e) => handleTextChange(currentPage - 1, e.target.value)}
-          placeholder="여기에 동화 내용을 입력하세요..."
+          placeholder="여기에 동화 내용을 입력하거나 AI가 이어쓰기를 선택하세요..."
           style={{
             width: "100%",
             minHeight: 150,

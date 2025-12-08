@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { generateImageViaFirebase } from "../services/firebaseFunctions";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { friendlyErrorMessage } from "../utils/errorHandler";
-import Header from "../components/Header";
 import "./DrawPractice.css";
 
 type ExamplePrompt = {

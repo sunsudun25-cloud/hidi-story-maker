@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useStory } from "../context/StoryContext";
-import Header from "../components/Header";
 import StoryCard from "../components/StoryCard";
 import { useState } from "react";
 

@@ -1,5 +1,4 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import { useStory } from "../context/StoryContext";
 
 export default function WritingDetail() {

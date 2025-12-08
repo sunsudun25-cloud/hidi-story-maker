@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 
 export default function WritingVoice() {
   const navigate = useNavigate();

@@ -1,21 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import "./DrawStart.css";
 
 export default function DrawStart() {
   const navigate = useNavigate();
 
   return (
-    
-      <div className="screen">
-        <Header title="그림" />
+    <div className="draw-start-container">
+      <p className="draw-start-subtitle">
+        어떤 방식으로 그림을 만드시겠어요?
+      </p>
 
-        <div className="screen-body">
-        <p className="draw-start-subtitle">
-          어떤 방식으로 그림을 만드시겠어요?
-        </p>
-
-        <div className="draw-start-buttons">
+      <div className="draw-start-buttons">
 
           {/* 연습하기 */}
           <button
@@ -39,9 +34,7 @@ export default function DrawStart() {
             <span className="btn-desc">원하는 그림을 직접 설명해보세요</span>
           </button>
 
-        </div>
-        </div>
       </div>
-    
+    </div>
   );
 }

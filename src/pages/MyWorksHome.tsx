@@ -28,7 +28,7 @@ export default function MyWorksHome() {
         display: 'grid',
         gridTemplateColumns: '1fr',
         gap: '16px',
-        maxWidth: '600px',
+        maxWidth: '480px',
         margin: '0 auto'
       }}>
 

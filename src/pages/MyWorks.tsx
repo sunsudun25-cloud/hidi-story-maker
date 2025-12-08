@@ -158,104 +158,83 @@ export default function MyWorks() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {storybooks.map((book) => (
                 <div
                   key={book.id}
-                  className="border-2 border-gray-200 rounded-2xl p-5 bg-white shadow-sm hover:shadow-md transition"
+                  className="relative group bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all"
                 >
                   {/* 커버 이미지 */}
-                  {book.coverImageUrl && (
-                    <img
-                      src={book.coverImageUrl}
-                      alt={book.title}
-                      className="w-full h-48 object-cover rounded-xl mb-4 cursor-pointer"
-                      onClick={() => window.open(book.coverImageUrl, "_blank")}
-                    />
-                  )}
-
-                  {/* 제목 */}
-                  <h3 className="text-[22px] font-bold text-gray-800 mb-3">{book.title}</h3>
-
-                  {/* 메타 정보 - 박스 형태 */}
-                  <div className="bg-gray-50 rounded-xl p-3 mb-3 space-y-2">
-                    {book.style && (
-                      <div className="flex items-center gap-2 text-[14px]">
-                        <span className="text-purple-600 font-semibold">스타일:</span>
-                        <span className="text-gray-700">{book.style}</span>
+                  <div className="relative aspect-[3/4] bg-gradient-to-br from-purple-100 to-purple-200">
+                    {book.coverImageUrl ? (
+                      <img
+                        src={book.coverImageUrl}
+                        alt={book.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <span className="text-[48px]">📕</span>
                       </div>
                     )}
-                    <div className="flex items-center gap-2 text-[14px]">
-                      <span className="text-purple-600 font-semibold">페이지 수:</span>
-                      <span className="text-gray-700">{book.pages.length}페이지</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-[14px]">
-                      <span className="text-purple-600 font-semibold">생성일:</span>
-                      <span className="text-gray-700">
-                        {new Date(book.createdAt).toLocaleString("ko-KR", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </span>
+
+                    {/* 액션 버튼 - 우측 상단 */}
+                    <div className="absolute top-2 right-2 flex flex-col gap-2">
+                      {/* 편집 버튼 */}
+                      <button
+                        className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-purple-500 hover:text-white transition-all"
+                        onClick={() =>
+                          navigate("/storybook-editor-modify", {
+                            state: {
+                              title: book.title,
+                              prompt: book.prompt,
+                              style: book.style,
+                              coverImageUrl: book.coverImageUrl,
+                              pages: book.pages,
+                            },
+                          })
+                        }
+                        title="편집하기"
+                      >
+                        <span className="text-[18px]">✏️</span>
+                      </button>
+
+                      {/* PDF 출력 버튼 */}
+                      <button
+                        className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-blue-500 hover:text-white transition-all"
+                        onClick={() =>
+                          navigate("/storybook-export", {
+                            state: {
+                              title: book.title,
+                              pages: book.pages,
+                              coverImageUrl: book.coverImageUrl,
+                            },
+                          })
+                        }
+                        title="PDF 출력"
+                      >
+                        <span className="text-[18px]">📕</span>
+                      </button>
+
+                      {/* 삭제 버튼 */}
+                      <button
+                        className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
+                        onClick={() => book.id && handleDeleteStorybook(book.id)}
+                        title="삭제"
+                      >
+                        <span className="text-[18px]">🗑️</span>
+                      </button>
                     </div>
                   </div>
 
-                  {/* 첫 페이지 미리보기 - 제한된 높이 */}
-                  {book.pages[0]?.text && (
-                    <div className="bg-purple-50 rounded-xl p-3 mb-4">
-                      <p className="text-[15px] text-gray-700 leading-relaxed overflow-hidden" 
-                         style={{ 
-                           display: '-webkit-box',
-                           WebkitLineClamp: 3,
-                           WebkitBoxOrient: 'vertical',
-                           maxHeight: '4.5em'
-                         }}>
-                        "{book.pages[0].text.substring(0, 150)}{book.pages[0].text.length > 150 ? '...' : ''}"
-                      </p>
-                    </div>
-                  )}
-
-                  {/* 액션 버튼 */}
-                  <div className="flex gap-2">
-                    <button
-                      className="flex-1 px-4 py-2 bg-purple-500 text-white rounded-lg text-[16px] font-semibold"
-                      onClick={() =>
-                        navigate("/storybook-editor-modify", {
-                          state: {
-                            title: book.title,
-                            prompt: book.prompt,
-                            style: book.style,
-                            coverImageUrl: book.coverImageUrl,
-                            pages: book.pages,  // ✅ 페이지 데이터 추가 (이어서 쓰기)
-                          },
-                        })
-                      }
-                    >
-                      📝 이어서 쓰기
-                    </button>
-
-                    <button
-                      className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg text-[16px] font-semibold"
-                      onClick={() =>
-                        navigate("/storybook-export", {
-                          state: {
-                            title: book.title,
-                            pages: book.pages,
-                            coverImageUrl: book.coverImageUrl,
-                          },
-                        })
-                      }
-                    >
-                      📕 PDF 만들기
-                    </button>
-
-                    <button
-                      className="px-4 py-2 bg-red-500 text-white rounded-lg text-[16px] font-semibold"
-                      onClick={() => book.id && handleDeleteStorybook(book.id)}
-                    >
-                      🗑️
-                    </button>
+                  {/* 제목 + 정보 */}
+                  <div className="p-3">
+                    <h3 className="text-[16px] font-bold text-gray-800 mb-1 truncate">
+                      {book.title || "제목 없음"}
+                    </h3>
+                    <p className="text-[12px] text-gray-500">
+                      {book.pages.length}페이지
+                    </p>
                   </div>
                 </div>
               ))}

@@ -20,7 +20,6 @@ export default function Gallery() {
   return (
     
       <div className="screen">
-        <Header title="내 작품 보기" />
         
         <div className="screen-body">
 

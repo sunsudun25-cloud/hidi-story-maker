@@ -22,7 +22,6 @@ export default function DrawingDirect() {
 
   return (
     <div className="pb-24">
-      <Header title="그림 만들기" />
 
       <div className="p-5">
         <h2 className="text-2xl font-bold mb-6">어떤 그림을 만들까요?</h2>

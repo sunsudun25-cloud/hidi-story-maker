@@ -41,7 +41,6 @@ export default function DrawingPractice() {
 
   return (
     <div className="pb-24">
-      <Header title="연습하기" />
 
       <div className="p-5">
         <h2 className="text-2xl font-bold mb-3">원하는 그림을 연습해봐요</h2>

@@ -12,7 +12,6 @@ export default function WritingDetail() {
   if (!story) {
     return (
       <div className="pb-24">
-        <Header title="글 상세보기" />
         <div className="p-5">
           <div className="bg-red-50 border border-red-300 rounded-xl p-6 text-center">
             <p className="text-xl text-red-600 font-semibold mb-4">
@@ -51,7 +50,6 @@ export default function WritingDetail() {
 
   return (
     <div className="pb-28">
-      <Header title="글 상세보기" />
 
       <div className="p-5">
         {/* 제목 */}

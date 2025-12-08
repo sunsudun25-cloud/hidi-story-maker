@@ -3,7 +3,6 @@ export default function Goods() {
   return (
     
       <div className="screen">
-        <Header title="나만의 굿즈 만들기" />
         
         <div className="screen-body">
           <div className="page-section text-center">

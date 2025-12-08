@@ -76,7 +76,6 @@ export default function WritingPhoto() {
 
   return (
     <div className="pb-24">
-      <Header title="사진으로 올리기" />
 
       <div className="p-5">
         <h2 className="text-2xl font-bold mb-4">📷 사진으로 글쓰기</h2>

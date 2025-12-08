@@ -156,7 +156,6 @@ export default function DrawPractice() {
   return (
     
       <div className="screen">
-        <Header title="연습하기" />
         
         <div className="screen-body draw-page-container">
         {isGenerating ? (

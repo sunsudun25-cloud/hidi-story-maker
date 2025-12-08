@@ -132,7 +132,6 @@ export default function WritingAiQuestions() {
   if (loading) {
     return (
       <div className="pb-24">
-        <Header title="AI 질문" />
         <div className="flex flex-col items-center justify-center h-[60vh]">
           <LoadingSpinner />
           <p className="mt-4 text-gray-600">AI가 질문을 준비하고 있어요...</p>
@@ -145,7 +144,6 @@ export default function WritingAiQuestions() {
 
   return (
     <div className="screen">
-      <Header title={`${label} 쓰기`} />
       
       <div className="screen-body pb-24">
         <div className="p-5">

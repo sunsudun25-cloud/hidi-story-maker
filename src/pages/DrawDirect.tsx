@@ -81,7 +81,6 @@ export default function DrawDirect() {
   return (
     
       <div className="screen">
-        <Header title="직접 입력" />
         
         <div className="screen-body draw-page-container">
         {/* 설명 안내 */}

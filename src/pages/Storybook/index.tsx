@@ -6,7 +6,6 @@ export default function Storybook() {
   return (
     
       <div className="screen">
-        <Header title="📚 동화책 만들기" />
 
         <div className="screen-body storybook-menu">
           <button

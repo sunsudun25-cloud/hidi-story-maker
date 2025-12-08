@@ -4,112 +4,179 @@ import { getAllImages, deleteImage, type SavedImage } from "../services/dbServic
 
 export default function MyWorksImages() {
   const [images, setImages] = useState<SavedImage[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadImages();
+    load();
   }, []);
 
-  const loadImages = async () => {
-    setIsLoading(true);
+  async function load() {
+    setLoading(true);
     try {
       const data = await getAllImages();
-      setImages(data.reverse());
+      setImages(data.reverse()); // 최신순 정렬
     } catch (error) {
       console.error("이미지 불러오기 오류:", error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
+  }
 
-  const handleDelete = async (id: number, e: React.MouseEvent) => {
+  async function handleDelete(id: number, e: React.MouseEvent) {
     e.stopPropagation();
     if (!confirm("이 이미지를 삭제하시겠습니까?")) return;
 
     try {
       await deleteImage(id);
       setImages((prev) => prev.filter((img) => img.id !== id));
-      alert("✅ 이미지가 삭제되었습니다.");
     } catch (error) {
       console.error("삭제 오류:", error);
       alert("삭제 중 오류가 발생했습니다.");
     }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="screen">
-        <div className="screen-body">
-          <p className="text-center text-[18px] text-gray-600 mt-10">불러오는 중...</p>
-        </div>
-      </div>
-    );
   }
 
   return (
-    <div className="screen">
-      <div className="screen-body p-4">
-        {/* 헤더 */}
-        <div className="flex justify-between items-center mb-4">
-          <button
-            onClick={() => navigate("/my-works")}
-            className="text-[24px] w-10 h-10 flex items-center justify-center"
-          >
-            ←
-          </button>
-          <h2 className="text-[22px] font-bold">🎨 내 이미지</h2>
-          <div className="w-10"></div>
-        </div>
-
-        {/* 이미지 없음 */}
-        {images.length === 0 ? (
-          <div className="text-center mt-10">
-            <p className="text-[20px] text-gray-600 mb-6">저장된 이미지가 없습니다.</p>
-            <button
-              className="px-6 py-3 bg-blue-500 text-white rounded-xl text-[18px] font-semibold"
-              onClick={() => navigate("/drawing/start")}
-            >
-              이미지 만들러 가기
-            </button>
-          </div>
-        ) : (
-          /* 이미지 갤러리 */
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {images.map((item) => (
-              <div
-                key={item.id}
-                className="relative bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer"
-                onClick={() => navigate(`/my-works/images/${item.id}`)}
-              >
-                <div className="relative aspect-square bg-gray-100">
-                  <img
-                    src={item.image}
-                    alt="저장된 이미지"
-                    className="w-full h-full object-cover"
-                  />
-
-                  {/* 삭제 버튼 */}
-                  <button
-                    className="absolute top-2 right-2 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
-                    onClick={(e) => handleDelete(item.id!, e)}
-                    title="삭제"
-                  >
-                    <span className="text-[16px]">🗑️</span>
-                  </button>
-                </div>
-
-                {/* 간단한 정보 */}
-                <div className="p-2">
-                  <p className="text-[11px] text-gray-400 truncate">
-                    {new Date(item.createdAt).toLocaleDateString("ko-KR")}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+    <div style={{ padding: "20px", minHeight: "100vh", backgroundColor: "#FFF9F0" }}>
+      {/* 헤더 */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <button
+          onClick={() => navigate("/my-works")}
+          style={{
+            fontSize: "24px",
+            width: "40px",
+            height: "40px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "white",
+            border: "1px solid #E5E7EB",
+            borderRadius: "8px",
+            cursor: "pointer"
+          }}
+        >
+          ←
+        </button>
+        <h2 style={{ fontSize: "22px", fontWeight: "bold" }}>🎨 내 이미지</h2>
+        <div style={{ width: "40px" }}></div>
       </div>
+
+      {/* 로딩 중 */}
+      {loading && (
+        <p style={{ textAlign: "center", fontSize: "18px", color: "#666", marginTop: "40px" }}>
+          불러오는 중...
+        </p>
+      )}
+
+      {/* 저장된 이미지 없음 */}
+      {!loading && images.length === 0 && (
+        <div style={{ textAlign: "center", marginTop: "40px" }}>
+          <p style={{ fontSize: "18px", color: "#666", marginBottom: "20px" }}>
+            저장된 이미지가 없습니다.
+          </p>
+          <button
+            style={{
+              padding: "12px 24px",
+              background: "#4AA8FF",
+              color: "white",
+              borderRadius: "12px",
+              border: "none",
+              fontSize: "16px",
+              fontWeight: "600",
+              cursor: "pointer"
+            }}
+            onClick={() => navigate("/drawing/start")}
+          >
+            이미지 만들러 가기
+          </button>
+        </div>
+      )}
+
+      {/* 이미지 갤러리 */}
+      {!loading && images.length > 0 && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "12px"
+          }}
+        >
+          {images.map((item) => (
+            <div
+              key={item.id}
+              onClick={() => navigate(`/my-works/images/${item.id}`)}
+              style={{
+                border: "2px solid #E5E7EB",
+                borderRadius: "12px",
+                overflow: "hidden",
+                cursor: "pointer",
+                position: "relative",
+                background: "white",
+                transition: "transform 0.2s, box-shadow 0.2s"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              {/* 이미지 */}
+              <div style={{ position: "relative", aspectRatio: "1/1", background: "#F3F4F6" }}>
+                <img
+                  src={item.image}
+                  alt="저장된 이미지"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover"
+                  }}
+                />
+
+                {/* 삭제 버튼 */}
+                <button
+                  onClick={(e) => handleDelete(item.id!, e)}
+                  style={{
+                    position: "absolute",
+                    top: "8px",
+                    right: "8px",
+                    width: "32px",
+                    height: "32px",
+                    background: "rgba(255,255,255,0.9)",
+                    backdropFilter: "blur(4px)",
+                    borderRadius: "50%",
+                    border: "1px solid #E5E7EB",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "16px",
+                    transition: "all 0.2s"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#EF4444";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.9)";
+                  }}
+                  title="삭제"
+                >
+                  🗑️
+                </button>
+              </div>
+
+              {/* 날짜 정보 */}
+              <div style={{ padding: "8px" }}>
+                <p style={{ fontSize: "11px", color: "#9CA3AF" }}>
+                  {new Date(item.createdAt).toLocaleDateString("ko-KR")}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

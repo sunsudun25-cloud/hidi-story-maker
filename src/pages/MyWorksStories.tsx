@@ -4,128 +4,184 @@ import { getAllStories, deleteStory, type Story } from "../services/dbService";
 
 export default function MyWorksStories() {
   const [stories, setStories] = useState<Story[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadStories();
+    load();
   }, []);
 
-  const loadStories = async () => {
-    setIsLoading(true);
+  async function load() {
+    setLoading(true);
     try {
       const data = await getAllStories();
-      setStories(data.reverse());
+      setStories(data.reverse()); // 최신순 정렬
     } catch (error) {
       console.error("글 불러오기 오류:", error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
+  }
 
-  const handleDelete = async (id: number, e: React.MouseEvent) => {
+  async function handleDelete(id: number, e: React.MouseEvent) {
     e.stopPropagation();
     if (!confirm("이 글을 삭제하시겠습니까?")) return;
 
     try {
       await deleteStory(id);
       setStories((prev) => prev.filter((s) => s.id !== id));
-      alert("✅ 글이 삭제되었습니다.");
     } catch (error) {
       console.error("삭제 오류:", error);
       alert("삭제 중 오류가 발생했습니다.");
     }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="screen">
-        <div className="screen-body">
-          <p className="text-center text-[18px] text-gray-600 mt-10">불러오는 중...</p>
-        </div>
-      </div>
-    );
   }
 
   return (
-    <div className="screen">
-      <div className="screen-body p-4">
-        {/* 헤더 */}
-        <div className="flex justify-between items-center mb-4">
-          <button
-            onClick={() => navigate("/my-works")}
-            className="text-[24px] w-10 h-10 flex items-center justify-center"
-          >
-            ←
-          </button>
-          <h2 className="text-[22px] font-bold">📝 내 글</h2>
-          <div className="w-10"></div>
-        </div>
-
-        {/* 글 없음 */}
-        {stories.length === 0 ? (
-          <div className="text-center mt-10">
-            <p className="text-[20px] text-gray-600 mb-6">저장된 글이 없습니다.</p>
-            <button
-              className="px-6 py-3 bg-green-500 text-white rounded-xl text-[18px] font-semibold"
-              onClick={() => navigate("/write")}
-            >
-              글쓰기 시작하기
-            </button>
-          </div>
-        ) : (
-          /* 글 목록 */
-          <div className="grid grid-cols-1 gap-4">
-            {stories.map((story) => (
-              <div
-                key={story.id}
-                className="relative bg-white border-2 border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-all cursor-pointer overflow-hidden"
-                onClick={() => navigate(`/my-works/stories/${story.id}`)}
-              >
-                <div className="p-4">
-                  {/* 제목 */}
-                  <h3 className="text-[18px] font-bold text-gray-800 mb-2">
-                    {story.title}
-                  </h3>
-
-                  {/* 내용 미리보기 */}
-                  <p
-                    className="text-[14px] text-gray-600 leading-relaxed"
-                    style={{
-                      display: '-webkit-box',
-                      WebkitLineClamp: 3,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    {story.content}
-                  </p>
-
-                  {/* 메타 정보 */}
-                  <div className="flex items-center gap-2 mt-3 text-[12px] text-gray-500">
-                    <span>{story.content.length}자</span>
-                    {story.images && story.images.length > 0 && (
-                      <>
-                        <span>·</span>
-                        <span>📸 {story.images.length}개</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* 삭제 버튼 */}
-                <button
-                  className="absolute top-2 right-2 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
-                  onClick={(e) => handleDelete(story.id!, e)}
-                  title="삭제"
-                >
-                  <span className="text-[16px]">🗑️</span>
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+    <div style={{ padding: "20px", minHeight: "100vh", backgroundColor: "#FFF9F0" }}>
+      {/* 헤더 */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <button
+          onClick={() => navigate("/my-works")}
+          style={{
+            fontSize: "24px",
+            width: "40px",
+            height: "40px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "white",
+            border: "1px solid #E5E7EB",
+            borderRadius: "8px",
+            cursor: "pointer"
+          }}
+        >
+          ←
+        </button>
+        <h2 style={{ fontSize: "22px", fontWeight: "bold" }}>📝 내 글</h2>
+        <div style={{ width: "40px" }}></div>
       </div>
+
+      {/* 로딩 중 */}
+      {loading && (
+        <p style={{ textAlign: "center", fontSize: "18px", color: "#666", marginTop: "40px" }}>
+          불러오는 중...
+        </p>
+      )}
+
+      {/* 저장된 글 없음 */}
+      {!loading && stories.length === 0 && (
+        <div style={{ textAlign: "center", marginTop: "40px" }}>
+          <p style={{ fontSize: "18px", color: "#666", marginBottom: "20px" }}>
+            저장된 글이 없습니다.
+          </p>
+          <button
+            style={{
+              padding: "12px 24px",
+              background: "#4AA8FF",
+              color: "white",
+              borderRadius: "12px",
+              border: "none",
+              fontSize: "16px",
+              fontWeight: "600",
+              cursor: "pointer"
+            }}
+            onClick={() => navigate("/write")}
+          >
+            글쓰기 시작하기
+          </button>
+        </div>
+      )}
+
+      {/* 글 목록 */}
+      {!loading && stories.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {stories.map((story) => (
+            <div
+              key={story.id}
+              onClick={() => navigate(`/my-works/stories/${story.id}`)}
+              style={{
+                position: "relative",
+                background: "white",
+                border: "2px solid #E5E7EB",
+                borderRadius: "12px",
+                padding: "16px",
+                cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              {/* 제목 */}
+              <h3 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "8px", color: "#1F2937" }}>
+                {story.title}
+              </h3>
+
+              {/* 내용 미리보기 */}
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "#6B7280",
+                  lineHeight: "1.5",
+                  overflow: "hidden",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 3,
+                  WebkitBoxOrient: "vertical"
+                }}
+              >
+                {story.content}
+              </p>
+
+              {/* 메타 정보 */}
+              <div style={{ marginTop: "12px", fontSize: "12px", color: "#9CA3AF" }}>
+                <span>{story.content.length}자</span>
+                {story.images && story.images.length > 0 && (
+                  <>
+                    <span style={{ margin: "0 4px" }}>·</span>
+                    <span>📸 {story.images.length}개</span>
+                  </>
+                )}
+              </div>
+
+              {/* 삭제 버튼 */}
+              <button
+                onClick={(e) => handleDelete(story.id!, e)}
+                style={{
+                  position: "absolute",
+                  top: "8px",
+                  right: "8px",
+                  width: "32px",
+                  height: "32px",
+                  background: "rgba(255,255,255,0.9)",
+                  backdropFilter: "blur(4px)",
+                  borderRadius: "50%",
+                  border: "1px solid #E5E7EB",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "16px",
+                  transition: "all 0.2s"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#EF4444";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.9)";
+                }}
+                title="삭제"
+              >
+                🗑️
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

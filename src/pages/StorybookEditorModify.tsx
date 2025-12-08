@@ -61,7 +61,7 @@ export default function StorybookEditorModify() {
 
   if (!state || !state.pages || state.pages.length === 0) {
     return (
-      <StorybookLayout title="📚 동화책 수정">
+      <StorybookLayout title="📚 동화책 편집">
         <div style={{ padding: 20 }}>
           ⚠ 수정할 작품 정보가 없습니다.
           <br />
@@ -272,7 +272,7 @@ ${current.text}
   const currentPageData = storyPages[currentPage - 1] || { text: "", imageUrl: undefined };
 
   return (
-    <StorybookLayout title="📝 동화책 수정">
+    <StorybookLayout title="📚 동화책 편집">
       <div style={{ display: "flex", flexDirection: "column", gap: 15 }}>
         {/* 제목 */}
         <h2 style={{ fontSize: 20, fontWeight: 700, textAlign: "center", margin: 0 }}>

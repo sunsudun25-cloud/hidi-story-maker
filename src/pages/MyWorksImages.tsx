@@ -68,7 +68,7 @@ export default function MyWorksImages() {
             <p className="text-[20px] text-gray-600 mb-6">저장된 이미지가 없습니다.</p>
             <button
               className="px-6 py-3 bg-blue-500 text-white rounded-xl text-[18px] font-semibold"
-              onClick={() => navigate("/image/practice")}
+              onClick={() => navigate("/drawing/start")}
             >
               이미지 만들러 가기
             </button>

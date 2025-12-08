@@ -30,6 +30,7 @@ export default function StorybookEditor() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [isAiHelping, setIsAiHelping] = useState(false);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
 
   useEffect(() => {
     if (state) {
@@ -88,11 +89,32 @@ export default function StorybookEditor() {
         // 기존 페이지가 있으면 이동
         setCurrentPage(currentPage + 1);
       } else {
+        // 10페이지 도달 시 완성 확인 모달
+        if (storyPages.length === 10) {
+          setShowCompletionModal(true);
+          return;
+        }
+        
         // 마지막 페이지면 새 빈 페이지 추가
         addNewPage("");
         setCurrentPage(storyPages.length + 1);
       }
     }
+  };
+
+  // 계속 쓰기 선택
+  const handleContinueWriting = () => {
+    setShowCompletionModal(false);
+    addNewPage("");
+    setCurrentPage(storyPages.length + 1);
+  };
+
+  // 완성 모드로 이동
+  const handleCompleteStorybook = () => {
+    setShowCompletionModal(false);
+    navigate("/storybook-export", {
+      state: { title, pages: storyPages, coverImageUrl: "" },
+    });
   };
 
   const handleTextChange = (index: number, newText: string) => {
@@ -400,6 +422,90 @@ ${current.text}
           📘 PDF 설정 페이지로 이동
         </button>
       </div>
+
+      {/* 10페이지 완성 확인 모달 */}
+      {showCompletionModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.6)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: 20,
+          }}
+          onClick={() => setShowCompletionModal(false)}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 16,
+              maxWidth: 400,
+              width: "100%",
+              padding: 30,
+              boxShadow: "0 10px 40px rgba(0, 0, 0, 0.2)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 아이콘 */}
+            <div style={{ textAlign: "center", fontSize: 64, marginBottom: 20 }}>
+              🎉
+            </div>
+
+            {/* 제목 */}
+            <h3 style={{ fontSize: 22, fontWeight: 700, textAlign: "center", margin: "0 0 15px 0", color: "#2c3e50" }}>
+              10페이지를 작성하셨습니다!
+            </h3>
+
+            {/* 설명 */}
+            <p style={{ fontSize: 16, textAlign: "center", color: "#7f8c8d", margin: "0 0 25px 0", lineHeight: 1.6 }}>
+              동화책을 완성하시겠어요?<br />
+              아니면 계속 작성하시겠어요?
+            </p>
+
+            {/* 버튼 */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <button
+                onClick={handleCompleteStorybook}
+                style={{
+                  padding: 16,
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 12,
+                  fontSize: 18,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)",
+                }}
+              >
+                ✅ 완성하기 (PDF로 내보내기)
+              </button>
+
+              <button
+                onClick={handleContinueWriting}
+                style={{
+                  padding: 16,
+                  background: "#fff",
+                  color: "#667eea",
+                  border: "2px solid #667eea",
+                  borderRadius: 12,
+                  fontSize: 18,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                ✏️ 계속 쓰기 (11페이지로)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </StorybookLayout>
   );
 }

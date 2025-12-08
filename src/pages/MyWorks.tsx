@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllStorybooks, deleteStorybook, getAllImages, deleteImage, type Storybook, type SavedImage } from "../services/dbService";
+import { getAllStorybooks, deleteStorybook, getAllImages, deleteImage, getAllStories, deleteStory, type Storybook, type SavedImage, type Story } from "../services/dbService";
 
-type TabType = "storybooks" | "images";
+type TabType = "storybooks" | "stories" | "images";
 
 export default function MyWorks() {
   const [activeTab, setActiveTab] = useState<TabType>("storybooks");
   const [storybooks, setStorybooks] = useState<Storybook[]>([]);
+  const [stories, setStories] = useState<Story[]>([]);
   const [images, setImages] = useState<SavedImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -18,11 +19,13 @@ export default function MyWorks() {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [storybooksData, imagesData] = await Promise.all([
+      const [storybooksData, storiesData, imagesData] = await Promise.all([
         getAllStorybooks(),
+        getAllStories(),
         getAllImages()
       ]);
       setStorybooks(storybooksData.reverse()); // 최신순
+      setStories(storiesData.reverse()); // 최신순
       setImages(imagesData.reverse()); // 최신순
     } catch (error) {
       console.error("데이터 불러오기 오류:", error);
@@ -38,6 +41,19 @@ export default function MyWorks() {
     try {
       await deleteStorybook(id);
       alert("✅ 동화책이 삭제되었습니다.");
+      loadData();
+    } catch (error) {
+      console.error("삭제 오류:", error);
+      alert("삭제 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleDeleteStory = async (id: number) => {
+    if (!confirm("이 글을 삭제하시겠습니까?")) return;
+
+    try {
+      await deleteStory(id);
+      alert("✅ 글이 삭제되었습니다.");
       loadData();
     } catch (error) {
       console.error("삭제 오류:", error);
@@ -97,6 +113,16 @@ export default function MyWorks() {
           onClick={() => setActiveTab("storybooks")}
         >
           📕 동화책 ({storybooks.length})
+        </button>
+        <button
+          className={`flex-1 py-3 rounded-xl text-[18px] font-semibold transition ${
+            activeTab === "stories"
+              ? "bg-green-500 text-white"
+              : "bg-gray-200 text-gray-700"
+          }`}
+          onClick={() => setActiveTab("stories")}
+        >
+          📝 글쓰기 ({stories.length})
         </button>
         <button
           className={`flex-1 py-3 rounded-xl text-[18px] font-semibold transition ${
@@ -203,6 +229,79 @@ export default function MyWorks() {
                     <button
                       className="px-4 py-2 bg-red-500 text-white rounded-lg text-[16px] font-semibold"
                       onClick={() => book.id && handleDeleteStorybook(book.id)}
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 글쓰기 탭 */}
+      {activeTab === "stories" && (
+        <div>
+          {stories.length === 0 ? (
+            <div className="text-center mt-10">
+              <p className="text-[20px] text-gray-600 mb-6">
+                저장된 글이 없습니다.
+              </p>
+              <button
+                className="px-6 py-3 bg-green-500 text-white rounded-xl text-[18px] font-semibold"
+                onClick={() => navigate("/write")}
+              >
+                글쓰기 시작하기
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
+              {stories.map((story) => (
+                <div
+                  key={story.id}
+                  className="border rounded-xl p-4 bg-white shadow hover:shadow-lg transition"
+                >
+                  {/* 제목 */}
+                  <h3 className="text-[20px] font-bold mb-2">{story.title}</h3>
+
+                  {/* 내용 미리보기 */}
+                  <p className="text-[16px] text-gray-700 mb-3 line-clamp-3">
+                    {story.content}
+                  </p>
+
+                  {/* 메타 정보 */}
+                  <div className="text-[14px] text-gray-500 mb-3">
+                    <p>글자 수: {story.content.length}자</p>
+                    <p>
+                      작성일:{" "}
+                      {new Date(story.createdAt).toLocaleString("ko-KR", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </p>
+                  </div>
+
+                  {/* 액션 버튼 */}
+                  <div className="flex gap-2">
+                    <button
+                      className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg text-[16px] font-semibold"
+                      onClick={() =>
+                        navigate("/write/editor", {
+                          state: {
+                            title: story.title,
+                            initialContent: story.content,
+                          },
+                        })
+                      }
+                    >
+                      ✏️ 수정하기
+                    </button>
+
+                    <button
+                      className="px-4 py-2 bg-red-500 text-white rounded-lg text-[16px] font-semibold"
+                      onClick={() => story.id && handleDeleteStory(story.id)}
                     >
                       🗑️
                     </button>

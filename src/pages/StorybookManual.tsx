@@ -276,7 +276,7 @@ export default function StorybookManual() {
               </div>
             ) : (
               <div className="ai-modal-content">
-                <p className="ai-modal-desc">마음에 드는 줄거리를 선택하면 자동으로 입력됩니다</p>
+                <p className="ai-modal-desc">3개의 줄거리 중 마음에 드는 것을 선택하면 자동으로 입력됩니다</p>
                 {aiSuggestions.map((suggestion, idx) => (
                   <button
                     key={idx}

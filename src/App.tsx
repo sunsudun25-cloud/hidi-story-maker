@@ -59,9 +59,7 @@ function AppContent() {
           <Route path="/home" element={<Home />} />
           
           {/* 📚 동화책 */}
-          <Route path="/storybook" element={<Storybook />} />
-          <Route path="/storybook-manual" element={<StorybookManual />} />
-          <Route path="/storybook-ai-suggestion" element={<StorybookAISuggestion />} />
+          <Route path="/storybook" element={<StorybookManual />} />
           <Route path="/storybook-editor" element={<StorybookEditor />} />
           <Route path="/storybook-export" element={<StorybookExport />} />
           {/* 🎨 그림 */}

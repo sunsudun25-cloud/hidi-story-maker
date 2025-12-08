@@ -48,6 +48,8 @@ export default function StorybookEditor() {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false); // 삽화 생성
   const [isAiHelping, setIsAiHelping] = useState(false);             // AI 도움받기
   const [showPdfModal, setShowPdfModal] = useState(false);
+  const [showPageExtensionModal, setShowPageExtensionModal] = useState(false); // 페이지 확장 모달
+  const [isAutoGeneratingImages, setIsAutoGeneratingImages] = useState(false); // 전체 이미지 자동 생성
   const [pdfOptions, setPdfOptions] = useState({
     author: "익명",
     layout: "vertical" as "vertical" | "horizontal",
@@ -142,6 +144,30 @@ export default function StorybookEditor() {
     }
   };
 
+  // 🆕 빈 페이지 추가 (직접 쓰기용)
+  const handleAddBlankPage = () => {
+    addNewPage("");
+    setCurrentPage(storyPages.length + 1);
+    alert("✨ 새로운 빈 페이지가 추가되었습니다!");
+  };
+
+  // 🆕 페이지 확장 모달 표시 (3페이지 이후)
+  const handleShowExtensionModal = () => {
+    setShowPageExtensionModal(true);
+  };
+
+  // 🆕 AI가 이어서 쓰기 선택
+  const handleContinueWithAI = async () => {
+    setShowPageExtensionModal(false);
+    await handleAutoGenerate();
+  };
+
+  // 🆕 직접 쓰기 선택
+  const handleWriteManually = () => {
+    setShowPageExtensionModal(false);
+    handleAddBlankPage();
+  };
+
   // 🤖 현재 페이지에 대해 AI에게 도움받기
   const handleAiAssist = async () => {
     const pageIndex = currentPage - 1;
@@ -222,8 +248,88 @@ ${current.text}
     }
   };
 
-  // 💾 저장
+  // 🆕 모든 페이지 삽화 자동 생성
+  const handleAutoGenerateAllImages = async () => {
+    const emptyPages = storyPages.filter(p => !p.imageUrl && p.text.trim());
+    
+    if (emptyPages.length === 0) {
+      alert("모든 페이지에 이미 이미지가 있거나, 내용이 비어있습니다!");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `${emptyPages.length}개 페이지의 삽화를 자동 생성하시겠습니까?\n\n` +
+      `예상 소요 시간: 약 ${emptyPages.length * 30}초\n` +
+      `(각 이미지당 약 30초 소요)`
+    );
+
+    if (!confirmed) return;
+
+    setIsAutoGeneratingImages(true);
+    
+    try {
+      let successCount = 0;
+      
+      for (let i = 0; i < storyPages.length; i++) {
+        const page = storyPages[i];
+        
+        // 이미 이미지가 있거나 내용이 없으면 건너뛰기
+        if (page.imageUrl || !page.text.trim()) {
+          continue;
+        }
+
+        try {
+          console.log(`🎨 페이지 ${i + 1} 이미지 생성 중...`);
+          
+          const imgPrompt = `
+동화책 장면에 어울리는 일러스트를 생성해주세요.
+스타일: ${style || "동화 스타일"}
+분위기: 따뜻하고 부드러운 느낌, 어린이가 좋아하는 그림체
+장면 설명:
+${page.text}
+
+조건:
+- 그림 안에 글자나 텍스트는 넣지 마세요.
+- 표지 느낌이 아니라 본문 삽화 느낌으로 그려주세요.
+`;
+
+          const imageDataUrl = await generateImageViaFirebase(imgPrompt, style);
+          setImageForPage(i, imageDataUrl);
+          successCount++;
+          
+          console.log(`✅ 페이지 ${i + 1} 이미지 생성 완료 (${successCount}/${emptyPages.length})`);
+          
+        } catch (err) {
+          console.error(`❌ 페이지 ${i + 1} 이미지 생성 실패:`, err);
+        }
+      }
+
+      alert(
+        `🎨 삽화 자동 생성 완료!\n\n` +
+        `성공: ${successCount}개\n` +
+        `실패: ${emptyPages.length - successCount}개`
+      );
+      
+    } catch (err) {
+      console.error("전체 이미지 생성 오류:", err);
+      alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsAutoGeneratingImages(false);
+    }
+  };
+
+  // 💾 저장 (최소 10페이지 검증)
   const handleSave = async () => {
+    // 최소 10페이지 검증
+    if (storyPages.length < 10) {
+      alert(
+        `⚠️ 동화책은 최소 10페이지 이상이어야 저장할 수 있습니다!\n\n` +
+        `현재 페이지: ${storyPages.length}페이지\n` +
+        `필요한 페이지: ${10 - storyPages.length}페이지 더 추가하세요.`
+      );
+      return;
+    }
+
     try {
       const storybookId = await saveStorybook({
         title,
@@ -243,8 +349,18 @@ ${current.text}
     }
   };
 
-  // 📕 간단 PDF
+  // 📕 간단 PDF (최소 10페이지 검증)
   const handleSaveAsPDF = async () => {
+    // 최소 10페이지 검증
+    if (storyPages.length < 10) {
+      alert(
+        `⚠️ PDF는 최소 10페이지 이상이어야 생성할 수 있습니다!\n\n` +
+        `현재 페이지: ${storyPages.length}페이지\n` +
+        `필요한 페이지: ${10 - storyPages.length}페이지 더 추가하세요.`
+      );
+      return;
+    }
+
     try {
       const date = new Date().toISOString().split("T")[0];
       const filename = `${title}_${date}.pdf`;
@@ -264,8 +380,19 @@ ${current.text}
     }
   };
 
-  // ✨ 고급 PDF
+  // ✨ 고급 PDF (최소 10페이지 검증)
   const handleEnhancedPDF = async () => {
+    // 최소 10페이지 검증
+    if (storyPages.length < 10) {
+      alert(
+        `⚠️ PDF는 최소 10페이지 이상이어야 생성할 수 있습니다!\n\n` +
+        `현재 페이지: ${storyPages.length}페이지\n` +
+        `필요한 페이지: ${10 - storyPages.length}페이지 더 추가하세요.`
+      );
+      setShowPdfModal(false);
+      return;
+    }
+
     try {
       await exportEnhancedPDF({
         pages: storyPages.map((p) => ({
@@ -373,30 +500,95 @@ ${current.text}
         </button>
       </div>
 
+      {/* 🆕 페이지 확장 가이드 (10페이지 미만 시) */}
+      {storyPages.length < 10 && (
+        <div
+          style={{
+            padding: "15px",
+            margin: "20px 0",
+            backgroundColor: "#FFF3CD",
+            border: "2px solid #FFC107",
+            borderRadius: "8px",
+            textAlign: "center",
+          }}
+        >
+          <p style={{ fontSize: "16px", fontWeight: "bold", marginBottom: "10px" }}>
+            ⚠️ 동화책은 최소 10페이지 이상이어야 저장/PDF 생성이 가능합니다!
+          </p>
+          <p style={{ fontSize: "14px", color: "#666" }}>
+            현재: {storyPages.length}페이지 / 최소: 10페이지
+            <br />
+            (필요: {10 - storyPages.length}페이지 더 추가)
+          </p>
+        </div>
+      )}
+
       {/* 아래 액션 버튼들 */}
       <div className="bottom-actions">
+        {/* 🆕 3페이지 이상일 때만 페이지 확장 모달 표시 */}
+        {storyPages.length >= 3 ? (
+          <button
+            className="secondary-btn"
+            onClick={handleShowExtensionModal}
+            disabled={isGenerating}
+            style={{ backgroundColor: "#4CAF50" }}
+          >
+            {isGenerating ? "⏳ 생성 중..." : "➕ 페이지 추가하기"}
+          </button>
+        ) : (
+          <button
+            className="secondary-btn"
+            onClick={handleAutoGenerate}
+            disabled={isGenerating}
+          >
+            {isGenerating ? "⏳ 생성 중..." : "➕ 다음 페이지 자동생성"}
+          </button>
+        )}
+
+        {/* 🆕 전체 삽화 자동 생성 */}
         <button
           className="secondary-btn"
-          onClick={handleAutoGenerate}
-          disabled={isGenerating}
+          onClick={handleAutoGenerateAllImages}
+          disabled={isAutoGeneratingImages || isGeneratingImage}
+          style={{ backgroundColor: "#FF9800" }}
         >
-          {isGenerating ? "⏳ 생성 중..." : "➕ 다음 페이지 자동생성"}
+          {isAutoGeneratingImages ? "⏳ 생성 중..." : "🎨 모든 삽화 자동생성"}
         </button>
 
-        <button className="pdf-btn" onClick={handleSaveAsPDF}>
+        <button
+          className="pdf-btn"
+          onClick={handleSaveAsPDF}
+          disabled={storyPages.length < 10}
+          style={{
+            backgroundColor: storyPages.length < 10 ? "#ccc" : undefined,
+            cursor: storyPages.length < 10 ? "not-allowed" : "pointer",
+          }}
+        >
           📕 빠른 PDF
         </button>
 
         <button
           className="pdf-btn"
-          style={{ backgroundColor: "#8B5CF6" }}
+          style={{
+            backgroundColor: storyPages.length < 10 ? "#ccc" : "#8B5CF6",
+            cursor: storyPages.length < 10 ? "not-allowed" : "pointer",
+          }}
           onClick={() => setShowPdfModal(true)}
+          disabled={storyPages.length < 10}
         >
           ✨ 고급 PDF
         </button>
 
-        <button className="primary-btn" onClick={handleSave}>
-          💾 저장하기
+        <button
+          className="primary-btn"
+          onClick={handleSave}
+          disabled={storyPages.length < 10}
+          style={{
+            backgroundColor: storyPages.length < 10 ? "#ccc" : undefined,
+            cursor: storyPages.length < 10 ? "not-allowed" : "pointer",
+          }}
+        >
+          💾 저장하기 {storyPages.length < 10 && `(${storyPages.length}/10)`}
         </button>
       </div>
 
@@ -415,6 +607,82 @@ ${current.text}
       >
         📘 PDF 만들기 설정 페이지로 이동
       </button>
+
+      {/* 🆕 페이지 확장 모달 */}
+      {showPageExtensionModal && (
+        <div className="modal-overlay" onClick={() => setShowPageExtensionModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ marginBottom: "20px", fontSize: "22px", fontWeight: "bold", textAlign: "center" }}>
+              ➕ 페이지를 어떻게 추가하시겠어요?
+            </h3>
+
+            <p style={{ textAlign: "center", color: "#666", marginBottom: "30px" }}>
+              현재 {storyPages.length}페이지
+              {storyPages.length < 10 && ` / 최소 10페이지 필요 (${10 - storyPages.length}페이지 더 필요)`}
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+              {/* AI가 이어서 쓰기 */}
+              <button
+                onClick={handleContinueWithAI}
+                disabled={isGenerating}
+                style={{
+                  padding: "20px",
+                  backgroundColor: "#4CAF50",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  cursor: isGenerating ? "not-allowed" : "pointer",
+                  opacity: isGenerating ? 0.6 : 1,
+                }}
+              >
+                🤖 AI가 이어서 쓰기
+                <div style={{ fontSize: "14px", fontWeight: "normal", marginTop: "8px" }}>
+                  AI가 자동으로 다음 페이지 내용을 생성합니다
+                </div>
+              </button>
+
+              {/* 직접 쓰기 */}
+              <button
+                onClick={handleWriteManually}
+                style={{
+                  padding: "20px",
+                  backgroundColor: "#2196F3",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                ✍️ 내가 직접 쓰기
+                <div style={{ fontSize: "14px", fontWeight: "normal", marginTop: "8px" }}>
+                  빈 페이지를 추가하여 직접 내용을 입력합니다
+                </div>
+              </button>
+
+              {/* 취소 */}
+              <button
+                onClick={() => setShowPageExtensionModal(false)}
+                style={{
+                  padding: "12px",
+                  backgroundColor: "#ddd",
+                  color: "#333",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                }}
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* PDF 설정 모달 */}
       {showPdfModal && (

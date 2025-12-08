@@ -1,63 +1,53 @@
-/* ================================
-   🟡 전체 앱 공통 배경 통일
-================================ */
-html, body, #root {
-  background: #F7F3EB !important;
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-}
+@import "../styles/theme.css";
 
-/* Layout 전체 */
-.layout-container {
+/* 전체 레이아웃 뼈대 */
+.layout-root {
   min-height: 100vh;
-  background: #F7F3EB !important;
+  background: var(--bg-app);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  color: var(--text-main);
 }
 
-/* 본문 컨테이너 */
 .layout-inner {
   flex: 1;
   width: 100%;
   max-width: 860px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 16px 32px;
 }
 
-/* ================================
-   🟡 공통 Footer (모든 페이지 공통)
-================================ */
+/* 공통 Footer */
 .layout-footer {
   text-align: center;
-  padding: 20px 0 32px;
-  background: transparent;
+  padding: 16px 0 28px;
 }
 
 .company-name {
-  font-size: 15px;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #444;
 }
 
 .company-slogan {
-  font-size: 13px;
+  font-size: 0.8rem;
   color: #777;
   margin-top: 4px;
 }
 
+/* 헤더 밑에 붙는 페이지 컨테이너 기본 간격 */
+.page-section {
+  margin-top: 24px;
+}
+
 /* ================================
-   🟡 헤더 아래 너무 붙는 문제 해결
-   (동화책, 글쓰기, 그림 등)
+   🟡 기존 호환성 클래스들 유지
 ================================ */
 .page-with-header {
   margin-top: 30px !important;
 }
 
-/* ================================
-   🟡 시니어 친화 버튼 스타일 통일
-================================ */
 .big-button {
   width: 100%;
   max-width: 480px;
@@ -84,19 +74,14 @@ html, body, #root {
   transform: translateY(-1px);
 }
 
-/* ================================
-   🟡 동화책 메뉴 버튼 간격 개선
-================================ */
 .storybook-menu-wrapper {
   margin-top: 40px;
 }
 
-/* ================================
-   🟡 페이지 컨테이너 (기존 호환성)
-================================ */
+/* 기존 page-container/page-content (호환성) */
 .page-container {
   min-height: 100vh;
-  background: #F7F3EB !important;
+  background: var(--bg-app);
   display: flex;
   flex-direction: column;
 }
@@ -110,9 +95,7 @@ html, body, #root {
   box-sizing: border-box;
 }
 
-/* ================================
-   🟡 고정 헤더 (Fixed Header)
-================================ */
+/* 고정 헤더 (CanvaHeader용) */
 .header-wrapper {
   position: fixed;
   top: 0;
@@ -130,4 +113,13 @@ html, body, #root {
 
 .header-wrapper ~ .page-content {
   margin-top: 80px;
+}
+
+/* layout-container (기존 호환) */
+.layout-container {
+  min-height: 100vh;
+  background: var(--bg-app);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }

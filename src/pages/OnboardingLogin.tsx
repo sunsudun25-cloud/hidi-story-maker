@@ -69,7 +69,10 @@ const OnboardingLogin: React.FC = () => {
 
         {/* 하단 브랜드 정보 */}
         <div className="onboarding-footer">
-          <p className="footer-text">HI-DI Edu AI Story Maker · 모두를 위한 AI 스토리</p>
+          <div style={{ fontSize: "18px", fontWeight: "bold", color: "#333", marginBottom: "6px" }}>
+            HI-DI Edu
+          </div>
+          <p className="footer-text">모든 세대를 잇는 AI 스토리 플랫폼</p>
         </div>
       </div>
       </div>

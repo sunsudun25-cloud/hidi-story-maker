@@ -90,10 +90,10 @@
 
 /* 비회원 버튼 (메인 강조) */
 .guest-btn {
-  height: 64px;
+  height: 60px;
   background: #3CB371;
   color: white;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
 }
 
@@ -140,11 +140,11 @@
 
 /* Google 버튼 */
 .google-btn {
-  height: 56px;
+  height: 60px;
   background: white;
   border: 2px solid #e0e0e0;
   color: #333;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .google-btn:hover {
@@ -154,10 +154,10 @@
 
 /* 카카오 버튼 */
 .kakao-btn {
-  height: 56px;
+  height: 60px;
   background: #FEE500;
   color: #000000;
-  font-size: 16px;
+  font-size: 18px;
   border: none;
 }
 
@@ -172,14 +172,18 @@
 /* 하단 정보 */
 .onboarding-footer {
   text-align: center;
-  padding-top: 8px;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  margin-top: 8px;
 }
 
 .footer-text {
   font-size: 14px;
-  color: #999;
+  color: #666;
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.6;
+  font-weight: 500;
 }
 
 /* 태블릿 */
@@ -221,15 +225,11 @@
     font-size: 15px;
   }
 
-  .guest-btn {
-    height: 60px;
-    font-size: 18px;
-  }
-
+  .guest-btn,
   .google-btn,
   .kakao-btn {
-    height: 54px;
-    font-size: 15px;
+    height: 56px;
+    font-size: 16px;
   }
 
   .footer-text {

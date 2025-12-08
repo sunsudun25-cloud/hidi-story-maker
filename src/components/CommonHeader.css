@@ -13,7 +13,10 @@
 
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 9999; /* 모든 콘텐츠 위에 표시 */
+  background: #dbe8ff;
+  backdrop-filter: blur(8px); /* 유리 효과 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .header-btn {

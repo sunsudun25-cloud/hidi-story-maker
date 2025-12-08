@@ -4,13 +4,15 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 9999; /* 모든 콘텐츠 위에 표시 */
   background: #dbe9ff;  /* 캔바 파스텔 헤더 */
+  backdrop-filter: blur(8px); /* 유리 효과 */
   padding: 18px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .header-title {

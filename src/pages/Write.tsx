@@ -17,11 +17,6 @@ export default function Write() {
   return (
     <div className="screen">
       <div className="write-container">
-        <h2 className="screen-title">글쓰기</h2>
-        <p className="screen-subtitle">
-          어떤 방법으로 글을 쓰시겠어요?
-        </p>
-
         <div className="write-options">
           {/* 옵션 1: 연습하기 */}
           <button className="write-option write-option-green" onClick={() => handleOptionSelect("practice")}>

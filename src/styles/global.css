@@ -76,6 +76,14 @@ body,
   box-sizing: border-box;
 }
 
+/* ===== 통일된 컨텐츠 래퍼 ===== */
+.content-wrapper {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+  box-sizing: border-box;
+}
+
 /* 공통 페이지 래퍼 – 모든 화면이 이 구조를 쓰게 */
 .screen {
   min-height: calc(100vh - 80px); /* footer 자리 제외 */

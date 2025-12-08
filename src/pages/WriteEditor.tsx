@@ -853,69 +853,6 @@ ${content}
         </div>
       </div>
 
-      {/* 팁 */}
-      <div style={{
-        padding: "20px",
-        backgroundColor: "#FFF3CD",
-        border: "2px solid #FFC107",
-        borderRadius: "8px",
-        marginBottom: "20px",
-        fontSize: "16px",
-        lineHeight: "1.8",
-      }}>
-        <div style={{ fontWeight: "bold", fontSize: "18px", marginBottom: "10px" }}>
-          💡 AI 도우미 사용법
-        </div>
-        
-        {genre ? (
-          // 장르별 도움말
-          <div>
-            <div style={{ marginBottom: "8px" }}>
-              <strong>🤖 기본 도우미</strong> 버튼을 눌러보세요:
-            </div>
-            <ul style={{ margin: "8px 0", paddingLeft: "20px" }}>
-              <li style={{ marginBottom: "6px" }}>
-                <strong>✨ 이어쓰기</strong> - 지금까지 쓴 내용에 이어서 AI가 자동으로 작성해드려요
-              </li>
-              <li style={{ marginBottom: "6px" }}>
-                <strong>✅ 문법 교정</strong> - 맞춤법, 띄어쓰기를 자동으로 고쳐드려요
-              </li>
-              <li style={{ marginBottom: "6px" }}>
-                <strong>💫 감정 강화</strong> - 표현을 더 풍부하고 감동적으로 만들어드려요
-              </li>
-              <li style={{ marginBottom: "6px" }}>
-                <strong>🎤 음성 입력</strong> - 말로 하면 자동으로 글로 써드려요
-              </li>
-            </ul>
-          </div>
-        ) : (
-          // 자유 글쓰기 도움말
-          <div>
-            <div style={{ marginBottom: "8px" }}>
-              <strong>🤖 기본 도우미</strong>와 <strong>✨ AI 보조작가</strong> 버튼을 활용하세요:
-            </div>
-            <div style={{ marginBottom: "12px" }}>
-              <strong>📌 기본 도우미:</strong>
-              <ul style={{ margin: "6px 0", paddingLeft: "20px" }}>
-                <li>✨ 이어쓰기 - 내용을 이어서 작성</li>
-                <li>✅ 문법 교정 - 맞춤법, 띄어쓰기 수정</li>
-                <li>💫 감정 강화 - 표현을 더 풍부하게</li>
-                <li>🎤 음성 입력 - 말로 글쓰기</li>
-              </ul>
-            </div>
-            <div>
-              <strong>📌 AI 보조작가 (고급):</strong>
-              <ul style={{ margin: "6px 0", paddingLeft: "20px" }}>
-                <li>📊 글 구성 제안 - 서론, 본론, 결론 짜드려요</li>
-                <li>✨ 문장 다듬기 - 문학적으로 세련되게 만들어요</li>
-                <li>📊 글 분석 - 어조, 감정, 개선점 알려드려요</li>
-                <li>📝 제목 추천 - 내용에 맞는 제목 3개 제안해요</li>
-              </ul>
-            </div>
-          </div>
-        )}
-      </div>
-
       {/* 저장 버튼 */}
       <div style={{ display: "flex", gap: "10px" }}>
         <button

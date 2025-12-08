@@ -1,3 +1,4 @@
+// src/pages/MyWorksHome.tsx
 import { useNavigate } from "react-router-dom";
 
 export default function MyWorksHome() {
@@ -5,55 +6,50 @@ export default function MyWorksHome() {
 
   return (
     <div className="screen">
-      <div className="screen-body p-6">
-        {/* 상단 헤더 */}
-        <div className="flex items-center gap-4 mb-6">
-          <button
-            className="text-[24px] font-bold text-gray-700 hover:text-gray-900"
-            onClick={() => navigate("/")}
-          >
-            ← 돌아가기
-          </button>
-        </div>
+      <div className="screen-body p-5">
 
-        <h1 className="text-center text-[26px] font-bold mb-8">📁 내 작품 관리</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          📂 내 작품 관리
+        </h1>
 
-        <div className="grid grid-cols-1 gap-6 max-w-md mx-auto">
-          {/* 이미지 */}
+        <div className="grid grid-cols-1 gap-4">
+
+          {/* 🎨 이미지 */}
           <button
-            className="flex items-center gap-4 p-6 bg-gradient-to-br from-pink-50 to-pink-100 border-2 border-pink-400 rounded-2xl text-left hover:shadow-lg hover:scale-[1.02] transition-all"
             onClick={() => navigate("/my-works/images")}
+            className="flex items-center gap-4 p-5 bg-white border-2 border-gray-200 rounded-2xl shadow hover:shadow-md transition-all"
           >
-            <div className="text-[48px]">🎨</div>
+            <span className="text-4xl">🎨</span>
             <div>
-              <div className="text-[22px] font-bold text-pink-800">이미지 모아보기</div>
-              <div className="text-[14px] text-pink-600">내가 만든 AI 이미지들</div>
+              <p className="text-xl font-bold">이미지</p>
+              <p className="text-gray-500 text-sm">AI로 만든 그림 보기</p>
             </div>
           </button>
 
-          {/* 글쓰기 */}
+          {/* 📝 글쓰기 */}
           <button
-            className="flex items-center gap-4 p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-400 rounded-2xl text-left hover:shadow-lg hover:scale-[1.02] transition-all"
             onClick={() => navigate("/my-works/stories")}
+            className="flex items-center gap-4 p-5 bg-white border-2 border-gray-200 rounded-2xl shadow hover:shadow-md transition-all"
           >
-            <div className="text-[48px]">📝</div>
+            <span className="text-4xl">📝</span>
             <div>
-              <div className="text-[22px] font-bold text-blue-800">글 모아보기</div>
-              <div className="text-[14px] text-blue-600">내가 쓴 글들</div>
+              <p className="text-xl font-bold">글쓰기</p>
+              <p className="text-gray-500 text-sm">작성한 글 보기</p>
             </div>
           </button>
 
-          {/* 동화책 */}
+          {/* 📕 동화책 */}
           <button
-            className="flex items-center gap-4 p-6 bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-400 rounded-2xl text-left hover:shadow-lg hover:scale-[1.02] transition-all"
             onClick={() => navigate("/my-works/storybooks")}
+            className="flex items-center gap-4 p-5 bg-white border-2 border-gray-200 rounded-2xl shadow hover:shadow-md transition-all"
           >
-            <div className="text-[48px]">📕</div>
+            <span className="text-4xl">📕</span>
             <div>
-              <div className="text-[22px] font-bold text-red-800">동화책 모아보기</div>
-              <div className="text-[14px] text-red-600">내가 만든 동화책들</div>
+              <p className="text-xl font-bold">동화책</p>
+              <p className="text-gray-500 text-sm">만든 동화책 보기</p>
             </div>
           </button>
+
         </div>
       </div>
     </div>

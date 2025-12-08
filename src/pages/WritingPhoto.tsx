@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Layout from "../components/Layout";
 import Header from "../components/Header";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { safeGeminiCall } from "../services/geminiService";

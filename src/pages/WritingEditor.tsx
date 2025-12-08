@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import Layout from "../components/Layout";
 import Header from "../components/Header";
 import { useStory } from "../context/StoryContext";
 import { safeGeminiCall, generateContinuationSamples } from "../services/geminiService";

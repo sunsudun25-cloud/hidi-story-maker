@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import Layout from "../components/Layout";
 import Header from "../components/Header";
 import "./Home.css";
 
@@ -7,11 +6,10 @@ export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <Layout>
-      <div className="screen">
-        <Header title="무엇을 만들어볼까요?" />
+    <div className="screen">
+      <Header title="무엇을 만들어볼까요?" />
 
-        <div className="screen-body home-container">
+      <div className="screen-body home-container">
         <div className="home-grid-menu">
           {/* 첫 번째: 그림 */}
           <div className="home-menu-tile green" onClick={() => navigate("/drawing/start")}>
@@ -43,8 +41,7 @@ export default function Home() {
           <span className="big-tile-text">나만의 굿즈 만들기</span>
         </div>
 
-        </div>
       </div>
-    </Layout>
+    </div>
   );
 }

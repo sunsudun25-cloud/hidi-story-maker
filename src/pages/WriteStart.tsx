@@ -1,12 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import Layout from "../components/Layout";
 import Header from "../components/Header";
 
 export default function WriteStart() {
   const navigate = useNavigate();
 
   return (
-    <Layout>
+    
       <div className="screen">
         <Header title="✏️ 글쓰기" />
 
@@ -55,6 +54,6 @@ export default function WriteStart() {
 
         </div>
       </div>
-    </Layout>
+    
   );
 }

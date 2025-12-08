@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import Layout from "../components/Layout";
 import Header from "../components/Header";
 
 export default function WritingPractice() {

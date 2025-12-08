@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import Layout from "../components/Layout";
 import Header from "../components/Header";
 import "./DrawStart.css";
 
@@ -7,7 +6,7 @@ export default function DrawStart() {
   const navigate = useNavigate();
 
   return (
-    <Layout>
+    
       <div className="screen">
         <Header title="그림" />
 
@@ -43,6 +42,6 @@ export default function DrawStart() {
         </div>
         </div>
       </div>
-    </Layout>
+    
   );
 }

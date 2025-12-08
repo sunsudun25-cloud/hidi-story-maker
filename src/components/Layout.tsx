@@ -1,14 +1,12 @@
-import { ReactNode } from "react";
+import { Outlet } from "react-router-dom";
 import "./Layout.css";
 
-interface LayoutProps {
-  children?: ReactNode;
-}
-
-export default function Layout({ children }: LayoutProps) {
+export default function Layout() {
   return (
     <div className="page-container">
-      <main className="page-content">{children}</main>
+      <main className="page-content">
+        <Outlet />
+      </main>
 
       <footer className="layout-footer">
         <div className="company-name">HI-DI Edu</div>

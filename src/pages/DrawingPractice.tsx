@@ -1,6 +1,5 @@
 // src/pages/DrawingPractice.tsx
 import { useState } from "react";
-import Layout from "../components/Layout";
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
 import { generateImageViaFirebase } from "../services/firebaseFunctions";  // ⭐ Firebase Functions 프록시 사용

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Layout from "../components/Layout";
 import Header from "../components/Header";
 import { getAllStorybooks, deleteStorybook, getAllImages, deleteImage, getAllStories, deleteStory, type Storybook, type SavedImage, type Story } from "../services/dbService";
 
@@ -78,19 +77,19 @@ export default function MyWorks() {
 
   if (isLoading) {
     return (
-      <Layout>
+      
         <div className="screen">
           <Header title="내 작품" />
           <div className="screen-body">
             <p className="text-[18px] text-center text-gray-600">불러오는 중...</p>
           </div>
         </div>
-      </Layout>
+      
     );
   }
 
   return (
-    <Layout>
+    
       <div className="screen">
         <Header title="내 작품" />
         <div className="screen-body">
@@ -392,6 +391,6 @@ export default function MyWorks() {
 
         </div>
       </div>
-    </Layout>
+    
   );
 }

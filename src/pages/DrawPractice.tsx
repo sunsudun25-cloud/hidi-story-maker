@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { generateImageViaFirebase } from "../services/firebaseFunctions";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { friendlyErrorMessage } from "../utils/errorHandler";
-import Layout from "../components/Layout";
 import Header from "../components/Header";
 import "./DrawPractice.css";
 
@@ -156,7 +155,7 @@ export default function DrawPractice() {
   };
 
   return (
-    <Layout>
+    
       <div className="screen">
         <Header title="연습하기" />
         
@@ -244,6 +243,6 @@ export default function DrawPractice() {
       )}
         </div>
       </div>
-    </Layout>
+    
   );
 }

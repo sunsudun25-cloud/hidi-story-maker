@@ -1,12 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import Layout from "../../components/Layout";
 import Header from "../../components/Header";
 
 export default function Storybook() {
   const navigate = useNavigate();
 
   return (
-    <Layout>
+    
       <div className="screen">
         <Header title="📚 동화책 만들기" />
 
@@ -26,6 +25,6 @@ export default function Storybook() {
           </button>
         </div>
       </div>
-    </Layout>
+    
   );
 }

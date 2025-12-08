@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useStory } from "../context/StoryContext";
-import Layout from "../components/Layout";
 import Header from "../components/Header";
 import StoryCard from "../components/StoryCard";
 import { useState } from "react";
@@ -20,7 +19,7 @@ export default function Gallery() {
   });
 
   return (
-    <Layout>
+    
       <div className="screen">
         <Header title="내 작품 보기" />
         
@@ -66,6 +65,6 @@ export default function Gallery() {
       )}
         </div>
       </div>
-    </Layout>
+    
   );
 }

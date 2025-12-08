@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Layout from "../components/Layout";
 import Header from "../components/Header";
 import { generateImageViaFirebase } from "../services/firebaseFunctions";
 import { friendlyErrorMessage } from "../utils/errorHandler";
@@ -81,7 +80,7 @@ export default function DrawDirect() {
   };
 
   return (
-    <Layout>
+    
       <div className="screen">
         <Header title="직접 입력" />
         
@@ -180,6 +179,6 @@ export default function DrawDirect() {
       )}
         </div>
       </div>
-    </Layout>
+    
   );
 }

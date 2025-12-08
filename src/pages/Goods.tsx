@@ -1,9 +1,8 @@
-import Layout from "../components/Layout";
 import Header from "../components/Header";
 
 export default function Goods() {
   return (
-    <Layout>
+    
       <div className="screen">
         <Header title="나만의 굿즈 만들기" />
         
@@ -16,6 +15,6 @@ export default function Goods() {
           </div>
         </div>
       </div>
-    </Layout>
+    
   );
 }

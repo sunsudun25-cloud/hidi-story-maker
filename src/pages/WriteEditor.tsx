@@ -193,7 +193,7 @@ ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""
 
       const continuation = await safeGeminiCall(prompt);
       setContent(content + "\n" + continuation);
-      alert(`✨ AI가 이어준 내용:\n\n${continuation}\n\n마음에 들지 않으면 자유롭게 수정하세요.`);
+      alert("✨ AI가 이어쓴 내용이 추가되었습니다.\n\n마음에 들지 않으면 자유롭게 수정하세요.");
     } catch (error) {
       console.error("AI 이어쓰기 오류:", error);
       alert("이어쓰기 중 오류가 발생했습니다.");

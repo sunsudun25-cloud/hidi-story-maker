@@ -41,6 +41,7 @@ export default function DrawStart() {
           </button>
 
         </div>
+        </div>
       </div>
     </Layout>
   );

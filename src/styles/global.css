@@ -78,13 +78,102 @@ body {
   margin-bottom: 12px;
 }
 
-/* Page Title - 20px (페이지 본문 제목) */
+/* ========================================
+   📄 페이지 공통 스타일
+   ======================================== */
+
+/* 페이지 공통 여백 */
+.page-section {
+  padding: 0 16px;
+}
+
+/* 섹션 타이틀 */
 .page-title {
-  font-size: 20px;
-  font-weight: 600;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+/* 섹션 부제 */
+.page-subtitle {
+  text-align: center;
+  color: #555;
+  font-size: 15px;
+  margin-bottom: 28px;
+}
+
+/* 공통 메뉴 카드 */
+.menu-card {
+  width: 100%;
+  padding: 22px 16px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
   margin-bottom: 16px;
   text-align: center;
+  transition: 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.menu-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
+
+.menu-card .icon {
+  font-size: 42px;
+  margin-bottom: 8px;
+}
+
+.menu-card .label {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
   color: var(--text);
+}
+
+.menu-card .desc {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 카드 색상 테마 */
+.menu-card.sky {
+  background: #E3F2FF;
+}
+
+.menu-card.yellow {
+  background: #FFF2C6;
+}
+
+.menu-card.purple {
+  background: #F0E6FF;
+}
+
+.menu-card.green {
+  background: #DDFCE5;
+}
+
+/* 팁 박스 */
+.tip-box {
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.tip-box strong {
+  color: var(--text);
+}
+
+/* 여백 유틸리티 */
+.mt-4 {
+  margin-top: 16px;
 }
 
 /* 본문 텍스트 - 18px */

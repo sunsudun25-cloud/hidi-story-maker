@@ -4,38 +4,35 @@ import StorybookLayout from "../../components/storybook/StorybookLayout";
 export default function Storybook() {
   const navigate = useNavigate();
 
-  // AI 추천 페이지로 이동
-  const handleGoToAISuggestion = () => {
-    navigate("/storybook-ai-suggestion");
-  };
-
-  // 직접 입력 페이지로 이동
-  const handleGoToManualInput = () => {
-    navigate("/storybook-manual");
+  const btnStyle: React.CSSProperties = {
+    padding: "20px",
+    fontSize: "18px",
+    fontWeight: "700",
+    borderRadius: "12px",
+    border: "none",
+    cursor: "pointer",
+    backgroundColor: "#FFE9A8",
+    boxShadow: "0 3px 6px rgba(0,0,0,0.15)",
   };
 
   return (
     <StorybookLayout title="📚 동화책 만들기">
-      <div className="page-section">
-        <h2 className="page-title">동화책 만들기를 어떻게 시작할까요?</h2>
-
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        
         <button
-          className="menu-card sky"
-          onClick={handleGoToManualInput}
+          onClick={() => navigate("/storybook-manual")}
+          style={btnStyle}
         >
-          <div className="icon">✍️</div>
-          <div className="label">직접 입력하기</div>
-          <div className="desc">주인공과 스토리를 직접 설정</div>
+          ✍️ 직접 줄거리 입력하기
         </button>
 
         <button
-          className="menu-card purple"
-          onClick={handleGoToAISuggestion}
+          onClick={() => navigate("/storybook-ai-suggestion")}
+          style={btnStyle}
         >
-          <div className="icon">🎯</div>
-          <div className="label">AI에게 추천받기</div>
-          <div className="desc">AI가 준비한 재미있는 아이디어</div>
+          🤖 AI가 줄거리 추천하기
         </button>
+
       </div>
     </StorybookLayout>
   );

@@ -1,21 +1,16 @@
-/* 홈 컨테이너 */
 .home-container {
-  min-height: 100vh;
-  background: #f5f0e8;
-  padding-top: 120px; /* Header 여백 확보 */
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-bottom: 40px;
+  width: 100%;
+  max-width: 480px;
+  margin: 32px auto 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
 }
 
-/* 2x2 메뉴 그리드 */
+/* 기존 home-grid-menu, home-menu-tile 등은 색상만 변수 사용으로 맞춰주면 됩니다 */
 .home-grid-menu {
   width: 100%;
-  max-width: 460px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
@@ -24,7 +19,7 @@
 
 .home-menu-tile {
   aspect-ratio: 1;
-  border-radius: 24px;
+  border-radius: var(--card-radius);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -32,7 +27,7 @@
   gap: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--card-shadow);
 }
 
 .home-menu-tile:hover {
@@ -40,39 +35,41 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
+.home-menu-tile:active {
+  transform: translateY(0);
+}
+
 .home-menu-tile.green {
-  background: #C8F3DC; /* 🌈 그림 - 파스텔 민트 */
+  background: var(--brand-green);
 }
 
 .home-menu-tile.yellow {
-  background: #FFF2A8; /* 📝 글쓰기 - 파스텔 레몬 */
+  background: var(--brand-yellow);
 }
 
 .home-menu-tile.cyan {
-  background: #b3f0f0;
+  background: var(--brand-cyan);
 }
 
 .home-menu-tile.blue {
-  background: #c5e3f0;
+  background: var(--brand-blue);
 }
 
 .tile-icon {
-  font-size: 56px;
+  font-size: 48px;
   line-height: 1;
 }
 
 .tile-label {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-main);
 }
 
-/* 하단 큰 타일 */
 .home-big-tile {
   width: 100%;
-  max-width: 460px;
-  background: #e8d4f0;
-  border-radius: 24px;
+  background: var(--brand-purple);
+  border-radius: var(--card-radius);
   padding: 28px 24px;
   display: flex;
   align-items: center;
@@ -80,7 +77,7 @@
   gap: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--card-shadow);
 }
 
 .home-big-tile:hover {
@@ -88,68 +85,34 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
+.home-big-tile:active {
+  transform: translateY(0);
+}
+
 .big-tile-icon {
-  font-size: 36px;
+  font-size: 40px;
   line-height: 1;
 }
 
 .big-tile-text {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-main);
 }
 
-/* 태블릿 */
-@media (max-width: 768px) {
-  .home-title {
-    font-size: 26px;
-  }
-
-  .tile-icon {
-    font-size: 52px;
-  }
-
-  .tile-label {
-    font-size: 19px;
-  }
-
-  .big-tile-icon {
-    font-size: 34px;
-  }
-
-  .big-tile-text {
-    font-size: 21px;
-  }
-}
-
-/* 모바일 */
-@media (max-width: 480px) {
+/* 반응형 */
+@media (max-width: 640px) {
   .home-container {
-    padding: 16px;
-  }
-
-  .home-title-box {
-    padding: 28px 20px;
-  }
-
-  .home-title {
-    font-size: 24px;
-  }
-
-  .home-grid-menu {
-    gap: 12px;
+    margin: 24px auto 0;
+    gap: 16px;
   }
 
   .tile-icon {
-    font-size: 48px;
+    font-size: 40px;
   }
 
   .tile-label {
-    font-size: 18px;
-  }
-
-  .home-big-tile {
-    padding: 24px 20px;
+    font-size: 16px;
   }
 
   .big-tile-icon {
@@ -157,6 +120,6 @@
   }
 
   .big-tile-text {
-    font-size: 20px;
+    font-size: 18px;
   }
 }

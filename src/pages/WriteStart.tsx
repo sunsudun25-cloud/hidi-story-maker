@@ -1,12 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import AppHeader from "../components/AppHeader";
+import Layout from "../components/Layout";
+import Header from "../components/Header";
 
 export default function WriteStart() {
   const navigate = useNavigate();
 
   return (
-    <div className="page-with-header">
-      <AppHeader title="✏️ 글쓰기" tone="yellow" />
+    <Layout>
+      <div className="screen">
+        <Header title="✏️ 글쓰기" />
+
+        <div className="screen-body page-section">
 
       {/* 제목 + 부제목 */}
       <h2 className="page-title">어떤 방법으로 글을 쓰시겠어요?</h2>
@@ -49,6 +53,8 @@ export default function WriteStart() {
         💡 <strong>처음이신가요?</strong> "직접 입력하기"를 추천합니다!
       </div>
 
-    </div>
+        </div>
+      </div>
+    </Layout>
   );
 }

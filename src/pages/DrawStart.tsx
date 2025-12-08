@@ -1,15 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import AppHeader from "../components/AppHeader";
+import Layout from "../components/Layout";
+import Header from "../components/Header";
 import "./DrawStart.css";
 
 export default function DrawStart() {
   const navigate = useNavigate();
 
   return (
-    <div className="page-with-header">
-      <AppHeader title="그림" tone="green" />
+    <Layout>
+      <div className="screen">
+        <Header title="그림" />
 
-      <div className="draw-page-container">
+        <div className="screen-body">
         <p className="draw-start-subtitle">
           어떤 방식으로 그림을 만드시겠어요?
         </p>
@@ -40,6 +42,6 @@ export default function DrawStart() {
 
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }

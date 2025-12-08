@@ -1,16 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import CanvaHeader from "../components/CanvaHeader";
+import Layout from "../components/Layout";
+import Header from "../components/Header";
 import "./Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <>
-      {/* 홈 전용 파스텔 파랑 헤더 */}
-      <CanvaHeader title="무엇을 만들어볼까요?" color="var(--canva-blue)" />
+    <Layout>
+      <div className="screen">
+        <Header title="무엇을 만들어볼까요?" />
 
-      <div className="home-container">
+        <div className="screen-body home-container">
         <div className="home-grid-menu">
           {/* 첫 번째: 그림 */}
           <div className="home-menu-tile green" onClick={() => navigate("/drawing/start")}>
@@ -42,8 +43,8 @@ export default function Home() {
           <span className="big-tile-text">나만의 굿즈 만들기</span>
         </div>
 
-        {/* 하단 메뉴와 회사 정보는 Layout에서 공통 처리 */}
+        </div>
       </div>
-    </>
+    </Layout>
   );
 }

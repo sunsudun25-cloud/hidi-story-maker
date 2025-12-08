@@ -1,114 +1,37 @@
-@import "../styles/theme.css";
-
-/* 전체 레이아웃 뼈대 */
-.layout-root {
-  min-height: 100vh;
-  background: var(--bg-app);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  color: var(--text-main);
-}
-
-.layout-inner {
-  flex: 1;
-  width: 100%;
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 20px 16px 32px;
-}
-
-/* 공통 Footer */
-.layout-footer {
-  width: 100%;
-  padding: 24px 0;
-  text-align: center;
-  color: #666;
-  font-size: 14px;
-  line-height: 1.6;
-  border-top: 1px solid #e0e0e0;
-  background: #ffffff;
-}
-
-/* 헤더 밑에 붙는 페이지 컨테이너 기본 간격 */
-.page-section {
-  margin-top: 24px;
-}
-
-/* ================================
-   🟡 기존 호환성 클래스들 유지
-================================ */
-.page-with-header {
-  margin-top: 30px !important;
-}
-
-.big-button {
-  width: 100%;
-  max-width: 480px;
-  padding: 20px;
-  border-radius: 20px;
-  background: #FFE9A8;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  text-align: center;
-  font-size: 18px;
-  font-weight: 600;
-  margin: 14px auto;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  display: block;
-}
-
-.big-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
-}
-
-.big-button:active {
-  transform: translateY(-1px);
-}
-
-.storybook-menu-wrapper {
-  margin-top: 40px;
-}
-
-/* 메인 레이아웃 컨테이너 */
 .page-container {
   min-height: 100vh;
+  background-color: var(--bg-main);
   display: flex;
   flex-direction: column;
 }
 
 .page-content {
   flex: 1;
-  padding-bottom: 80px; /* footer 공간 확보 */
+  display: flex;
+  justify-content: center;
+  /* 헤더와 같은 폭으로 중앙 정렬 */
 }
 
-/* 고정 헤더 (CanvaHeader용) */
-.header-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
+.page-content > * {
+  /* 각 페이지에서 .screen을 쓰면 그대로 들어감 */
   width: 100%;
-  height: 80px;
-  background: var(--header-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  z-index: 999;
-  box-sizing: border-box;
 }
 
-.header-wrapper ~ .page-content {
-  margin-top: 80px;
+/* 공통 푸터 */
+.layout-footer {
+  padding: 12px 16px 18px;
+  text-align: center;
+  font-size: 12px;
+  color: #777;
+  background-color: transparent;
 }
 
-/* layout-container (기존 호환) */
-.layout-container {
-  min-height: 100vh;
-  background: var(--bg-app);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.company-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.company-slogan {
+  font-size: 11px;
+  color: #999;
 }

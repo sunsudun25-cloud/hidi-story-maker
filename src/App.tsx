@@ -26,6 +26,7 @@ import Storybook from './pages/Storybook'
 import StorybookManual from './pages/StorybookManual'
 import StorybookAISuggestion from './pages/StorybookAISuggestion'
 import StorybookEditor from './pages/StorybookEditor'
+import StorybookEditorModify from './pages/StorybookEditorModify'
 import StorybookExport from './pages/StorybookExport'
 import MyWorks from './pages/MyWorks'
 import Goods from './pages/Goods'
@@ -61,6 +62,7 @@ function AppContent() {
           {/* 📚 동화책 */}
           <Route path="/storybook" element={<StorybookManual />} />
           <Route path="/storybook-editor" element={<StorybookEditor />} />
+          <Route path="/storybook-editor-modify" element={<StorybookEditorModify />} />
           <Route path="/storybook-export" element={<StorybookExport />} />
           {/* 🎨 그림 */}
           <Route path="/drawing/start" element={<DrawStart />} />

@@ -186,7 +186,7 @@ export default function MyWorks() {
                     <button
                       className="flex-1 px-4 py-2 bg-purple-500 text-white rounded-lg text-[16px] font-semibold"
                       onClick={() =>
-                        navigate("/storybook-editor", {
+                        navigate("/storybook-editor-modify", {
                           state: {
                             title: book.title,
                             prompt: book.prompt,

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Layout from "../components/Layout";
 import { getAllStorybooks, deleteStorybook, getAllImages, deleteImage, getAllStories, deleteStory, type Storybook, type SavedImage, type Story } from "../services/dbService";
 
 type TabType = "storybooks" | "stories" | "images";
@@ -387,5 +386,11 @@ export default function MyWorks() {
 
     </div>
     </Layout>
+  );
+}
+
+      )}
+
+    </div>
   );
 }

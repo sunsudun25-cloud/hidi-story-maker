@@ -51,13 +51,17 @@ function App() {
         <Route path="/storybook-editor" element={<StorybookEditor />} />
         <Route path="/storybook-export" element={<StorybookExport />} />
 
-        {/* 나머지 페이지는 Layout으로 감싸기 */}
-        <Route element={<Layout />}>
+        {/* 🎨 그림 관련 페이지 */}
+        <Route element={<Layout title="🎨 그림" color="#C8F3DC" />}>
           <Route path="/drawing/start" element={<DrawStart />} />
           <Route path="/drawing/practice" element={<DrawPractice />} />
           <Route path="/drawing/direct" element={<DrawDirect />} />
           <Route path="/drawing/result" element={<DrawingResult />} />
           <Route path="/direct-input" element={<DirectInput />} />
+        </Route>
+
+        {/* ✏️ 글쓰기 관련 페이지 */}
+        <Route element={<Layout title="✏️ 글쓰기" color="#FFF2A8" />}>
           <Route path="/write" element={<Write />} />
           <Route path="/write/practice" element={<WritingPracticeNew />} />
           <Route path="/write/editor" element={<WriteEditor />} />
@@ -70,13 +74,29 @@ function App() {
           <Route path="/writing/help" element={<WritingHelp />} />
           <Route path="/writing/editor" element={<WritingEditor />} />
           <Route path="/writing/detail" element={<WritingDetail />} />
-          <Route path="/export" element={<StorybookExport />} />
+        </Route>
+
+        {/* 📚 동화책 관련 페이지 (헤더 필요한 것들만) */}
+        <Route element={<Layout title="📚 동화책" color="#D8E9FF" />}>
+          <Route path="/storybook" element={<Storybook />} />
+        </Route>
+
+        {/* 🏆 내 작품 */}
+        <Route element={<Layout title="🏆 내 작품" color="#FFE1D1" />}>
+          <Route path="/my-works" element={<MyWorks />} />
+        </Route>
+
+        {/* 🎁 나만의 굿즈 */}
+        <Route element={<Layout title="🎁 나만의 굿즈" color="#EAD8FF" />}>
+          <Route path="/goods" element={<Goods />} />
+        </Route>
+
+        {/* 기타 페이지 (헤더 없음) */}
+        <Route element={<Layout />}>
           <Route path="/image/practice" element={<ImageMakePractice />} />
           <Route path="/image/custom" element={<ImageMakeCustom />} />
           <Route path="/image/result" element={<ImageMakeResult />} />
           <Route path="/gallery" element={<Gallery />} />
-          <Route path="/my-works" element={<MyWorks />} />
-          <Route path="/goods" element={<Goods />} />
           <Route path="/result" element={<Result />} />
           <Route path="/test-buttons" element={<TestButtons />} />
         </Route>

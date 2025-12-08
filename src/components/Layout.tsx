@@ -1,23 +1,22 @@
-import { ReactNode } from "react";
+import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import "./Layout.css";
 
 interface LayoutProps {
-  children: ReactNode;
-  title: string;
+  title?: string;
   color?: string;
 }
 
-export default function Layout({ children, title, color }: LayoutProps) {
+export default function Layout({ title, color }: LayoutProps) {
   return (
     <div className="layout-wrapper">
       
-      {/* 모든 페이지 공통 Header */}
-      <Header title={title} color={color} />
+      {/* 페이지별 헤더 (값이 있을 때만 렌더) */}
+      {title && <Header title={title} color={color} />}
 
-      {/* 본문 */}
+      {/* 실제 페이지 내용이 렌더되는 위치 */}
       <div className="layout-inner">
-        {children}
+        <Outlet />
       </div>
 
       {/* 공통 푸터 */}

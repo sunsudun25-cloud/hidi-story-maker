@@ -10,8 +10,8 @@ export default function Write() {
     
     // 각 옵션별로 다른 state를 전달하여 WriteEditor로 이동
     if (option === "practice") {
-      // 연습하기: AI 주제 제안 모드
-      navigate("/write/editor", { state: { mode: "practice" } });
+      // 연습하기: 연습 화면으로 이동
+      navigate("/write/practice");
     } else if (option === "select") {
       // 선택하기: 카테고리 선택 모드
       navigate("/write/editor", { state: { mode: "select" } });

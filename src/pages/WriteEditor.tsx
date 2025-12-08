@@ -6,11 +6,11 @@ import { saveStory, getAllStories, type Story } from "../services/dbService";
 export default function WriteEditor() {
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as { mode?: string } | undefined;
+  const state = location.state as { mode?: string; title?: string; initialContent?: string } | undefined;
   const mode = state?.mode || "free"; // practice, select, free
   
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState(state?.title || "");
+  const [content, setContent] = useState(state?.initialContent || "");
   const [savedStories, setSavedStories] = useState<Story[]>([]);
   
   // AI 도우미 상태

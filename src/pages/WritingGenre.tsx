@@ -58,15 +58,26 @@ export default function WritingGenre() {
           {genres.map((g) => (
             <button
               key={g.key}
-              onClick={() =>
-                navigate("/write/editor", { 
-                  state: { 
-                    genre: g.key, 
-                    genreLabel: g.label,
-                    genreGuide: g.guide 
-                  } 
-                })
-              }
+              onClick={() => {
+                // 시와 소설은 질문 페이지로, 나머지는 바로 편집기로
+                if (g.key === "poem" || g.key === "novel") {
+                  navigate("/writing/genre/questions", { 
+                    state: { 
+                      genre: g.key, 
+                      genreLabel: g.label,
+                      genreGuide: g.guide 
+                    } 
+                  });
+                } else {
+                  navigate("/write/editor", { 
+                    state: { 
+                      genre: g.key, 
+                      genreLabel: g.label,
+                      genreGuide: g.guide 
+                    } 
+                  });
+                }
+              }}
               className="
                 bg-white border-2 border-gray-300 rounded-xl
                 p-6 text-left shadow-sm

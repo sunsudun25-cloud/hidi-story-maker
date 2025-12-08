@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import { getHeaderColor } from "../styles/colors";
 import "./DrawStart.css";
 
 export default function DrawStart() {
@@ -8,7 +9,7 @@ export default function DrawStart() {
 
   return (
     <div className="page-container">
-      <Header title="그림 만들기" />
+      <Header title="그림 만들기" color={getHeaderColor("그림 만들기")} />
       <div className="draw-start-container">
         <p className="draw-start-subtitle">어떤 방식으로 시작하시겠어요?</p>
 

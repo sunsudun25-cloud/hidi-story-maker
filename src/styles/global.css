@@ -106,12 +106,6 @@ body {
   padding: 20px;
 }
 
-main, header, div, section {
-  max-width: 480px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
 /* ========================================
    노인 친화적 큰 텍스트 & 버튼
    ======================================== */

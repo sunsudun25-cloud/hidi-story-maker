@@ -2,31 +2,35 @@ import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   title: string;
+  color?: string;
 }
 
-export default function Header({ title }: HeaderProps) {
+export default function Header({ title, color = "#B5D7FF" }: HeaderProps) {
   const navigate = useNavigate();
 
   return (
-    <header className="w-full bg-[#B5D7FF] py-3 shadow-md rounded-b-2xl 
-                       flex items-center justify-between px-4 max-w-[480px] mx-auto">
+    <header 
+      className="w-full fixed top-0 left-0 z-50 py-4 shadow-md rounded-b-3xl 
+                 flex items-center justify-between px-5"
+      style={{ backgroundColor: color }}
+    >
       {/* Back */}
       <button
         onClick={() => navigate(-1)}
-        className="w-10 h-10 bg-white rounded-full flex items-center
-                   justify-center shadow text-lg"
+        className="w-12 h-12 bg-white rounded-full flex items-center
+                   justify-center shadow text-2xl font-bold"
       >
         ←
       </button>
 
       {/* Title */}
-      <h1 className="text-lg font-bold text-gray-800">{title}</h1>
+      <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
 
       {/* Home */}
       <button
         onClick={() => navigate("/home")}
-        className="w-10 h-10 bg-white rounded-full flex items-center 
-                   justify-center shadow text-xl"
+        className="w-12 h-12 bg-white rounded-full flex items-center 
+                   justify-center shadow text-2xl"
       >
         🏠
       </button>

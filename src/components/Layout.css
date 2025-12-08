@@ -11,7 +11,7 @@
 .layout-inner {
   width: 100%;
   max-width: 600px; /* 모바일 앱 너비 기준 */
-  padding: 0 16px; /* 모바일 여백 */
+  padding: 100px 16px 16px 16px; /* 헤더 높이만큼 상단 여백 확보 */
 }
 
 /* 데스크탑 넓은 화면에서도 중앙에 고정 */

@@ -1,16 +1,19 @@
-/* ===== 전체 앱 공통 레이아웃 ===== */
+/* ===== 전체 앱 공통 레이아웃 (중앙 520px 고정) ===== */
 .layout-wrapper {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;   /* ⭐ 가운데 정렬 */
   background: #f8f5ef; 
 }
 
 /* 페이지 본문 — 헤더 공간 확보 필수 */
 .layout-content {
   flex: 1;
-  padding: 20px;
-  padding-top: 100px;  /* ⭐ 헤더 침범 방지 핵심 */
+  width: 100%;
+  max-width: 520px;      /* ⭐ 앱 전체가 520px 기준 */
+  padding: 90px 20px 20px 20px;  /* ⭐ 헤더 높이 보정 (90px) */
+  box-sizing: border-box;
 }
 
 /* 공통 푸터 */

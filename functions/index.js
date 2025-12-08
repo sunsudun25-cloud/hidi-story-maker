@@ -43,21 +43,19 @@ exports.generateImage = onRequest(
       try {
         logger.info('🚀 [generateImage] 함수 호출됨');
         
-        // 🔑 OpenAI API 키 불러오기 (2가지 방법 지원)
-        const OPENAI_API_KEY = 
-          process.env.OPENAI_API_KEY ||              // 로컬 .env (에뮬레이터)
-          functions.config().openai?.key;            // 배포 환경 (실서버)
+        // 🔑 OpenAI API 키 불러오기 (환경 변수 사용)
+        const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
         
         if (!OPENAI_API_KEY) {
           logger.error('❌ OPENAI_API_KEY가 설정되지 않았습니다!');
-          logger.error('💡 해결 방법: firebase functions:config:set openai.key="YOUR_KEY"');
+          logger.error('💡 해결 방법: functions/.env 파일에 OPENAI_API_KEY 설정 필요');
           return res.status(500).json({ 
             success: false, 
             error: 'API 키가 설정되지 않았습니다.' 
           });
         }
 
-        logger.info('✅ OpenAI API 키 확인됨 (출처:', process.env.OPENAI_API_KEY ? '.env' : 'Firebase Config', ')');
+        logger.info('✅ OpenAI API 키 확인됨');
 
         // OpenAI 클라이언트 초기화 (함수 내부에서!)
         const openai = new OpenAI({

@@ -26,14 +26,12 @@ const OnboardingLogin: React.FC = () => {
       <div className="onboarding-content">
         <div className="onboarding-header">
           <h1 className="onboarding-title">환영합니다!</h1>
-          <p className="onboarding-description">아래에서 시작 방식을 선택해 주세요.</p>
         </div>
 
         <div className="onboarding-buttons">
           {/* 비회원 버튼 (메인 강조) */}
           <button className="onboarding-btn guest-btn" onClick={handleGuestLogin}>
-            <span className="btn-icon">👤</span>
-            <span className="btn-text">비회원으로 시작하기</span>
+            <span className="btn-text">비회원로그인</span>
           </button>
 
           {/* 소셜 로그인 섹션 */}
@@ -52,7 +50,7 @@ const OnboardingLogin: React.FC = () => {
                   <path d="M10.2 3.97727C11.6136 3.97727 12.8727 4.48182 13.8636 5.42727L16.7545 2.53636C15.1682 1.05909 12.8955 0.136364 10.2 0.136364C6.27273 0.136364 2.81818 2.37727 1.18182 5.50909L4.56364 8.1C5.38182 5.73636 7.59545 3.97727 10.2 3.97727Z" fill="#EA4335"/>
                 </svg>
               </span>
-              <span className="btn-text">Google로 시작하기</span>
+              <span className="btn-text">Google로 로그인</span>
             </button>
 
             {/* 카카오 로그인 */}
@@ -62,7 +60,7 @@ const OnboardingLogin: React.FC = () => {
                   <path d="M10 0C4.477 0 0 3.667 0 8.182c0 2.91 1.929 5.458 4.828 6.91-.199.73-.67 2.521-.769 2.908-.12.466.171.46.36.334.143-.095 2.318-1.569 3.309-2.24C8.495 16.281 9.235 16.364 10 16.364c5.523 0 10-3.667 10-8.182S15.523 0 10 0z" fill="#000000"/>
                 </svg>
               </span>
-              <span className="btn-text">카카오로 시작하기</span>
+              <span className="btn-text">카카오로 로그인</span>
             </button>
           </div>
         </div>

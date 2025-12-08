@@ -43,7 +43,6 @@ function App() {
         {/* 헤더가 필요 없는 페이지 */}
         <Route path="/" element={<Welcome />} />
         <Route path="/onboarding" element={<OnboardingLogin />} />
-        <Route path="/home" element={<Home />} />
 
         {/* ⭐ 동화책 전용: Layout 없이 독립 (StorybookLayout 사용) */}
         <Route path="/storybook" element={<Storybook />} />
@@ -52,8 +51,10 @@ function App() {
         <Route path="/storybook-editor" element={<StorybookEditor />} />
         <Route path="/storybook-export" element={<StorybookExport />} />
 
-        {/* ⭐ 다른 모든 페이지는 Layout 포함 (CommonHeader 사용) */}
+        {/* ⭐ 다른 모든 페이지는 Layout 포함 (Header + Footer) */}
         <Route element={<Layout />}>
+          {/* 🏠 홈 */}
+          <Route path="/home" element={<Home />} />
           {/* 🎨 그림 */}
           <Route path="/drawing/start" element={<DrawStart />} />
           <Route path="/drawing/practice" element={<DrawPractice />} />

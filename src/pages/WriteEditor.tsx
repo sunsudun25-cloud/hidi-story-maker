@@ -514,7 +514,7 @@ ${content}
   };
 
   return (
-    <main style={{ padding: "20px", maxWidth: "900px", margin: "0 auto" }}>
+    <main style={{ padding: "10px 20px 20px", maxWidth: "900px", margin: "0 auto" }}>
       {/* 장르 가이드 (장르가 있을 경우만 표시) */}
       {genre && genreGuide && (
         <div style={{

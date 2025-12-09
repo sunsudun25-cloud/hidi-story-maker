@@ -11,7 +11,7 @@ export default function Goods() {
 
   return (
     <div className="screen">
-      <div className="screen-body p-5">
+      <div className="screen-body p-5" style={{ paddingBottom: "60px" }}>
         {/* 제목 영역 */}
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold mb-2">

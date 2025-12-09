@@ -7,7 +7,7 @@ export default function StorybookLayout({ title, children }: StorybookLayoutProp
   return (
     <div style={{ background: "#FAF8F2", minHeight: "100vh" }}>
       <main
-        className="max-w-[480px] md:max-w-[720px] mx-auto"
+        className="responsive-container"
         style={{
           padding: 20,
         }}

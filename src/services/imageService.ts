@@ -26,22 +26,20 @@ export async function generateStoryImage(
 텍스트나 워터마크는 포함하지 마세요.
 
 동화 내용:
-${text}
+${text.substring(0, 1000)}
 `;
 
     console.log("🎨 동화 이미지 생성 중:", prompt.substring(0, 100) + "...");
 
-    // Firebase Functions 프록시를 통해 DALL-E 3 호출
-    const response = await fetch("https://us-central1-story-make-fbbd7.cloudfunctions.net/api/generateImage", {
+    // Cloudflare Pages API를 통해 DALL-E 3 호출
+    const response = await fetch("https://story-maker-4l6.pages.dev/api/generate-image", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         prompt: prompt,
-        size: "1024x1024",
-        quality: "standard",
-        n: 1,
+        style: style,
       }),
     });
 
@@ -52,8 +50,8 @@ ${text}
 
     const data = await response.json();
     
-    if (!data.imageUrl) {
-      throw new Error("이미지 URL을 받지 못했습니다.");
+    if (!data.success || !data.imageUrl) {
+      throw new Error(data.error || "이미지 URL을 받지 못했습니다.");
     }
 
     console.log("✅ 동화 이미지 생성 완료:", data.imageUrl);
@@ -87,22 +85,20 @@ ${genreStyle} 따뜻하고 감성적인 일러스트를 만들어 주세요.
 텍스트나 워터마크는 포함하지 마세요.
 
 글 내용:
-${text}
+${text.substring(0, 1000)}
 `;
 
     console.log("🎨 글쓰기 이미지 생성 중:", prompt.substring(0, 100) + "...");
 
-    // Firebase Functions 프록시를 통해 DALL-E 3 호출
-    const response = await fetch("https://us-central1-story-make-fbbd7.cloudfunctions.net/api/generateImage", {
+    // Cloudflare Pages API를 통해 DALL-E 3 호출
+    const response = await fetch("https://story-maker-4l6.pages.dev/api/generate-image", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         prompt: prompt,
-        size: "1024x1024",
-        quality: "standard",
-        n: 1,
+        style: genre || "동화풍",
       }),
     });
 
@@ -113,8 +109,8 @@ ${text}
 
     const data = await response.json();
     
-    if (!data.imageUrl) {
-      throw new Error("이미지 URL을 받지 못했습니다.");
+    if (!data.success || !data.imageUrl) {
+      throw new Error(data.error || "이미지 URL을 받지 못했습니다.");
     }
 
     console.log("✅ 글쓰기 이미지 생성 완료:", data.imageUrl);

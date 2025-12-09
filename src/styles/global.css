@@ -91,7 +91,7 @@ body,
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 10px 20px; /* ⭐ 패딩 축소: 좌우 10px, 하단 20px */
+  padding: 0 0 20px; /* ⭐ 좌우 패딩 완전 제거, 하단만 20px */
   box-sizing: border-box;
   background-color: var(--bg-main);
 }

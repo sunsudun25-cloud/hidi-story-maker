@@ -65,7 +65,7 @@ export default function MyWorksImageDetail() {
   if (isLoading) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
-        <div style={{ maxWidth: "720px", margin: "0 auto" }}>
+        <div className="max-w-[480px] md:max-w-[720px] mx-auto">
           <p className="text-center text-[18px] text-gray-600 mt-10">불러오는 중...</p>
         </div>
       </div>
@@ -75,7 +75,7 @@ export default function MyWorksImageDetail() {
   if (!item) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
-        <div style={{ maxWidth: "720px", margin: "0 auto", padding: "24px" }}>
+        <div className="max-w-[480px] md:max-w-[720px] mx-auto p-6">
           <p className="text-center text-[18px] text-gray-600">이미지를 찾을 수 없습니다.</p>
           <div className="text-center mt-4">
             <button
@@ -92,28 +92,17 @@ export default function MyWorksImageDetail() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
-      <div style={{ maxWidth: "720px", margin: "0 auto" }}>
+      <div className="max-w-[480px] md:max-w-[720px] mx-auto">
         {/* 헤더 */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <div className="flex justify-between items-center mb-5">
           <button
             onClick={() => navigate("/my-works/images")}
-            style={{
-              fontSize: "24px",
-              width: "40px",
-              height: "40px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "white",
-              border: "1px solid #E5E7EB",
-              borderRadius: "8px",
-              cursor: "pointer"
-            }}
+            className="text-[24px] w-10 h-10 flex items-center justify-center bg-white border border-gray-300 rounded-lg cursor-pointer"
           >
             ←
           </button>
-          <h2 style={{ fontSize: "22px", fontWeight: "bold" }}>이미지 상세</h2>
-          <div style={{ width: "40px" }}></div>
+          <h2 className="text-[22px] font-bold">이미지 상세</h2>
+          <div className="w-10"></div>
         </div>
 
         {/* 이미지 */}

@@ -10,6 +10,10 @@ export default {
       },
       borderRadius: {
         xl: "18px",
+      },
+      maxWidth: {
+        'mobile': '480px',
+        'desktop': '720px',
       }
     },
   },

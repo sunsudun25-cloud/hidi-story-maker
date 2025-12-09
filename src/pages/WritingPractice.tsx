@@ -13,7 +13,7 @@ export default function WritingPractice() {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", paddingTop: "72px", paddingBottom: "20px" }}>
       <div className="responsive-container">
         <h2 className="screen-title">주제를 선택하세요</h2>
         <p className="screen-subtitle">

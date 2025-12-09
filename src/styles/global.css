@@ -79,7 +79,7 @@ body,
 
 /* ===== 통일된 컨텐츠 래퍼 ===== */
 .content-wrapper {
-  max-width: 480px;
+  /* max-width: 480px; */ /* ⭐ 전체 폭 사용을 위해 제거 */
   margin: 0 auto;
   padding: 24px 20px 80px;
   box-sizing: border-box;
@@ -99,7 +99,7 @@ body,
 
 .screen-body {
   width: 100%;
-  max-width: 480px;
+  /* max-width: 480px; */ /* ⭐ 전체 폭 사용을 위해 제거 */
   margin-top: 20px; /* 헤더 아래 여백 */
   padding: 0 0 20px; /* 하단 여백 */
 }

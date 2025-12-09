@@ -15,7 +15,7 @@ export default function Write() {
   };
 
   return (
-    <div className="screen">
+    <div className="screen" style={{ paddingTop: "10px" }}>
       <div className="write-container">
         <div className="write-options">
           {/* 옵션 1: 연습하기 */}

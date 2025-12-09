@@ -4,7 +4,7 @@
 .write-container {
   width: 100%;
   /* max-width: 520px; */
-  padding: 20px;
+  padding: 10px; /* ⭐ 패딩 축소 20px → 10px */
   margin: 0 auto;
 }
 

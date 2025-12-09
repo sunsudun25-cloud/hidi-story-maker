@@ -24,12 +24,10 @@ export default function MyWorksHome() {
       </h1>
 
       {/* 메뉴 3개 */}
-      <div style={{
+      <div className="responsive-container" style={{
         display: 'grid',
         gridTemplateColumns: '1fr',
-        gap: '16px',
-        maxWidth: '480px',
-        margin: '0 auto'
+        gap: '16px'
       }}>
 
         {/* 🎨 이미지 */}

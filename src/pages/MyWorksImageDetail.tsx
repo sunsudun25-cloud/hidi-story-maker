@@ -109,7 +109,8 @@ export default function MyWorksImageDetail() {
         <img
           src={item.image}
           alt="AI 이미지"
-          className="w-full rounded-2xl shadow-lg mb-6"
+          className="w-full rounded-2xl shadow-lg mb-6 cursor-pointer"
+          style={{ maxWidth: "380px", margin: "0 auto", display: "block" }}
           onClick={() => window.open(item.image, "_blank")}
         />
 

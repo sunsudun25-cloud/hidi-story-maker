@@ -163,11 +163,11 @@ export default function MyWorksStorybookDetail() {
         </div>
 
         {/* 액션 버튼들 */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2.5">
           {/* 편집하기 */}
           <button
             onClick={handleEdit}
-            className="p-4 bg-blue-500 text-white rounded-xl text-[16px] font-semibold hover:bg-blue-600 transition"
+            className="py-2.5 px-4 bg-blue-500 text-white rounded-lg text-[15px] font-semibold hover:bg-blue-600 transition shadow-sm"
           >
             ✏️ 편집하기
           </button>
@@ -175,7 +175,7 @@ export default function MyWorksStorybookDetail() {
           {/* PDF 출력 */}
           <button
             onClick={handleExport}
-            className="p-4 bg-purple-500 text-white rounded-xl text-[16px] font-semibold hover:bg-purple-600 transition"
+            className="py-2.5 px-4 bg-purple-500 text-white rounded-lg text-[15px] font-semibold hover:bg-purple-600 transition shadow-sm"
           >
             📄 PDF 출력
           </button>
@@ -183,7 +183,7 @@ export default function MyWorksStorybookDetail() {
           {/* 삭제 */}
           <button
             onClick={handleDelete}
-            className="p-4 bg-red-500 text-white rounded-xl text-[16px] font-semibold hover:bg-red-600 transition"
+            className="py-2.5 px-4 bg-rose-500 text-white rounded-lg text-[15px] font-semibold hover:bg-rose-600 transition shadow-sm"
           >
             🗑️ 삭제하기
           </button>

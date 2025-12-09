@@ -215,20 +215,23 @@ ${current.text}
 
     setIsGeneratingImage(true);
     try {
-      // ⭐ 일관성 유지를 위한 동화책 컨텍스트 포함 + 텍스트 제거 강화
+      // ⭐ 일관성 유지를 위한 동화책 컨텍스트 포함 + 텍스트 제거 강화 + 단일 페이지
       const imgPrompt = `
-IMPORTANT: Create a pure illustration with NO TEXT whatsoever.
+IMPORTANT: Create a SINGLE PAGE illustration (NOT a two-page spread).
 
 Children's book illustration for the story "${title}".
 Page ${currentPage + 1} scene: ${current.text}
 
 CRITICAL RULES:
-1. ABSOLUTELY NO text, words, letters, numbers, or written symbols
-2. NO signs, labels, speech bubbles, or captions
-3. Only visual storytelling through images
-4. Keep consistent character designs across all pages
-5. Maintain same art style and color palette throughout
-6. Simple, child-friendly composition
+1. Create ONE complete scene (not a book spread with two pages)
+2. NO center fold, gutter, or split-page layout
+3. Full frame single illustration
+4. ABSOLUTELY NO text, words, letters, numbers, or written symbols
+5. NO signs, labels, speech bubbles, or captions
+6. Only visual storytelling through images
+7. Keep consistent character designs across all pages
+8. Maintain same art style and color palette throughout
+9. Simple, child-friendly composition
 
 Style: ${style}
 `;
@@ -253,20 +256,22 @@ Style: ${style}
     setIsGeneratingCover(true);
     try {
       const coverPrompt = `
-CRITICAL: Create a pure illustration cover with NO TEXT of any kind.
+CRITICAL: Create a SINGLE PAGE book cover illustration with NO TEXT.
 
 Children's book cover illustration for "${title}".
 Story summary: ${prompt}
 
 STRICT REQUIREMENTS:
-1. NO text, words, letters, or symbols anywhere on the cover
-2. NO book title in the image (will be added separately)
-3. NO author name or any written text
-4. Pure visual illustration only
-5. Eye-catching composition for a book cover
-6. Main characters prominently featured
-7. Warm, child-friendly atmosphere
-8. Establish character design for the entire book
+1. Create ONE unified cover image (NOT a front-and-back spread)
+2. Full frame composition without split or fold line
+3. NO text, words, letters, or symbols anywhere on the cover
+4. NO book title in the image (will be added separately)
+5. NO author name or any written text
+6. Pure visual illustration only
+7. Eye-catching composition for a book cover
+8. Main characters prominently featured
+9. Warm, child-friendly atmosphere
+10. Establish character design for the entire book
 
 Style: ${style}
 `;

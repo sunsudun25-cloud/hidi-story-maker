@@ -70,7 +70,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
 
     const stylePrompt = styleMap[style || '기본'] || 'illustration style';
     
-    // ⭐ 동화책 삽화 전용 프롬프트 강화 (텍스트 제거 최우선)
+    // ⭐ 동화책 삽화 전용 프롬프트 강화 (텍스트 제거 + 단일 페이지)
     const noTextGuide = `
 CRITICAL REQUIREMENT: This must be a pure illustration with ABSOLUTELY NO TEXT.
 - NO words, letters, numbers, or symbols of any kind
@@ -79,11 +79,19 @@ CRITICAL REQUIREMENT: This must be a pure illustration with ABSOLUTELY NO TEXT.
 - Only visual imagery, no textual elements
 - Pure illustration without any text overlay
 `;
+
+    const singlePageGuide = `
+IMPORTANT: Create a SINGLE PAGE illustration (NOT a book spread).
+- Show ONE complete scene, not two pages
+- NO center fold or gutter line
+- Full frame composition, not split pages
+- Single unified image, not left-right divided layout
+`;
     
     const consistencyGuide = 'Consistent character design and art style';
     const qualityGuide = 'High quality detailed illustration, clean composition';
     
-    const fullPrompt = `${prompt}. ${stylePrompt}. ${noTextGuide}. ${consistencyGuide}. ${qualityGuide}`;
+    const fullPrompt = `${prompt}. ${stylePrompt}. ${singlePageGuide}. ${noTextGuide}. ${consistencyGuide}. ${qualityGuide}`;
 
     console.log('📡 OpenAI API 호출:', fullPrompt);
 

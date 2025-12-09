@@ -50,8 +50,8 @@ export default function MyWorksStoryDetail() {
 
   if (isLoading) {
     return (
-      <div className="screen">
-        <div className="screen-body">
+      <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
+        <div style={{ maxWidth: "720px", margin: "0 auto" }}>
           <p className="text-center text-[18px] text-gray-600 mt-10">불러오는 중...</p>
         </div>
       </div>
@@ -60,8 +60,8 @@ export default function MyWorksStoryDetail() {
 
   if (!story) {
     return (
-      <div className="screen">
-        <div className="screen-body p-6">
+      <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
+        <div style={{ maxWidth: "720px", margin: "0 auto", padding: "24px" }}>
           <p className="text-center text-[18px] text-gray-600">글을 찾을 수 없습니다.</p>
           <div className="text-center mt-4">
             <button
@@ -77,8 +77,8 @@ export default function MyWorksStoryDetail() {
   }
 
   return (
-    <div className="screen">
-      <div className="screen-body p-4">
+    <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
+      <div style={{ maxWidth: "720px", margin: "0 auto", padding: "16px" }}>
         {/* 헤더 */}
         <div className="flex justify-between items-center mb-4">
           <button

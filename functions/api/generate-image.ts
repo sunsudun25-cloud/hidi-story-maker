@@ -12,6 +12,23 @@ interface ImageRequest {
   style?: string;
 }
 
+// CORS 헤더 설정
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Content-Type': 'application/json'
+};
+
+// OPTIONS 요청 처리 (CORS preflight)
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders
+  });
+}
+
+// POST 요청 처리
 export async function onRequestPost(context: { request: Request; env: Env }) {
   const { request, env } = context;
 
@@ -21,7 +38,7 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
       console.error('❌ OPENAI_API_KEY not configured');
       return new Response(
         JSON.stringify({ success: false, error: 'API key not configured' }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
+        { status: 500, headers: corsHeaders }
       );
     }
 
@@ -32,7 +49,7 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     if (!prompt) {
       return new Response(
         JSON.stringify({ success: false, error: 'prompt is required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -84,7 +101,7 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
           success: false, 
           error: `OpenAI API error: ${openaiResponse.status}` 
         }),
-        { status: openaiResponse.status, headers: { 'Content-Type': 'application/json' } }
+        { status: openaiResponse.status, headers: corsHeaders }
       );
     }
 
@@ -94,7 +111,7 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     if (!base64Data) {
       return new Response(
         JSON.stringify({ success: false, error: 'No image data received' }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
+        { status: 500, headers: corsHeaders }
       );
     }
 
@@ -109,7 +126,7 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
         prompt: fullPrompt,
         style: style || '기본',
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      { status: 200, headers: corsHeaders }
     );
 
   } catch (error) {
@@ -119,7 +136,7 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error' 
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

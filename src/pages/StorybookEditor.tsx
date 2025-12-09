@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { generateNextPage, safeGeminiCall } from "../services/geminiService";
-import { generateImageViaFirebase } from "../services/firebaseFunctions";
+import { generateImageViaCloudflare } from "../services/cloudflareImageApi";
 import { saveStorybook } from "../services/dbService";
 import { useStorybook } from "../context/StorybookContext";
 import StorybookLayout from "../components/storybook/StorybookLayout";
@@ -222,7 +222,7 @@ ${current.text}
 (그림 안에 텍스트 넣지 말기)
 `;
 
-      const imageDataUrl = await generateImageViaFirebase(imgPrompt, style);
+      const imageDataUrl = await generateImageViaCloudflare(imgPrompt, style);
       setImageForPage(pageIndex, imageDataUrl);
       alert("🎨 이미지가 생성되었습니다!");
     } catch (err) {
@@ -254,7 +254,7 @@ ${current.text}
 - 그림 안에 텍스트 넣지 말기 (텍스트는 나중에 추가)
 `;
 
-      const coverImageDataUrl = await generateImageViaFirebase(coverPrompt, style);
+      const coverImageDataUrl = await generateImageViaCloudflare(coverPrompt, style);
       setCoverImageUrl(coverImageDataUrl);
       alert("📕 표지가 생성되었습니다!");
     } catch (err) {

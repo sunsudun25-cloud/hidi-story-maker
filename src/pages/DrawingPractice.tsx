@@ -1,7 +1,7 @@
 // src/pages/DrawingPractice.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { generateImageViaFirebase } from "../services/firebaseFunctions";  // ⭐ Firebase Functions 프록시 사용
+import { generateImageViaCloudflare } from "../services/cloudflareImageApi";  // ⭐ Firebase Functions 프록시 사용
 
 export default function DrawingPractice() {
   const [prompt, setPrompt] = useState("");
@@ -22,7 +22,7 @@ export default function DrawingPractice() {
 
     setLoading(true);
     try {
-      const imageBase64 = await generateImageViaFirebase(prompt, "기본");  // ⭐ Firebase Functions 프록시 사용
+      const imageBase64 = await generateImageViaCloudflare(prompt, "기본");  // ⭐ Firebase Functions 프록시 사용
 
       navigate("/result", {
         state: {

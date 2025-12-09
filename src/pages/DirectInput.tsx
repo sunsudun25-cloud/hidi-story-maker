@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { generateImageViaFirebase } from "../services/firebaseFunctions";  // ⭐ Firebase Functions 프록시 사용
+import { generateImageViaCloudflare } from "../services/cloudflareImageApi";  // ⭐ Firebase Functions 프록시 사용
 import LoadingSpinner from "../components/LoadingSpinner";
 import { friendlyErrorMessage } from "../utils/errorHandler";
 import "./DirectInput.css";
@@ -36,10 +36,10 @@ export default function DirectInput() {
       const styleText = selectedStyle ? ` (${selectedStyle} 스타일)` : "";
       const fullPrompt = `${description}${styleText}`;
 
-      console.log("📡 [DirectInput] generateImageViaFirebase 호출 중...", fullPrompt);
+      console.log("📡 [DirectInput] generateImageViaCloudflare 호출 중...", fullPrompt);
 
       // ⭐ Firebase Functions를 통한 안전한 이미지 생성
-      const imageBase64 = await generateImageViaFirebase(description, selectedStyle ?? undefined);
+      const imageBase64 = await generateImageViaCloudflare(description, selectedStyle ?? undefined);
 
       console.log("✅ [DirectInput] 이미지 생성 완료, Base64 길이:", imageBase64.length);
 

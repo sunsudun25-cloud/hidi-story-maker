@@ -1,0 +1,14 @@
+{
+  "name": "story-maker-image-proxy",
+  "version": "1.0.0",
+  "description": "OpenAI DALL-E 3 proxy worker for Story Maker",
+  "main": "src/index.ts",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250105.0",
+    "wrangler": "^3.78.0"
+  }
+}

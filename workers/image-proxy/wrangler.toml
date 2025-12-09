@@ -1,0 +1,5 @@
+name = "story-maker-image-proxy"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# OpenAI API 키는 secret으로 설정 (wrangler secret put OPENAI_API_KEY)

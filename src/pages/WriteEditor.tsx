@@ -1021,30 +1021,7 @@ ${content}
         </button>
       </div>
 
-      {/* 회사 정보 푸터 */}
-      <div style={{
-        marginTop: "40px",
-        padding: "30px 20px",
-        backgroundColor: "#f5f5f5",
-        borderRadius: "12px",
-        textAlign: "center",
-      }}>
-        <div style={{
-          fontSize: "20px",
-          fontWeight: "bold",
-          color: "#333",
-          marginBottom: "8px",
-        }}>
-          HI-DI Edu
-        </div>
-        <div style={{
-          fontSize: "14px",
-          color: "#666",
-          lineHeight: "1.6",
-        }}>
-          모든 세대를 잇는 AI 스토리 플랫폼
-        </div>
-      </div>
+      {/* ⭐ Layout 컴포넌트에 푸터가 있으므로 중복 제거 */}
     </main>
   );
 }

@@ -215,16 +215,20 @@ ${current.text}
 
     setIsGeneratingImage(true);
     try {
-      // ⭐ 일관성 유지를 위한 동화책 컨텍스트 포함
+      // ⭐ 일관성 유지를 위한 동화책 컨텍스트 포함 + 텍스트 제거 강화
       const imgPrompt = `
+IMPORTANT: Create a pure illustration with NO TEXT whatsoever.
+
 Children's book illustration for the story "${title}".
 Page ${currentPage + 1} scene: ${current.text}
 
-Consistency requirements:
-- Keep the same character design throughout all pages
-- Maintain consistent art style and color palette
-- Simple, clean composition for children
-- NO TEXT, NO WORDS, NO LETTERS anywhere in the image
+CRITICAL RULES:
+1. ABSOLUTELY NO text, words, letters, numbers, or written symbols
+2. NO signs, labels, speech bubbles, or captions
+3. Only visual storytelling through images
+4. Keep consistent character designs across all pages
+5. Maintain same art style and color palette throughout
+6. Simple, child-friendly composition
 
 Style: ${style}
 `;
@@ -249,15 +253,20 @@ Style: ${style}
     setIsGeneratingCover(true);
     try {
       const coverPrompt = `
+CRITICAL: Create a pure illustration cover with NO TEXT of any kind.
+
 Children's book cover illustration for "${title}".
 Story summary: ${prompt}
 
-Cover design requirements:
-- Eye-catching composition suitable for a book cover
-- Main characters prominently featured
-- Warm, child-friendly atmosphere
-- ABSOLUTELY NO TEXT OR WORDS in the image (title will be added later)
-- Establish the character design that will be used throughout the book
+STRICT REQUIREMENTS:
+1. NO text, words, letters, or symbols anywhere on the cover
+2. NO book title in the image (will be added separately)
+3. NO author name or any written text
+4. Pure visual illustration only
+5. Eye-catching composition for a book cover
+6. Main characters prominently featured
+7. Warm, child-friendly atmosphere
+8. Establish character design for the entire book
 
 Style: ${style}
 `;

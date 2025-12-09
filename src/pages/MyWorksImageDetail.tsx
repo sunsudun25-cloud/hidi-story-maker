@@ -65,7 +65,7 @@ export default function MyWorksImageDetail() {
   if (isLoading) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
-        <div className="max-w-mobile md:max-w-desktop mx-auto">
+        <div className="responsive-container">
           <p className="text-center text-[18px] text-gray-600 mt-10">불러오는 중...</p>
         </div>
       </div>
@@ -75,7 +75,7 @@ export default function MyWorksImageDetail() {
   if (!item) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
-        <div className="max-w-mobile md:max-w-desktop mx-auto p-6">
+        <div className="responsive-container p-6">
           <p className="text-center text-[18px] text-gray-600">이미지를 찾을 수 없습니다.</p>
           <div className="text-center mt-4">
             <button
@@ -92,7 +92,7 @@ export default function MyWorksImageDetail() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
-      <div className="max-w-mobile md:max-w-desktop mx-auto">
+      <div className="responsive-container">
         {/* 헤더 */}
         <div className="flex justify-between items-center mb-5">
           <button

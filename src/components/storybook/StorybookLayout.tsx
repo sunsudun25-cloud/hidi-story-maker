@@ -9,7 +9,10 @@ export default function StorybookLayout({ title, children }: StorybookLayoutProp
       <main
         className="responsive-container"
         style={{
-          padding: 20,
+          paddingTop: 90,    /* ⭐ 헤더(72px) + 여백(18px) = 90px */
+          paddingBottom: 20,
+          paddingLeft: 20,
+          paddingRight: 20,
         }}
       >
         {children}

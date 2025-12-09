@@ -111,6 +111,7 @@ export default function MyWorksStorybookDetail() {
             src={book.coverImageUrl}
             alt={book.title}
             className="w-full rounded-2xl shadow-lg mb-6 cursor-pointer"
+            style={{ maxWidth: "380px", margin: "0 auto", display: "block" }}
             onClick={() => window.open(book.coverImageUrl, "_blank")}
           />
         )}
@@ -149,7 +150,9 @@ export default function MyWorksStorybookDetail() {
                   <img
                     src={page.imageUrl}
                     alt={`Page ${idx + 1}`}
-                    className="w-full h-32 object-cover rounded-lg mt-2"
+                    className="w-full rounded-lg mt-2 cursor-pointer"
+                    style={{ maxWidth: "280px", height: "auto", objectFit: "cover", margin: "8px auto 0", display: "block" }}
+                    onClick={() => window.open(page.imageUrl, "_blank")}
                   />
                 )}
               </div>

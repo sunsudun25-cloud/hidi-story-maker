@@ -62,6 +62,17 @@ export default function WritingDetail() {
           작성일: {new Date(story.createdAt).toLocaleDateString('ko-KR')}
         </p>
 
+        {/* 이미지 (있는 경우) */}
+        {story.image && (
+          <img
+            src={story.image}
+            alt={story.title}
+            className="w-full rounded-2xl shadow-lg mb-6 cursor-pointer"
+            style={{ maxWidth: "380px", margin: "0 auto", display: "block" }}
+            onClick={() => window.open(story.image, "_blank")}
+          />
+        )}
+
         {/* 본문 */}
         <div className="p-5 border-2 rounded-xl bg-white leading-relaxed text-lg whitespace-pre-line min-h-[300px]">
           {story.content || story.description}

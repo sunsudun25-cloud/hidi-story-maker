@@ -144,7 +144,8 @@ IMPORTANT: Create a SINGLE PAGE illustration (NOT a book spread).
     return new Response(
       JSON.stringify({
         success: true,
-        imageData: dataUrl,
+        imageUrl: dataUrl,  // imageData → imageUrl로 변경 (imageService.ts와 일치)
+        imageData: dataUrl, // 하위 호환성 유지
         prompt: fullPrompt,
         style: style || '기본',
       }),

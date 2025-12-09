@@ -18,10 +18,9 @@ export default function Goods() {
             ✨ 나만의 출판물 & 굿즈 만들기
           </h1>
           <p style={{ fontSize: "15px", color: "#666", lineHeight: "1.6" }}>
-            AI로 만든 그림, 동화, 글을{" "}
-            <span style={{ fontWeight: "600" }}>책 · 앨범 · 굿즈</span>로 제작해 보세요.
+            AI로 만든 그림, 동화, 글을 <span style={{ fontWeight: "600" }}>책 · 앨범 · 굿즈</span>로 제작
             <br />
-            시니어·학생·창작자를 위한 출판·굿즈 제작 서비스입니다.
+            시니어·학생·창작자를 위한 출판·굿즈 제작 서비스
           </p>
         </div>
 

@@ -49,9 +49,8 @@ export default function WritingDetail() {
   };
 
   return (
-    <div className="pb-28">
-
-      <div className="p-5">
+    <div className="pb-28" style={{ minHeight: "100vh", backgroundColor: "#FFF9F0" }}>
+      <div className="max-w-4xl mx-auto p-5">
         {/* 제목 */}
         <h2 className="text-3xl font-bold mb-3">
           📖 {story.title}
@@ -64,13 +63,15 @@ export default function WritingDetail() {
 
         {/* 이미지 (있는 경우) */}
         {story.image && (
-          <img
-            src={story.image}
-            alt={story.title}
-            className="w-full rounded-2xl shadow-lg mb-6 cursor-pointer"
-            style={{ maxWidth: "380px", margin: "0 auto", display: "block" }}
-            onClick={() => window.open(story.image, "_blank")}
-          />
+          <div className="flex justify-center mb-6">
+            <img
+              src={story.image}
+              alt={story.title}
+              className="rounded-2xl shadow-lg cursor-pointer"
+              style={{ maxWidth: "380px", width: "100%", height: "auto" }}
+              onClick={() => window.open(story.image, "_blank")}
+            />
+          </div>
         )}
 
         {/* 본문 */}

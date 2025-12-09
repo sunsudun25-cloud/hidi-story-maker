@@ -3,6 +3,8 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   padding: 0;
+  position: relative;
+  isolation: isolate; /* ⭐ 새로운 stacking context 생성 */
 }
 
 /* ===== 상단 헤더 ===== */
@@ -15,8 +17,9 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
-  z-index: 100; /* ⭐ z-index 낮춤: 입력 필드 방해 방지 */
+  z-index: 50; /* ⭐ z-index 더 낮춤: 입력 필드(300) 방해 방지 */
   backdrop-filter: blur(8px); /* 유리 효과 */
+  pointer-events: auto; /* ⭐ 헤더는 클릭 가능 */
 }
 
 .back-btn,
@@ -109,6 +112,10 @@
   font-size: 18px;
   line-height: 1.5;
   transition: all 0.2s ease;
+  position: relative;
+  z-index: 300; /* ⭐ 입력 필드가 최상위에 표시 */
+  background: white;
+  touch-action: manipulation; /* ⭐ 터치 이벤트 최적화 */
 }
 
 .field-input:focus,

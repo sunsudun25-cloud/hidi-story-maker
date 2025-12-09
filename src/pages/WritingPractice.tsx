@@ -13,27 +13,29 @@ export default function WritingPractice() {
   ];
 
   return (
-    <div className="responsive-container" style={{ paddingTop: "90px", paddingLeft: "20px", paddingRight: "20px" }}>
-      <h2 className="screen-title">주제를 선택하세요</h2>
-      <p className="screen-subtitle">
-        아래 주제 중 하나를 선택하면<br />
-        AI가 글쓰기를 도와드려요 ✨
-      </p>
+    <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
+      <div className="responsive-container">
+        <h2 className="screen-title">주제를 선택하세요</h2>
+        <p className="screen-subtitle">
+          아래 주제 중 하나를 선택하면<br />
+          AI가 글쓰기를 도와드려요 ✨
+        </p>
 
-      <div className="wp-list">
-        {topics.map((t, index) => (
-          <button
-            key={index}
-            className="wp-card"
-            onClick={() => navigate("/write/editor", { state: { mode: "practice", title: t.title } })}
-          >
-            <div className="wp-icon">{t.icon}</div>
-            <div className="wp-card-content">
-              <div className="wp-card-title">{t.title}</div>
-              <div className="wp-card-desc">{t.desc}</div>
-            </div>
-          </button>
-        ))}
+        <div className="wp-list">
+          {topics.map((t, index) => (
+            <button
+              key={index}
+              className="wp-card"
+              onClick={() => navigate("/write/editor", { state: { mode: "practice", title: t.title } })}
+            >
+              <div className="wp-icon">{t.icon}</div>
+              <div className="wp-card-content">
+                <div className="wp-card-title">{t.title}</div>
+                <div className="wp-card-desc">{t.desc}</div>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

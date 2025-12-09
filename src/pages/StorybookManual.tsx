@@ -95,10 +95,40 @@ export default function StorybookManual() {
       return;
     }
 
-    console.log("📘 동화책 초안 생성:", { title: storyTitle, prompt: storyPrompt, style: selectedStyle });
-
     setIsGenerating(true);
     try {
+      // ------------------------------
+      // 0) 제목이 없으면 AI로 자동 생성
+      // ------------------------------
+      let finalTitle = storyTitle.trim();
+      
+      if (!finalTitle) {
+        console.log("📝 제목이 없어 AI로 자동 생성합니다...");
+        const titlePrompt = `
+다음 동화책 줄거리에 어울리는 제목 1개를 생성해주세요.
+줄거리: ${storyPrompt}
+
+요구사항:
+- 제목만 출력 (설명 없이)
+- 간결하고 매력적인 제목
+- 5~10글자 내외
+- 어린이가 이해하기 쉬운 제목
+
+예시: 작은 별의 여행, 마법의 숲, 용감한 토끼
+        `.trim();
+        
+        try {
+          finalTitle = await safeGeminiCall(titlePrompt);
+          finalTitle = finalTitle.trim().replace(/^["']|["']$/g, ''); // 따옴표 제거
+          console.log("✅ 자동 생성된 제목:", finalTitle);
+        } catch (err) {
+          console.error("제목 생성 오류:", err);
+          finalTitle = "나의 동화책"; // 실패 시 기본 제목
+        }
+      }
+
+      console.log("📘 동화책 초안 생성:", { title: finalTitle, prompt: storyPrompt, style: selectedStyle });
+
       // ------------------------------
       // 1) Gemini AI로 1페이지만 생성
       // ------------------------------
@@ -106,7 +136,7 @@ export default function StorybookManual() {
 당신은 어린이를 위한 동화책 작가입니다.
 사용자의 줄거리를 기반으로 동화책의 첫 페이지를 작성하세요.
 
-제목: ${storyTitle}
+제목: ${finalTitle}
 줄거리: ${storyPrompt}
 
 첫 페이지는 3~5문장으로 구성하세요.
@@ -131,20 +161,20 @@ export default function StorybookManual() {
       console.log("✅ 생성된 첫 페이지:", pages[0].text.substring(0, 50) + "...");
 
       // ------------------------------
-      // 3) Context에 저장
+      // 3) Context에 저장 (자동 생성된 제목 사용)
       // ------------------------------
       storybookContext.resetStorybook();
-      storybookContext.setTitle(storyTitle);
+      storybookContext.setTitle(finalTitle);
       storybookContext.setPrompt(storyPrompt);
       storybookContext.setStyle(selectedStyle || "동화 스타일");
       storybookContext.setStoryPages(pages);
 
       // ------------------------------
-      // 4) Editor로 이동 (pages 전달)
+      // 4) Editor로 이동 (pages 전달, 자동 생성된 제목 사용)
       // ------------------------------
       navigate("/storybook-editor", {
         state: {
-          title: storyTitle,
+          title: finalTitle,
           prompt: storyPrompt,
           style: selectedStyle || "동화 스타일",
           pages,

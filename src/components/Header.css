@@ -8,7 +8,7 @@
   margin: 0 auto;           /* ⭐ 좌우 자동 마진으로 중앙 고정 */
 
   width: 100%;
-  /* max-width: 520px; */  /* ⭐ 폭 제한 제거 */
+  max-width: 480px;         /* ⭐ 모바일: 480px */
   background: var(--bg-soft-blue);
 
   padding: 14px 20px;
@@ -21,6 +21,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+/* 데스크톱: 720px */
+@media (min-width: 768px) {
+  .app-header {
+    max-width: 720px;
+  }
 }
 
 .header-btn {

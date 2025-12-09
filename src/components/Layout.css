@@ -12,7 +12,7 @@
 .page-content {
   flex: 1;
   width: 100%;
-  max-width: 520px;  /* ⭐ 전 화면 폭 통일 */
+  /* max-width: 520px; */  /* ⭐ 폭 제한 제거하여 전체 화면 사용 */
   padding: 80px 20px 40px; /* ⭐ 위쪽 패딩 축소 (90px → 80px) */
   box-sizing: border-box;
   overflow-y: visible !important; /* ⭐ 이중 스크롤 방지 */
@@ -27,7 +27,7 @@
   opacity: 0.8;
   color: #444;
 
-  max-width: 520px;       /* ⭐ 헤더와 동일한 중앙 박스 */
+  /* max-width: 520px; */  /* ⭐ 폭 제한 제거 */
   margin: 0 auto;         /* ⭐ 가운데 정렬 */
   width: 100%;
   box-sizing: border-box;

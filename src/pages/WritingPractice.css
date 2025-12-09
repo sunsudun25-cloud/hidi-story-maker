@@ -3,7 +3,7 @@
 =========================== */
 .wp-container {
   width: 100%;
-  max-width: 520px;
+  /* max-width: 520px; */
   padding: 20px;
   margin: 0 auto;
 }

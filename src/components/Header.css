@@ -8,7 +8,7 @@
   margin: 0 auto;           /* ⭐ 좌우 자동 마진으로 중앙 고정 */
 
   width: 100%;
-  max-width: 520px;
+  /* max-width: 520px; */  /* ⭐ 폭 제한 제거 */
   background: var(--bg-soft-blue);
 
   padding: 14px 20px;

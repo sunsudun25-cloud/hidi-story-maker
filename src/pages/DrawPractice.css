@@ -11,7 +11,7 @@
 
 .draw-page-container {
   width: 100%;
-  max-width: 520px;
+  /* max-width: 520px; */
   padding: 0; /* Layout.css에서 padding 처리됨 */
 }
 

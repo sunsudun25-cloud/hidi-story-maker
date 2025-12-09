@@ -311,7 +311,7 @@ body,
   }
 
   .app-header-title {
-    font-size: 16px;
+    font-size: 22px !important; /* 모바일 가독성 향상 */
   }
 
   .header-btn {

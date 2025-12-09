@@ -1,6 +1,6 @@
 /**
  * Cloudflare Pages Function - OpenAI DALL-E 3 프록시
- * /api/generate-image 엔드포인트
+ * CORS 완전 지원 버전
  */
 
 interface Env {
@@ -12,44 +12,41 @@ interface ImageRequest {
   style?: string;
 }
 
-// CORS 헤더 설정
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-  'Content-Type': 'application/json'
-};
-
-// OPTIONS 요청 처리 (CORS preflight)
-export async function onRequestOptions() {
-  return new Response(null, {
-    status: 204,
-    headers: corsHeaders
-  });
-}
-
-// POST 요청 처리
-export async function onRequestPost(context: { request: Request; env: Env }) {
+export async function onRequest(context: { request: Request; env: Env }) {
   const { request, env } = context;
 
-  try {
-    // API 키 확인
-    if (!env.OPENAI_API_KEY) {
-      console.error('❌ OPENAI_API_KEY not configured');
-      return new Response(
-        JSON.stringify({ success: false, error: 'API key not configured' }),
-        { status: 500, headers: corsHeaders }
-      );
-    }
+  // ⭐ CORS 헤더
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
 
-    // 요청 파라미터 파싱
+  // ⭐ OPTIONS 요청 (Preflight) 처리
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
+  }
+
+  try {
     const body = await request.json() as ImageRequest;
     const { prompt, style } = body;
 
     if (!prompt) {
       return new Response(
-        JSON.stringify({ success: false, error: 'prompt is required' }),
-        { status: 400, headers: corsHeaders }
+        JSON.stringify({ success: false, error: "프롬프트가 없습니다." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // API 키 확인
+    if (!env.OPENAI_API_KEY) {
+      console.error('❌ OPENAI_API_KEY not configured');
+      return new Response(
+        JSON.stringify({ success: false, error: 'API key not configured' }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -77,19 +74,19 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     console.log('📡 OpenAI API 호출:', fullPrompt);
 
     // OpenAI API 호출
-    const openaiResponse = await fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
+    const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'dall-e-3',
+        model: "dall-e-3",
         prompt: fullPrompt,
         n: 1,
-        size: '1024x1024',
-        quality: 'standard',
-        response_format: 'b64_json',
+        size: "1024x1024",
+        quality: "standard",
+        response_format: "b64_json",
       }),
     });
 
@@ -101,7 +98,10 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
           success: false, 
           error: `OpenAI API error: ${openaiResponse.status}` 
         }),
-        { status: openaiResponse.status, headers: corsHeaders }
+        { 
+          status: openaiResponse.status, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
       );
     }
 
@@ -111,7 +111,7 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     if (!base64Data) {
       return new Response(
         JSON.stringify({ success: false, error: 'No image data received' }),
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -126,7 +126,10 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
         prompt: fullPrompt,
         style: style || '기본',
       }),
-      { status: 200, headers: corsHeaders }
+      { 
+        status: 200, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      }
     );
 
   } catch (error) {
@@ -136,7 +139,10 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error' 
       }),
-      { status: 500, headers: corsHeaders }
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      }
     );
   }
 }

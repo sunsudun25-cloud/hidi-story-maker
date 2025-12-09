@@ -5,7 +5,7 @@ interface StorybookLayoutProps {
 
 export default function StorybookLayout({ title, children }: StorybookLayoutProps) {
   return (
-    <div style={{ background: "#FAF8F2", minHeight: "100vh", paddingTop: "72px", paddingBottom: "20px" }}>
+    <div style={{ background: "#FAF8F2", minHeight: "100vh", paddingTop: "10px", paddingBottom: "20px" }}>
       <main className="responsive-container">
         {children}
       </main>

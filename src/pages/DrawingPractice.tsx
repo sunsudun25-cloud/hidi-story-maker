@@ -42,7 +42,7 @@ export default function DrawingPractice() {
   return (
     <div className="pb-24">
 
-      <div className="p-5">
+      <div className="p-3">
         <h2 className="text-2xl font-bold mb-3">원하는 그림을 연습해봐요</h2>
 
         <p className="text-gray-700 mb-6 leading-relaxed">

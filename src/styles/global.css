@@ -91,8 +91,7 @@ body,
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 20px 40px; /* 상단 패딩 제거 */
-  padding-top: 0; /* 헤더가 sticky로 처리 */
+  padding: 0 10px 20px; /* ⭐ 패딩 축소: 좌우 10px, 하단 20px */
   box-sizing: border-box;
   background-color: var(--bg-main);
 }
@@ -100,7 +99,7 @@ body,
 .screen-body {
   width: 100%;
   /* max-width: 480px; */ /* ⭐ 전체 폭 사용을 위해 제거 */
-  margin-top: 20px; /* 헤더 아래 여백 */
+  margin-top: 0; /* ⭐ 중복 여백 제거 */
   padding: 0 0 20px; /* 하단 여백 */
 }
 

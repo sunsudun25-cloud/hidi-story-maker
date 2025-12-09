@@ -23,7 +23,7 @@ export default function DrawingDirect() {
   return (
     <div className="pb-24">
 
-      <div className="p-5">
+      <div className="p-3">
         <h2 className="text-2xl font-bold mb-6">어떤 그림을 만들까요?</h2>
 
         {/* 프롬프트 입력 */}

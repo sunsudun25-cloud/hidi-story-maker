@@ -56,8 +56,8 @@ export async function onRequest(context: { request: Request; env: Env }) {
     const styleMap: Record<string, string> = {
       '수채화': 'watercolor painting style',
       'watercolor': 'watercolor painting style',
-      '동화풍': 'fairytale illustration style',
-      'fairytale': 'fairytale illustration style',
+      '동화풍': 'children\'s book illustration style',
+      'fairytale': 'children\'s book illustration style',
       '파스텔톤': 'soft pastel colors style',
       'pastel': 'soft pastel colors style',
       '따뜻한 스타일': 'warm and cozy atmosphere',
@@ -69,7 +69,13 @@ export async function onRequest(context: { request: Request; env: Env }) {
     };
 
     const stylePrompt = styleMap[style || '기본'] || 'illustration style';
-    const fullPrompt = `${prompt}. ${stylePrompt}. High quality, detailed, no text or watermarks.`;
+    
+    // ⭐ 동화책 삽화 전용 프롬프트 강화
+    const consistencyGuide = 'consistent character design, same art style throughout';
+    const noTextGuide = 'NO TEXT, NO WORDS, NO LETTERS, NO WATERMARKS in the image';
+    const qualityGuide = 'high quality, detailed illustration, clean and simple composition';
+    
+    const fullPrompt = `${prompt}. ${stylePrompt}. ${consistencyGuide}. ${noTextGuide}. ${qualityGuide}.`;
 
     console.log('📡 OpenAI API 호출:', fullPrompt);
 

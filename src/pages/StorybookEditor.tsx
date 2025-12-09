@@ -215,11 +215,18 @@ ${current.text}
 
     setIsGeneratingImage(true);
     try {
+      // ⭐ 일관성 유지를 위한 동화책 컨텍스트 포함
       const imgPrompt = `
-동화책 본문 삽화 생성
-스타일: ${style}
-내용: ${current.text}
-(그림 안에 텍스트 넣지 말기)
+Children's book illustration for the story "${title}".
+Page ${currentPage + 1} scene: ${current.text}
+
+Consistency requirements:
+- Keep the same character design throughout all pages
+- Maintain consistent art style and color palette
+- Simple, clean composition for children
+- NO TEXT, NO WORDS, NO LETTERS anywhere in the image
+
+Style: ${style}
 `;
 
       const imageDataUrl = await generateImageViaCloudflare(imgPrompt, style);
@@ -242,16 +249,17 @@ ${current.text}
     setIsGeneratingCover(true);
     try {
       const coverPrompt = `
-동화책 표지 이미지 생성
-제목: ${title}
-줄거리: ${prompt}
-스타일: ${style}
+Children's book cover illustration for "${title}".
+Story summary: ${prompt}
 
-표지 디자인 요구사항:
-- 동화책 표지로 적합한 구도
-- 제목과 주요 캐릭터가 돋보이도록
-- 어린이에게 친근한 느낌
-- 그림 안에 텍스트 넣지 말기 (텍스트는 나중에 추가)
+Cover design requirements:
+- Eye-catching composition suitable for a book cover
+- Main characters prominently featured
+- Warm, child-friendly atmosphere
+- ABSOLUTELY NO TEXT OR WORDS in the image (title will be added later)
+- Establish the character design that will be used throughout the book
+
+Style: ${style}
 `;
 
       const coverImageDataUrl = await generateImageViaCloudflare(coverPrompt, style);

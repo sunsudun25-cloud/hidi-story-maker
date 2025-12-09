@@ -30,6 +30,7 @@ export async function generateStorybookPDF(
   filename: string = "storybook.pdf"
 ): Promise<void> {
   const { jsPDF } = await import("jspdf");
+  const fontData = (await import("../assets/fonts/NotoSansKR-Regular")).default;
   
   // A4 세로 방향 (210mm x 297mm)
   const doc = new jsPDF({
@@ -37,6 +38,11 @@ export async function generateStorybookPDF(
     unit: "mm",
     format: "a4",
   });
+
+  // ⭐ Noto Sans KR 폰트 추가 (한글 지원)
+  doc.addFileToVFS("NotoSansKR-Regular.ttf", fontData);
+  doc.addFont("NotoSansKR-Regular.ttf", "NotoSansKR", "normal");
+  doc.setFont("NotoSansKR");
 
   const pageWidth = 210;
   const pageHeight = 297;
@@ -50,7 +56,7 @@ export async function generateStorybookPDF(
     try {
       // 제목
       doc.setFontSize(24);
-      doc.setFont("helvetica", "bold");
+      doc.setFont("NotoSansKR", "normal");
       doc.text(bookData.title, pageWidth / 2, 40, { align: "center" });
 
       // 표지 이미지
@@ -69,7 +75,7 @@ export async function generateStorybookPDF(
   } else {
     // 표지 이미지 없을 때 - 제목만
     doc.setFontSize(28);
-    doc.setFont("helvetica", "bold");
+    doc.setFont("NotoSansKR", "normal");
     doc.text(bookData.title, pageWidth / 2, pageHeight / 2, { align: "center" });
     
     isFirstPage = false;
@@ -86,7 +92,7 @@ export async function generateStorybookPDF(
 
     // 페이지 번호
     doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
+    doc.setFont("NotoSansKR", "normal");
     doc.text(`${i + 1}`, pageWidth / 2, margin, { align: "center" });
 
     let currentY = margin + 10;
@@ -108,7 +114,7 @@ export async function generateStorybookPDF(
 
     // 페이지 텍스트
     doc.setFontSize(14);
-    doc.setFont("helvetica", "normal");
+    doc.setFont("NotoSansKR", "normal");
     
     // 텍스트를 여러 줄로 분할
     const lines = doc.splitTextToSize(page.text, contentWidth);
@@ -272,6 +278,7 @@ export async function generateStorybookPDFWithOptions(
  */
 export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<void> {
   const jsPDF = (await import("jspdf")).default;
+  const fontData = (await import("../assets/fonts/NotoSansKR-Regular")).default;
 
   const {
     pages,
@@ -289,6 +296,11 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
     unit: "pt",
     format: "a4",
   });
+
+  // ⭐ Noto Sans KR 폰트 추가 (한글 지원)
+  doc.addFileToVFS("NotoSansKR-Regular.ttf", fontData);
+  doc.addFont("NotoSansKR-Regular.ttf", "NotoSansKR", "normal");
+  doc.setFont("NotoSansKR");
 
   const width = doc.internal.pageSize.getWidth();
   const height = doc.internal.pageSize.getHeight();
@@ -322,14 +334,14 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
   }
 
   // 제목
-  doc.setFont("Helvetica", "bold");
+  doc.setFont("NotoSansKR", "normal");
   doc.setFontSize(32);
   doc.text(title, width / 2, height - 200, { align: "center" });
 
   // 저자명
-  doc.setFont("Helvetica", "normal");
+  doc.setFont("NotoSansKR", "normal");
   doc.setFontSize(18);
-  doc.text(`Written by ${author}`, width / 2, height - 160, { align: "center" });
+  doc.text(`저자: ${author}`, width / 2, height - 160, { align: "center" });
 
   // ======================================================
   // ===== 3. 본문 페이지 생성 =================================
@@ -346,9 +358,9 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
     }
 
     // 제목: 페이지 번호
-    doc.setFont("Helvetica", "bold");
+    doc.setFont("NotoSansKR", "normal");
     doc.setFontSize(18);
-    doc.text(`Page ${index + 1}`, 40, 50);
+    doc.text(`${index + 1}페이지`, 40, 50);
 
     // ===== 상세 레이아웃 =====
 
@@ -360,7 +372,7 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
         console.warn(`페이지 ${index + 1} 이미지 추가 실패:`, e);
       }
 
-      doc.setFont("Helvetica", "normal");
+      doc.setFont("NotoSansKR", "normal");
       doc.setFontSize(14);
 
       const contentY = 350;
@@ -371,7 +383,7 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
       const half = width / 2 - 60;
 
       // 텍스트
-      doc.setFont("Helvetica", "normal");
+      doc.setFont("NotoSansKR", "normal");
       doc.setFontSize(14);
       const lines = doc.splitTextToSize(page.text, half);
       doc.text(lines, 40, 80);
@@ -384,7 +396,7 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
       }
     } else {
       // 텍스트만 있는 페이지
-      doc.setFont("Helvetica", "normal");
+      doc.setFont("NotoSansKR", "normal");
       doc.setFontSize(14);
       const lines = doc.splitTextToSize(page.text, width - 80);
       doc.text(lines, 40, 100);

@@ -44,7 +44,7 @@ export default function WritingGenre() {
   ];
 
   return (
-    <div className="screen" style={{ paddingTop: "10px" }}>
+    <div className="screen">
       <div className="genre-container">
         <h2 className="screen-title">글쓰기 장르 선택</h2>
         <p className="screen-subtitle">

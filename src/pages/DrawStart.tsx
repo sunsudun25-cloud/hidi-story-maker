@@ -4,8 +4,8 @@ export default function DrawStart() {
   const navigate = useNavigate();
 
   return (
-    <div className="screen" style={{ paddingTop: "10px" }}>
-      <div className="screen-title" style={{ marginTop: "10px" }}>어떤 방식으로 그림을 만드시겠어요?</div>
+    <div className="screen">
+      <div className="screen-title">어떤 방식으로 그림을 만드시겠어요?</div>
 
       <div
         className="option-card primary"

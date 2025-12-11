@@ -11,8 +11,13 @@ import './styles/global.css'
 import './styles/canva-theme.css'
 import './index.css'
 
-// 환경변수 디버깅
-console.log("🌍 ENV CHECK", import.meta.env);
+// 환경변수 디버깅 (개발 환경에서만)
+if (import.meta.env.DEV) {
+  console.log("🌍 ENV CHECK (Dev Only)", {
+    mode: import.meta.env.MODE,
+    hasGeminiKey: !!import.meta.env.VITE_GEMINI_API_KEY
+  });
+}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

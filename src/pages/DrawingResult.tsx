@@ -94,21 +94,26 @@ export default function DrawingResult() {
   };
 
   return (
-    <div className="p-5 pb-20">
-      <h1 className="text-2xl font-bold mb-4">생성된 그림 🎨</h1>
+    <div className="min-h-screen bg-[#FFF9F0] p-5 pb-20">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-2xl font-bold mb-4">생성된 그림 🎨</h1>
 
-      <div className="mb-4 p-3 bg-gray-100 rounded-lg">
-        <p className="text-sm text-gray-600">설명: {prompt}</p>
-        <p className="text-sm text-gray-600">스타일: {style}</p>
+        <div className="mb-4 p-3 bg-gray-100 rounded-lg">
+          <p className="text-sm text-gray-600">설명: {prompt}</p>
+          <p className="text-sm text-gray-600">스타일: {style}</p>
+        </div>
+
+      <div className="flex justify-center mb-6">
+        <img
+          src={imageData}
+          alt="AI 생성 이미지"
+          className="rounded-xl shadow-lg cursor-pointer"
+          style={{ maxWidth: "380px", width: "100%", height: "auto" }}
+          onClick={() => window.open(imageData, "_blank")}
+          onLoad={() => console.log("✅ [DrawingResult] 이미지 로드 완료")}
+          onError={(e) => console.error("❌ [DrawingResult] 이미지 로드 실패:", e)}
+        />
       </div>
-
-      <img
-        src={imageData}
-        alt="AI 생성 이미지"
-        className="w-full rounded-xl shadow-lg"
-        onLoad={() => console.log("✅ [DrawingResult] 이미지 로드 완료")}
-        onError={(e) => console.error("❌ [DrawingResult] 이미지 로드 실패:", e)}
-      />
 
       <button
         className="w-full bg-emerald-500 text-white text-xl py-4 rounded-xl mt-6"
@@ -131,12 +136,13 @@ export default function DrawingResult() {
         📂 내 작품 보기
       </button>
 
-      <button
-        className="w-full bg-gray-300 text-black text-xl py-4 rounded-xl mt-4"
-        onClick={() => navigate(-1)}
-      >
-        ← 다시 만들기
-      </button>
+        <button
+          className="w-full bg-gray-300 text-black text-xl py-4 rounded-xl mt-4"
+          onClick={() => navigate(-1)}
+        >
+          ← 다시 만들기
+        </button>
+      </div>
     </div>
   );
 }

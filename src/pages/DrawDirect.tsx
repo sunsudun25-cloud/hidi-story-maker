@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { generateImageViaCloudflare } from "../services/cloudflareImageApi";
 import { friendlyErrorMessage } from "../utils/errorHandler";
 import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
+import { uploadImage } from "../services/imageUploadService";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./DrawDirect.css";
 
@@ -12,6 +13,8 @@ export default function DrawDirect() {
   const [selectedStyle, setSelectedStyle] = useState<string>("기본");
   const [isListening, setIsListening] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleVoiceInput = () => {
     if (!isSpeechRecognitionSupported()) {
@@ -65,18 +68,29 @@ export default function DrawDirect() {
       return;
     }
 
-    console.log("🚀 [DrawDirect] 이미지 생성 시작:", { description, style: selectedStyle });
+    console.log("🚀 [DrawDirect] 이미지 생성 시작:", { 
+      description, 
+      style: selectedStyle,
+      hasUploadedImage: !!uploadedImage 
+    });
 
     setIsGenerating(true);
 
     try {
+      // 업로드된 이미지가 있을 경우 프롬프트에 추가 정보 포함
+      let finalPrompt = description;
+      if (uploadedImage) {
+        finalPrompt = `${description} (참고: 업로드된 이미지의 스타일과 구도를 참고하여 새로운 그림을 그려주세요)`;
+        console.log("📸 [DrawDirect] 업로드된 이미지 포함 모드");
+      }
+
       const styleText = selectedStyle && selectedStyle !== "기본" ? ` (${selectedStyle} 스타일)` : "";
-      const fullPrompt = `${description}${styleText}`;
+      const fullPrompt = `${finalPrompt}${styleText}`;
 
       console.log("📡 [DrawDirect] generateImageViaCloudflare 호출 중...", fullPrompt);
 
-      // Firebase Functions를 통한 DALL·E 이미지 생성
-      const imageBase64 = await generateImageViaCloudflare(description, selectedStyle);
+      // Cloudflare Functions를 통한 DALL·E 이미지 생성
+      const imageBase64 = await generateImageViaCloudflare(finalPrompt, selectedStyle);
 
       console.log("✅ [DrawDirect] 이미지 생성 완료, Base64 길이:", imageBase64.length);
 
@@ -86,6 +100,7 @@ export default function DrawDirect() {
           imageBase64,
           prompt: description,
           style: selectedStyle,
+          sourceImage: uploadedImage, // 참고한 원본 이미지도 함께 전달
         },
       });
     } catch (err) {
@@ -97,9 +112,40 @@ export default function DrawDirect() {
     }
   };
 
-  const handleUpload = () => {
-    alert("사진 업로드 기능은 준비 중입니다.");
-    // TODO: 파일 업로드 구현
+  const handleUpload = async () => {
+    setIsUploading(true);
+    try {
+      // 이미지 파일 선택 및 업로드
+      const result = await uploadImage(true); // true = 자동 압축
+
+      console.log("✅ [DrawDirect] 이미지 업로드 완료:", {
+        fileName: result.fileName,
+        fileSize: result.fileSize,
+        width: result.width,
+        height: result.height,
+      });
+
+      // 업로드된 이미지 저장
+      setUploadedImage(result.base64);
+
+      // 자동으로 설명 추가 (선택)
+      if (!description.trim()) {
+        setDescription("업로드된 사진을 참고하여 그림을 그려주세요");
+      }
+
+      alert(`✅ 이미지가 업로드되었습니다!\n\n파일명: ${result.fileName}\n크기: ${result.width}x${result.height}px\n\n이제 설명을 입력하고 '그림 만들기'를 눌러주세요.`);
+    } catch (error) {
+      console.error("❌ [DrawDirect] 이미지 업로드 실패:", error);
+      alert(friendlyErrorMessage(error));
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    if (confirm("업로드한 이미지를 삭제하시겠습니까?")) {
+      setUploadedImage(null);
+    }
   };
 
   return (
@@ -113,6 +159,50 @@ export default function DrawDirect() {
         <br />
         예) 파란 하늘 아래 초록 들판에서 고양이가 나비와 놀고 있는 모습
       </p>
+
+      {/* 업로드된 이미지 미리보기 */}
+      {uploadedImage && (
+        <div style={{
+          marginBottom: "20px",
+          padding: "15px",
+          backgroundColor: "#f0f0f0",
+          borderRadius: "12px",
+          border: "2px solid var(--secondary)"
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+            <span style={{ fontSize: "16px", fontWeight: "bold" }}>📷 업로드된 이미지</span>
+            <button
+              onClick={handleRemoveImage}
+              style={{
+                padding: "6px 12px",
+                fontSize: "14px",
+                backgroundColor: "#ff6b6b",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer"
+              }}
+            >
+              🗑️ 삭제
+            </button>
+          </div>
+          <img
+            src={uploadedImage}
+            alt="업로드된 이미지"
+            style={{
+              width: "100%",
+              maxWidth: "300px",
+              height: "auto",
+              borderRadius: "8px",
+              display: "block",
+              margin: "0 auto"
+            }}
+          />
+          <p style={{ fontSize: "14px", color: "#666", marginTop: "10px", textAlign: "center" }}>
+            💡 이 이미지를 참고하여 새로운 그림을 만들어드립니다.
+          </p>
+        </div>
+      )}
 
       {/* 입력 박스 */}
       <textarea
@@ -128,8 +218,9 @@ export default function DrawDirect() {
         <button 
           className="btn-tertiary"
           onClick={handleUpload}
+          disabled={isUploading}
         >
-          📤 사진 또는 그림 업로드
+          {isUploading ? "📤 업로드 중..." : "📤 사진 또는 그림 업로드"}
         </button>
         <button 
           className={"btn-tertiary" + (isListening ? " voice-button--active" : "")}

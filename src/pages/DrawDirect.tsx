@@ -4,6 +4,7 @@ import { generateImageViaCloudflare } from "../services/cloudflareImageApi";
 import { friendlyErrorMessage } from "../utils/errorHandler";
 import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
 import { uploadImage } from "../services/imageUploadService";
+import { analyzeHandwriting } from "../services/visionService";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./DrawDirect.css";
 
@@ -15,6 +16,7 @@ export default function DrawDirect() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleVoiceInput = () => {
     if (!isSpeechRecognitionSupported()) {
@@ -142,6 +144,42 @@ export default function DrawDirect() {
     }
   };
 
+  const handleHandwritingUpload = async () => {
+    setIsUploading(true);
+    setIsAnalyzing(true);
+    try {
+      // 이미지 파일 선택 및 업로드
+      const result = await uploadImage(true);
+
+      console.log("✅ [DrawDirect] 손글씨 이미지 업로드 완료");
+
+      // 업로드된 이미지 저장
+      setUploadedImage(result.base64);
+
+      // Vision API로 손글씨 분석
+      console.log("🔍 [DrawDirect] 손글씨 분석 시작...");
+      const extractedText = await analyzeHandwriting(result.base64);
+
+      console.log("✅ [DrawDirect] 손글씨 분석 완료:", extractedText);
+
+      // 인식된 텍스트를 설명란에 입력
+      if (extractedText && extractedText !== "텍스트를 찾을 수 없습니다") {
+        setDescription(extractedText);
+        alert(`✅ 손글씨를 성공적으로 읽었습니다!\n\n인식된 내용:\n"${extractedText}"\n\n필요하면 내용을 수정한 후 '그림 만들기'를 눌러주세요.`);
+      } else {
+        alert("❌ 손글씨를 인식할 수 없습니다.\n\n다음을 확인해주세요:\n1. 글씨가 명확하게 보이는지\n2. 사진이 흐릿하지 않은지\n3. 조명이 충분한지");
+        setUploadedImage(null);
+      }
+    } catch (error) {
+      console.error("❌ [DrawDirect] 손글씨 분석 실패:", error);
+      alert("❌ 손글씨 분석 중 오류가 발생했습니다.\n\n" + friendlyErrorMessage(error));
+      setUploadedImage(null);
+    } finally {
+      setIsUploading(false);
+      setIsAnalyzing(false);
+    }
+  };
+
   const handleRemoveImage = () => {
     if (confirm("업로드한 이미지를 삭제하시겠습니까?")) {
       setUploadedImage(null);
@@ -218,9 +256,17 @@ export default function DrawDirect() {
         <button 
           className="btn-tertiary"
           onClick={handleUpload}
-          disabled={isUploading}
+          disabled={isUploading || isAnalyzing}
         >
-          {isUploading ? "📤 업로드 중..." : "📤 사진 또는 그림 업로드"}
+          {isUploading && !isAnalyzing ? "📤 업로드 중..." : "📤 사진 또는 그림 업로드"}
+        </button>
+        <button 
+          className="btn-tertiary"
+          onClick={handleHandwritingUpload}
+          disabled={isUploading || isAnalyzing}
+          style={{ backgroundColor: "#9c27b0", borderColor: "#9c27b0" }}
+        >
+          {isAnalyzing ? "🔍 손글씨 읽는 중..." : "✍️ 손글씨 사진 업로드"}
         </button>
         <button 
           className={"btn-tertiary" + (isListening ? " voice-button--active" : "")}

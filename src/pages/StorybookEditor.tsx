@@ -4,6 +4,8 @@ import { generateNextPage, safeGeminiCall } from "../services/geminiService";
 import { generateImageViaCloudflare } from "../services/cloudflareImageApi";
 import { saveStorybook } from "../services/dbService";
 import { useStorybook } from "../context/StorybookContext";
+import { uploadImage } from "../services/imageUploadService";
+import { analyzeHandwriting } from "../services/visionService";
 import StorybookLayout from "../components/storybook/StorybookLayout";
 
 export default function StorybookEditor() {
@@ -34,6 +36,7 @@ export default function StorybookEditor() {
   const [isAiHelping, setIsAiHelping] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [isGeneratingCover, setIsGeneratingCover] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   useEffect(() => {
     if (state) {
@@ -287,6 +290,38 @@ Style: ${style}
     }
   };
 
+  const handleHandwritingInput = async () => {
+    setIsAnalyzing(true);
+    try {
+      // 이미지 파일 선택 및 업로드
+      const result = await uploadImage(true);
+
+      console.log("✅ [StorybookEditor] 손글씨 이미지 업로드 완료");
+
+      // Vision API로 손글씨 분석
+      console.log("🔍 [StorybookEditor] 손글씨 분석 시작...");
+      const extractedText = await analyzeHandwriting(result.base64);
+
+      console.log("✅ [StorybookEditor] 손글씨 분석 완료:", extractedText);
+
+      // 인식된 텍스트를 현재 페이지에 추가
+      if (extractedText && extractedText !== "텍스트를 찾을 수 없습니다") {
+        const pageIndex = currentPage - 1;
+        const currentText = storyPages[pageIndex]?.text || "";
+        const newText = currentText ? `${currentText}\n\n${extractedText}` : extractedText;
+        setTextForPage(pageIndex, newText);
+        alert(`✅ 손글씨를 성공적으로 읽었습니다!\n\n인식된 내용:\n"${extractedText.substring(0, 100)}${extractedText.length > 100 ? '...' : ''}"\n\n내용이 추가되었습니다.`);
+      } else {
+        alert("❌ 손글씨를 인식할 수 없습니다.\n\n다음을 확인해주세요:\n1. 글씨가 명확하게 보이는지\n2. 사진이 흐릿하지 않은지\n3. 조명이 충분한지");
+      }
+    } catch (error) {
+      console.error("❌ [StorybookEditor] 손글씨 분석 실패:", error);
+      alert("❌ 손글씨 분석 중 오류가 발생했습니다.\n\n" + (error instanceof Error ? error.message : "알 수 없는 오류"));
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   const handleSave = async () => {
     if (storyPages.length < 1) {
       alert("최소 1페이지 이상 작성해야 저장할 수 있습니다!");
@@ -454,23 +489,43 @@ Style: ${style}
           </button>
         </div>
 
-        {/* 2. AI 이어쓰기 */}
-        <button
-          onClick={handleAiAssist}
-          disabled={isAiHelping}
-          style={{
-            padding: 12,
-            background: isAiHelping ? "#D1D5DB" : "#10B981",
-            color: "white",
-            border: "none",
-            borderRadius: 8,
-            fontSize: 16,
-            fontWeight: 600,
-            cursor: isAiHelping ? "not-allowed" : "pointer",
-          }}
-        >
-          {isAiHelping ? "⏳ AI가 쓰는 중..." : "✨ AI가 이어서 쓰기"}
-        </button>
+        {/* 2. AI 이어쓰기 & 손글씨 입력 */}
+        <div style={{ display: "flex", gap: 10 }}>
+          <button
+            onClick={handleAiAssist}
+            disabled={isAiHelping || isAnalyzing}
+            style={{
+              flex: 1,
+              padding: 12,
+              background: isAiHelping ? "#D1D5DB" : "#10B981",
+              color: "white",
+              border: "none",
+              borderRadius: 8,
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: isAiHelping ? "not-allowed" : "pointer",
+            }}
+          >
+            {isAiHelping ? "⏳ AI가 쓰는 중..." : "✨ AI가 이어서 쓰기"}
+          </button>
+          <button
+            onClick={handleHandwritingInput}
+            disabled={isAnalyzing || isAiHelping}
+            style={{
+              flex: 1,
+              padding: 12,
+              background: isAnalyzing ? "#D1D5DB" : "#9C27B0",
+              color: "white",
+              border: "none",
+              borderRadius: 8,
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: isAnalyzing ? "not-allowed" : "pointer",
+            }}
+          >
+            {isAnalyzing ? "🔍 읽는 중..." : "✍️ 손글씨 입력"}
+          </button>
+        </div>
 
         {/* 3. 삽화 만들기 */}
         {currentPageData.imageUrl ? (

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { generateImageViaCloudflare } from "../services/cloudflareImageApi";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { friendlyErrorMessage } from "../utils/errorHandler";
+import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
 import "./DrawPractice.css";
 
 type ExamplePrompt = {
@@ -79,41 +80,32 @@ export default function DrawPractice() {
 
   // 음성 입력 (Web Speech API)
   const handleVoiceInput = () => {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert("이 브라우저에서는 음성 인식이 지원되지 않습니다.");
+    if (!isSpeechRecognitionSupported()) {
+      alert("이 브라우저는 음성 인식을 지원하지 않습니다.\n\nChrome, Edge, Safari 브라우저를 사용해주세요.");
       return;
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = "ko-KR";
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    setIsListening(true);
 
-    recognition.onstart = () => {
-      setIsListening(true);
-    };
+    const stopListening = startListening(
+      (text) => {
+        // 인식된 텍스트를 기존 내용에 추가
+        setDescription((prev) =>
+          prev.trim().length > 0 ? `${prev} ${text}` : text
+        );
+        setIsListening(false);
+      },
+      (error) => {
+        alert(error);
+        setIsListening(false);
+      }
+    );
 
-    recognition.onerror = () => {
+    // 컴포넌트가 언마운트될 때 음성 인식 중지
+    return () => {
+      stopListening();
       setIsListening(false);
-      alert("음성 인식 중 오류가 발생했어요. 다시 시도해 주세요.");
     };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognition.onresult = (event: any) => {
-      const result = event.results[0][0].transcript as string;
-      setDescription((prev) =>
-        prev.trim().length > 0 ? `${prev} ${result}` : result
-      );
-    };
-
-    recognition.start();
   };
 
   // 그림 생성

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { safeGeminiCall } from "../services/geminiService";
 import { saveStory, getAllStories, type Story, type StoryImage } from "../services/dbService";
 import { generateWritingImage } from "../services/imageService";
+import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
 
 export default function WriteEditor() {
   const navigate = useNavigate();
@@ -479,38 +480,30 @@ ${content}
 
   // 🎤 음성 입력
   const handleVoiceInput = () => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert("죄송합니다. 이 브라우저는 음성 입력을 지원하지 않습니다.");
+    if (!isSpeechRecognitionSupported()) {
+      alert("이 브라우저는 음성 인식을 지원하지 않습니다.\n\nChrome, Edge, Safari 브라우저를 사용해주세요.");
       return;
     }
 
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    
-    recognition.lang = 'ko-KR';
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    setIsListening(true);
 
-    recognition.onstart = () => {
-      setIsListening(true);
-    };
+    const stopListening = startListening(
+      (text) => {
+        // 인식된 텍스트를 기존 내용에 추가
+        setContent(content + (content ? "\n\n" : "") + text);
+        setIsListening(false);
+      },
+      (error) => {
+        alert(error);
+        setIsListening(false);
+      }
+    );
 
-    recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      setContent(content + (content ? "\n\n" : "") + transcript);
+    // 컴포넌트가 언마운트될 때 음성 인식 중지
+    return () => {
+      stopListening();
       setIsListening(false);
     };
-
-    recognition.onerror = () => {
-      alert("음성 인식 중 오류가 발생했습니다.");
-      setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognition.start();
   };
 
   return (

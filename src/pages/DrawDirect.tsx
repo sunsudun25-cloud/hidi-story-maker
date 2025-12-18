@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateImageViaCloudflare } from "../services/cloudflareImageApi";
 import { friendlyErrorMessage } from "../utils/errorHandler";
+import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./DrawDirect.css";
 
@@ -13,9 +14,32 @@ export default function DrawDirect() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleVoiceInput = () => {
-    setIsListening(!isListening);
-    alert(isListening ? "음성 입력 중지" : "음성 입력 시작");
-    // TODO: Web Speech API 구현
+    if (!isSpeechRecognitionSupported()) {
+      alert("이 브라우저는 음성 인식을 지원하지 않습니다.\n\nChrome, Edge, Safari 브라우저를 사용해주세요.");
+      return;
+    }
+
+    setIsListening(true);
+
+    const stopListening = startListening(
+      (text) => {
+        // 인식된 텍스트를 기존 내용에 추가
+        setDescription((prev) =>
+          prev.trim().length > 0 ? `${prev} ${text}` : text
+        );
+        setIsListening(false);
+      },
+      (error) => {
+        alert(error);
+        setIsListening(false);
+      }
+    );
+
+    // 컴포넌트가 언마운트될 때 음성 인식 중지
+    return () => {
+      stopListening();
+      setIsListening(false);
+    };
   };
 
   const handleHelp = () => {
@@ -108,10 +132,11 @@ export default function DrawDirect() {
           📤 사진 또는 그림 업로드
         </button>
         <button 
-          className="btn-tertiary"
+          className={"btn-tertiary" + (isListening ? " voice-button--active" : "")}
           onClick={handleVoiceInput}
+          disabled={isListening}
         >
-          🎤 말로 입력
+          {isListening ? "🎤 듣는 중..." : "🎤 말로 입력"}
         </button>
         <button 
           className="btn-secondary"

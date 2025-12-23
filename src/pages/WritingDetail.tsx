@@ -80,41 +80,60 @@ export default function WritingDetail() {
         </div>
 
         {/* 버튼 그룹 */}
-        <div className="mt-6 space-y-3">
-          <button
-            onClick={handleEdit}
-            className="
-              w-full py-4 text-xl font-bold rounded-xl 
-              bg-blue-600 text-white shadow-lg 
-              hover:bg-blue-700
-              active:scale-95
-              transition-all duration-200
-            "
-          >
-            ✏️ 수정하기
-          </button>
+        <div style={{ marginTop: "24px" }}>
+          {/* 수정하기, 삭제하기 (2열) */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            <button
+              onClick={handleEdit}
+              style={{
+                backgroundColor: "#2563eb",
+                color: "white",
+                fontWeight: "600",
+                padding: "12px 16px",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                fontSize: "16px"
+              }}
+            >
+              ✏️ 수정하기
+            </button>
 
-          <button
-            onClick={handleDelete}
-            className="
-              w-full py-4 text-xl font-bold rounded-xl 
-              bg-red-600 text-white shadow-lg 
-              hover:bg-red-700
-              active:scale-95
-              transition-all duration-200
-            "
-          >
-            🗑️ 삭제하기
-          </button>
+            <button
+              onClick={handleDelete}
+              style={{
+                backgroundColor: "#dc2626",
+                color: "white",
+                fontWeight: "600",
+                padding: "12px 16px",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                fontSize: "16px"
+              }}
+            >
+              🗑️ 삭제하기
+            </button>
+          </div>
 
+          {/* 목록으로 돌아가기 */}
           <button
             onClick={() => navigate("/gallery")}
-            className="
-              w-full py-3 text-lg font-semibold
-              bg-gray-100 text-gray-700 rounded-xl
-              hover:bg-gray-200
-              transition-colors duration-200
-            "
+            style={{
+              width: "100%",
+              backgroundColor: "#9ca3af",
+              color: "white",
+              fontWeight: "600",
+              padding: "12px 16px",
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              marginTop: "12px",
+              fontSize: "16px"
+            }}
           >
             ← 목록으로 돌아가기
           </button>

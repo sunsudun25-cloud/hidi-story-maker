@@ -166,29 +166,82 @@ export default function MyWorksStorybookDetail() {
         </div>
 
         {/* 액션 버튼들 */}
-        <div className="flex flex-col gap-2.5">
-          {/* 편집하기 */}
-          <button
-            onClick={handleEdit}
-            className="py-2.5 px-4 bg-blue-500 text-white rounded-lg text-[15px] font-semibold hover:bg-blue-600 transition shadow-sm"
-          >
-            ✏️ 편집하기
-          </button>
+        <div>
+          {/* 편집하기, 삭제하기 (2열) */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            <button
+              onClick={handleEdit}
+              style={{
+                backgroundColor: "#3b82f6",
+                color: "white",
+                fontWeight: "600",
+                padding: "12px 16px",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                fontSize: "16px"
+              }}
+            >
+              ✏️ 편집하기
+            </button>
+
+            <button
+              onClick={handleDelete}
+              style={{
+                backgroundColor: "#dc2626",
+                color: "white",
+                fontWeight: "600",
+                padding: "12px 16px",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                fontSize: "16px"
+              }}
+            >
+              🗑️ 삭제하기
+            </button>
+          </div>
 
           {/* PDF 출력 */}
           <button
             onClick={handleExport}
-            className="py-2.5 px-4 bg-purple-500 text-white rounded-lg text-[15px] font-semibold hover:bg-purple-600 transition shadow-sm"
+            style={{
+              width: "100%",
+              backgroundColor: "#9333ea",
+              color: "white",
+              fontWeight: "700",
+              padding: "12px 16px",
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              marginTop: "12px",
+              fontSize: "16px"
+            }}
           >
             📄 PDF 출력
           </button>
 
-          {/* 삭제 */}
+          {/* 목록으로 돌아가기 */}
           <button
-            onClick={handleDelete}
-            className="py-2.5 px-4 bg-rose-500 text-white rounded-lg text-[15px] font-semibold hover:bg-rose-600 transition shadow-sm"
+            onClick={() => navigate("/my-works/storybooks")}
+            style={{
+              width: "100%",
+              backgroundColor: "#9ca3af",
+              color: "white",
+              fontWeight: "600",
+              padding: "12px 16px",
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              marginTop: "12px",
+              fontSize: "16px"
+            }}
           >
-            🗑️ 삭제하기
+            ← 목록으로 돌아가기
           </button>
         </div>
       </div>

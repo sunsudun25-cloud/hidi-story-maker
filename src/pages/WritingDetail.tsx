@@ -48,6 +48,43 @@ export default function WritingDetail() {
     });
   };
 
+  const handleDownload = () => {
+    // 텍스트를 파일로 다운로드
+    const content = `${story.title}\n\n작성일: ${new Date(story.createdAt).toLocaleDateString('ko-KR')}\n\n${story.content || story.description}`;
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${story.title}-${Date.now()}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    alert("📥 글이 다운로드되었습니다!");
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: story.title,
+          text: story.content || story.description,
+        });
+        alert("✅ 공유되었습니다!");
+      } catch (err) {
+        console.error("공유 실패:", err);
+      }
+    } else {
+      // 공유 기능이 없으면 클립보드에 복사
+      const content = `${story.title}\n\n${story.content || story.description}`;
+      navigator.clipboard.writeText(content).then(() => {
+        alert("📋 클립보드에 복사되었습니다!");
+      }).catch(() => {
+        alert("이 브라우저는 공유 기능을 지원하지 않습니다.");
+      });
+    }
+  };
+
   return (
     <div className="pb-28" style={{ minHeight: "100vh", backgroundColor: "#FFF9F0" }}>
       <div className="max-w-4xl mx-auto p-5">
@@ -81,8 +118,45 @@ export default function WritingDetail() {
 
         {/* 버튼 그룹 */}
         <div style={{ marginTop: "24px" }}>
-          {/* 수정하기, 삭제하기 (2열) */}
+          {/* 다운로드, 공유하기 (2열) */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            <button
+              onClick={handleDownload}
+              style={{
+                backgroundColor: "#10b981",
+                color: "white",
+                fontWeight: "600",
+                padding: "12px 16px",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                fontSize: "16px"
+              }}
+            >
+              📥 다운로드
+            </button>
+
+            <button
+              onClick={handleShare}
+              style={{
+                backgroundColor: "#3b82f6",
+                color: "white",
+                fontWeight: "600",
+                padding: "12px 16px",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                fontSize: "16px"
+              }}
+            >
+              📤 공유하기
+            </button>
+          </div>
+
+          {/* 수정하기, 삭제하기 (2열) */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "12px" }}>
             <button
               onClick={handleEdit}
               style={{
@@ -117,6 +191,26 @@ export default function WritingDetail() {
               🗑️ 삭제하기
             </button>
           </div>
+
+          {/* 다시 만들기 */}
+          <button
+            onClick={() => navigate("/writing")}
+            style={{
+              width: "100%",
+              backgroundColor: "#9333ea",
+              color: "white",
+              fontWeight: "700",
+              padding: "12px 16px",
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              marginTop: "12px",
+              fontSize: "16px"
+            }}
+          >
+            ✨ 다시 만들기
+          </button>
 
           {/* 목록으로 돌아가기 */}
           <button

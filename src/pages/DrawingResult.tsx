@@ -116,10 +116,20 @@ export default function DrawingResult() {
       </div>
 
       {/* 버튼 그룹 */}
-      <div className="grid grid-cols-2 gap-3 mt-6">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "24px" }}>
         {/* 이미지 다운로드 */}
         <button
-          className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-colors"
+          style={{
+            backgroundColor: "#10b981",
+            color: "white",
+            fontWeight: "600",
+            padding: "12px 16px",
+            borderRadius: "8px",
+            border: "none",
+            cursor: "pointer",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            fontSize: "16px"
+          }}
           onClick={handleDownload}
         >
           📥 다운로드
@@ -127,7 +137,17 @@ export default function DrawingResult() {
 
         {/* 공유하기 */}
         <button
-          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-colors"
+          style={{
+            backgroundColor: "#3b82f6",
+            color: "white",
+            fontWeight: "600",
+            padding: "12px 16px",
+            borderRadius: "8px",
+            border: "none",
+            cursor: "pointer",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            fontSize: "16px"
+          }}
           onClick={handleShare}
         >
           📤 공유하기
@@ -136,7 +156,19 @@ export default function DrawingResult() {
 
       {/* 내 작품 보기 (전체 너비) */}
       <button
-        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg shadow-md mt-3 transition-colors"
+        style={{
+          width: "100%",
+          backgroundColor: "#9333ea",
+          color: "white",
+          fontWeight: "700",
+          padding: "12px 16px",
+          borderRadius: "8px",
+          border: "none",
+          cursor: "pointer",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          marginTop: "12px",
+          fontSize: "16px"
+        }}
         onClick={() => navigate("/my-works")}
       >
         👀 내 작품 보기
@@ -144,7 +176,19 @@ export default function DrawingResult() {
 
       {/* 다시 만들기 */}
       <button
-        className="w-full bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 px-4 rounded-lg shadow-md mt-3 transition-colors"
+        style={{
+          width: "100%",
+          backgroundColor: "#9ca3af",
+          color: "white",
+          fontWeight: "600",
+          padding: "12px 16px",
+          borderRadius: "8px",
+          border: "none",
+          cursor: "pointer",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          marginTop: "12px",
+          fontSize: "16px"
+        }}
         onClick={() => navigate(-1)}
       >
         ← 다시 만들기

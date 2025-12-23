@@ -115,33 +115,40 @@ export default function DrawingResult() {
         />
       </div>
 
-      <button
-        className="w-full bg-emerald-500 text-white text-xl py-4 rounded-xl mt-6"
-        onClick={handleDownload}
-      >
-        📥 이미지 다운로드
-      </button>
+      {/* 버튼 그룹 */}
+      <div className="grid grid-cols-2 gap-3 mt-6">
+        {/* 이미지 다운로드 */}
+        <button
+          className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-colors"
+          onClick={handleDownload}
+        >
+          📥 다운로드
+        </button>
 
-      <button
-        className="w-full bg-blue-500 text-white text-xl py-4 rounded-xl mt-4"
-        onClick={handleShare}
-      >
-        📤 공유하기
-      </button>
+        {/* 공유하기 */}
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-colors"
+          onClick={handleShare}
+        >
+          📤 공유하기
+        </button>
+      </div>
 
+      {/* 내 작품 보기 (전체 너비) */}
       <button
-        className="w-full bg-purple-500 text-white text-xl py-4 rounded-xl mt-4"
+        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg shadow-md mt-3 transition-colors"
         onClick={() => navigate("/my-works")}
       >
-        📂 내 작품 보기
+        👀 내 작품 보기
       </button>
 
-        <button
-          className="w-full bg-gray-300 text-black text-xl py-4 rounded-xl mt-4"
-          onClick={() => navigate(-1)}
-        >
-          ← 다시 만들기
-        </button>
+      {/* 다시 만들기 */}
+      <button
+        className="w-full bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 px-4 rounded-lg shadow-md mt-3 transition-colors"
+        onClick={() => navigate(-1)}
+      >
+        ← 다시 만들기
+      </button>
       </div>
     </div>
   );

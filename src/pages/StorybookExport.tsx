@@ -50,9 +50,11 @@ export default function StorybookExport({
   const [author, setAuthor] = useState("");
   const [coverImage, setCoverImage] = useState(initialCover);
 
-  const [layout, setLayout] = useState("vertical");
+  const [layout, setLayout] = useState("horizontal");  // 기본값: 가로 (출판 표준)
   const [usePastelBackground, setUsePastelBackground] = useState(true);
-  const [textImageLayout, setTextImageLayout] = useState("image-top");
+  const [textImageLayout, setTextImageLayout] = useState("image-left");  // 기본값: 왼쪽 그림
+  const [bookMode, setBookMode] = useState(true);  // 제본 모드
+  const [pageSize, setPageSize] = useState("a4");  // 페이지 크기
 
   const [isGeneratingCover, setIsGeneratingCover] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -111,8 +113,10 @@ export default function StorybookExport({
         author,
         layout: layout as "vertical" | "horizontal",
         usePastelBackground,
-        textImageLayout: textImageLayout as "image-right" | "image-top",
+        textImageLayout: textImageLayout as "image-left" | "image-top",
         coverImage,
+        bookMode,  // 제본 모드 전달
+        pageSize: pageSize as "a4" | "a5",  // 페이지 크기 전달
       });
 
       alert("✨ 동화책 PDF가 다운로드되었습니다!");
@@ -230,11 +234,21 @@ export default function StorybookExport({
         </>
       )}
 
-      {/* ===== STEP 3: PDF 옵션 ===== */}
+      {/* ===== STEP 3: PDF 옵션 - 출판용 그림책 설정 ===== */}
       {step === 3 && (
         <>
           <StepCard>
-            <label className="field-label">📄 PDF 방향</label>
+            <label className="field-label">📐 페이지 크기</label>
+            <select
+              className="field-select"
+              value={pageSize}
+              onChange={(e) => setPageSize(e.target.value)}
+            >
+              <option value="a4">A4 (210 × 297mm) - 권장</option>
+              <option value="a5">A5 (148 × 210mm)</option>
+            </select>
+
+            <label className="field-label">📄 PDF 방향 (레이아웃)</label>
             <select
               className="field-select"
               value={layout}
@@ -249,28 +263,58 @@ export default function StorybookExport({
                 }
               }}
             >
-              <option value="vertical">세로 (위: 그림, 아래: 글)</option>
-              <option value="horizontal">가로 (왼쪽: 그림, 오른쪽: 글)</option>
+              <option value="horizontal">가로 (왼쪽 55% 그림, 오른쪽 40% 글) ⭐ 출판 표준</option>
+              <option value="vertical">세로 (위: 그림 50%, 아래: 글 40%)</option>
             </select>
 
             <div style={{ 
               marginTop: '16px', 
-              padding: '12px', 
-              backgroundColor: '#f0f9ff', 
-              borderRadius: '8px',
-              border: '1px solid #bfdbfe'
+              padding: '14px', 
+              backgroundColor: layout === "horizontal" ? '#f0fdf4' : '#f0f9ff', 
+              borderRadius: '10px',
+              border: layout === "horizontal" ? '2px solid #86efac' : '1px solid #bfdbfe'
             }}>
               <p style={{ 
-                fontSize: '14px', 
-                color: '#1e40af', 
+                fontSize: '15px', 
+                color: layout === "horizontal" ? '#166534' : '#1e40af', 
                 margin: 0,
-                lineHeight: '1.5'
+                lineHeight: '1.6',
+                fontWeight: layout === "horizontal" ? '600' : 'normal'
               }}>
-                ℹ️ {layout === "vertical" 
-                  ? "세로 방향: 그림이 위에, 글이 아래에 배치됩니다." 
-                  : "가로 방향: 그림이 왼쪽에, 글이 오른쪽에 배치됩니다."}
+                {layout === "vertical" 
+                  ? "📖 세로 방향: 그림이 위쪽 50%, 글이 아래쪽 40%에 배치됩니다." 
+                  : "📕 가로 그림책 (출판 표준): 왼쪽 55~60%에 삽화, 오른쪽 40~45%에 글이 배치됩니다. 전시·수업·제본에 최적화된 레이아웃입니다."}
               </p>
             </div>
+
+            <label className="field-label">📚 출력 모드</label>
+            <select
+              className="field-select"
+              value={String(bookMode)}
+              onChange={(e) => setBookMode(e.target.value === "true")}
+            >
+              <option value="true">Book Mode (제본용 여백) ⭐ 권장</option>
+              <option value="false">일반 모드 (균등 여백)</option>
+            </select>
+
+            {bookMode && (
+              <div style={{ 
+                marginTop: '12px', 
+                padding: '12px', 
+                backgroundColor: '#fef3c7', 
+                borderRadius: '8px',
+                border: '1px solid #fbbf24'
+              }}>
+                <p style={{ 
+                  fontSize: '13px', 
+                  color: '#92400e', 
+                  margin: 0,
+                  lineHeight: '1.5'
+                }}>
+                  💡 <strong>Book Mode:</strong> 제본 안쪽 여백을 바깥쪽보다 크게 설정하여 인쇄·제본 시 글이 잘리지 않습니다.
+                </p>
+              </div>
+            )}
 
             <label className="field-label">🎨 배경 스타일</label>
             <select
@@ -278,8 +322,8 @@ export default function StorybookExport({
               value={String(usePastelBackground)}
               onChange={(e) => setUsePastelBackground(e.target.value === "true")}
             >
-              <option value="true">파스텔톤 배경</option>
-              <option value="false">기본 흰색</option>
+              <option value="true">파스텔톤 배경 (부드러운 느낌)</option>
+              <option value="false">흰색 배경 (깔끔한 느낌)</option>
             </select>
           </StepCard>
 
@@ -303,16 +347,26 @@ export default function StorybookExport({
               </div>
               <div className="summary-item">
                 <span className="summary-label">✍️ 저자:</span>
-                <span className="summary-value">{author}</span>
+                <span className="summary-value">{author || "(저자명 없음)"}</span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">📐 크기:</span>
+                <span className="summary-value">{pageSize.toUpperCase()}</span>
               </div>
               <div className="summary-item">
                 <span className="summary-label">📄 방향:</span>
-                <span className="summary-value">{layout === "vertical" ? "세로" : "가로"}</span>
+                <span className="summary-value">{layout === "vertical" ? "세로" : "가로 (출판 표준)"}</span>
               </div>
               <div className="summary-item">
                 <span className="summary-label">🖼️ 배치:</span>
                 <span className="summary-value">
-                  {layout === "vertical" ? "위: 그림, 아래: 글" : "왼쪽: 그림, 오른쪽: 글"}
+                  {layout === "vertical" ? "위: 그림 50%, 아래: 글 40%" : "왼쪽: 그림 55%, 오른쪽: 글 40%"}
+                </span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">📚 모드:</span>
+                <span className="summary-value">
+                  {bookMode ? "Book Mode (제본용 여백)" : "일반 모드"}
                 </span>
               </div>
               <div className="summary-item">

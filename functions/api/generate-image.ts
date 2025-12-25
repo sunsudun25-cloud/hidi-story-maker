@@ -70,20 +70,46 @@ export async function onRequest(context: { request: Request; env: Env }) {
 
     const stylePrompt = styleMap[style || '기본'] || 'illustration style';
     
-    // ⭐⭐⭐ 최우선 규칙: 텍스트 완전 제거 (프롬프트 맨 앞에 배치)
-    const criticalRule = 'CRITICAL: Image must contain ZERO text, words, letters, or written language of any kind. Pure illustration only.';
+    // ⭐⭐⭐ 최우선 규칙: 텍스트/로고/워터마크 완전 제거 (프롬프트 맨 앞에 배치)
+    const criticalRules = `
+🚨 ABSOLUTELY NO TEXT ALLOWED - This is the most important rule! 🚨
+
+CRITICAL REQUIREMENTS (MUST FOLLOW):
+✅ ZERO text, words, letters, alphabets, or numbers
+✅ NO signs, posters, labels, speech bubbles, captions
+✅ NO books with visible text on pages
+✅ NO logos, watermarks, signatures, or branding
+✅ NO English, Korean, Chinese, Japanese, or any language
+✅ ONLY pure visual illustration without any written content
+
+FORBIDDEN ELEMENTS:
+❌ Text ❌ Words ❌ Letters ❌ Numbers ❌ Symbols
+❌ Signs ❌ Labels ❌ Captions ❌ Speech bubbles
+❌ Book text ❌ Posters ❌ Logos ❌ Watermarks
+❌ Any form of written language
+
+REQUIRED APPROACH:
+- Pure illustration storytelling through visuals only
+- Character expressions and actions tell the story
+- Environmental details convey the narrative
+- NO reliance on text or written elements
+    `.trim();
     
-    // 간결하고 강력한 NO TEXT 규칙
-    const noTextRule = 'NO text NO words NO letters NO numbers NO symbols NO signs NO labels anywhere in image.';
+    const singlePageRule = 'Single unified scene illustration (NOT a book spread or two-page layout).';
     
-    const singlePageRule = 'Single unified scene, not a book spread or two-page layout.';
+    const styleRule = `Art style: ${stylePrompt}, children's book illustration style.`;
     
-    const styleRule = `${stylePrompt}, children's book illustration style.`;
-    
-    const qualityRule = 'High quality, simple clean composition, consistent character design.';
+    const qualityRule = 'High quality, simple clean composition, consistent character design, professional children\'s book illustration.';
     
     // ⭐ 프롬프트 구조: 가장 중요한 규칙을 맨 앞에
-    const fullPrompt = `${criticalRule} ${noTextRule} ${prompt}. ${singlePageRule} ${styleRule} ${qualityRule}`;
+    const fullPrompt = `${criticalRules}
+
+SCENE DESCRIPTION:
+${prompt}
+
+${singlePageRule}
+${styleRule}
+${qualityRule}`;
 
     console.log('📡 OpenAI API 호출:', fullPrompt);
 

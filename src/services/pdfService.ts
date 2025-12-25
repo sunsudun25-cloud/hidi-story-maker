@@ -254,6 +254,8 @@ export interface EnhancedPDFOptions {
   usePastelBackground: boolean;
   textImageLayout: "image-left" | "image-top";
   coverImage?: string | null;
+  bookMode?: boolean;  // 제본 여백 모드
+  pageSize?: "a4" | "a5";  // 페이지 크기
 }
 
 /**
@@ -272,8 +274,8 @@ export async function generateStorybookPDFWithOptions(
 }
 
 /**
- * 강화된 PDF 생성기
- * 파스텔 배경, 커버 이미지, 다양한 레이아웃 지원
+ * 강화된 PDF 생성기 - 출판용 그림 동화책
+ * Book Mode: 제본 여백 지원, 가로형 레이아웃 최적화
  * @param options 고급 PDF 생성 옵션
  */
 export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<void> {
@@ -287,17 +289,39 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
     usePastelBackground,
     textImageLayout,
     coverImage,
+    bookMode = true,  // 기본값: Book Mode 활성화
+    pageSize = "a4",   // 기본값: A4
   } = options;
 
   // === 1. PDF 설정 ===
   const doc = new jsPDF({
     orientation: layout === "horizontal" ? "landscape" : "portrait",
     unit: "pt",
-    format: "a4",
+    format: pageSize,
   });
 
   const width = doc.internal.pageSize.getWidth();
   const height = doc.internal.pageSize.getHeight();
+  
+  // === 제본 여백 설정 (Book Mode) ===
+  // 짝수 페이지(왼쪽): 오른쪽 여백 증가
+  // 홀수 페이지(오른쪽): 왼쪽 여백 증가
+  const baseMargin = 40;  // 기본 여백
+  const gutterMargin = 60;  // 제본 안쪽 여백 (더 큼)
+  
+  const getMargins = (pageNumber: number) => {
+    if (!bookMode) {
+      return { left: baseMargin, right: baseMargin, top: baseMargin, bottom: baseMargin };
+    }
+    
+    const isEvenPage = pageNumber % 2 === 0;
+    return {
+      left: isEvenPage ? baseMargin : gutterMargin,   // 홀수 페이지는 왼쪽 여백 증가
+      right: isEvenPage ? gutterMargin : baseMargin,  // 짝수 페이지는 오른쪽 여백 증가
+      top: baseMargin,
+      bottom: baseMargin
+    };
+  };
 
   // ⭐ html2canvas를 사용하여 한글 텍스트를 이미지로 렌더링
   const html2canvas = (await import("html2canvas")).default;
@@ -383,13 +407,17 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
   }
 
   // ======================================================
-  // ===== 3. 본문 페이지 생성 =================================
+  // ===== 3. 본문 페이지 생성 - 출판용 그림책 레이아웃 =====
   // ======================================================
 
   // 각 페이지를 HTML로 렌더링
   for (let index = 0; index < pages.length; index++) {
     const page = pages[index];
+    const pageNumber = index + 2;  // 표지 = 1, 본문 = 2부터
     doc.addPage();
+
+    // 제본 여백 적용
+    const margins = getMargins(pageNumber);
 
     // 페이지를 HTML로 생성
     const pageDiv = document.createElement('div');
@@ -398,7 +426,7 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
     pageDiv.style.position = 'fixed';
     pageDiv.style.left = '-9999px';
     pageDiv.style.top = '0';
-    pageDiv.style.fontFamily = '"Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
+    pageDiv.style.fontFamily = '"Noto Sans KR", "Pretendard", "Malgun Gothic", sans-serif';
     
     // 배경색
     if (usePastelBackground) {
@@ -408,106 +436,102 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
       pageDiv.style.backgroundColor = '#ffffff';
     }
     
-    // 페이지 번호
+    // 페이지 번호 (하단 중앙, 작은 크기)
     const pageNumEl = document.createElement('div');
-    pageNumEl.textContent = `${index + 1}페이지`;
-    pageNumEl.style.fontSize = '18px';
+    pageNumEl.textContent = `– ${index + 1} –`;
+    pageNumEl.style.fontSize = '12px';
     pageNumEl.style.position = 'absolute';
-    pageNumEl.style.left = '40px';
-    pageNumEl.style.top = '50px';
-    pageNumEl.style.color = '#333333';
+    pageNumEl.style.left = '0';
+    pageNumEl.style.right = '0';
+    pageNumEl.style.bottom = '20px';
+    pageNumEl.style.textAlign = 'center';
+    pageNumEl.style.color = '#999999';
     pageDiv.appendChild(pageNumEl);
     
-    // 레이아웃에 따라 콘텐츠 배치
-    if (textImageLayout === "image-top" && page.image) {
-      // 이미지 상단 + 텍스트 하단
-      const imgEl = document.createElement('img');
-      imgEl.src = page.image;
-      imgEl.style.position = 'absolute';
-      imgEl.style.left = '40px';
-      imgEl.style.top = '80px';
-      imgEl.style.width = `${width - 80}px`;
-      imgEl.style.height = '240px';
-      imgEl.style.objectFit = 'contain';
-      pageDiv.appendChild(imgEl);
+    // === 가로형 레이아웃: 왼쪽 55~60% 그림, 오른쪽 40~45% 글 ===
+    if (textImageLayout === "image-left") {
+      const imageWidth = width * 0.55;  // 그림 영역 55%
+      const textWidth = width * 0.40;   // 텍스트 영역 40%
+      const gap = width * 0.05;         // 중간 간격 5%
       
-      const textEl = document.createElement('div');
-      textEl.textContent = page.text;
-      textEl.style.position = 'absolute';
-      textEl.style.left = '40px';
-      textEl.style.top = '350px';
-      textEl.style.width = `${width - 80}px`;
-      textEl.style.fontSize = '14px';
-      textEl.style.lineHeight = '1.6';
-      textEl.style.color = '#000000';
-      textEl.style.whiteSpace = 'pre-wrap';
-      textEl.style.wordWrap = 'break-word';
-      pageDiv.appendChild(textEl);
-    } else if (textImageLayout === "image-left" && page.image) {
-      // 가로 방향: 이미지 왼쪽 + 텍스트 오른쪽
-      const half = width / 2 - 60;
-      
-      // 이미지 왼쪽
-      const imgEl = document.createElement('img');
-      imgEl.src = page.image;
-      imgEl.style.position = 'absolute';
-      imgEl.style.left = '40px';
-      imgEl.style.top = '80px';
-      imgEl.style.width = `${half}px`;
-      imgEl.style.height = `${half}px`;
-      imgEl.style.objectFit = 'contain';
-      pageDiv.appendChild(imgEl);
+      if (page.image) {
+        // 이미지 왼쪽
+        const imgEl = document.createElement('img');
+        imgEl.src = page.image;
+        imgEl.style.position = 'absolute';
+        imgEl.style.left = `${margins.left}px`;
+        imgEl.style.top = `${margins.top + 20}px`;
+        imgEl.style.width = `${imageWidth - margins.left - gap}px`;
+        imgEl.style.height = `${height - margins.top - margins.bottom - 60}px`;
+        imgEl.style.objectFit = 'contain';
+        pageDiv.appendChild(imgEl);
+      }
       
       // 텍스트 오른쪽
       const textEl = document.createElement('div');
       textEl.textContent = page.text;
       textEl.style.position = 'absolute';
-      textEl.style.left = `${width / 2 + 20}px`;
-      textEl.style.top = '80px';
-      textEl.style.width = `${half}px`;
-      textEl.style.fontSize = '14px';
-      textEl.style.lineHeight = '1.6';
+      textEl.style.left = `${imageWidth + gap}px`;
+      textEl.style.top = `${margins.top + 40}px`;
+      textEl.style.width = `${textWidth - margins.right}px`;
+      textEl.style.height = `${height - margins.top - margins.bottom - 80}px`;
+      textEl.style.fontSize = '16px';      // 14~16pt
+      textEl.style.lineHeight = '1.8';     // 넉넉한 줄 간격
       textEl.style.color = '#000000';
       textEl.style.whiteSpace = 'pre-wrap';
       textEl.style.wordWrap = 'break-word';
+      textEl.style.display = 'flex';
+      textEl.style.alignItems = 'center';  // 세로 중앙 정렬
+      textEl.style.padding = '0 20px';
       pageDiv.appendChild(textEl);
-    } else {
-      // 텍스트만 있는 페이지 (그림 없음)
-      // 사용자가 직접 그림을 붙일 수 있도록 여백 유지
+      
+    } 
+    // === 세로형 레이아웃: 위쪽 그림, 아래쪽 글 ===
+    else if (textImageLayout === "image-top") {
+      const imageHeight = height * 0.50;  // 그림 영역 50%
+      const textHeight = height * 0.40;   // 텍스트 영역 40%
+      
+      if (page.image) {
+        // 이미지 위쪽
+        const imgEl = document.createElement('img');
+        imgEl.src = page.image;
+        imgEl.style.position = 'absolute';
+        imgEl.style.left = `${margins.left}px`;
+        imgEl.style.top = `${margins.top + 20}px`;
+        imgEl.style.width = `${width - margins.left - margins.right}px`;
+        imgEl.style.height = `${imageHeight - margins.top - 40}px`;
+        imgEl.style.objectFit = 'contain';
+        pageDiv.appendChild(imgEl);
+      }
+      
+      // 텍스트 아래쪽
       const textEl = document.createElement('div');
       textEl.textContent = page.text;
       textEl.style.position = 'absolute';
-      textEl.style.fontSize = '14px';
-      textEl.style.lineHeight = '1.6';
+      textEl.style.left = `${margins.left + 20}px`;
+      textEl.style.top = `${imageHeight + 20}px`;
+      textEl.style.width = `${width - margins.left - margins.right - 40}px`;
+      textEl.style.height = `${textHeight - 40}px`;
+      textEl.style.fontSize = '16px';
+      textEl.style.lineHeight = '1.8';
       textEl.style.color = '#000000';
       textEl.style.whiteSpace = 'pre-wrap';
       textEl.style.wordWrap = 'break-word';
-      
-      if (textImageLayout === "image-top") {
-        // 세로 버전: 위쪽 여백 유지 (그림 공간), 아래에 텍스트
-        textEl.style.left = '40px';
-        textEl.style.top = '350px';  // 그림 영역(80~320px) 이후부터 시작
-        textEl.style.width = `${width - 80}px`;
-      } else {
-        // 가로 버전: 왼쪽 여백 유지 (그림 공간), 오른쪽에 텍스트
-        const half = width / 2 - 60;
-        textEl.style.left = `${width / 2 + 20}px`;  // 오른쪽 절반
-        textEl.style.top = '80px';
-        textEl.style.width = `${half}px`;
-      }
-      
+      textEl.style.padding = '20px';
       pageDiv.appendChild(textEl);
     }
     
     document.body.appendChild(pageDiv);
     
     try {
-      // HTML을 캔버스로 렌더링
+      // HTML을 고해상도 캔버스로 렌더링
       const pageCanvas = await html2canvas(pageDiv, {
         width: width,
         height: height,
-        scale: 2,
-        backgroundColor: usePastelBackground ? pastelColors[index % pastelColors.length] : '#ffffff'
+        scale: 2,  // 고해상도
+        backgroundColor: usePastelBackground ? pastelColors[index % pastelColors.length] : '#ffffff',
+        useCORS: true,
+        allowTaint: true
       });
       const pageImgData = pageCanvas.toDataURL('image/png');
       doc.addImage(pageImgData, 'PNG', 0, 0, width, height);

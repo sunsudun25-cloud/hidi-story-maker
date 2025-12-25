@@ -70,26 +70,31 @@ export async function onRequest(context: { request: Request; env: Env }) {
 
     const stylePrompt = styleMap[style || '기본'] || 'illustration style';
     
-    // ⭐ 동화책 삽화 전용 프롬프트 강화 (텍스트 제거 + 단일 페이지)
+    // ⭐ 동화책 삽화 전용 프롬프트 강화 (텍스트 완전 제거 + 단일 페이지)
     const noTextGuide = `
-CRITICAL REQUIREMENT: This must be a pure illustration with ABSOLUTELY NO TEXT.
-- NO words, letters, numbers, or symbols of any kind
-- NO signs, labels, captions, or speech bubbles  
-- NO written language in any form (English, Korean, etc.)
-- Only visual imagery, no textual elements
-- Pure illustration without any text overlay
+🚨 ABSOLUTELY NO TEXT ALLOWED - This is the most important rule! 🚨
+ZERO written content:
+- ❌ NO text, words, letters, alphabets, numbers, symbols
+- ❌ NO signs, posters, labels, name tags, speech bubbles
+- ❌ NO books with visible text, newspapers, documents  
+- ❌ NO billboards, banners, or any written messages
+- ❌ NO English, Korean, Chinese, or any language text
+- ✅ ONLY pure visual illustration without any writing
+- ✅ Tell the story through images alone, not words
+This is a strict requirement for children's book illustrations.
 `;
 
     const singlePageGuide = `
-IMPORTANT: Create a SINGLE PAGE illustration (NOT a book spread).
-- Show ONE complete scene, not two pages
-- NO center fold or gutter line
-- Full frame composition, not split pages
-- Single unified image, not left-right divided layout
+SINGLE PAGE LAYOUT ONLY:
+- ✅ Create ONE complete unified scene
+- ❌ NOT a two-page book spread
+- ❌ NO center fold, gutter, or split composition
+- ✅ Full frame single illustration
+- ✅ Single image, not left-right divided pages
 `;
     
-    const consistencyGuide = 'Consistent character design and art style';
-    const qualityGuide = 'High quality detailed illustration, clean composition';
+    const consistencyGuide = 'Keep consistent character designs, art style, and color palette';
+    const qualityGuide = 'High quality detailed children\'s book illustration, clean simple composition';
     
     const fullPrompt = `${prompt}. ${stylePrompt}. ${singlePageGuide}. ${noTextGuide}. ${consistencyGuide}. ${qualityGuide}`;
 

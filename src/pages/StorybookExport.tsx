@@ -233,21 +233,39 @@ export default function StorybookExport({
             <select
               className="field-select"
               value={layout}
-              onChange={(e) => setLayout(e.target.value)}
+              onChange={(e) => {
+                const newLayout = e.target.value;
+                setLayout(newLayout);
+                // 방향에 따라 자동으로 레이아웃 설정
+                if (newLayout === "vertical") {
+                  setTextImageLayout("image-top");
+                } else {
+                  setTextImageLayout("image-left");
+                }
+              }}
             >
-              <option value="vertical">세로 (A4 기본)</option>
-              <option value="horizontal">가로</option>
+              <option value="vertical">세로 (위: 그림, 아래: 글)</option>
+              <option value="horizontal">가로 (왼쪽: 그림, 오른쪽: 글)</option>
             </select>
 
-            <label className="field-label">🖼️ 페이지 배치 방식</label>
-            <select
-              className="field-select"
-              value={textImageLayout}
-              onChange={(e) => setTextImageLayout(e.target.value)}
-            >
-              <option value="image-top">이미지 위 + 텍스트 아래</option>
-              <option value="image-right">텍스트 왼쪽 + 이미지 오른쪽</option>
-            </select>
+            <div style={{ 
+              marginTop: '16px', 
+              padding: '12px', 
+              backgroundColor: '#f0f9ff', 
+              borderRadius: '8px',
+              border: '1px solid #bfdbfe'
+            }}>
+              <p style={{ 
+                fontSize: '14px', 
+                color: '#1e40af', 
+                margin: 0,
+                lineHeight: '1.5'
+              }}>
+                ℹ️ {layout === "vertical" 
+                  ? "세로 방향: 그림이 위에, 글이 아래에 배치됩니다." 
+                  : "가로 방향: 그림이 왼쪽에, 글이 오른쪽에 배치됩니다."}
+              </p>
+            </div>
 
             <label className="field-label">🎨 배경 스타일</label>
             <select
@@ -289,7 +307,7 @@ export default function StorybookExport({
               <div className="summary-item">
                 <span className="summary-label">🖼️ 배치:</span>
                 <span className="summary-value">
-                  {textImageLayout === "image-top" ? "이미지 위" : "이미지 우측"}
+                  {layout === "vertical" ? "위: 그림, 아래: 글" : "왼쪽: 그림, 오른쪽: 글"}
                 </span>
               </div>
               <div className="summary-item">

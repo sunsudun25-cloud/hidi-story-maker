@@ -252,7 +252,7 @@ export interface EnhancedPDFOptions {
   author: string;
   layout: "vertical" | "horizontal";
   usePastelBackground: boolean;
-  textImageLayout: "image-right" | "image-top";
+  textImageLayout: "image-left" | "image-top";
   coverImage?: string | null;
 }
 
@@ -443,14 +443,26 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
       textEl.style.whiteSpace = 'pre-wrap';
       textEl.style.wordWrap = 'break-word';
       pageDiv.appendChild(textEl);
-    } else if (textImageLayout === "image-right" && page.image) {
-      // 텍스트 왼쪽 + 이미지 오른쪽
+    } else if (textImageLayout === "image-left" && page.image) {
+      // 가로 방향: 이미지 왼쪽 + 텍스트 오른쪽
       const half = width / 2 - 60;
       
+      // 이미지 왼쪽
+      const imgEl = document.createElement('img');
+      imgEl.src = page.image;
+      imgEl.style.position = 'absolute';
+      imgEl.style.left = '40px';
+      imgEl.style.top = '80px';
+      imgEl.style.width = `${half}px`;
+      imgEl.style.height = `${half}px`;
+      imgEl.style.objectFit = 'contain';
+      pageDiv.appendChild(imgEl);
+      
+      // 텍스트 오른쪽
       const textEl = document.createElement('div');
       textEl.textContent = page.text;
       textEl.style.position = 'absolute';
-      textEl.style.left = '40px';
+      textEl.style.left = `${width / 2 + 20}px`;
       textEl.style.top = '80px';
       textEl.style.width = `${half}px`;
       textEl.style.fontSize = '14px';
@@ -459,16 +471,6 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
       textEl.style.whiteSpace = 'pre-wrap';
       textEl.style.wordWrap = 'break-word';
       pageDiv.appendChild(textEl);
-      
-      const imgEl = document.createElement('img');
-      imgEl.src = page.image;
-      imgEl.style.position = 'absolute';
-      imgEl.style.left = `${width / 2 + 20}px`;
-      imgEl.style.top = '80px';
-      imgEl.style.width = `${half}px`;
-      imgEl.style.height = `${half}px`;
-      imgEl.style.objectFit = 'contain';
-      pageDiv.appendChild(imgEl);
     } else {
       // 텍스트만 있는 페이지
       const textEl = document.createElement('div');

@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { generateNextPage, safeGeminiCall } from "../services/geminiService";
+import { generateNextPage, safeGeminiCall, sanitizeAiStoryText } from "../services/geminiService";
 import { generateImageViaCloudflare } from "../services/cloudflareImageApi";
 import { saveStorybook } from "../services/dbService";
 import { useStorybook } from "../context/StorybookContext";
@@ -176,10 +176,18 @@ export default function StorybookEditor() {
 ${previousPages}
 
 위 내용을 이어서 3~5문장으로 다음 페이지를 작성해주세요.
+
+⚠️ 출력 규칙 (반드시 지켜주세요):
+- 안내문, 설명, 인사말을 쓰지 마세요.
+- "네, 알겠습니다", "물론입니다" 같은 문장을 쓰지 마세요.
+- "---", "[n페이지]" 같은 구분 표시를 쓰지 마세요.
+- 오직 동화 본문만 출력하세요.
+- 직접 이야기를 시작하세요.
 `;
 
-        const newPageText = await safeGeminiCall(aiPrompt);
-        setTextForPage(pageIndex, newPageText.trim());
+        const rawText = await safeGeminiCall(aiPrompt);
+        const cleanText = sanitizeAiStoryText(rawText || "");
+        setTextForPage(pageIndex, cleanText.trim());
         alert("✨ AI가 이어서 새 페이지를 작성했어요!");
       } else {
         // 현재 페이지에 내용이 있는 경우 → 현재 페이지 내용을 확장
@@ -192,10 +200,18 @@ ${previousPages}
 
 [현재 페이지]
 ${current.text}
+
+⚠️ 출력 규칙 (반드시 지켜주세요):
+- 안내문, 설명, 인사말을 쓰지 마세요.
+- "네, 알겠습니다", "물론입니다" 같은 문장을 쓰지 마세요.
+- "---", "[n페이지]" 같은 구분 표시를 쓰지 마세요.
+- 오직 동화 본문만 출력하세요.
+- 직접 이야기를 시작하세요.
 `;
 
-        const suggestion = await safeGeminiCall(aiPrompt);
-        const newText = `${current.text.trim()}\n\n${suggestion.trim()}`;
+        const rawSuggestion = await safeGeminiCall(aiPrompt);
+        const cleanSuggestion = sanitizeAiStoryText(rawSuggestion || "");
+        const newText = `${current.text.trim()}\n\n${cleanSuggestion.trim()}`;
         setTextForPage(pageIndex, newText);
         alert("✨ AI가 내용을 추가했어요!");
       }

@@ -47,6 +47,39 @@ export async function generateImage(prompt: string, style?: string): Promise<str
   return await callFunction(FUNCTIONS_URL.image, { prompt, style });
 }
 
+/**
+ * AI 응답에서 불필요한 멘트 제거
+ * "네, 알겠습니다", "---", "[n페이지]" 등 제거
+ */
+export function sanitizeAiStoryText(text: string): string {
+  if (!text) return text;
+
+  return text
+    // AI 인사말/응답 제거
+    .replace(/^네[,! ]*알겠습니다[^\n]*\n?/gim, "")
+    .replace(/^알겠습니다[^\n]*\n?/gim, "")
+    .replace(/^물론입니다[^\n]*\n?/gim, "")
+    .replace(/^좋습니다[^\n]*\n?/gim, "")
+    .replace(/^그럼[,! ]*[^\n]*작성해\s*드릴게요[^\n]*\n?/gim, "")
+    .replace(/^다음과\s*같이[^\n]*\n?/gim, "")
+    // 구분선 제거
+    .replace(/^\s*---+\s*$/gm, "")
+    .replace(/^\s*===+\s*$/gm, "")
+    // 페이지 번호 제거
+    .replace(/^\s*\[\s*\d+\s*페이지\s*\]\s*\n?/gim, "")
+    .replace(/^\s*\d+\s*페이지\s*[:\-]\s*\n?/gim, "")
+    // 제목/라벨 제거
+    .replace(/^\s*제목\s*[:：]\s*[^\n]*\n?/gim, "")
+    .replace(/^\s*내용\s*[:：]\s*\n?/gim, "")
+    // 따옴표 제거
+    .replace(/^["「『]/gm, "")
+    .replace(/["」』]$/gm, "")
+    // 여러 줄바꿈을 두 줄바꿈으로
+    .replace(/\n{3,}/g, "\n\n")
+    // 앞뒤 공백 제거
+    .trim();
+}
+
 /** 하위 호환성을 위한 별칭들 */
 export const callGemini = generateText;
 export const safeGeminiCall = generateText;
@@ -68,9 +101,21 @@ ${prevPages.join("\n")}
 
 다음 내용을 3~5문장으로 자연스럽게 이어서 작성하세요.
 스타일: ${style}
+
+⚠️ 출력 규칙 (반드시 지켜주세요):
+- 안내문, 설명, 인사말, 머리말을 쓰지 마세요.
+- "네, 알겠습니다", "물론입니다", "다음과 같이" 같은 문장을 쓰지 마세요.
+- "---", "[n페이지]" 같은 구분 표시를 쓰지 마세요.
+- 오직 동화 본문 문단만 출력하세요.
+- 번호, 따옴표, 제목 없이 문단으로만 작성하세요.
+- 직접 이야기를 시작하세요.
 `;
 
-  return await generateText(prompt);
+  const rawText = await generateText(prompt);
+  if (!rawText) return null;
+  
+  // AI 응답 정리
+  return sanitizeAiStoryText(rawText);
 }
 
 /** 글쓰기 이어쓰기 */

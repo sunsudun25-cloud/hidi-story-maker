@@ -116,98 +116,44 @@ export default function WritingDetail() {
           {story.content || story.description}
         </div>
 
-        {/* 버튼 그룹 */}
-        <div style={{ marginTop: "24px" }}>
-          {/* 다운로드, 공유하기 (2열) */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-            <button
-              onClick={handleDownload}
-              style={{
-                backgroundColor: "#10b981",
-                color: "white",
-                fontWeight: "600",
-                padding: "12px 16px",
-                borderRadius: "8px",
-                border: "none",
-                cursor: "pointer",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                fontSize: "16px"
-              }}
-            >
-              📥 다운로드
-            </button>
+        {/* 액션 버튼들 - 내작품관리 스타일 */}
+        <div className="flex flex-col gap-2.5 mt-6">
+          {/* 다운로드 */}
+          <button
+            onClick={handleDownload}
+            className="py-3 px-4 bg-emerald-500 text-white rounded-xl text-[16px] font-semibold hover:bg-emerald-600 transition shadow-sm"
+          >
+            📥 다운로드
+          </button>
 
-            <button
-              onClick={handleShare}
-              style={{
-                backgroundColor: "#3b82f6",
-                color: "white",
-                fontWeight: "600",
-                padding: "12px 16px",
-                borderRadius: "8px",
-                border: "none",
-                cursor: "pointer",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                fontSize: "16px"
-              }}
-            >
-              📤 공유하기
-            </button>
-          </div>
+          {/* 공유하기 */}
+          <button
+            onClick={handleShare}
+            className="py-3 px-4 bg-blue-500 text-white rounded-xl text-[16px] font-semibold hover:bg-blue-600 transition shadow-sm"
+          >
+            📤 공유하기
+          </button>
 
-          {/* 수정하기, 삭제하기 (2열) */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "12px" }}>
-            <button
-              onClick={handleEdit}
-              style={{
-                backgroundColor: "#2563eb",
-                color: "white",
-                fontWeight: "600",
-                padding: "12px 16px",
-                borderRadius: "8px",
-                border: "none",
-                cursor: "pointer",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                fontSize: "16px"
-              }}
-            >
-              ✏️ 수정하기
-            </button>
+          {/* 수정하기 */}
+          <button
+            onClick={handleEdit}
+            className="py-3 px-4 bg-indigo-500 text-white rounded-xl text-[16px] font-semibold hover:bg-indigo-600 transition shadow-sm"
+          >
+            ✏️ 수정하기
+          </button>
 
-            <button
-              onClick={handleDelete}
-              style={{
-                backgroundColor: "#dc2626",
-                color: "white",
-                fontWeight: "600",
-                padding: "12px 16px",
-                borderRadius: "8px",
-                border: "none",
-                cursor: "pointer",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                fontSize: "16px"
-              }}
-            >
-              🗑️ 삭제하기
-            </button>
-          </div>
+          {/* 삭제하기 */}
+          <button
+            onClick={handleDelete}
+            className="py-3 px-4 bg-rose-500 text-white rounded-xl text-[16px] font-semibold hover:bg-rose-600 transition shadow-sm"
+          >
+            🗑️ 삭제하기
+          </button>
 
           {/* 다시 만들기 */}
           <button
             onClick={() => navigate("/writing")}
-            style={{
-              width: "100%",
-              backgroundColor: "#9333ea",
-              color: "white",
-              fontWeight: "700",
-              padding: "12px 16px",
-              borderRadius: "8px",
-              border: "none",
-              cursor: "pointer",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-              marginTop: "12px",
-              fontSize: "16px"
-            }}
+            className="py-3 px-4 bg-purple-600 text-white rounded-xl text-[16px] font-bold hover:bg-purple-700 transition shadow-sm"
           >
             ✨ 다시 만들기
           </button>
@@ -215,19 +161,7 @@ export default function WritingDetail() {
           {/* 목록으로 돌아가기 */}
           <button
             onClick={() => navigate("/gallery")}
-            style={{
-              width: "100%",
-              backgroundColor: "#9ca3af",
-              color: "white",
-              fontWeight: "600",
-              padding: "12px 16px",
-              borderRadius: "8px",
-              border: "none",
-              cursor: "pointer",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-              marginTop: "12px",
-              fontSize: "16px"
-            }}
+            className="py-3 px-4 bg-gray-400 text-white rounded-xl text-[16px] font-semibold hover:bg-gray-500 transition shadow-sm mt-2"
           >
             ← 목록으로 돌아가기
           </button>

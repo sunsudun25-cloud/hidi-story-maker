@@ -296,24 +296,11 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
     format: "a4",
   });
 
-  // ⭐ Noto Sans KR 폰트 추가 시도 (한글 지원)
-  // 폰트 로딩 실패 시에도 계속 진행
-  try {
-    const fontData = (await import("../assets/fonts/NotoSansKR-Regular")).default;
-    if (fontData && fontData.length > 0) {
-      doc.addFileToVFS("NotoSansKR-Regular.ttf", fontData);
-      doc.addFont("NotoSansKR-Regular.ttf", "NotoSansKR", "normal");
-      doc.setFont("NotoSansKR");
-      console.log("✅ 한글 폰트 로드 성공");
-    } else {
-      console.warn("⚠️ 폰트 데이터가 비어있습니다. 기본 폰트 사용");
-    }
-  } catch (error) {
-    console.warn("⚠️ 한글 폰트 로드 실패, 기본 폰트 사용:", error);
-  }
-
   const width = doc.internal.pageSize.getWidth();
   const height = doc.internal.pageSize.getHeight();
+
+  // ⭐ html2canvas를 사용하여 한글 텍스트를 이미지로 렌더링
+  const html2canvas = (await import("html2canvas")).default;
 
   // ⭐ 파스텔톤 색상 목록
   const pastelColors = [
@@ -325,93 +312,197 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
   ];
 
   // ======================================================
-  // ===== 2. 표지 페이지 생성 =================================
+  // ===== 2. 표지 페이지 생성 (HTML로 렌더링하여 한글 지원) =====
   // ======================================================
 
-  // 배경 색 적용
-  if (usePastelBackground) {
-    doc.setFillColor("#E8F0FE");
-    doc.rect(0, 0, width, height, "F");
-  }
-
-  // 표지 이미지
+  // 표지 페이지를 HTML로 생성
+  const coverDiv = document.createElement('div');
+  coverDiv.style.width = `${width}px`;
+  coverDiv.style.height = `${height}px`;
+  coverDiv.style.position = 'fixed';
+  coverDiv.style.left = '-9999px';
+  coverDiv.style.top = '0';
+  coverDiv.style.backgroundColor = usePastelBackground ? '#E8F0FE' : '#ffffff';
+  coverDiv.style.display = 'flex';
+  coverDiv.style.flexDirection = 'column';
+  coverDiv.style.alignItems = 'center';
+  coverDiv.style.justifyContent = 'center';
+  coverDiv.style.fontFamily = '"Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
+  
+  // 표지 이미지 추가
   if (coverImage) {
-    try {
-      doc.addImage(coverImage, "PNG", 100, 80, width - 200, height / 2);
-    } catch (e) {
-      console.warn("표지 이미지 로드 실패");
-    }
+    const imgEl = document.createElement('img');
+    imgEl.src = coverImage;
+    imgEl.style.width = `${width - 200}px`;
+    imgEl.style.height = `${height / 2}px`;
+    imgEl.style.objectFit = 'contain';
+    imgEl.style.marginBottom = '40px';
+    coverDiv.appendChild(imgEl);
   }
-
+  
   // 제목
-  doc.setFont("NotoSansKR", "normal");
-  doc.setFontSize(32);
-  doc.text(title, width / 2, height - 200, { align: "center" });
-
+  const titleEl = document.createElement('div');
+  titleEl.textContent = title;
+  titleEl.style.fontSize = '32px';
+  titleEl.style.fontWeight = 'bold';
+  titleEl.style.textAlign = 'center';
+  titleEl.style.marginTop = coverImage ? '20px' : '0';
+  titleEl.style.color = '#000000';
+  coverDiv.appendChild(titleEl);
+  
   // 저자명
-  doc.setFont("NotoSansKR", "normal");
-  doc.setFontSize(18);
-  doc.text(`저자: ${author}`, width / 2, height - 160, { align: "center" });
+  const authorEl = document.createElement('div');
+  authorEl.textContent = `저자: ${author}`;
+  authorEl.style.fontSize = '18px';
+  authorEl.style.textAlign = 'center';
+  authorEl.style.marginTop = '20px';
+  authorEl.style.color = '#666666';
+  coverDiv.appendChild(authorEl);
+  
+  document.body.appendChild(coverDiv);
+  
+  try {
+    // HTML을 캔버스로 렌더링
+    const coverCanvas = await html2canvas(coverDiv, {
+      width: width,
+      height: height,
+      scale: 2,
+      backgroundColor: usePastelBackground ? '#E8F0FE' : '#ffffff'
+    });
+    const coverImgData = coverCanvas.toDataURL('image/png');
+    doc.addImage(coverImgData, 'PNG', 0, 0, width, height);
+  } catch (error) {
+    console.error('표지 렌더링 오류:', error);
+    // 폴백: 기본 배경만 추가
+    if (usePastelBackground) {
+      doc.setFillColor("#E8F0FE");
+      doc.rect(0, 0, width, height, "F");
+    }
+  } finally {
+    document.body.removeChild(coverDiv);
+  }
 
   // ======================================================
   // ===== 3. 본문 페이지 생성 =================================
   // ======================================================
 
-  pages.forEach((page, index) => {
+  // 각 페이지를 HTML로 렌더링
+  for (let index = 0; index < pages.length; index++) {
+    const page = pages[index];
     doc.addPage();
 
-    // 배경 넣기
+    // 페이지를 HTML로 생성
+    const pageDiv = document.createElement('div');
+    pageDiv.style.width = `${width}px`;
+    pageDiv.style.height = `${height}px`;
+    pageDiv.style.position = 'fixed';
+    pageDiv.style.left = '-9999px';
+    pageDiv.style.top = '0';
+    pageDiv.style.fontFamily = '"Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
+    
+    // 배경색
     if (usePastelBackground) {
       const bg = pastelColors[index % pastelColors.length];
-      doc.setFillColor(bg);
-      doc.rect(0, 0, width, height, "F");
+      pageDiv.style.backgroundColor = bg;
+    } else {
+      pageDiv.style.backgroundColor = '#ffffff';
     }
-
-    // 제목: 페이지 번호
-    doc.setFont("NotoSansKR", "normal");
-    doc.setFontSize(18);
-    doc.text(`${index + 1}페이지`, 40, 50);
-
-    // ===== 상세 레이아웃 =====
-
+    
+    // 페이지 번호
+    const pageNumEl = document.createElement('div');
+    pageNumEl.textContent = `${index + 1}페이지`;
+    pageNumEl.style.fontSize = '18px';
+    pageNumEl.style.position = 'absolute';
+    pageNumEl.style.left = '40px';
+    pageNumEl.style.top = '50px';
+    pageNumEl.style.color = '#333333';
+    pageDiv.appendChild(pageNumEl);
+    
+    // 레이아웃에 따라 콘텐츠 배치
     if (textImageLayout === "image-top" && page.image) {
       // 이미지 상단 + 텍스트 하단
-      try {
-        doc.addImage(page.image, "PNG", 40, 80, width - 80, 240);
-      } catch (e) {
-        console.warn(`페이지 ${index + 1} 이미지 추가 실패:`, e);
-      }
-
-      doc.setFont("NotoSansKR", "normal");
-      doc.setFontSize(14);
-
-      const contentY = 350;
-      const lines = doc.splitTextToSize(page.text, width - 80);
-      doc.text(lines, 40, contentY);
+      const imgEl = document.createElement('img');
+      imgEl.src = page.image;
+      imgEl.style.position = 'absolute';
+      imgEl.style.left = '40px';
+      imgEl.style.top = '80px';
+      imgEl.style.width = `${width - 80}px`;
+      imgEl.style.height = '240px';
+      imgEl.style.objectFit = 'contain';
+      pageDiv.appendChild(imgEl);
+      
+      const textEl = document.createElement('div');
+      textEl.textContent = page.text;
+      textEl.style.position = 'absolute';
+      textEl.style.left = '40px';
+      textEl.style.top = '350px';
+      textEl.style.width = `${width - 80}px`;
+      textEl.style.fontSize = '14px';
+      textEl.style.lineHeight = '1.6';
+      textEl.style.color = '#000000';
+      textEl.style.whiteSpace = 'pre-wrap';
+      textEl.style.wordWrap = 'break-word';
+      pageDiv.appendChild(textEl);
     } else if (textImageLayout === "image-right" && page.image) {
       // 텍스트 왼쪽 + 이미지 오른쪽
       const half = width / 2 - 60;
-
-      // 텍스트
-      doc.setFont("NotoSansKR", "normal");
-      doc.setFontSize(14);
-      const lines = doc.splitTextToSize(page.text, half);
-      doc.text(lines, 40, 80);
-
-      // 이미지
-      try {
-        doc.addImage(page.image, "PNG", width / 2 + 20, 80, half, half);
-      } catch (e) {
-        console.warn(`페이지 ${index + 1} 이미지 추가 실패:`, e);
-      }
+      
+      const textEl = document.createElement('div');
+      textEl.textContent = page.text;
+      textEl.style.position = 'absolute';
+      textEl.style.left = '40px';
+      textEl.style.top = '80px';
+      textEl.style.width = `${half}px`;
+      textEl.style.fontSize = '14px';
+      textEl.style.lineHeight = '1.6';
+      textEl.style.color = '#000000';
+      textEl.style.whiteSpace = 'pre-wrap';
+      textEl.style.wordWrap = 'break-word';
+      pageDiv.appendChild(textEl);
+      
+      const imgEl = document.createElement('img');
+      imgEl.src = page.image;
+      imgEl.style.position = 'absolute';
+      imgEl.style.left = `${width / 2 + 20}px`;
+      imgEl.style.top = '80px';
+      imgEl.style.width = `${half}px`;
+      imgEl.style.height = `${half}px`;
+      imgEl.style.objectFit = 'contain';
+      pageDiv.appendChild(imgEl);
     } else {
       // 텍스트만 있는 페이지
-      doc.setFont("NotoSansKR", "normal");
-      doc.setFontSize(14);
-      const lines = doc.splitTextToSize(page.text, width - 80);
-      doc.text(lines, 40, 100);
+      const textEl = document.createElement('div');
+      textEl.textContent = page.text;
+      textEl.style.position = 'absolute';
+      textEl.style.left = '40px';
+      textEl.style.top = '100px';
+      textEl.style.width = `${width - 80}px`;
+      textEl.style.fontSize = '14px';
+      textEl.style.lineHeight = '1.6';
+      textEl.style.color = '#000000';
+      textEl.style.whiteSpace = 'pre-wrap';
+      textEl.style.wordWrap = 'break-word';
+      pageDiv.appendChild(textEl);
     }
-  });
+    
+    document.body.appendChild(pageDiv);
+    
+    try {
+      // HTML을 캔버스로 렌더링
+      const pageCanvas = await html2canvas(pageDiv, {
+        width: width,
+        height: height,
+        scale: 2,
+        backgroundColor: usePastelBackground ? pastelColors[index % pastelColors.length] : '#ffffff'
+      });
+      const pageImgData = pageCanvas.toDataURL('image/png');
+      doc.addImage(pageImgData, 'PNG', 0, 0, width, height);
+    } catch (error) {
+      console.error(`페이지 ${index + 1} 렌더링 오류:`, error);
+    } finally {
+      document.body.removeChild(pageDiv);
+    }
+  }
 
   // ======================================================
   // ===== 4. 파일 저장 =====================================

@@ -218,27 +218,8 @@ ${current.text}
 
     setIsGeneratingImage(true);
     try {
-      // ⭐ 일관성 유지를 위한 동화책 컨텍스트 포함 + 텍스트 제거 강화 + 단일 페이지
-      const imgPrompt = `
-🚨 ABSOLUTELY NO TEXT IN IMAGE - This is critical! 🚨
-
-Create a single-page children's book illustration.
-Story: "${title}"
-Scene for page ${currentPage + 1}: ${current.text}
-
-MANDATORY REQUIREMENTS:
-1. ❌ ZERO text, letters, words, numbers, or symbols anywhere in the image
-2. ❌ NO signs, labels, speech bubbles, captions, or written elements  
-3. ❌ NO book pages, papers, or documents with visible text
-4. ✅ ONLY pure visual storytelling through illustrations
-5. ✅ Single unified scene (not a two-page spread)
-6. ✅ Consistent character design and art style
-7. ✅ Warm, child-friendly atmosphere
-8. ✅ Clear, simple composition
-
-Art style: ${style}
-Focus: Visual narrative without any written elements
-`;
+      // ⭐⭐⭐ 최우선 규칙을 맨 앞에 배치하여 DALL-E가 반드시 따르도록 함
+      const imgPrompt = `CRITICAL: ZERO text or words in image. NO letters NO numbers NO symbols. Children's book illustration for "${title}", page ${currentPage + 1}: ${current.text}. Single scene (not book spread). ${style} style. Pure visual storytelling only.`;
 
       const imageDataUrl = await generateImageViaCloudflare(imgPrompt, style);
       setImageForPage(pageIndex, imageDataUrl);
@@ -259,28 +240,7 @@ Focus: Visual narrative without any written elements
 
     setIsGeneratingCover(true);
     try {
-      const coverPrompt = `
-🚨 CRITICAL: ABSOLUTELY NO TEXT on this book cover! 🚨
-
-Create a children's book cover illustration.
-Book: "${title}"
-Story: ${prompt}
-
-MANDATORY COVER REQUIREMENTS:
-1. ❌ ZERO text anywhere (no title, no author name, no words)
-2. ❌ NO letters, numbers, symbols, or written elements
-3. ❌ NO signs, labels, or text decorations
-4. ❌ NO book spines, pages, or papers with text
-5. ✅ ONLY illustration - title will be added separately later
-6. ✅ Eye-catching visual composition 
-7. ✅ Main characters prominently displayed
-8. ✅ Establish clear character design for the book
-9. ✅ Warm, inviting atmosphere for children
-10. ✅ Single unified cover (not a spread)
-
-Art style: ${style}
-Remember: Pure visual art only - no written elements!
-`;
+      const coverPrompt = `CRITICAL: NO text NO words NO letters in image. Children's book cover for "${title}": ${prompt}. ${style} style. Main characters featured. Warm inviting atmosphere. Single cover (not spread). Pure illustration only.`;
 
       const coverImageDataUrl = await generateImageViaCloudflare(coverPrompt, style);
       setCoverImageUrl(coverImageDataUrl);

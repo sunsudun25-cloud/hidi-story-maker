@@ -70,33 +70,20 @@ export async function onRequest(context: { request: Request; env: Env }) {
 
     const stylePrompt = styleMap[style || '기본'] || 'illustration style';
     
-    // ⭐ 동화책 삽화 전용 프롬프트 강화 (텍스트 완전 제거 + 단일 페이지)
-    const noTextGuide = `
-🚨 ABSOLUTELY NO TEXT ALLOWED - This is the most important rule! 🚨
-ZERO written content:
-- ❌ NO text, words, letters, alphabets, numbers, symbols
-- ❌ NO signs, posters, labels, name tags, speech bubbles
-- ❌ NO books with visible text, newspapers, documents  
-- ❌ NO billboards, banners, or any written messages
-- ❌ NO English, Korean, Chinese, or any language text
-- ✅ ONLY pure visual illustration without any writing
-- ✅ Tell the story through images alone, not words
-This is a strict requirement for children's book illustrations.
-`;
-
-    const singlePageGuide = `
-SINGLE PAGE LAYOUT ONLY:
-- ✅ Create ONE complete unified scene
-- ❌ NOT a two-page book spread
-- ❌ NO center fold, gutter, or split composition
-- ✅ Full frame single illustration
-- ✅ Single image, not left-right divided pages
-`;
+    // ⭐⭐⭐ 최우선 규칙: 텍스트 완전 제거 (프롬프트 맨 앞에 배치)
+    const criticalRule = 'CRITICAL: Image must contain ZERO text, words, letters, or written language of any kind. Pure illustration only.';
     
-    const consistencyGuide = 'Keep consistent character designs, art style, and color palette';
-    const qualityGuide = 'High quality detailed children\'s book illustration, clean simple composition';
+    // 간결하고 강력한 NO TEXT 규칙
+    const noTextRule = 'NO text NO words NO letters NO numbers NO symbols NO signs NO labels anywhere in image.';
     
-    const fullPrompt = `${prompt}. ${stylePrompt}. ${singlePageGuide}. ${noTextGuide}. ${consistencyGuide}. ${qualityGuide}`;
+    const singlePageRule = 'Single unified scene, not a book spread or two-page layout.';
+    
+    const styleRule = `${stylePrompt}, children's book illustration style.`;
+    
+    const qualityRule = 'High quality, simple clean composition, consistent character design.';
+    
+    // ⭐ 프롬프트 구조: 가장 중요한 규칙을 맨 앞에
+    const fullPrompt = `${criticalRule} ${noTextRule} ${prompt}. ${singlePageRule} ${styleRule} ${qualityRule}`;
 
     console.log('📡 OpenAI API 호출:', fullPrompt);
 

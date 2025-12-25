@@ -116,6 +116,8 @@
   z-index: 300; /* ⭐ 입력 필드가 최상위에 표시 */
   background: white;
   touch-action: manipulation; /* ⭐ 터치 이벤트 최적화 */
+  ime-mode: active; /* ⭐ 한글 입력 IME 활성화 */
+  font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }
 
 .field-input:focus,

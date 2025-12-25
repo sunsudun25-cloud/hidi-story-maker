@@ -47,7 +47,7 @@ export default function StorybookExport({
   const [step, setStep] = useState(1);
   
   const [title, setTitle] = useState(initialTitle);
-  const [author, setAuthor] = useState("익명");
+  const [author, setAuthor] = useState("");
   const [coverImage, setCoverImage] = useState(initialCover);
 
   const [layout, setLayout] = useState("vertical");
@@ -182,6 +182,8 @@ export default function StorybookExport({
               placeholder="예: 작은 별의 여행"
               onChange={(e) => setTitle(e.target.value)}
               lang="ko"
+              autoComplete="off"
+              inputMode="text"
             />
 
             <label className="field-label">✍️ 저자명</label>
@@ -191,7 +193,10 @@ export default function StorybookExport({
               value={author}
               placeholder="예: 손선희"
               onChange={(e) => setAuthor(e.target.value)}
+              onInput={(e) => setAuthor((e.target as HTMLInputElement).value)}
               lang="ko"
+              autoComplete="off"
+              inputMode="text"
             />
           </StepCard>
 

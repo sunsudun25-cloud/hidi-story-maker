@@ -472,18 +472,30 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
       textEl.style.wordWrap = 'break-word';
       pageDiv.appendChild(textEl);
     } else {
-      // 텍스트만 있는 페이지
+      // 텍스트만 있는 페이지 (그림 없음)
+      // 사용자가 직접 그림을 붙일 수 있도록 여백 유지
       const textEl = document.createElement('div');
       textEl.textContent = page.text;
       textEl.style.position = 'absolute';
-      textEl.style.left = '40px';
-      textEl.style.top = '100px';
-      textEl.style.width = `${width - 80}px`;
       textEl.style.fontSize = '14px';
       textEl.style.lineHeight = '1.6';
       textEl.style.color = '#000000';
       textEl.style.whiteSpace = 'pre-wrap';
       textEl.style.wordWrap = 'break-word';
+      
+      if (textImageLayout === "image-top") {
+        // 세로 버전: 위쪽 여백 유지 (그림 공간), 아래에 텍스트
+        textEl.style.left = '40px';
+        textEl.style.top = '350px';  // 그림 영역(80~320px) 이후부터 시작
+        textEl.style.width = `${width - 80}px`;
+      } else {
+        // 가로 버전: 왼쪽 여백 유지 (그림 공간), 오른쪽에 텍스트
+        const half = width / 2 - 60;
+        textEl.style.left = `${width / 2 + 20}px`;  // 오른쪽 절반
+        textEl.style.top = '80px';
+        textEl.style.width = `${half}px`;
+      }
+      
       pageDiv.appendChild(textEl);
     }
     

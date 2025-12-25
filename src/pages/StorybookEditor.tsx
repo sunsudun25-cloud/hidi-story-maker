@@ -234,30 +234,86 @@ ${current.text}
 
     setIsGeneratingImage(true);
     try {
-      // 캐릭터 일관성: 첫 페이지 또는 전체 스토리에서 캐릭터 정보 추출
-      let characterInfo = "";
+      // 캐릭터 일관성: 전체 스토리에서 캐릭터 정보 추출
+      let characterSheet = "";
       if (storyPages.length > 0) {
         const allText = storyPages.map(p => p.text).join(" ");
         
-        // 간단한 캐릭터 추출 (패턴 매칭)
+        // 구체적인 캐릭터 시트 생성 (패턴 매칭)
         if (/토끼|rabbit/i.test(allText)) {
-          characterInfo = "Main character: A small, friendly rabbit with soft fur, big expressive eyes, and long ears. Always the same rabbit throughout the story.";
+          characterSheet = `
+Main Character Setting (항상 동일하게 유지):
+- Species: Baby rabbit
+- Fur: Soft white fur with light gray patches
+- Eyes: Large, round brown eyes
+- Expression: Gentle and warm
+- Outfit: Blue vest, red bow tie
+- Build: Round, baby-like proportions
+
+CRITICAL: Character's facial proportions, colors, and outfit must be IDENTICAL to previous illustrations.`;
         } else if (/곰|bear/i.test(allText)) {
-          characterInfo = "Main character: A gentle, cuddly bear with round ears, warm brown fur, and a kind smile. Always the same bear throughout the story.";
+          characterSheet = `
+Main Character Setting (항상 동일하게 유지):
+- Species: Baby bear
+- Fur: Warm honey-brown fur
+- Eyes: Big, round black eyes
+- Expression: Kind and friendly
+- Outfit: Red overalls, yellow shirt
+- Build: Chubby, cuddly proportions
+
+CRITICAL: Character's facial proportions, colors, and outfit must be IDENTICAL to previous illustrations.`;
         } else if (/여우|fox/i.test(allText)) {
-          characterInfo = "Main character: A clever, bright-eyed fox with orange-red fur, bushy tail, and alert expression. Always the same fox throughout the story.";
+          characterSheet = `
+Main Character Setting (항상 동일하게 유지):
+- Species: Baby fox
+- Fur: Bright orange-red with white chest
+- Eyes: Large amber eyes
+- Expression: Clever and alert
+- Outfit: Green scarf, brown vest
+- Build: Slender, agile proportions
+
+CRITICAL: Character's facial proportions, colors, and outfit must be IDENTICAL to previous illustrations.`;
         } else if (/강아지|개|dog|puppy/i.test(allText)) {
-          characterInfo = "Main character: A playful, friendly puppy with soft fur, floppy ears, and joyful eyes. Always the same puppy throughout the story.";
+          characterSheet = `
+Main Character Setting (항상 동일하게 유지):
+- Species: Puppy
+- Fur: Golden retriever color, soft and fluffy
+- Eyes: Dark brown, sparkly eyes
+- Expression: Playful and joyful
+- Outfit: Red collar with bone tag
+- Build: Energetic, puppy proportions
+
+CRITICAL: Character's facial proportions, colors, and outfit must be IDENTICAL to previous illustrations.`;
         } else if (/고양이|cat/i.test(allText)) {
-          characterInfo = "Main character: A graceful, curious cat with soft fur, bright eyes, and elegant whiskers. Always the same cat throughout the story.";
+          characterSheet = `
+Main Character Setting (항상 동일하게 유지):
+- Species: Kitten
+- Fur: Cream color with light orange stripes
+- Eyes: Large, round brown eyes
+- Expression: Gentle and warm
+- Outfit: Green dress, pink ribbon
+- Build: Round, baby-like proportions
+
+CRITICAL: Character's facial proportions, colors, and outfit must be IDENTICAL to previous illustrations.`;
         } else if (/아이|어린이|소년|소녀|child|boy|girl/i.test(allText)) {
-          characterInfo = "Main character: A young child (5-8 years old) with bright eyes, wearing simple colorful clothing. Always the same child with consistent appearance throughout the story.";
+          characterSheet = `
+Main Character Setting (항상 동일하게 유지):
+- Species: Human child (5-7 years old)
+- Hair: Short brown hair, neat style
+- Eyes: Bright brown eyes
+- Expression: Curious and cheerful
+- Outfit: Blue t-shirt, beige shorts
+- Build: Average height for age
+
+CRITICAL: Character's facial proportions, colors, and outfit must be IDENTICAL to previous illustrations.`;
         }
       }
 
-      // 순수 장면 묘사 프롬프트 (책 페이지 개념 제거)
-      const sceneDescription = current.text.substring(0, 800);
-      const imgPrompt = `Scene: ${sceneDescription}${characterInfo ? `\n\nIMPORTANT - Character consistency:\n${characterInfo}` : ""}`;
+      // 순수 장면 묘사 프롬프트
+      const sceneDescription = current.text.substring(0, 700);
+      const imgPrompt = characterSheet 
+        ? `This is one scene from a children's book illustration series with the same protagonist appearing continuously.\n\n${characterSheet}\n\nScene Description:\n${sceneDescription}\n\nImportant: NO text, letters, or numbers in the image. Pure illustration only.`
+        : `Scene Description:\n${sceneDescription}\n\nImportant: NO text, letters, or numbers in the image. Pure illustration only.`;
 
       const imageDataUrl = await generateImageViaCloudflare(imgPrompt, style);
       setImageForPage(pageIndex, imageDataUrl);
@@ -279,26 +335,26 @@ ${current.text}
     setIsGeneratingCover(true);
     try {
       // 캐릭터 일관성을 표지에도 적용
-      let characterInfo = "";
+      let characterSheet = "";
       if (storyPages.length > 0) {
         const allText = storyPages.map(p => p.text).join(" ");
         
         if (/토끼|rabbit/i.test(allText)) {
-          characterInfo = "Main character: A small, friendly rabbit with soft fur, big expressive eyes, and long ears.";
+          characterSheet = "Main character: Baby rabbit - soft white fur with light gray patches, large round brown eyes, blue vest, red bow tie";
         } else if (/곰|bear/i.test(allText)) {
-          characterInfo = "Main character: A gentle, cuddly bear with round ears, warm brown fur, and a kind smile.";
+          characterSheet = "Main character: Baby bear - warm honey-brown fur, big round black eyes, red overalls, yellow shirt";
         } else if (/여우|fox/i.test(allText)) {
-          characterInfo = "Main character: A clever, bright-eyed fox with orange-red fur, bushy tail, and alert expression.";
+          characterSheet = "Main character: Baby fox - bright orange-red fur with white chest, large amber eyes, green scarf, brown vest";
         } else if (/강아지|개|dog|puppy/i.test(allText)) {
-          characterInfo = "Main character: A playful, friendly puppy with soft fur, floppy ears, and joyful eyes.";
+          characterSheet = "Main character: Puppy - golden retriever color, soft fluffy fur, dark brown sparkly eyes, red collar with bone tag";
         } else if (/고양이|cat/i.test(allText)) {
-          characterInfo = "Main character: A graceful, curious cat with soft fur, bright eyes, and elegant whiskers.";
+          characterSheet = "Main character: Kitten - cream color with light orange stripes, large round brown eyes, green dress, pink ribbon";
         } else if (/아이|어린이|소년|소녀|child|boy|girl/i.test(allText)) {
-          characterInfo = "Main character: A young child (5-8 years old) with bright eyes, wearing simple colorful clothing.";
+          characterSheet = "Main character: Human child (5-7 years old) - short brown hair, bright brown eyes, blue t-shirt, beige shorts";
         }
       }
 
-      const coverPrompt = `Book cover illustration for children's storybook: ${prompt.substring(0, 500)}${characterInfo ? `\n\nCharacter to feature:\n${characterInfo}` : ""}`;
+      const coverPrompt = `Children's storybook cover illustration: ${prompt.substring(0, 400)}${characterSheet ? `\n\nMain character to feature on cover:\n${characterSheet}` : ""}\n\nImportant: NO text, title, or letters in the illustration. The title will be added separately by the publisher. Pure cover illustration only.`;
 
       const coverImageDataUrl = await generateImageViaCloudflare(coverPrompt, style);
       setCoverImageUrl(coverImageDataUrl);

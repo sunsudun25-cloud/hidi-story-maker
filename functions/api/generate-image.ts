@@ -70,46 +70,61 @@ export async function onRequest(context: { request: Request; env: Env }) {
 
     const stylePrompt = styleMap[style || '기본'] || 'illustration style';
     
-    // ⭐⭐⭐ 최우선 규칙: 텍스트/로고/워터마크 완전 제거 (프롬프트 맨 앞에 배치)
-    const criticalRules = `
-🚨 ABSOLUTELY NO TEXT ALLOWED - This is the most important rule! 🚨
-
-CRITICAL REQUIREMENTS (MUST FOLLOW):
-✅ ZERO text, words, letters, alphabets, or numbers
-✅ NO signs, posters, labels, speech bubbles, captions
-✅ NO books with visible text on pages
-✅ NO logos, watermarks, signatures, or branding
-✅ NO English, Korean, Chinese, Japanese, or any language
-✅ ONLY pure visual illustration without any written content
-
-FORBIDDEN ELEMENTS:
-❌ Text ❌ Words ❌ Letters ❌ Numbers ❌ Symbols
-❌ Signs ❌ Labels ❌ Captions ❌ Speech bubbles
-❌ Book text ❌ Posters ❌ Logos ❌ Watermarks
-❌ Any form of written language
-
-REQUIRED APPROACH:
-- Pure illustration storytelling through visuals only
-- Character expressions and actions tell the story
-- Environmental details convey the narrative
-- NO reliance on text or written elements
+    // ⭐⭐⭐ 역할 재정의: 책이 아닌 순수 삽화 작가
+    const roleDefinition = `
+You are a PURE ILLUSTRATION ARTIST, NOT a book designer.
+Your ONLY job is to create standalone artwork for children's books.
+You do NOT create book pages, book spreads, or anything with text.
+You create ONLY the picture that goes inside the book.
     `.trim();
     
-    const singlePageRule = 'Single unified scene illustration (NOT a book spread or two-page layout).';
-    
-    const styleRule = `Art style: ${stylePrompt}, children's book illustration style.`;
-    
-    const qualityRule = 'High quality, simple clean composition, consistent character design, professional children\'s book illustration.';
-    
-    // ⭐ 프롬프트 구조: 가장 중요한 규칙을 맨 앞에
-    const fullPrompt = `${criticalRules}
+    // ⭐⭐⭐ 텍스트 완전 금지 (구조적 접근)
+    const textProhibition = `
+ABSOLUTE PROHIBITION - NO TEXT ANYWHERE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+This is NOT a book page. This is ONLY the illustration.
+The text will be added separately by the publisher.
 
-SCENE DESCRIPTION:
+DO NOT include:
+❌ NO text, letters, words, alphabets, numbers
+❌ NO books with visible text or writing
+❌ NO signs, posters, billboards with text
+❌ NO speech bubbles, captions, labels
+❌ NO logos, watermarks, signatures
+❌ NO newspapers, magazines with readable text
+❌ NO chalkboards, whiteboards with writing
+❌ NO computer screens, phones with text
+❌ NO ANY form of written language (English, Korean, Chinese, Japanese, etc.)
+
+INSTEAD, show:
+✅ Character facial expressions and body language
+✅ Environmental storytelling through objects and scenes
+✅ Actions and interactions between characters
+✅ Visual metaphors and symbolic elements
+✅ Pure artistic composition without words
+    `.trim();
+    
+    // ⭐⭐⭐ 삽화 전용 지침
+    const illustrationGuidelines = `
+ILLUSTRATION GUIDELINES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Create a single, unified scene (NOT a book spread)
+- Focus on character emotions and actions
+- Use visual storytelling only
+- Clean, simple composition
+- Professional children's book illustration quality
+- Art style: ${stylePrompt}
+    `.trim();
+    
+    // ⭐ 프롬프트 구조: 역할 → 금지사항 → 장면 → 스타일
+    const fullPrompt = `${roleDefinition}
+
+${textProhibition}
+
+SCENE TO ILLUSTRATE:
 ${prompt}
 
-${singlePageRule}
-${styleRule}
-${qualityRule}`;
+${illustrationGuidelines}`;
 
     console.log('📡 OpenAI API 호출:', fullPrompt);
 

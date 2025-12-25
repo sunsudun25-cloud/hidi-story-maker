@@ -4,9 +4,9 @@
  */
 
 /**
- * 동화 이미지 생성 (DALL-E 3 via Firebase Functions)
+ * 동화 이미지 생성 (DALL-E 3 via Cloudflare Pages Function)
  * @param text 페이지 내용 또는 장면 설명
- * @param options 추가 옵션 (스타일, 분위기 등)
+ * @param options 추가 옵션 (스타일, 분위기, 캐릭터 정보 등)
  * @returns 이미지 URL
  */
 export async function generateStoryImage(
@@ -14,20 +14,27 @@ export async function generateStoryImage(
   options?: {
     style?: string;
     mood?: string;
+    character?: string;  // 캐릭터 일관성 프롬프트
   }
 ): Promise<string> {
   try {
-    const { style = "동화 스타일", mood = "따뜻하고 부드러운" } = options || {};
+    const { 
+      style = "동화풍", 
+      mood = "따뜻하고 부드러운",
+      character = ""
+    } = options || {};
 
+    // 순수 장면 묘사 프롬프트 (텍스트 배제)
     const prompt = `
-아래 동화 내용에 맞는 ${mood} 분위기의 그림을 만들어 주세요.
-어린이와 시니어가 보기 편한 ${style}로 표현해주세요.
-복잡한 배경은 피하고, 화면이 너무 어둡지 않게 구성해주세요.
-텍스트나 워터마크는 포함하지 마세요.
+Scene from a children's storybook: ${text.substring(0, 800)}
 
-동화 내용:
-${text.substring(0, 1000)}
-`;
+${character ? `\nMain character description (MUST be consistent): ${character}` : ''}
+
+Mood: ${mood}
+Visual storytelling through actions, expressions, and environment only.
+Simple, clean composition suitable for children and seniors.
+Bright, not too dark. Avoid complex backgrounds.
+    `.trim();
 
     console.log("🎨 동화 이미지 생성 중:", prompt.substring(0, 100) + "...");
 

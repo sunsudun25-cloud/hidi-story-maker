@@ -234,8 +234,30 @@ ${current.text}
 
     setIsGeneratingImage(true);
     try {
-      // ⭐⭐⭐ 최우선 규칙을 맨 앞에 배치하여 DALL-E가 반드시 따르도록 함
-      const imgPrompt = `CRITICAL: ZERO text or words in image. NO letters NO numbers NO symbols. Children's book illustration for "${title}", page ${currentPage + 1}: ${current.text}. Single scene (not book spread). ${style} style. Pure visual storytelling only.`;
+      // 캐릭터 일관성: 첫 페이지 또는 전체 스토리에서 캐릭터 정보 추출
+      let characterInfo = "";
+      if (storyPages.length > 0) {
+        const allText = storyPages.map(p => p.text).join(" ");
+        
+        // 간단한 캐릭터 추출 (패턴 매칭)
+        if (/토끼|rabbit/i.test(allText)) {
+          characterInfo = "Main character: A small, friendly rabbit with soft fur, big expressive eyes, and long ears. Always the same rabbit throughout the story.";
+        } else if (/곰|bear/i.test(allText)) {
+          characterInfo = "Main character: A gentle, cuddly bear with round ears, warm brown fur, and a kind smile. Always the same bear throughout the story.";
+        } else if (/여우|fox/i.test(allText)) {
+          characterInfo = "Main character: A clever, bright-eyed fox with orange-red fur, bushy tail, and alert expression. Always the same fox throughout the story.";
+        } else if (/강아지|개|dog|puppy/i.test(allText)) {
+          characterInfo = "Main character: A playful, friendly puppy with soft fur, floppy ears, and joyful eyes. Always the same puppy throughout the story.";
+        } else if (/고양이|cat/i.test(allText)) {
+          characterInfo = "Main character: A graceful, curious cat with soft fur, bright eyes, and elegant whiskers. Always the same cat throughout the story.";
+        } else if (/아이|어린이|소년|소녀|child|boy|girl/i.test(allText)) {
+          characterInfo = "Main character: A young child (5-8 years old) with bright eyes, wearing simple colorful clothing. Always the same child with consistent appearance throughout the story.";
+        }
+      }
+
+      // 순수 장면 묘사 프롬프트 (책 페이지 개념 제거)
+      const sceneDescription = current.text.substring(0, 800);
+      const imgPrompt = `Scene: ${sceneDescription}${characterInfo ? `\n\nIMPORTANT - Character consistency:\n${characterInfo}` : ""}`;
 
       const imageDataUrl = await generateImageViaCloudflare(imgPrompt, style);
       setImageForPage(pageIndex, imageDataUrl);
@@ -256,7 +278,27 @@ ${current.text}
 
     setIsGeneratingCover(true);
     try {
-      const coverPrompt = `CRITICAL: NO text NO words NO letters in image. Children's book cover for "${title}": ${prompt}. ${style} style. Main characters featured. Warm inviting atmosphere. Single cover (not spread). Pure illustration only.`;
+      // 캐릭터 일관성을 표지에도 적용
+      let characterInfo = "";
+      if (storyPages.length > 0) {
+        const allText = storyPages.map(p => p.text).join(" ");
+        
+        if (/토끼|rabbit/i.test(allText)) {
+          characterInfo = "Main character: A small, friendly rabbit with soft fur, big expressive eyes, and long ears.";
+        } else if (/곰|bear/i.test(allText)) {
+          characterInfo = "Main character: A gentle, cuddly bear with round ears, warm brown fur, and a kind smile.";
+        } else if (/여우|fox/i.test(allText)) {
+          characterInfo = "Main character: A clever, bright-eyed fox with orange-red fur, bushy tail, and alert expression.";
+        } else if (/강아지|개|dog|puppy/i.test(allText)) {
+          characterInfo = "Main character: A playful, friendly puppy with soft fur, floppy ears, and joyful eyes.";
+        } else if (/고양이|cat/i.test(allText)) {
+          characterInfo = "Main character: A graceful, curious cat with soft fur, bright eyes, and elegant whiskers.";
+        } else if (/아이|어린이|소년|소녀|child|boy|girl/i.test(allText)) {
+          characterInfo = "Main character: A young child (5-8 years old) with bright eyes, wearing simple colorful clothing.";
+        }
+      }
+
+      const coverPrompt = `Book cover illustration for children's storybook: ${prompt.substring(0, 500)}${characterInfo ? `\n\nCharacter to feature:\n${characterInfo}` : ""}`;
 
       const coverImageDataUrl = await generateImageViaCloudflare(coverPrompt, style);
       setCoverImageUrl(coverImageDataUrl);

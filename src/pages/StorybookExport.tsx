@@ -176,18 +176,22 @@ export default function StorybookExport({
           <StepCard>
             <label className="field-label">📙 책 제목</label>
             <input
+              type="text"
               className="field-input"
               value={title}
               placeholder="예: 작은 별의 여행"
               onChange={(e) => setTitle(e.target.value)}
+              lang="ko"
             />
 
             <label className="field-label">✍️ 저자명</label>
             <input
+              type="text"
               className="field-input"
               value={author}
               placeholder="예: 손선희"
               onChange={(e) => setAuthor(e.target.value)}
+              lang="ko"
             />
           </StepCard>
 

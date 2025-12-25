@@ -277,8 +277,7 @@ export async function generateStorybookPDFWithOptions(
  * @param options 고급 PDF 생성 옵션
  */
 export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<void> {
-  const jsPDF = (await import("jspdf")).default;
-  const fontData = (await import("../assets/fonts/NotoSansKR-Regular")).default;
+  const { default: jsPDF } = await import("jspdf");
 
   const {
     pages,
@@ -297,10 +296,21 @@ export async function exportEnhancedPDF(options: EnhancedPDFOptions): Promise<vo
     format: "a4",
   });
 
-  // ⭐ Noto Sans KR 폰트 추가 (한글 지원)
-  doc.addFileToVFS("NotoSansKR-Regular.ttf", fontData);
-  doc.addFont("NotoSansKR-Regular.ttf", "NotoSansKR", "normal");
-  doc.setFont("NotoSansKR");
+  // ⭐ Noto Sans KR 폰트 추가 시도 (한글 지원)
+  // 폰트 로딩 실패 시에도 계속 진행
+  try {
+    const fontData = (await import("../assets/fonts/NotoSansKR-Regular")).default;
+    if (fontData && fontData.length > 0) {
+      doc.addFileToVFS("NotoSansKR-Regular.ttf", fontData);
+      doc.addFont("NotoSansKR-Regular.ttf", "NotoSansKR", "normal");
+      doc.setFont("NotoSansKR");
+      console.log("✅ 한글 폰트 로드 성공");
+    } else {
+      console.warn("⚠️ 폰트 데이터가 비어있습니다. 기본 폰트 사용");
+    }
+  } catch (error) {
+    console.warn("⚠️ 한글 폰트 로드 실패, 기본 폰트 사용:", error);
+  }
 
   const width = doc.internal.pageSize.getWidth();
   const height = doc.internal.pageSize.getHeight();

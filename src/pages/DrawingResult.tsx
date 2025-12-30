@@ -115,84 +115,40 @@ export default function DrawingResult() {
         />
       </div>
 
-      {/* 버튼 그룹 */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "24px" }}>
-        {/* 이미지 다운로드 */}
+      {/* 액션 버튼들 - 개선된 스타일 */}
+      <div className="flex flex-col gap-3 mt-6">
+        {/* 다운로드 */}
         <button
-          style={{
-            backgroundColor: "#10b981",
-            color: "white",
-            fontWeight: "600",
-            padding: "12px 16px",
-            borderRadius: "8px",
-            border: "none",
-            cursor: "pointer",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            fontSize: "16px"
-          }}
           onClick={handleDownload}
+          className="py-4 px-5 bg-emerald-500 text-white rounded-xl text-[17px] font-bold hover:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg"
         >
           📥 다운로드
         </button>
 
         {/* 공유하기 */}
         <button
-          style={{
-            backgroundColor: "#3b82f6",
-            color: "white",
-            fontWeight: "600",
-            padding: "12px 16px",
-            borderRadius: "8px",
-            border: "none",
-            cursor: "pointer",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            fontSize: "16px"
-          }}
           onClick={handleShare}
+          className="py-4 px-5 bg-blue-500 text-white rounded-xl text-[17px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
         >
           📤 공유하기
         </button>
+
+        {/* 내 작품 보기 */}
+        <button
+          onClick={() => navigate("/my-works")}
+          className="py-4 px-5 bg-purple-600 text-white rounded-xl text-[17px] font-bold hover:bg-purple-700 transition-all duration-200 shadow-md hover:shadow-lg"
+        >
+          👀 내 작품 보기
+        </button>
+
+        {/* 다시 만들기 */}
+        <button
+          onClick={() => navigate(-1)}
+          className="py-4 px-5 bg-gray-400 text-white rounded-xl text-[17px] font-bold hover:bg-gray-500 transition-all duration-200 shadow-md hover:shadow-lg"
+        >
+          ← 다시 만들기
+        </button>
       </div>
-
-      {/* 내 작품 보기 (전체 너비) */}
-      <button
-        style={{
-          width: "100%",
-          backgroundColor: "#9333ea",
-          color: "white",
-          fontWeight: "700",
-          padding: "12px 16px",
-          borderRadius: "8px",
-          border: "none",
-          cursor: "pointer",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          marginTop: "12px",
-          fontSize: "16px"
-        }}
-        onClick={() => navigate("/my-works")}
-      >
-        👀 내 작품 보기
-      </button>
-
-      {/* 다시 만들기 */}
-      <button
-        style={{
-          width: "100%",
-          backgroundColor: "#9ca3af",
-          color: "white",
-          fontWeight: "600",
-          padding: "12px 16px",
-          borderRadius: "8px",
-          border: "none",
-          cursor: "pointer",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          marginTop: "12px",
-          fontSize: "16px"
-        }}
-        onClick={() => navigate(-1)}
-      >
-        ← 다시 만들기
-      </button>
       </div>
     </div>
   );

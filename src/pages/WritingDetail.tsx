@@ -116,12 +116,12 @@ export default function WritingDetail() {
           {story.content || story.description}
         </div>
 
-        {/* 액션 버튼들 - 내작품관리 스타일 */}
-        <div className="flex flex-col gap-2.5 mt-6">
+        {/* 액션 버튼들 - 통일된 큰 버튼 스타일 */}
+        <div className="flex flex-col gap-3 mt-6">
           {/* 다운로드 */}
           <button
             onClick={handleDownload}
-            className="py-3 px-4 bg-emerald-500 text-white rounded-xl text-[16px] font-semibold hover:bg-emerald-600 transition shadow-sm"
+            className="py-4 px-5 bg-emerald-500 text-white rounded-xl text-[17px] font-bold hover:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             📥 다운로드
           </button>
@@ -129,7 +129,7 @@ export default function WritingDetail() {
           {/* 공유하기 */}
           <button
             onClick={handleShare}
-            className="py-3 px-4 bg-blue-500 text-white rounded-xl text-[16px] font-semibold hover:bg-blue-600 transition shadow-sm"
+            className="py-4 px-5 bg-blue-500 text-white rounded-xl text-[17px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             📤 공유하기
           </button>
@@ -137,7 +137,7 @@ export default function WritingDetail() {
           {/* 수정하기 */}
           <button
             onClick={handleEdit}
-            className="py-3 px-4 bg-indigo-500 text-white rounded-xl text-[16px] font-semibold hover:bg-indigo-600 transition shadow-sm"
+            className="py-4 px-5 bg-indigo-500 text-white rounded-xl text-[17px] font-bold hover:bg-indigo-600 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             ✏️ 수정하기
           </button>
@@ -145,7 +145,7 @@ export default function WritingDetail() {
           {/* 삭제하기 */}
           <button
             onClick={handleDelete}
-            className="py-3 px-4 bg-rose-500 text-white rounded-xl text-[16px] font-semibold hover:bg-rose-600 transition shadow-sm"
+            className="py-4 px-5 bg-rose-500 text-white rounded-xl text-[17px] font-bold hover:bg-rose-600 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             🗑️ 삭제하기
           </button>
@@ -153,7 +153,7 @@ export default function WritingDetail() {
           {/* 다시 만들기 */}
           <button
             onClick={() => navigate("/writing")}
-            className="py-3 px-4 bg-purple-600 text-white rounded-xl text-[16px] font-bold hover:bg-purple-700 transition shadow-sm"
+            className="py-4 px-5 bg-purple-600 text-white rounded-xl text-[17px] font-bold hover:bg-purple-700 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             ✨ 다시 만들기
           </button>
@@ -161,7 +161,7 @@ export default function WritingDetail() {
           {/* 목록으로 돌아가기 */}
           <button
             onClick={() => navigate("/gallery")}
-            className="py-3 px-4 bg-gray-400 text-white rounded-xl text-[16px] font-semibold hover:bg-gray-500 transition shadow-sm mt-2"
+            className="py-4 px-5 bg-gray-400 text-white rounded-xl text-[17px] font-bold hover:bg-gray-500 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             ← 목록으로 돌아가기
           </button>

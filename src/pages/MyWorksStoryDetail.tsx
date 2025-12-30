@@ -132,12 +132,12 @@ export default function MyWorksStoryDetail() {
           </div>
         )}
 
-        {/* 액션 버튼들 */}
-        <div className="flex flex-col gap-2.5">
+        {/* 액션 버튼들 - 통일된 큰 버튼 스타일 */}
+        <div className="flex flex-col gap-3">
           {/* 수정하기 */}
           <button
             onClick={handleEdit}
-            className="py-2.5 px-4 bg-blue-500 text-white rounded-lg text-[15px] font-semibold hover:bg-blue-600 transition shadow-sm"
+            className="py-4 px-5 bg-blue-500 text-white rounded-xl text-[17px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             ✏️ 수정하기
           </button>
@@ -145,7 +145,7 @@ export default function MyWorksStoryDetail() {
           {/* 삭제 */}
           <button
             onClick={handleDelete}
-            className="py-2.5 px-4 bg-rose-500 text-white rounded-lg text-[15px] font-semibold hover:bg-rose-600 transition shadow-sm"
+            className="py-4 px-5 bg-rose-500 text-white rounded-xl text-[17px] font-bold hover:bg-rose-600 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             🗑️ 삭제하기
           </button>

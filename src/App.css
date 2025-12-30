@@ -1,30 +1,7 @@
-.App {
-  text-align: center;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
+/* ⚠️ Tailwind CSS 사용으로 전역 스타일 최소화 */
 
-.App-header {
-  background-color: #282c34;
-  padding: 40px;
-  border-radius: 10px;
-  color: white;
-}
-
-h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
-  color: #61dafb;
-}
-
-.card {
-  padding: 2rem;
-}
-
-button {
+/* 필요한 경우에만 .btn 클래스로 사용 */
+.btn-legacy {
   font-size: 1.2rem;
   padding: 0.8rem 1.5rem;
   background-color: #61dafb;
@@ -36,13 +13,7 @@ button {
   transition: all 0.3s ease;
 }
 
-button:hover {
+.btn-legacy:hover {
   background-color: #4fa8c5;
   transform: scale(1.05);
-}
-
-.read-the-docs {
-  color: #888;
-  margin-top: 1.5rem;
-  font-size: 1rem;
 }

@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { saveImageAsFile, shareImage, copyImageToClipboard } from "../services/imageService";
 import { saveImage } from "../services/dbService";
-import "./Result.css";
 
 export default function Result() {
   const navigate = useNavigate();
@@ -109,61 +108,71 @@ export default function Result() {
   };
 
   return (
-    <>
-      <div className="result-page">
+    <div className="min-h-screen bg-[#FFF9F0] p-5 pb-20">
+      <div className="max-w-4xl mx-auto">
         {imageUrl ? (
           <>
+            {/* 제목 */}
+            <h1 className="text-2xl font-bold mb-4">생성된 그림 🎨</h1>
+
             {/* 생성된 이미지 */}
-            <div className="result-image-container">
-              <img src={imageUrl} alt="생성된 그림" className="result-image" />
+            <div className="flex justify-center mb-6">
+              <img
+                src={imageUrl}
+                alt="생성된 그림"
+                className="rounded-xl shadow-lg cursor-pointer"
+                style={{ maxWidth: "380px", width: "100%", height: "auto" }}
+                onClick={() => window.open(imageUrl, "_blank")}
+              />
             </div>
 
-            {/* 액션 버튼들 */}
-            <div className="result-actions">
-              <button className="action-btn primary" onClick={handleDownload}>
-                💾 저장하기
+            {/* 액션 버튼들 - 2번째 이미지 스타일 */}
+            <div className="flex flex-col gap-3 mt-6">
+              {/* 1행: 다운로드 + 공유하기 */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={handleDownload}
+                  className="py-4 px-5 bg-emerald-500 text-white rounded-xl text-[17px] font-bold hover:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                  📥 다운로드
+                </button>
+                <button
+                  onClick={handleShare}
+                  className="py-4 px-5 bg-blue-500 text-white rounded-xl text-[17px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                  📤 공유하기
+                </button>
+              </div>
+
+              {/* 2행: 내 작품 보기 */}
+              <button
+                onClick={() => navigate("/my-works")}
+                className="py-4 px-5 bg-purple-600 text-white rounded-xl text-[17px] font-bold hover:bg-purple-700 transition-all duration-200 shadow-md hover:shadow-lg"
+              >
+                👀 내 작품 보기
               </button>
-              <button className="action-btn secondary" onClick={handleShare}>
-                📤 공유하기
+
+              {/* 3행: 다시 만들기 */}
+              <button
+                onClick={() => navigate("/drawing/practice")}
+                className="py-4 px-5 bg-gray-400 text-white rounded-xl text-[17px] font-bold hover:bg-gray-500 transition-all duration-200 shadow-md hover:shadow-lg"
+              >
+                ← 다시 만들기
               </button>
             </div>
-
-            {/* 다시 만들기 */}
-            <button
-              className="big-btn secondary result-retry"
-              onClick={() => navigate("/drawing/practice")}
-            >
-              🎨 다시 만들기
-            </button>
-
-            {/* 내 작품 보러가기 */}
-            <button
-              className="big-btn secondary result-gallery"
-              onClick={() => navigate("/my-works")}
-            >
-              🖼️ 내 작품 보러가기
-            </button>
-
-            {/* 홈으로 돌아가기 */}
-            <button
-              className="big-btn primary result-home"
-              onClick={() => navigate("/home")}
-            >
-              🏠 홈으로 돌아가기
-            </button>
           </>
         ) : (
-          <div className="result-empty">
-            <p>생성된 이미지가 없습니다.</p>
+          <div className="p-10 text-center">
+            <p className="text-xl mb-5">생성된 이미지가 없습니다.</p>
             <button
-              className="result-retry"
               onClick={() => navigate("/drawing/practice")}
+              className="bg-purple-600 text-white px-6 py-3 rounded-xl text-lg font-bold hover:bg-purple-700 transition-colors"
             >
               🎨 그림 만들러 가기
             </button>
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

@@ -115,25 +115,25 @@ export default function DrawingResult() {
         />
       </div>
 
-      {/* 액션 버튼들 - 개선된 스타일 */}
+      {/* 액션 버튼들 - 2번째 이미지 스타일 */}
       <div className="flex flex-col gap-3 mt-6">
-        {/* 다운로드 */}
-        <button
-          onClick={handleDownload}
-          className="py-4 px-5 bg-emerald-500 text-white rounded-xl text-[17px] font-bold hover:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg"
-        >
-          📥 다운로드
-        </button>
+        {/* 1행: 다운로드 + 공유하기 */}
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={handleDownload}
+            className="py-4 px-5 bg-emerald-500 text-white rounded-xl text-[17px] font-bold hover:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg"
+          >
+            📥 다운로드
+          </button>
+          <button
+            onClick={handleShare}
+            className="py-4 px-5 bg-blue-500 text-white rounded-xl text-[17px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
+          >
+            📤 공유하기
+          </button>
+        </div>
 
-        {/* 공유하기 */}
-        <button
-          onClick={handleShare}
-          className="py-4 px-5 bg-blue-500 text-white rounded-xl text-[17px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
-        >
-          📤 공유하기
-        </button>
-
-        {/* 내 작품 보기 */}
+        {/* 2행: 내 작품 보기 */}
         <button
           onClick={() => navigate("/my-works")}
           className="py-4 px-5 bg-purple-600 text-white rounded-xl text-[17px] font-bold hover:bg-purple-700 transition-all duration-200 shadow-md hover:shadow-lg"
@@ -141,7 +141,7 @@ export default function DrawingResult() {
           👀 내 작품 보기
         </button>
 
-        {/* 다시 만들기 */}
+        {/* 3행: 다시 만들기 */}
         <button
           onClick={() => navigate(-1)}
           className="py-4 px-5 bg-gray-400 text-white rounded-xl text-[17px] font-bold hover:bg-gray-500 transition-all duration-200 shadow-md hover:shadow-lg"

@@ -108,8 +108,13 @@ ILLUSTRATION STYLE (삽화 스타일):
 - Art style: ${stylePrompt}
     `.trim();
     
-    // ⭐ 최종 프롬프트 구조
-    const fullPrompt = `${illustrationPurpose}
+    // ⭐ 최종 프롬프트 구조 (텍스트 금지 3번 강조)
+    const fullPrompt = `🚫 NO TEXT NO WORDS NO LETTERS NO NUMBERS ANYWHERE IN THE IMAGE 🚫
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+This is a PURE ILLUSTRATION with ZERO TEXT.
+The text will be added SEPARATELY by the publisher.
+
+${illustrationPurpose}
 
 ${absoluteProhibitions}
 
@@ -118,7 +123,9 @@ ${styleGuide}
 SCENE DESCRIPTION (장면 설명):
 ${prompt}
 
-Remember: This is a text-free illustration. The publisher will add text later.`;
+🚫 CRITICAL REMINDER: NO TEXT, NO WORDS, NO LETTERS, NO SYMBOLS 🚫
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+If you add ANY text, the image will be REJECTED and REGENERATED.`;
 
     console.log('📡 OpenAI API 호출:', fullPrompt);
 

@@ -4,7 +4,7 @@
 .screen {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: 12px; /* ⭐ 여백 축소: 20px → 12px */
 }
 
 /* 섹션 제목 */
@@ -12,8 +12,7 @@
   font-size: var(--font-large);
   font-weight: 700;
   color: var(--text-title);
-  margin-top: 0; /* ⭐ 위쪽 여백 제거 */
-  margin-bottom: 12px; /* ⭐ 아래 여백만 유지 */
+  margin: 0; /* ⭐ 모든 여백 제거 (gap으로만 조절) */
 }
 
 .screen-subtitle {

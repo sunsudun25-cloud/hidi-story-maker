@@ -10,12 +10,37 @@ interface QRCodeModalProps {
 export default function QRCodeModal({ isOpen, onClose, imageUrl, title = "QR 코드로 공유하기" }: QRCodeModalProps) {
   if (!isOpen) return null;
 
+  // 인라인 스타일로 확실하게 표시
+  const overlayStyle: React.CSSProperties = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 9999,
+  };
+
+  const modalStyle: React.CSSProperties = {
+    backgroundColor: 'white',
+    borderRadius: '16px',
+    padding: '32px',
+    maxWidth: '400px',
+    width: '90%',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+  };
+
   return (
     <div 
+      style={overlayStyle}
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div 
+        style={modalStyle}
         className="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >

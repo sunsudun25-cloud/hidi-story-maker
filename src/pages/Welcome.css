@@ -18,6 +18,27 @@
   gap: 40px;
 }
 
+/* 회사 로고 및 슬로건 - 최상단 */
+.welcome-company {
+  text-align: center;
+  margin-bottom: -20px; /* gap과 조화 */
+}
+
+.welcome-company .company-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.welcome-company .company-slogan {
+  font-size: 13px;
+  font-weight: 400;
+  color: #666;
+  line-height: 1.5;
+}
+
 /* AI 아이콘 */
 .welcome-icon {
   display: flex;

@@ -310,11 +310,33 @@ export async function shareImage(
   }
 
   try {
-    // HTTP URL인 경우: URL만 공유 (파일 없이)
+    // HTTP URL인 경우
     if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      // 방법 1: 파일 공유 시도 (모바일에서 더 나은 경험)
+      if (navigator.canShare) {
+        try {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const file = new File([blob], "image.png", { type: blob.type || "image/png" });
+          
+          // 파일 공유 가능 여부 확인
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title,
+              text,
+              files: [file],
+            });
+            return true;
+          }
+        } catch (fileShareError) {
+          console.warn("파일 공유 실패, URL 공유로 폴백:", fileShareError);
+        }
+      }
+      
+      // 방법 2: URL만 공유 (폴백)
       await navigator.share({
         title,
-        text: `${text}\n${imageUrl}`,
+        text: `${text}\n\n`,
         url: imageUrl
       });
       return true;
@@ -324,6 +346,12 @@ export async function shareImage(
     const blob = await imageUrlToBlob(imageUrl);
     const file = new File([blob], "image.png", { type: "image/png" });
 
+    // 파일 공유 가능 여부 확인
+    if (navigator.canShare && !navigator.canShare({ files: [file] })) {
+      console.warn("파일 공유가 지원되지 않습니다.");
+      return false;
+    }
+
     await navigator.share({
       title,
       text,
@@ -331,7 +359,13 @@ export async function shareImage(
     });
 
     return true;
-  } catch (error) {
+  } catch (error: any) {
+    // 사용자가 공유를 취소한 경우 (정상)
+    if (error.name === 'AbortError') {
+      console.log("사용자가 공유를 취소했습니다.");
+      return true; // 취소는 오류가 아님
+    }
+    
     console.error("이미지 공유 오류:", error);
     return false;
   }

@@ -77,19 +77,41 @@ export default function DrawingResult() {
   const handleShare = async () => {
     console.log("📤 [DrawingResult] 공유 시작");
     
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "AI 생성 이미지",
-          text: `${prompt} (${style} 스타일)`,
-          url: window.location.href,
-        });
+    if (!imageData) {
+      alert("공유할 이미지가 없습니다.");
+      return;
+    }
+
+    try {
+      // imageService 사용하여 공유
+      const { shareImage, copyImageToClipboard } = await import("../services/imageService");
+      
+      const success = await shareImage(
+        imageData,
+        "AI 생성 이미지",
+        `${prompt} (${style} 스타일)`
+      );
+
+      if (!success) {
+        console.log("⚠️ Web Share API 사용 불가, 클립보드 복사로 대체");
+        
+        // Web Share API 미지원 시 클립보드 복사
+        const copied = await copyImageToClipboard(imageData);
+        if (copied) {
+          if (imageData.startsWith('http://') || imageData.startsWith('https://')) {
+            alert("📋 이미지 링크가 클립보드에 복사되었습니다!\n\n💡 메신저나 SNS에 붙여넣기(Ctrl+V)하여 공유하세요.");
+          } else {
+            alert("📋 이미지가 클립보드에 복사되었습니다!\n\n💡 메신저나 SNS에 붙여넣기(Ctrl+V)하여 공유하세요.");
+          }
+        } else {
+          alert("⚠️ 공유 기능을 사용할 수 없습니다.\n\n직접 이미지를 다운로드한 후 공유해주세요.");
+        }
+      } else {
         console.log("✅ [DrawingResult] 공유 완료");
-      } catch (err) {
-        console.error("❌ [DrawingResult] 공유 실패:", err);
       }
-    } else {
-      alert("이 브라우저는 공유 기능을 지원하지 않습니다.");
+    } catch (err) {
+      console.error("❌ [DrawingResult] 공유 실패:", err);
+      alert("공유 중 오류가 발생했습니다.\n\n이미지를 다운로드한 후 직접 공유해주세요.");
     }
   };
 

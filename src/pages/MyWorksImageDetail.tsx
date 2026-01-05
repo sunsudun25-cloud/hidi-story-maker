@@ -34,18 +34,39 @@ export default function MyWorksImageDetail() {
   };
 
   const handleShare = async () => {
-    if (!item) return;
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "AI 이미지",
-          url: item.image,
-        });
-      } catch (error) {
-        console.error("공유 오류:", error);
+    if (!item || !item.image) {
+      alert("공유할 이미지가 없습니다.");
+      return;
+    }
+
+    try {
+      // imageService 사용하여 공유
+      const { shareImage, copyImageToClipboard } = await import("../services/imageService");
+      
+      const success = await shareImage(
+        item.image,
+        "AI 이미지",
+        item.prompt || "AI로 생성한 이미지입니다"
+      );
+
+      if (!success) {
+        console.log("⚠️ Web Share API 사용 불가, 클립보드 복사로 대체");
+        
+        // Web Share API 미지원 시 클립보드 복사
+        const copied = await copyImageToClipboard(item.image);
+        if (copied) {
+          if (item.image.startsWith('http://') || item.image.startsWith('https://')) {
+            alert("📋 이미지 링크가 클립보드에 복사되었습니다!\n\n💡 메신저나 SNS에 붙여넣기(Ctrl+V)하여 공유하세요.");
+          } else {
+            alert("📋 이미지가 클립보드에 복사되었습니다!\n\n💡 메신저나 SNS에 붙여넣기(Ctrl+V)하여 공유하세요.");
+          }
+        } else {
+          alert("⚠️ 공유 기능을 사용할 수 없습니다.\n\n직접 이미지를 다운로드한 후 공유해주세요.");
+        }
       }
-    } else {
-      alert("이 브라우저는 공유 기능을 지원하지 않습니다.");
+    } catch (error) {
+      console.error("공유 오류:", error);
+      alert("공유 중 오류가 발생했습니다.\n\n이미지를 다운로드한 후 직접 공유해주세요.");
     }
   };
 

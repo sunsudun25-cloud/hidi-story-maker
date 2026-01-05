@@ -77,9 +77,14 @@ export default function Result() {
   };
 
   const handleShare = async () => {
-    if (!imageUrl) return;
+    if (!imageUrl) {
+      alert("공유할 이미지가 없습니다.");
+      return;
+    }
 
     try {
+      console.log("🔗 공유 시작:", imageUrl.substring(0, 100) + "...");
+      
       // imageService 사용하여 공유
       const success = await shareImage(
         imageUrl,
@@ -88,22 +93,26 @@ export default function Result() {
       );
 
       if (!success) {
+        console.log("⚠️ Web Share API 사용 불가, 클립보드 복사로 대체");
+        
         // Web Share API 미지원 시 클립보드 복사
         const copied = await copyImageToClipboard(imageUrl);
         if (copied) {
           // HTTP URL인 경우
           if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-            alert("📋 이미지 링크가 클립보드에 복사되었습니다!\n\n링크를 공유하거나 브라우저에 붙여넣어 다운로드하세요.");
+            alert("📋 이미지 링크가 클립보드에 복사되었습니다!\n\n💡 메신저나 SNS에 붙여넣기(Ctrl+V)하여 공유하세요.");
           } else {
-            alert("📋 이미지가 클립보드에 복사되었습니다!");
+            alert("📋 이미지가 클립보드에 복사되었습니다!\n\n💡 메신저나 SNS에 붙여넣기(Ctrl+V)하여 공유하세요.");
           }
         } else {
-          alert("공유 기능을 사용할 수 없습니다.");
+          alert("⚠️ 공유 기능을 사용할 수 없습니다.\n\n직접 이미지를 다운로드한 후 공유해주세요.");
         }
+      } else {
+        console.log("✅ 공유 성공!");
       }
     } catch (err) {
-      console.error("공유 오류:", err);
-      alert("공유 중 오류가 발생했습니다.");
+      console.error("❌ 공유 오류:", err);
+      alert("공유 중 오류가 발생했습니다.\n\n이미지를 다운로드한 후 직접 공유해주세요.");
     }
   };
 

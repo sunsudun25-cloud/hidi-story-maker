@@ -15,13 +15,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 40px;
+  gap: 32px; /* 40px → 32px 여백 축소 */
 }
 
-/* 회사 로고 및 슬로건 - 최상단 */
+/* 회사 로고 및 슬로건 - 하단 */
 .welcome-company {
   text-align: center;
-  margin-bottom: -20px; /* gap과 조화 */
+  margin-top: 8px; /* 상단 여백 추가 */
 }
 
 .welcome-company .company-name {
@@ -188,7 +188,7 @@
   }
   
   .welcome-content {
-    gap: 32px;
+    gap: 24px; /* 모바일에서 여백 더 축소 */
   }
 
   .icon-box {

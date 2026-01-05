@@ -13,12 +13,6 @@ const Welcome: React.FC = () => {
   return (
     <div className="welcome-container">
       <div className="welcome-content">
-        {/* 회사 로고 및 슬로건 - 최상단으로 이동 */}
-        <div className="welcome-company">
-          <div className="company-name">HI-DI Edu</div>
-          <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
-        </div>
-
         {/* AI 아이콘 */}
         <div className="welcome-icon">
           <div className="icon-box">
@@ -47,6 +41,12 @@ const Welcome: React.FC = () => {
             <span className="feature-dot orange"></span>
             <span className="feature-text">회원가입 불필요</span>
           </div>
+        </div>
+
+        {/* 회사 로고 및 슬로건 - 하단으로 이동 */}
+        <div className="welcome-company">
+          <div className="company-name">HI-DI Edu</div>
+          <div className="company-slogan">모든 세대를 잇는 AI 스토리 플랫폼</div>
         </div>
       </div>
     </div>

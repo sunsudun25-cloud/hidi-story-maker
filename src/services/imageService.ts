@@ -4,9 +4,18 @@
  */
 
 /**
- * 동화 이미지 생성 (DALL-E 3 via Cloudflare Pages Function)
+ * 지원 모델 타입 정의
+ */
+export type SupportedModel = 
+  | "dall-e-3"
+  | "gpt-image-1.5"
+  | "gpt-image-1"
+  | "gpt-image-1-mini";
+
+/**
+ * 동화 이미지 생성 (Cloudflare Pages Function)
  * @param text 페이지 내용 또는 장면 설명
- * @param options 추가 옵션 (스타일, 분위기, 캐릭터 정보 등)
+ * @param options 추가 옵션 (스타일, 분위기, 캐릭터 정보, 모델 선택 등)
  * @returns 이미지 URL
  */
 export async function generateStoryImage(
@@ -15,13 +24,19 @@ export async function generateStoryImage(
     style?: string;
     mood?: string;
     character?: string;  // 캐릭터 일관성 프롬프트
+    model?: SupportedModel;  // ✅ 모델 선택 (기본값: dall-e-3)
+    size?: "1024x1024" | "1024x1536" | "1536x1024";  // ✅ 이미지 크기
+    quality?: "standard" | "high";  // ✅ 이미지 품질
   }
 ): Promise<string> {
   try {
     const { 
       style = "동화풍", 
       mood = "따뜻하고 부드러운",
-      character = ""
+      character = "",
+      model = "dall-e-3",  // ✅ 기본값: dall-e-3 (안정성)
+      size = "1024x1024",
+      quality = "standard"
     } = options || {};
 
     // 순수 장면 묘사 프롬프트 (텍스트 배제)
@@ -36,9 +51,9 @@ Simple, clean composition suitable for children and seniors.
 Bright, not too dark. Avoid complex backgrounds.
     `.trim();
 
-    console.log("🎨 동화 이미지 생성 중:", prompt.substring(0, 100) + "...");
+    console.log("🎨 동화 이미지 생성 중:", { model, style, prompt: prompt.substring(0, 100) + "..." });
 
-    // Cloudflare Pages API를 통해 DALL-E 3 호출
+    // Cloudflare Pages API를 통해 이미지 생성 (모델 지정 가능)
     const response = await fetch("https://story-maker-4l6.pages.dev/api/generate-image", {
       method: "POST",
       headers: {
@@ -47,6 +62,9 @@ Bright, not too dark. Avoid complex backgrounds.
       body: JSON.stringify({
         prompt: prompt,
         style: style,
+        model: model,  // ✅ 모델 선택
+        size: size,
+        quality: quality,
       }),
     });
 
@@ -70,16 +88,28 @@ Bright, not too dark. Avoid complex backgrounds.
 }
 
 /**
- * 글쓰기 이미지 생성 (DALL-E 3 via Firebase Functions)
+ * 글쓰기 이미지 생성 (Cloudflare Pages Function)
  * @param text 글 내용
  * @param genre 장르 (일기, 편지, 수필, 시, 소설, 자서전)
+ * @param options 추가 옵션 (모델, 크기, 품질)
  * @returns 이미지 URL
  */
 export async function generateWritingImage(
   text: string,
-  genre?: string
+  genre?: string,
+  options?: {
+    model?: SupportedModel;  // ✅ 모델 선택
+    size?: "1024x1024" | "1024x1536" | "1536x1024";
+    quality?: "standard" | "high";
+  }
 ): Promise<string> {
   try {
+    const {
+      model = "dall-e-3",  // ✅ 기본값: dall-e-3
+      size = "1024x1024",
+      quality = "standard"
+    } = options || {};
+
     const genreStyle = genre 
       ? `${genre} 장르에 어울리는` 
       : "글 내용에 맞는";
@@ -95,9 +125,9 @@ ${genreStyle} 따뜻하고 감성적인 일러스트를 만들어 주세요.
 ${text.substring(0, 1000)}
 `;
 
-    console.log("🎨 글쓰기 이미지 생성 중:", prompt.substring(0, 100) + "...");
+    console.log("🎨 글쓰기 이미지 생성 중:", { model, genre, prompt: prompt.substring(0, 100) + "..." });
 
-    // Cloudflare Pages API를 통해 DALL-E 3 호출
+    // Cloudflare Pages API를 통해 이미지 생성 (모델 지정 가능)
     const response = await fetch("https://story-maker-4l6.pages.dev/api/generate-image", {
       method: "POST",
       headers: {
@@ -106,6 +136,9 @@ ${text.substring(0, 1000)}
       body: JSON.stringify({
         prompt: prompt,
         style: genre || "동화풍",
+        model: model,  // ✅ 모델 선택
+        size: size,
+        quality: quality,
       }),
     });
 

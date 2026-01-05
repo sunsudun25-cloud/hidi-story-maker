@@ -59,6 +59,16 @@
 
 ### ✅ 완료된 개선사항
 
+**0. 이미지 생성 모델 다변화 (2024-12-30)** 🆕
+- **멀티 모델 지원**: DALL-E 3 외에 GPT-Image 계열 모델 추가
+  - `dall-e-3`: 기본 모델 (운영 안정성)
+  - `gpt-image-1.5`: 차세대 고품질 모델
+  - `gpt-image-1`: 표준 품질 모델
+  - `gpt-image-1-mini`: 빠른 생성 모델
+- **자동 폴백**: 새 모델 실패 시 자동으로 `dall-e-3`로 재시도
+- **하위 호환성 보장**: 기존 코드 수정 없이 작동
+- **향후 확장 가능**: 2026년 5월 DALL-E 종료 대비
+
 **1. 음성 입력 기능 (Web Speech API)**
 - 그림 만들기, 글쓰기, 동화책 만들기 전체 지원
 - 한국어 음성 인식 (`ko-KR`)
@@ -155,7 +165,12 @@
 - **Cloudflare Pages/Workers** (호스팅)
 - **Cloudflare D1** (SQLite 데이터베이스)
 - **OpenAI API**:
-  - DALL-E 3 (이미지 생성)
+  - **Multi-Model Support** ✨ (2024-12-30 추가)
+    - `dall-e-3` (기본, 고품질)
+    - `gpt-image-1.5` (차세대 모델)
+    - `gpt-image-1` (표준)
+    - `gpt-image-1-mini` (빠른 생성)
+  - **Automatic Fallback**: 새 모델 실패 시 `dall-e-3`로 자동 재시도
   - GPT-4o-mini Vision (손글씨 인식)
 - **Gemini API** (텍스트 생성)
 - **Web Speech API** (음성 인식)

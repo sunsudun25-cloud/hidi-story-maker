@@ -22,13 +22,20 @@ export default function DrawingPractice() {
 
     setLoading(true);
     try {
-      const imageBase64 = await generateImageViaCloudflare(prompt, "기본");  // ⭐ Firebase Functions 프록시 사용
+      console.log("🎨 [DrawingPractice] gpt-image-1-mini 모델로 이미지 생성 시작");
+      
+      // ✅ gpt-image-1-mini 모델 사용 (빠른 생성)
+      const imageBase64 = await generateImageViaCloudflare(prompt, "기본", {
+        model: "gpt-image-1-mini"
+      });
+
+      console.log("✅ [DrawingPractice] 이미지 생성 완료");
 
       navigate("/result", {
         state: {
           imageUrl: imageBase64,
           prompt,
-          style: "연습하기",
+          style: "연습하기 (GPT-Image Mini)",
         },
       });
     } catch (error) {

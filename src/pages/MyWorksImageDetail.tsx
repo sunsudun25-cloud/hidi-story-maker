@@ -1,12 +1,16 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAllImages, deleteImage, type SavedImage } from "../services/dbService";
+import QRCodeModal from "../components/QRCodeModal";
 
 export default function MyWorksImageDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState<SavedImage | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // ✅ QR 코드 모달 상태
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
 
   useEffect(() => {
     loadImage();
@@ -149,30 +153,48 @@ export default function MyWorksImageDetail() {
 
         {/* 액션 버튼들 - 개선된 스타일 */}
         <div className="flex flex-col gap-3">
-          {/* 다운로드 */}
-          <button
-            onClick={handleDownload}
-            className="py-4 px-5 bg-emerald-500 text-white rounded-xl text-[17px] font-bold hover:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg"
-          >
-            📥 다운로드
-          </button>
+          {/* 1행: 다운로드 + 공유하기 */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={handleDownload}
+              className="py-4 px-5 bg-emerald-500 text-white rounded-xl text-[17px] font-bold hover:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              📥 다운로드
+            </button>
+            <button
+              onClick={handleShare}
+              className="py-4 px-5 bg-blue-500 text-white rounded-xl text-[17px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              📤 공유하기
+            </button>
+          </div>
 
-          {/* 공유하기 */}
-          <button
-            onClick={handleShare}
-            className="py-4 px-5 bg-blue-500 text-white rounded-xl text-[17px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
-          >
-            📤 공유하기
-          </button>
-
-          {/* 삭제하기 */}
-          <button
-            onClick={handleDelete}
-            className="py-4 px-5 bg-rose-500 text-white rounded-xl text-[17px] font-bold hover:bg-rose-600 transition-all duration-200 shadow-md hover:shadow-lg"
-          >
-            🗑️ 삭제하기
-          </button>
+          {/* 2행: QR 코드 + 삭제하기 */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setIsQRModalOpen(true)}
+              className="py-4 px-5 bg-orange-500 text-white rounded-xl text-[17px] font-bold hover:bg-orange-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              📱 QR 코드
+            </button>
+            <button
+              onClick={handleDelete}
+              className="py-4 px-5 bg-rose-500 text-white rounded-xl text-[17px] font-bold hover:bg-rose-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              🗑️ 삭제하기
+            </button>
+          </div>
         </div>
+
+        {/* ✅ QR 코드 모달 */}
+        {item && (
+          <QRCodeModal
+            isOpen={isQRModalOpen}
+            onClose={() => setIsQRModalOpen(false)}
+            imageUrl={item.image}
+            title="QR 코드로 공유하기"
+          />
+        )}
       </div>
     </div>
   );

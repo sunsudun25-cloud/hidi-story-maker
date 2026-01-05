@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { saveImageAsFile, shareImage, copyImageToClipboard } from "../services/imageService";
 import { saveImage } from "../services/dbService";
+import QRCodeModal from "../components/QRCodeModal";
 
 export default function Result() {
   const navigate = useNavigate();
@@ -10,6 +11,9 @@ export default function Result() {
   const prompt = state?.prompt || "AI 생성 이미지";
   const style = state?.style || "기본";
   const hasSaved = useRef(false); // 저장 플래그
+  
+  // ✅ QR 코드 모달 상태
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
 
   // 이미지가 생성되면 자동으로 DB에 저장 (한 번만 실행)
   useEffect(() => {
@@ -153,13 +157,21 @@ export default function Result() {
                 </button>
               </div>
 
-              {/* 2행: 내 작품 보기 */}
-              <button
-                onClick={() => navigate("/my-works")}
-                className="py-4 px-5 bg-purple-600 text-white rounded-xl text-[17px] font-bold hover:bg-purple-700 transition-all duration-200 shadow-md hover:shadow-lg"
-              >
-                👀 내 작품 보기
-              </button>
+              {/* 2행: QR 코드 + 내 작품 보기 */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setIsQRModalOpen(true)}
+                  className="py-4 px-5 bg-orange-500 text-white rounded-xl text-[17px] font-bold hover:bg-orange-600 transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                  📱 QR 코드
+                </button>
+                <button
+                  onClick={() => navigate("/my-works")}
+                  className="py-4 px-5 bg-purple-600 text-white rounded-xl text-[17px] font-bold hover:bg-purple-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                  👀 내 작품 보기
+                </button>
+              </div>
 
               {/* 3행: 다시 만들기 */}
               <button
@@ -169,6 +181,14 @@ export default function Result() {
                 ← 다시 만들기
               </button>
             </div>
+
+            {/* ✅ QR 코드 모달 */}
+            <QRCodeModal
+              isOpen={isQRModalOpen}
+              onClose={() => setIsQRModalOpen(false)}
+              imageUrl={imageUrl}
+              title="QR 코드로 공유하기"
+            />
           </>
         ) : (
           <div className="p-10 text-center">

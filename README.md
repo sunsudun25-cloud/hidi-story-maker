@@ -285,17 +285,98 @@ git push origin main
 
 **전체 진행률**: 약 80%
 
+## 🎓 수업 관리 시스템 (2025-01-07 추가) 🆕
+
+### 개요
+Firebase Functions 기반 클라우드 저장 시스템으로 교육 현장에 최적화된 기능 제공
+
+### 핵심 기능
+- **로그인 불필요**: 수업코드(8자리) + 학생코드(4자리)로 간편 접근
+- **6개월 클라우드 저장**: Firestore + Storage 기반 안전한 데이터 보관
+- **Base64 최적화**: Storage 업로드로 용량 절감, Firestore에는 URL만 저장
+- **PDF + JSON 저장**: book.pdf (뷰어용) + data.json (재편집용) 함께 보관
+- **기기 변경 지원**: Share ID/QR로 다른 기기에서 작품 열람 가능
+- **강사용 ZIP**: 전체 학생 작품 일괄 다운로드
+
+### Firebase Functions (7개)
+| Function | 설명 | URL |
+|----------|------|-----|
+| `classCreate` | 수업 생성 (8자리 코드) | POST /classCreate |
+| `classVerifyPin` | 강사 PIN 검증 (6자리) | POST /classVerifyPin |
+| `learnerEnsure` | 학생 등록/로그인 (4자리) | POST /learnerEnsure |
+| `artifactSave` | 작품 저장 (Base64 → Storage) | POST /artifactSave |
+| `artifactList` | 학생 작품 목록 조회 | GET /artifactList?learnerId=xxx |
+| `artifactByShare` | 공유 링크로 작품 열기 | GET /artifactByShare?shareId=xxx |
+| `exportClassZip` | 강사용 ZIP 다운로드 | POST /exportClassZip |
+
+**Base URL**: `https://asia-northeast1-story-make-fbbd7.cloudfunctions.net`
+
+### 데이터 구조
+- **Firestore Collections**:
+  - `classes/{classCode}`: 수업 정보
+  - `learners/{learnerId}`: 학생 정보
+  - `artifacts/{artifactId}`: 작품 정보
+- **Storage 구조**:
+  - `artifacts/{classCode}/{learnerId}/{artifactId}/`
+    - `cover.png`, `page_1.png`, ..., `book.pdf`, `data.json`
+
+### 사용 시나리오
+1. **수업 준비**: 강사가 `classCreate`로 수업 생성 → `classCode` 획득
+2. **학생 로그인**: 학생이 `learnerEnsure`로 등록 → `learnerId` 획득
+3. **작품 저장**: `artifactSave`로 동화책/그림/글 저장 → `shareId` 발급
+4. **내 작품 보기**: `artifactList`로 저장된 작품 목록 조회
+5. **공유하기**: `artifactByShare`로 QR/링크를 통해 다른 기기에서 열람
+6. **강사 다운로드**: `exportClassZip`으로 전체 학생 작품 ZIP 다운로드
+
+### 테스트 방법
+**가장 빠른 테스트**:
+```bash
+cd /home/user/webapp
+./quick-test.sh
+```
+
+**상세한 테스트 가이드**:
+- `START_HERE.md`: 테스트 시작 가이드
+- `TESTING_GUIDE.md`: 전체 테스트 가이드
+- `LOCAL_TESTING.md`: 로컬 Emulator 테스트
+- `MANUAL_DEPLOYMENT.md`: 수동 배포 가이드
+- `CLASSROOM_DEPLOYMENT_GUIDE.md`: 수업 시스템 상세 가이드
+
+### 예상 비용
+| 규모 | Firestore | Storage | Functions | 총 비용 |
+|------|-----------|---------|-----------|---------|
+| 소규모 (50명) | $0 | $0 | $0 | **$0/월** (무료 플랜) |
+| 중규모 (500명) | $1~2 | $2~3 | $1~2 | **$5~10/월** |
+| 대규모 (5000명) | $5~10 | $10~15 | $5~10 | **$20~30/월** |
+
+### 주요 개선사항
+**Before (IndexedDB만 사용)**:
+- ❌ 브라우저 캐시 삭제 시 데이터 손실
+- ❌ Base64 저장으로 용량 증가
+- ❌ 멀티 디바이스 미지원
+- ❌ 백업 불가
+
+**After (Firestore + Storage)**:
+- ✅ 6개월 클라우드 저장
+- ✅ Storage 업로드로 용량 절감
+- ✅ 기기 변경 지원 (Share ID/QR)
+- ✅ 강사용 ZIP 다운로드
+- ✅ 자동 백업
+
+---
+
 ## 🔜 다음 개발 계획
 
-1. **굿즈 만들기 모듈**
+1. **수업 시스템 UI 구현** 🆕
+   - 수업 생성 페이지
+   - 학생 로그인 페이지
+   - 공유하기 페이지 (QR 코드)
+   - 강사 관리 페이지 (ZIP 다운로드)
+
+2. **굿즈 만들기 모듈**
    - 머그컵, 티셔츠, 스티커 등
    - 작품을 굿즈에 적용
    - 주문 및 배송 연동
-
-2. **사용자 인증**
-   - Cloudflare Access
-   - 사용자별 작품 관리
-   - 클라우드 동기화
 
 3. **공유 기능 강화**
    - 소셜 미디어 연동
@@ -315,4 +396,4 @@ MIT
 
 ---
 
-**Last Updated**: 2024-12-30
+**Last Updated**: 2025-01-07

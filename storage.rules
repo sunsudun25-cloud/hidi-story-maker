@@ -1,0 +1,15 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // artifacts 폴더: 읽기는 누구나, 쓰기는 Functions만
+    match /artifacts/{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+    
+    // 기타 모든 파일: 거부
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

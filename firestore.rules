@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 수업 컬렉션
+    match /classes/{classCode} {
+      // 읽기: 누구나 (수업 코드 알면)
+      allow read: if true;
+      
+      // 쓰기: Functions만 (보안)
+      allow write: if false;
+    }
+    
+    // 학생 컬렉션
+    match /learners/{learnerId} {
+      // 읽기: 누구나
+      allow read: if true;
+      
+      // 쓰기: Functions만
+      allow write: if false;
+    }
+    
+    // 작품 컬렉션
+    match /artifacts/{artifactId} {
+      // 읽기: 누구나 (공유 링크용)
+      allow read: if true;
+      
+      // 쓰기: Functions만
+      allow write: if false;
+    }
+  }
+}

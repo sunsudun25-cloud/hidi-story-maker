@@ -1,0 +1,37 @@
+==========================================
+copyright_1_drawing.zip 파일 목록
+==========================================
+src/pages/DrawPractice.tsx
+src/pages/DrawDirect.tsx
+src/pages/DrawingResult.tsx
+src/pages/Result.tsx
+src/pages/ImageMake/Practice.tsx
+src/pages/ImageMake/Custom.tsx
+src/pages/ImageMake/Result.tsx
+src/services/imageService.ts
+src/services/cloudflareImageApi.ts
+src/services/speechRecognitionService.ts
+src/services/imageUploadService.ts
+src/services/visionService.ts
+src/services/firebaseFunctions.ts
+src/components/QRCodeModal.tsx
+
+==========================================
+copyright_2_writing.zip 파일 목록
+==========================================
+src/pages/Write.tsx
+src/pages/WriteEditor.tsx
+src/services/geminiService.ts
+src/services/dbService.ts
+src/services/imageService.ts
+src/services/speechRecognitionService.ts
+
+==========================================
+copyright_3_storybook.zip 파일 목록
+==========================================
+src/pages/Storybook/index.tsx
+src/services/pdfService.ts
+src/services/geminiService.ts
+src/services/imageService.ts
+src/services/dbService.ts
+

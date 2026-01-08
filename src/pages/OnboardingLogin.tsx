@@ -8,7 +8,6 @@ const OnboardingLogin: React.FC = () => {
   const [showClassCodeInput, setShowClassCodeInput] = useState(false)
   const [classCode, setClassCode] = useState('')
   const [learnerCode, setLearnerCode] = useState('')
-  const [learnerName, setLearnerName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -31,8 +30,7 @@ const OnboardingLogin: React.FC = () => {
       // Firebase Functions API 호출
       const learnerInfo = await ensureLearner(
         classCode.toUpperCase().trim(),
-        learnerCode.trim(),
-        learnerName.trim() || undefined
+        learnerCode.trim()
       )
 
       // 로컬 스토리지에 저장
@@ -137,31 +135,13 @@ const OnboardingLogin: React.FC = () => {
                 />
               </div>
 
-              <div style={{ marginBottom: '12px' }}>
+              <div style={{ marginBottom: '16px' }}>
                 <input
                   type="text"
                   placeholder="학생 번호 (예: 0001)"
                   value={learnerCode}
                   onChange={(e) => setLearnerCode(e.target.value)}
                   maxLength={4}
-                  disabled={loading}
-                  style={{
-                    width: '100%',
-                    padding: '14px',
-                    fontSize: '16px',
-                    border: '2px solid #ddd',
-                    borderRadius: '8px',
-                    textAlign: 'center'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '16px' }}>
-                <input
-                  type="text"
-                  placeholder="이름 (선택사항)"
-                  value={learnerName}
-                  onChange={(e) => setLearnerName(e.target.value)}
                   disabled={loading}
                   style={{
                     width: '100%',
@@ -198,7 +178,6 @@ const OnboardingLogin: React.FC = () => {
                   setShowClassCodeInput(false)
                   setClassCode('')
                   setLearnerCode('')
-                  setLearnerName('')
                   setError('')
                 }}
                 disabled={loading}

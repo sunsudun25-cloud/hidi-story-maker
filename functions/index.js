@@ -595,11 +595,11 @@ exports.exportClassZip = functions.https.onRequest({
  * ========================================
  */
 
-// 수업 코드 생성 (8자리 영숫자)
+// 수업 코드 생성 (4자리 영숫자 - 시니어 친화)
 function generateClassCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 혼동 가능한 문자 제외
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 혼동 가능한 문자 제외 (0,O,I,1 제외)
   let code = '';
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 4; i++) {
     code += chars[Math.floor(Math.random() * chars.length)];
   }
   return code;

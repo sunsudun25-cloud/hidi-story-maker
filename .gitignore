@@ -15,11 +15,8 @@ dist/
 node_modules/
 .wrangler
 
-# Firebase Functions
-functions/node_modules/
-functions/lib/
-functions/.runtimeconfig.json
-functions/.env.production
+# Firebase Functions (deployed separately, not for Cloudflare Pages)
+functions/
 .firebase/
 
 # env

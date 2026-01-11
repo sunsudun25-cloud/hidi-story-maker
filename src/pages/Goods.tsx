@@ -1,8 +1,35 @@
 // src/pages/Goods.tsx
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useRef } from "react";
 
 export default function Goods() {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // 전달받은 작품 데이터
+  const { artwork, artworkType, category } = location.state || {};
+  
+  // 각 섹션 ref
+  const publishingRef = useRef<HTMLDivElement>(null);
+  const exhibitionRef = useRef<HTMLDivElement>(null);
+  const physicalRef = useRef<HTMLDivElement>(null);
+
+  // 카테고리에 따라 자동 스크롤
+  useEffect(() => {
+    if (category) {
+      const scrollToSection = () => {
+        if (category === 'publishing' && publishingRef.current) {
+          publishingRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else if (category === 'exhibition' && exhibitionRef.current) {
+          exhibitionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else if (category === 'physical' && physicalRef.current) {
+          physicalRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      };
+      // 약간의 지연 후 스크롤 (렌더링 완료 대기)
+      setTimeout(scrollToSection, 100);
+    }
+  }, [category]);
 
   // 아직 세부 기능은 없으니, 클릭 시 안내만 띄우도록 처리
   const handleComingSoon = (feature: string) => {
@@ -24,13 +51,85 @@ export default function Goods() {
           </p>
         </div>
 
+        {/* 선택한 작품 미리보기 */}
+        {artwork && (
+          <div style={{
+            background: "white",
+            borderRadius: "16px",
+            padding: "20px",
+            marginBottom: "24px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+            border: "2px solid #e0e0e0"
+          }}>
+            <h3 style={{ fontSize: "16px", fontWeight: "bold", marginBottom: "12px", color: "#333" }}>
+              📌 선택한 작품
+            </h3>
+            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+              {/* 이미지 타입 */}
+              {artworkType === 'image' && artwork.image && (
+                <img 
+                  src={artwork.image} 
+                  alt="선택한 작품" 
+                  style={{ 
+                    width: "80px", 
+                    height: "80px", 
+                    objectFit: "cover", 
+                    borderRadius: "8px",
+                    border: "2px solid #ddd"
+                  }} 
+                />
+              )}
+              {/* 동화책 타입 */}
+              {artworkType === 'storybook' && artwork.coverImageUrl && (
+                <img 
+                  src={artwork.coverImageUrl} 
+                  alt="동화책 표지" 
+                  style={{ 
+                    width: "80px", 
+                    height: "80px", 
+                    objectFit: "cover", 
+                    borderRadius: "8px",
+                    border: "2px solid #ddd"
+                  }} 
+                />
+              )}
+              {/* 글 타입 */}
+              {artworkType === 'writing' && (
+                <div style={{
+                  width: "80px",
+                  height: "80px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#f5f5f5",
+                  borderRadius: "8px",
+                  fontSize: "32px"
+                }}>
+                  📝
+                </div>
+              )}
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: "16px", fontWeight: "bold", color: "#333", marginBottom: "4px" }}>
+                  {artwork.title || artwork.prompt || "작품"}
+                </p>
+                <p style={{ fontSize: "13px", color: "#666" }}>
+                  {artworkType === 'image' && '그림 작품'}
+                  {artworkType === 'writing' && '글 작품'}
+                  {artworkType === 'storybook' && `동화책 (${artwork.pages?.length || 0}페이지)`}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 기능 카드들 */}
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {/* 1) AI 출판 */}
-          <button
-            type="button"
-            onClick={() => handleComingSoon("AI 출판")}
-            style={{
+          <div ref={publishingRef}>
+            <button
+              type="button"
+              onClick={() => handleComingSoon("AI 출판")}
+              style={{
               width: "100%",
               textAlign: "left",
               borderRadius: "16px",
@@ -64,7 +163,8 @@ export default function Goods() {
                 </p>
               </div>
             </div>
-          </button>
+            </button>
+          </div>
 
           {/* 2) 창작자 수익화 & 공방 연계 */}
           <button
@@ -109,9 +209,10 @@ export default function Goods() {
           </button>
 
           {/* 3) 전시 & 공유 (디지털 굿즈) */}
-          <button
-            type="button"
-            onClick={() => handleComingSoon("전시 & 공유")}
+          <div ref={exhibitionRef}>
+            <button
+              type="button"
+              onClick={() => handleComingSoon("전시 & 공유")}
             style={{
               width: "100%",
               textAlign: "left",
@@ -137,12 +238,14 @@ export default function Goods() {
                 </p>
               </div>
             </div>
-          </button>
+            </button>
+          </div>
 
           {/* 4) 실물 굿즈 제작 */}
-          <button
-            type="button"
-            onClick={() => handleComingSoon("실물 굿즈 제작")}
+          <div ref={physicalRef}>
+            <button
+              type="button"
+              onClick={() => handleComingSoon("실물 굿즈 제작")}
             style={{
               width: "100%",
               textAlign: "left",
@@ -177,7 +280,8 @@ export default function Goods() {
                 </p>
               </div>
             </div>
-          </button>
+            </button>
+          </div>
 
           {/* 5) 체험형 굿즈 만들기 */}
           <button

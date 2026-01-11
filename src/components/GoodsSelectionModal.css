@@ -1,0 +1,197 @@
+/* 모달 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+/* 모달 컨텐츠 */
+.modal-content {
+  background: #FFF9F0;
+  border-radius: 20px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* 모달 헤더 */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+/* 선택한 작품 미리보기 */
+.selected-artwork-preview {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 25px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.selected-artwork-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.writing-preview {
+  padding: 20px;
+  color: #666;
+  font-size: 16px;
+  font-style: italic;
+}
+
+/* 굿즈 옵션 버튼들 */
+.goods-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.goods-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: left;
+}
+
+.goods-option-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.goods-option-btn.publishing {
+  border-color: #FFB74D;
+}
+
+.goods-option-btn.publishing:hover {
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+  border-color: #FF9800;
+}
+
+.goods-option-btn.exhibition {
+  border-color: #81C784;
+}
+
+.goods-option-btn.exhibition:hover {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  border-color: #4CAF50;
+}
+
+.goods-option-btn.physical {
+  border-color: #90CAF9;
+}
+
+.goods-option-btn.physical:hover {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-color: #2196F3;
+}
+
+.goods-option-btn.experience {
+  border-color: #CE93D8;
+}
+
+.goods-option-btn.experience:hover {
+  background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+  border-color: #9C27B0;
+}
+
+.option-icon {
+  font-size: 40px;
+  flex-shrink: 0;
+}
+
+.option-text {
+  flex: 1;
+}
+
+.option-text h3 {
+  margin: 0 0 5px 0;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.option-text p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 600px) {
+  .modal-content {
+    padding: 20px;
+  }
+
+  .modal-header h2 {
+    font-size: 20px;
+  }
+
+  .goods-option-btn {
+    padding: 15px;
+  }
+
+  .option-icon {
+    font-size: 32px;
+  }
+
+  .option-text h3 {
+    font-size: 18px;
+  }
+
+  .option-text p {
+    font-size: 13px;
+  }
+}

@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAllImages, deleteImage, type SavedImage } from "../services/dbService";
 import QRCodeModal from "../components/QRCodeModal";
+import GoodsSelectionModal from "../components/GoodsSelectionModal";
 
 export default function MyWorksImageDetail() {
   const { id } = useParams();
@@ -11,6 +12,9 @@ export default function MyWorksImageDetail() {
   
   // ✅ QR 코드 모달 상태
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
+  
+  // ✅ 굿즈 선택 모달 상태
+  const [isGoodsModalOpen, setIsGoodsModalOpen] = useState(false);
 
   useEffect(() => {
     loadImage();
@@ -153,12 +157,12 @@ export default function MyWorksImageDetail() {
 
         {/* 액션 버튼들 - 개선된 스타일 */}
         <div className="flex flex-col gap-3">
-          {/* 굿즈로 만들기 버튼 - 가장 상단에 강조 */}
+          {/* 무엇을 만들까요? 버튼 - 가장 상단에 강조 */}
           <button
-            onClick={() => navigate(`/goods/postcard/${item.id}`, { state: { image: item } })}
+            onClick={() => setIsGoodsModalOpen(true)}
             className="py-5 px-5 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl text-[18px] font-bold hover:from-pink-600 hover:to-purple-600 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
-            🎨 엽서로 만들기
+            🎨 무엇을 만들까요?
           </button>
 
           {/* 1행: 다운로드 + 공유하기 */}
@@ -201,6 +205,16 @@ export default function MyWorksImageDetail() {
             onClose={() => setIsQRModalOpen(false)}
             imageUrl={item.image}
             title="QR 코드로 공유하기"
+          />
+        )}
+
+        {/* ✅ 굿즈 선택 모달 */}
+        {item && (
+          <GoodsSelectionModal
+            isOpen={isGoodsModalOpen}
+            onClose={() => setIsGoodsModalOpen(false)}
+            artwork={item}
+            artworkType="image"
           />
         )}
       </div>

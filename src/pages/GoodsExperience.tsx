@@ -1,17 +1,26 @@
 // src/pages/GoodsExperience.tsx
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function GoodsExperience() {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // 전달받은 작품 데이터
+  const { artwork, artworkType } = location.state || {};
 
   const handleComingSoon = (item: string) => {
     alert(`${item} 제작 기능은 곧 준비될 예정입니다! 😊`);
   };
 
   const handlePostcardClick = () => {
-    // 엽서는 내 작품에서 시작해야 하므로 내 작품 관리로 안내
-    if (confirm("엽서 만들기는 '내 작품 관리'에서 시작합니다.\n\n그림을 선택하고 '엽서로 만들기' 버튼을 눌러주세요.\n\n내 작품 관리로 이동하시겠습니까?")) {
-      navigate("/my-works/images");
+    // 작품이 선택되어 있으면 바로 엽서 제작으로
+    if (artwork && artworkType === 'image') {
+      navigate(`/goods/postcard/${artwork.id}`, { state: { image: artwork } });
+    } else {
+      // 작품이 없으면 내 작품 관리로 안내
+      if (confirm("엽서 만들기는 '내 작품 관리'에서 시작합니다.\n\n그림을 선택하고 '무엇을 만들까요?' 버튼을 눌러주세요.\n\n내 작품 관리로 이동하시겠습니까?")) {
+        navigate("/my-works/images");
+      }
     }
   };
 
@@ -49,6 +58,45 @@ export default function GoodsExperience() {
             내가 만든 그림으로 특별한 굿즈를 제작해보세요
           </p>
         </div>
+
+        {/* 선택한 작품 미리보기 */}
+        {artwork && (
+          <div style={{
+            background: "white",
+            borderRadius: "16px",
+            padding: "20px",
+            marginBottom: "24px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+            border: "2px solid #e0e0e0"
+          }}>
+            <h3 style={{ fontSize: "16px", fontWeight: "bold", marginBottom: "12px", color: "#333" }}>
+              📌 선택한 작품
+            </h3>
+            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+              {artworkType === 'image' && artwork.image && (
+                <img 
+                  src={artwork.image} 
+                  alt="선택한 작품" 
+                  style={{ 
+                    width: "80px", 
+                    height: "80px", 
+                    objectFit: "cover", 
+                    borderRadius: "8px",
+                    border: "2px solid #ddd"
+                  }} 
+                />
+              )}
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: "16px", fontWeight: "bold", color: "#333", marginBottom: "4px" }}>
+                  {artwork.title || artwork.prompt || "작품"}
+                </p>
+                <p style={{ fontSize: "13px", color: "#666" }}>
+                  이 작품으로 굿즈를 만들어보세요!
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* 굿즈 카드들 */}
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>

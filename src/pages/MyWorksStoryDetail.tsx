@@ -1,12 +1,16 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAllStories, deleteStory, type Story } from "../services/dbService";
+import GoodsSelectionModal from "../components/GoodsSelectionModal";
 
 export default function MyWorksStoryDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [story, setStory] = useState<Story | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // ✅ 굿즈 선택 모달 상태
+  const [isGoodsModalOpen, setIsGoodsModalOpen] = useState(false);
 
   useEffect(() => {
     loadStory();
@@ -134,6 +138,14 @@ export default function MyWorksStoryDetail() {
 
         {/* 액션 버튼들 - 통일된 큰 버튼 스타일 */}
         <div className="flex flex-col gap-3">
+          {/* 무엇을 만들까요? 버튼 - 가장 상단에 강조 */}
+          <button
+            onClick={() => setIsGoodsModalOpen(true)}
+            className="py-5 px-5 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl text-[18px] font-bold hover:from-pink-600 hover:to-purple-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+          >
+            🎨 무엇을 만들까요?
+          </button>
+
           {/* 수정하기 */}
           <button
             onClick={handleEdit}
@@ -150,6 +162,16 @@ export default function MyWorksStoryDetail() {
             🗑️ 삭제하기
           </button>
         </div>
+
+        {/* ✅ 굿즈 선택 모달 */}
+        {story && (
+          <GoodsSelectionModal
+            isOpen={isGoodsModalOpen}
+            onClose={() => setIsGoodsModalOpen(false)}
+            artwork={story}
+            artworkType="writing"
+          />
+        )}
       </div>
     </div>
   );

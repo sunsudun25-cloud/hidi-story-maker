@@ -1,12 +1,16 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAllStorybooks, deleteStorybook, type Storybook } from "../services/dbService";
+import GoodsSelectionModal from "../components/GoodsSelectionModal";
 
 export default function MyWorksStorybookDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [book, setBook] = useState<Storybook | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // ✅ 굿즈 선택 모달 상태
+  const [isGoodsModalOpen, setIsGoodsModalOpen] = useState(false);
 
   useEffect(() => {
     loadStorybook();
@@ -167,6 +171,26 @@ export default function MyWorksStorybookDetail() {
 
         {/* 액션 버튼들 */}
         <div>
+          {/* 무엇을 만들까요? 버튼 - 가장 상단에 강조 */}
+          <button
+            onClick={() => setIsGoodsModalOpen(true)}
+            style={{
+              width: "100%",
+              background: "linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)",
+              color: "white",
+              fontWeight: "700",
+              padding: "16px",
+              borderRadius: "12px",
+              border: "none",
+              cursor: "pointer",
+              boxShadow: "0 4px 12px rgba(236, 72, 153, 0.3)",
+              marginBottom: "12px",
+              fontSize: "18px"
+            }}
+          >
+            🎨 무엇을 만들까요?
+          </button>
+
           {/* 편집하기, 삭제하기 (2열) */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <button
@@ -244,6 +268,16 @@ export default function MyWorksStorybookDetail() {
             ← 목록으로 돌아가기
           </button>
         </div>
+
+        {/* ✅ 굿즈 선택 모달 */}
+        {book && (
+          <GoodsSelectionModal
+            isOpen={isGoodsModalOpen}
+            onClose={() => setIsGoodsModalOpen(false)}
+            artwork={book}
+            artworkType="storybook"
+          />
+        )}
       </div>
     </div>
   );

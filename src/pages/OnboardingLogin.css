@@ -239,3 +239,39 @@
     font-size: 13px;
   }
 }
+
+/* 수업 코드 입력란 스타일 */
+.class-code-input {
+  width: 100%;
+  padding: 18px;
+  font-size: 24px !important;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  letter-spacing: 8px;
+  font-weight: bold;
+}
+
+.class-code-input::placeholder {
+  font-size: 14px;
+  letter-spacing: 0px;
+  font-weight: normal;
+}
+
+/* 학생 번호 입력란 스타일 */
+.learner-code-input {
+  width: 100%;
+  padding: 18px;
+  font-size: 24px !important;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  letter-spacing: 8px;
+  font-weight: bold;
+}
+
+.learner-code-input::placeholder {
+  font-size: 14px;
+  letter-spacing: 0px;
+  font-weight: normal;
+}

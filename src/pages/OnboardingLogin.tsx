@@ -117,42 +117,24 @@ const OnboardingLogin: React.FC = () => {
               <div style={{ marginBottom: '12px' }}>
                 <input
                   type="text"
+                  className="class-code-input"
                   placeholder="수업 코드 4자리 (예: AB12)"
                   value={classCode}
                   onChange={(e) => setClassCode(e.target.value.toUpperCase())}
                   maxLength={4}
                   disabled={loading}
-                  style={{
-                    width: '100%',
-                    padding: '18px',
-                    fontSize: '16px',
-                    border: '2px solid #ddd',
-                    borderRadius: '8px',
-                    textAlign: 'center',
-                    letterSpacing: '4px',
-                    fontWeight: 'bold'
-                  }}
                 />
               </div>
 
               <div style={{ marginBottom: '16px' }}>
                 <input
                   type="text"
+                  className="learner-code-input"
                   placeholder="학생 번호 4자리 (예: 0001)"
                   value={learnerCode}
                   onChange={(e) => setLearnerCode(e.target.value)}
                   maxLength={4}
                   disabled={loading}
-                  style={{
-                    width: '100%',
-                    padding: '18px',
-                    fontSize: '16px',
-                    border: '2px solid #ddd',
-                    borderRadius: '8px',
-                    textAlign: 'center',
-                    letterSpacing: '4px',
-                    fontWeight: 'bold'
-                  }}
                 />
               </div>
 

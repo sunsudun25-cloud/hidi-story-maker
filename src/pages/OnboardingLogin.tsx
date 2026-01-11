@@ -138,7 +138,7 @@ const OnboardingLogin: React.FC = () => {
               <div style={{ marginBottom: '16px' }}>
                 <input
                   type="text"
-                  placeholder="학생 번호 (예: 01)"
+                  placeholder="학생 번호 (예: 0001)"
                   value={learnerCode}
                   onChange={(e) => setLearnerCode(e.target.value)}
                   maxLength={4}

@@ -39,6 +39,7 @@ import MyWorksStoryDetail from './pages/MyWorksStoryDetail'
 import MyWorksStorybooks from './pages/MyWorksStorybooks'
 import MyWorksStorybookDetail from './pages/MyWorksStorybookDetail'
 import Goods from './pages/Goods'
+import GoodsExperience from './pages/GoodsExperience'
 import Result from './pages/Result'
 import TestButtons from './pages/TestButtons'
 import ImageMakePractice from './pages/ImageMake/Practice'
@@ -106,6 +107,7 @@ function AppContent() {
 
           {/* 🎁 나만의 굿즈 */}
           <Route path="/goods" element={<Goods />} />
+          <Route path="/goods/experience" element={<GoodsExperience />} />
 
           {/* 기타 페이지 */}
           <Route path="/image/practice" element={<ImageMakePractice />} />

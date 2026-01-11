@@ -178,6 +178,46 @@ export default function Goods() {
               </div>
             </div>
           </button>
+
+          {/* 5) 체험형 굿즈 만들기 */}
+          <button
+            type="button"
+            onClick={() => navigate("/goods/experience")}
+            style={{
+              width: "100%",
+              textAlign: "left",
+              borderRadius: "16px",
+              padding: "20px",
+              background: "#FCE4EC",
+              border: "2px solid #EC407A",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+              cursor: "pointer",
+              transition: "all 0.2s ease"
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
+              <div style={{ fontSize: "32px" }}>🎨</div>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "4px" }}>
+                  체험형 굿즈 만들기
+                </p>
+                <p style={{ fontSize: "14px", color: "#666", lineHeight: "1.6", marginBottom: "0" }}>
+                  엽서, 명함, 아크릴 무드등 등
+                  <br />
+                  간편하게 만들어보는 나만의 굿즈 체험
+                </p>
+                <p style={{
+                  marginTop: "12px",
+                  fontSize: "12px",
+                  color: "#C2185B",
+                  fontWeight: "500",
+                  lineHeight: "1.5"
+                }}>
+                  클릭하여 체험형 굿즈를 만들어보세요!
+                </p>
+              </div>
+            </div>
+          </button>
         </div>
 
         {/* 하단 안내 문구 */}

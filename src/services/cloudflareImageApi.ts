@@ -8,14 +8,46 @@
 // ✅ 지원 모델 타입 정의
 export type ImageModel = "dall-e-3" | "gpt-image-1.5" | "gpt-image-1" | "gpt-image-1-mini";
 
-// Cloudflare Pages Functions 엔드포인트
-// 프로덕션: https://story-maker-4l6.pages.dev/api/generate-image
-// 개발: 현재 origin 사용 (localhost 또는 sandbox)
-const API_BASE_URL = typeof window !== 'undefined' 
-  ? window.location.origin  // 현재 접속한 도메인 사용
-  : 'https://story-maker-4l6.pages.dev';
+// Cloudflare Pages Functions 엔드포인트 결정
+// 1순위: 환경 변수 override (VITE_API_BASE_URL)
+// 2순위: localhost → 현재 origin 사용
+// 3순위: 프로덕션 → Pages 도메인 사용
+function getApiBaseUrl(): string {
+  // 환경 변수 override (빌드 시 설정 가능)
+  const envOverride = import.meta.env.VITE_API_BASE_URL;
+  if (envOverride) {
+    console.log('🔧 [API] 환경 변수 override 사용:', envOverride);
+    return envOverride;
+  }
 
+  // 브라우저 환경에서만 window 사용
+  if (typeof window === 'undefined') {
+    return 'https://story-maker-4l6.pages.dev';
+  }
+
+  const hostname = window.location.hostname;
+  
+  // localhost: 현재 origin 사용 (개발 서버)
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    console.log('🏠 [API] localhost 감지, 현재 origin 사용:', window.location.origin);
+    return window.location.origin;
+  }
+  
+  // sandbox 환경: 현재 origin 사용
+  if (hostname.includes('sandbox') || hostname.includes('novita.ai')) {
+    console.log('🧪 [API] Sandbox 감지, 현재 origin 사용:', window.location.origin);
+    return window.location.origin;
+  }
+  
+  // 프로덕션: Pages 도메인 사용 (CORS 회피)
+  console.log('🌍 [API] 프로덕션 감지, 현재 origin 사용:', window.location.origin);
+  return window.location.origin;
+}
+
+const API_BASE_URL = getApiBaseUrl();
 const GENERATE_IMAGE_URL = `${API_BASE_URL}/api/generate-image`;
+
+console.log('📍 [API] 최종 API 엔드포인트:', GENERATE_IMAGE_URL);
 
 /**
  * Cloudflare Pages Function을 통해 이미지 생성 (멀티 모델 지원)

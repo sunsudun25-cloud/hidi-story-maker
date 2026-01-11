@@ -253,9 +253,10 @@
 }
 
 .class-code-input::placeholder {
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 0px;
-  font-weight: normal;
+  font-weight: 500;
+  color: #999;
 }
 
 /* 학생 번호 입력란 스타일 */
@@ -271,7 +272,8 @@
 }
 
 .learner-code-input::placeholder {
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 0px;
-  font-weight: normal;
+  font-weight: 500;
+  color: #999;
 }

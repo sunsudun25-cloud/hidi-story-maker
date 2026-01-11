@@ -17,6 +17,9 @@ export default function GoodsPostcard() {
   const [line1, setLine1] = useState("");
   const [line2, setLine2] = useState("");
   const [selectedFont, setSelectedFont] = useState<"nanum" | "cute" | "jua">("nanum");
+  
+  // CORS-safe 이미지 URL (data URL로 변환)
+  const [safeImageUrl, setSafeImageUrl] = useState<string>("");
 
   // 글자체 설정
   const fontStyles = {
@@ -32,6 +35,44 @@ export default function GoodsPostcard() {
       navigate(-1);
     }
   }, [imageData, navigate]);
+
+  // 이미지를 data URL로 변환 (CORS 문제 해결)
+  useEffect(() => {
+    if (!imageData?.image) return;
+
+    const convertToDataURL = async () => {
+      // 이미 data URL이면 그대로 사용
+      if (imageData.image.startsWith('data:')) {
+        setSafeImageUrl(imageData.image);
+        return;
+      }
+
+      try {
+        // 원격 이미지를 data URL로 변환
+        const response = await fetch(imageData.image);
+        const blob = await response.blob();
+        const reader = new FileReader();
+        
+        reader.onloadend = () => {
+          setSafeImageUrl(reader.result as string);
+        };
+        
+        reader.onerror = () => {
+          // 변환 실패 시 원본 URL 사용 (fallback)
+          console.warn("이미지 변환 실패, 원본 URL 사용");
+          setSafeImageUrl(imageData.image);
+        };
+        
+        reader.readAsDataURL(blob);
+      } catch (error) {
+        // fetch 실패 시 원본 URL 사용 (fallback)
+        console.warn("이미지 로드 실패, 원본 URL 사용:", error);
+        setSafeImageUrl(imageData.image);
+      }
+    };
+
+    convertToDataURL();
+  }, [imageData]);
 
   // PDF 저장
   const handleSavePDF = async () => {
@@ -147,15 +188,30 @@ export default function GoodsPostcard() {
             height: "70%",
             overflow: "hidden"
           }}>
-            <img
-              src={imageData.image}
-              alt="엽서 이미지"
-              style={{
+            {safeImageUrl ? (
+              <img
+                src={safeImageUrl}
+                alt="엽서 이미지"
+                crossOrigin="anonymous"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover"
+                }}
+              />
+            ) : (
+              <div style={{
                 width: "100%",
                 height: "100%",
-                objectFit: "cover"
-              }}
-            />
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "#f0f0f0",
+                color: "#666"
+              }}>
+                이미지 로딩 중...
+              </div>
+            )}
           </div>
 
           {/* 텍스트 영역 */}

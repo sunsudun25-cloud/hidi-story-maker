@@ -8,6 +8,13 @@ export default function GoodsExperience() {
     alert(`${item} 제작 기능은 곧 준비될 예정입니다! 😊`);
   };
 
+  const handlePostcardClick = () => {
+    // 엽서는 내 작품에서 시작해야 하므로 내 작품 관리로 안내
+    if (confirm("엽서 만들기는 '내 작품 관리'에서 시작합니다.\n\n그림을 선택하고 '엽서로 만들기' 버튼을 눌러주세요.\n\n내 작품 관리로 이동하시겠습니까?")) {
+      navigate("/my-works/images");
+    }
+  };
+
   return (
     <div className="screen">
       <div className="screen-body" style={{ padding: "20px", paddingBottom: "60px" }}>
@@ -48,7 +55,7 @@ export default function GoodsExperience() {
           {/* 1) 엽서 */}
           <button
             type="button"
-            onClick={() => handleComingSoon("엽서")}
+            onClick={handlePostcardClick}
             style={{
               width: "100%",
               textAlign: "left",

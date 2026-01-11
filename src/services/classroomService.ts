@@ -5,6 +5,8 @@
  * 로그인 없이 수업코드 + 학생코드로 6개월 클라우드 저장
  */
 
+// Firebase Functions Gen 2 uses Cloud Run URLs
+// Note: Each function has its own URL with different subdomain
 const FUNCTIONS_BASE_URL = "https://asia-northeast1-story-make-fbbd7.cloudfunctions.net";
 
 /**

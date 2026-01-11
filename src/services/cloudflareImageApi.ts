@@ -10,9 +10,9 @@ export type ImageModel = "dall-e-3" | "gpt-image-1.5" | "gpt-image-1" | "gpt-ima
 
 // Cloudflare Pages Functions 엔드포인트
 // 프로덕션: https://story-maker-4l6.pages.dev/api/generate-image
-// 개발: http://localhost:3000/api/generate-image
-const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
-  ? 'http://localhost:3000'
+// 개발: 현재 origin 사용 (localhost 또는 sandbox)
+const API_BASE_URL = typeof window !== 'undefined' 
+  ? window.location.origin  // 현재 접속한 도메인 사용
   : 'https://story-maker-4l6.pages.dev';
 
 const GENERATE_IMAGE_URL = `${API_BASE_URL}/api/generate-image`;

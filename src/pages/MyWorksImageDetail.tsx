@@ -153,6 +153,14 @@ export default function MyWorksImageDetail() {
 
         {/* 액션 버튼들 - 개선된 스타일 */}
         <div className="flex flex-col gap-3">
+          {/* 굿즈로 만들기 버튼 - 가장 상단에 강조 */}
+          <button
+            onClick={() => navigate(`/goods/postcard/${item.id}`, { state: { image: item } })}
+            className="py-5 px-5 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl text-[18px] font-bold hover:from-pink-600 hover:to-purple-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+          >
+            🎨 엽서로 만들기
+          </button>
+
           {/* 1행: 다운로드 + 공유하기 */}
           <div className="grid grid-cols-2 gap-3">
             <button

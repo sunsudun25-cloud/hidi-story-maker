@@ -117,7 +117,7 @@ const OnboardingLogin: React.FC = () => {
               <div style={{ marginBottom: '12px' }}>
                 <input
                   type="text"
-                  placeholder="수업 코드 (예: AB12)"
+                  placeholder="수업 코드 4자리 (예: AB12)"
                   value={classCode}
                   onChange={(e) => setClassCode(e.target.value.toUpperCase())}
                   maxLength={4}
@@ -125,11 +125,11 @@ const OnboardingLogin: React.FC = () => {
                   style={{
                     width: '100%',
                     padding: '18px',
-                    fontSize: '24px',
+                    fontSize: '16px',
                     border: '2px solid #ddd',
                     borderRadius: '8px',
                     textAlign: 'center',
-                    letterSpacing: '8px',
+                    letterSpacing: '4px',
                     fontWeight: 'bold'
                   }}
                 />
@@ -138,7 +138,7 @@ const OnboardingLogin: React.FC = () => {
               <div style={{ marginBottom: '16px' }}>
                 <input
                   type="text"
-                  placeholder="학생 번호 (예: 0001)"
+                  placeholder="학생 번호 4자리 (예: 0001)"
                   value={learnerCode}
                   onChange={(e) => setLearnerCode(e.target.value)}
                   maxLength={4}
@@ -146,11 +146,11 @@ const OnboardingLogin: React.FC = () => {
                   style={{
                     width: '100%',
                     padding: '18px',
-                    fontSize: '24px',
+                    fontSize: '16px',
                     border: '2px solid #ddd',
                     borderRadius: '8px',
                     textAlign: 'center',
-                    letterSpacing: '8px',
+                    letterSpacing: '4px',
                     fontWeight: 'bold'
                   }}
                 />

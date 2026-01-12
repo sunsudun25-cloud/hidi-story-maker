@@ -59,58 +59,64 @@ export async function onRequest(context: { request: Request; env: Env }) {
 
     console.log('🎨 이미지 생성 요청:', { requestId, prompt, style, model, size, quality });
 
-    // 스타일 매핑
+    // 스타일 매핑 (photo-realistic → photo-inspired illustration)
     const styleMap: Record<string, string> = {
-      '수채화': 'watercolor painting style',
-      'watercolor': 'watercolor painting style',
-      '동화풍': 'children\'s book illustration style',
-      'fairytale': 'children\'s book illustration style',
-      '파스텔톤': 'soft pastel colors style',
-      'pastel': 'soft pastel colors style',
-      '따뜻한 스타일': 'warm and cozy atmosphere',
-      'warm': 'warm and cozy atmosphere',
+      '수채화': 'soft watercolor wash, gentle paper texture, warm light, flowing brushstrokes',
+      'watercolor': 'soft watercolor wash, gentle paper texture, warm light',
+      '동화풍': 'children\'s book illustration style, clear lines, bright colors, storybook quality',
+      'fairytale': 'children\'s book illustration style, clear lines, bright colors',
+      '파스텔톤': 'pastel colors, soft gradients, gentle atmosphere, light and airy',
+      'pastel': 'pastel colors, soft gradients, gentle atmosphere',
+      '따뜻한 스타일': 'warm color palette, cozy atmosphere, inviting composition',
+      'warm': 'warm color palette, cozy atmosphere',
+      '만화풍': 'clean lineart, flat colors, simple shading, cartoon style, cute and friendly',
+      '감성 사진 같은 그림': 'photo-inspired illustration, natural lighting, subtle imperfections, realistic yet artistic',
       '애니메이션': 'anime illustration style',
       '연필스케치': 'pencil sketch style',
-      '기본': 'illustration style',
-      '기본 스타일': 'illustration style',
+      '흑백 스케치': 'pencil sketch, line drawing, monochrome, hatching and cross-hatching, artistic rendering',
+      '기본': 'illustration style, balanced composition, pleasing aesthetics',
+      '기본 스타일': 'illustration style, balanced composition',
     };
 
     const stylePrompt = styleMap[style || '기본'] || 'illustration style';
     
-    // ⭐ 스타일을 프롬프트 본문에 강하게 삽입
+    // ⭐ 스타일을 프롬프트 본문에 강하게 삽입 (함정 수정: ABSOLUTELY 제거)
     const styleEnforcement = `
-[STYLE ENFORCEMENT - HIGHEST PRIORITY]
+[STYLE DIRECTIVE]
+Style: ${style || '기본'}
+Rendering: ${stylePrompt}
+Quality: clean composition, readable, not busy
+
+Main Subject:
+${prompt}
+
+=== STYLE ENFORCEMENT ===
 Medium: ${stylePrompt}
 Art Style: ${stylePrompt}
-This MUST be created in ${stylePrompt}.
-Style Requirements: ${stylePrompt} is MANDATORY.
+This MUST be created in ${stylePrompt}
+Style Requirements: ${stylePrompt} is MANDATORY
 `;
     
-    // ⭐ 동화책 삽화 전용 프롬프트 강화 (텍스트 제거 + 단일 페이지)
-    const noTextGuide = `
-[CRITICAL REQUIREMENT - NO TEXT]
-This must be a pure illustration with ABSOLUTELY NO TEXT.
-- NO words, letters, numbers, or symbols of any kind
-- NO signs, labels, captions, or speech bubbles  
-- NO written language in any form (English, Korean, etc.)
-- Only visual imagery, no textual elements
-- Pure illustration without any text overlay
+    // ⭐ 출력 규칙 (함정 수정: 간결하게, No readable text)
+    const outputRules = `
+=== OUTPUT RULES ===
+- No readable text, no letters, no typography anywhere in the image
+- No watermark, no logo, no brand marks, no signatures
+- Single illustration, one scene, clean and simple composition
 `;
 
-    const singlePageGuide = `
-[IMPORTANT - SINGLE PAGE]
-Create a SINGLE PAGE illustration (NOT a book spread).
-- Show ONE complete scene, not two pages
-- NO center fold or gutter line
-- Full frame composition, not split pages
-- Single unified image, not left-right divided layout
+    // ⭐ 학교용 가이드라인
+    const schoolFriendlyGuide = `
+=== SCHOOL-FRIENDLY GUIDELINES ===
+- Bright, positive, welcoming atmosphere
+- Simple, uncluttered composition
+- Friendly facial expressions (if characters present)
+- Avoid: violence, horror, scary elements, adult themes
+- Age-appropriate content for all ages
 `;
     
-    const consistencyGuide = '[CONSISTENCY] Consistent character design and art style';
-    const qualityGuide = '[QUALITY] High quality detailed illustration, clean composition';
-    
-    // 프롬프트 구성: 스타일 강제 → 사용자 프롬프트 → 제약사항
-    const fullPrompt = `${styleEnforcement}\n\nMain Subject: ${prompt}\n\n${singlePageGuide}\n${noTextGuide}\n${consistencyGuide}\n${qualityGuide}`;
+    // 프롬프트 구성: 스타일 강제 → 출력 규칙 → 학교용 가이드
+    const fullPrompt = `${styleEnforcement}${outputRules}${schoolFriendlyGuide}`.trim();
 
     console.log('📡 OpenAI API 호출:', { requestId, model: model || 'dall-e-3', size: size || '1024x1024', quality: quality || 'standard' });
     console.log('📝 Full Prompt:', fullPrompt);

@@ -1,15 +1,46 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { generateStoryImage, SupportedModel } from "../../services/imageService";
+import { generateStoryImage } from "../../services/imageService";
 import "./ImageMake.css";
+
+// 목적별 설정 타입
+interface PurposeConfig {
+  style: string;
+  size: string;
+  quality: string;
+}
+
+// 목적별 기본 설정
+const purposeConfigs: Record<string, PurposeConfig> = {
+  '이야기/동화': {
+    style: '동화풍',
+    size: '1024x1536',
+    quality: 'standard'
+  },
+  '감정/추억': {
+    style: '수채화',
+    size: '1024x1024',
+    quality: 'standard'
+  },
+  '발표/수업': {
+    style: '파스텔톤',
+    size: '1536x1024',
+    quality: 'standard'
+  },
+  '사진 느낌': {
+    style: '감성 사진 같은 그림',
+    size: '1024x1024',
+    quality: 'standard'
+  }
+};
 
 export default function Practice() {
   const navigate = useNavigate();
   const [text, setText] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   
-  // ✅ 모델 선택 State 추가
-  const [selectedModel, setSelectedModel] = useState<SupportedModel>("dall-e-3");
+  // 목적 선택 State
+  const [selectedPurpose, setSelectedPurpose] = useState<string>('이야기/동화');
 
   const examplePrompts = [
     "강아지가 공원에서 뛰노는 모습",
@@ -27,12 +58,23 @@ export default function Practice() {
     setIsGenerating(true);
 
     try {
-      console.log("🎨 이미지 생성 시작:", { prompt, model: selectedModel });
+      // 선택한 목적에 따른 설정 가져오기
+      const config = purposeConfigs[selectedPurpose];
+      
+      console.log("🎨 이미지 생성 시작:", { 
+        prompt, 
+        purpose: selectedPurpose,
+        style: config.style,
+        size: config.size,
+        quality: config.quality
+      });
       
       const image = await generateStoryImage(prompt, {
-        style: "동화 스타일",
+        style: config.style,
         mood: "따뜻하고 부드러운",
-        model: selectedModel  // ✅ 선택한 모델 전달
+        model: "dall-e-3",  // 모델은 항상 dall-e-3 고정
+        size: config.size,
+        quality: config.quality
       });
       
       navigate("/image/result", {
@@ -64,61 +106,71 @@ export default function Practice() {
           아래 예시 중 하나를 선택해 그림을 만들어보세요
         </p>
 
-        {/* ✅ 모델 선택 드롭다운 */}
-        <div className="model-selection-section" style={{
-          marginBottom: '20px',
-          padding: '16px',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '12px',
-          border: '2px solid #e9ecef'
+        {/* ✅ 목적 선택 UI */}
+        <div className="purpose-selection-section" style={{
+          marginBottom: '24px'
         }}>
-          <label 
-            htmlFor="model-select" 
-            className="input-label" 
-            style={{ 
-              display: 'block', 
-              marginBottom: '8px',
-              fontSize: '16px',
-              fontWeight: '600',
-              color: '#495057'
-            }}
-          >
-            🤖 이미지 생성 모델
-          </label>
-          <select
-            id="model-select"
-            value={selectedModel}
-            onChange={(e) => setSelectedModel(e.target.value as SupportedModel)}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              fontSize: '16px',
-              border: '2px solid #dee2e6',
-              borderRadius: '8px',
-              backgroundColor: 'white',
-              cursor: 'pointer',
-              fontWeight: '500'
-            }}
-          >
-            <option value="dall-e-3">DALL-E 3 (기본, 고품질)</option>
-            <option value="gpt-image-1.5">GPT-Image 1.5 (차세대 모델) ⚡</option>
-            <option value="gpt-image-1">GPT-Image 1 (표준)</option>
-            <option value="gpt-image-1-mini">GPT-Image Mini (빠른 생성)</option>
-          </select>
-          <p style={{
-            marginTop: '8px',
-            fontSize: '13px',
-            color: '#6c757d',
-            lineHeight: '1.4'
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '600',
+            color: '#212529',
+            marginBottom: '16px',
+            textAlign: 'center'
           }}>
-            💡 {selectedModel === "dall-e-3" 
-              ? "안정적인 기본 모델입니다" 
-              : selectedModel === "gpt-image-1.5"
-              ? "최신 고품질 모델입니다 (실패 시 자동으로 DALL-E 3로 전환)"
-              : selectedModel === "gpt-image-1"
-              ? "빠르고 표준 품질의 모델입니다"
-              : "가장 빠른 생성 속도의 모델입니다"}
-          </p>
+            어떤 목적으로 쓰나요?
+          </h3>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '12px',
+            marginBottom: '8px'
+          }}>
+            {[
+              { key: '이야기/동화', icon: '🏫', label: '이야기/동화', desc: '동화책 만들기, 스토리텔링' },
+              { key: '감정/추억', icon: '💭', label: '감정/추억', desc: '기억 표현, 감성 일러스트' },
+              { key: '발표/수업', icon: '📊', label: '발표/수업', desc: '프레젠테이션, 교육 자료' },
+              { key: '사진 느낌', icon: '📷', label: '사진 느낌', desc: '현실적인 일러스트' }
+            ].map((purpose) => (
+              <button
+                key={purpose.key}
+                onClick={() => setSelectedPurpose(purpose.key)}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '16px 12px',
+                  border: selectedPurpose === purpose.key ? '2px solid #3b82f6' : '2px solid #e5e7eb',
+                  borderRadius: '12px',
+                  background: selectedPurpose === purpose.key ? '#eff6ff' : 'white',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  fontSize: '14px'
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedPurpose !== purpose.key) {
+                    e.currentTarget.style.borderColor = '#3b82f6';
+                    e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedPurpose !== purpose.key) {
+                    e.currentTarget.style.borderColor = '#e5e7eb';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }
+                }}
+              >
+                <span style={{ fontSize: '32px' }}>{purpose.icon}</span>
+                <span style={{ fontWeight: '600', color: '#111827' }}>{purpose.label}</span>
+                <span style={{ 
+                  fontSize: '12px', 
+                  color: '#6b7280', 
+                  textAlign: 'center',
+                  lineHeight: '1.3'
+                }}>{purpose.desc}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* 예시 프롬프트 */}

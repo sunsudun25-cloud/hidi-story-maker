@@ -84,6 +84,37 @@
   color: #666;
   font-size: 16px;
   font-style: italic;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.writing-icon {
+  font-size: 48px;
+}
+
+/* 이미지 로드 실패 시 대체 UI */
+.image-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  gap: 12px;
+}
+
+.fallback-icon {
+  font-size: 64px;
+}
+
+.fallback-text {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  font-weight: 500;
+  max-width: 200px;
+  word-break: keep-all;
 }
 
 /* 굿즈 옵션 버튼들 */

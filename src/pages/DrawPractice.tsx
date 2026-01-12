@@ -117,19 +117,42 @@ export default function DrawPractice() {
 
     setIsGenerating(true);
     try {
-      // Firebase Functions로 이미지 생성
-      const imageUrl = await generateImageViaCloudflare(description, selectedStyle ?? "기본 스타일");
+      console.log("🎨 [DrawPractice] DALL-E 3 모델로 이미지 생성 시작");
+      console.log("📝 [DrawPractice] 프롬프트:", description);
+      console.log("🎭 [DrawPractice] 스타일:", selectedStyle ?? "기본");
+      
+      // ✅ DALL-E 3 모델 사용 (강화된 스타일 프롬프트 적용)
+      const imageUrl = await generateImageViaCloudflare(description, selectedStyle ?? "기본", {
+        model: "dall-e-3"
+      });
+
+      console.log("✅ [DrawPractice] 이미지 생성 완료");
 
       // 결과 페이지로 이동 (prompt와 style 정보도 함께 전달)
       navigate("/result", { 
         state: { 
           imageUrl,
           prompt: description,
-          style: selectedStyle ?? "기본"
+          style: selectedStyle ?? "기본",
+          model: "dall-e-3"
         } 
       });
     } catch (error) {
-      alert(friendlyErrorMessage(error));
+      console.error("❌ [DrawPractice] 이미지 생성 실패:", error);
+      
+      // 사용자 친화적 에러 메시지
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "알 수 없는 오류가 발생했습니다.";
+      
+      alert(
+        `🚨 이미지 생성에 실패했습니다\n\n` +
+        `오류: ${errorMessage}\n\n` +
+        `다시 시도해주세요. 문제가 계속되면:\n` +
+        `1. 페이지를 새로고침하세요 (Ctrl+Shift+R)\n` +
+        `2. 시크릿 모드로 접속해보세요\n` +
+        `3. 관리자에게 문의하세요`
+      );
     } finally {
       setIsGenerating(false);
     }
@@ -185,6 +208,8 @@ export default function DrawPractice() {
 
           <div className="tip-box">
             💡 팁: 무엇을 + 어디서 + 어떤 색깔과 분위기로 그릴지 자세히 써주세요.
+            <br />
+            🎨 스타일을 선택하면 일러스트 느낌으로 그려집니다!
           </div>
         </section>
 

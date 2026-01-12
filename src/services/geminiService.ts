@@ -30,7 +30,8 @@ async function callFunction(url: string, payload: any) {
       console.error("❌ Functions 응답 오류:", data);
       return null;
     }
-    return data.text ?? data.imageUrl ?? null;
+    // ✅ imageData 우선 사용 (CORS-safe Data URL)
+    return data.text ?? data.imageData ?? data.imageUrl ?? null;
   } catch (err) {
     console.error("❌ 네트워크 오류:", err);
     return null;

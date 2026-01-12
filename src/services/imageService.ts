@@ -3,14 +3,12 @@
  * 이미지 다운로드, 변환, 최적화 등 이미지 관련 유틸리티 함수
  */
 
+import { generateImageViaCloudflare, type ImageModel } from './cloudflareImageApi';
+
 /**
  * 지원 모델 타입 정의
  */
-export type SupportedModel = 
-  | "dall-e-3"
-  | "gpt-image-1.5"
-  | "gpt-image-1"
-  | "gpt-image-1-mini";
+export type SupportedModel = ImageModel;
 
 /**
  * 동화 이미지 생성 (Cloudflare Pages Function)
@@ -53,34 +51,11 @@ Bright, not too dark. Avoid complex backgrounds.
 
     console.log("🎨 동화 이미지 생성 중:", { model, style, prompt: prompt.substring(0, 100) + "..." });
 
-    // Cloudflare Pages API를 통해 이미지 생성 (모델 지정 가능)
-    const response = await fetch("https://story-maker-4l6.pages.dev/api/generate-image", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt: prompt,
-        style: style,
-        model: model,  // ✅ 모델 선택
-        size: size,
-        quality: quality,
-      }),
-    });
+    // ✅ generateImageViaCloudflare 재사용 (환경별 엔드포인트 일관성)
+    const imageData = await generateImageViaCloudflare(prompt, style, { model });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`이미지 생성 실패: ${response.status} - ${errorText}`);
-    }
-
-    const data = await response.json();
-    
-    if (!data.success || !data.imageUrl) {
-      throw new Error(data.error || "이미지 URL을 받지 못했습니다.");
-    }
-
-    console.log("✅ 동화 이미지 생성 완료:", data.imageUrl);
-    return data.imageUrl;
+    console.log("✅ 동화 이미지 생성 완료");
+    return imageData;  // imageData 우선 (Data URL)
   } catch (error) {
     console.error("❌ 동화 이미지 생성 오류:", error);
     throw error;
@@ -127,34 +102,11 @@ ${text.substring(0, 1000)}
 
     console.log("🎨 글쓰기 이미지 생성 중:", { model, genre, prompt: prompt.substring(0, 100) + "..." });
 
-    // Cloudflare Pages API를 통해 이미지 생성 (모델 지정 가능)
-    const response = await fetch("https://story-maker-4l6.pages.dev/api/generate-image", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt: prompt,
-        style: genre || "동화풍",
-        model: model,  // ✅ 모델 선택
-        size: size,
-        quality: quality,
-      }),
-    });
+    // ✅ generateImageViaCloudflare 재사용 (환경별 엔드포인트 일관성)
+    const imageData = await generateImageViaCloudflare(prompt, genre || "동화풍", { model });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`이미지 생성 실패: ${response.status} - ${errorText}`);
-    }
-
-    const data = await response.json();
-    
-    if (!data.success || !data.imageUrl) {
-      throw new Error(data.error || "이미지 URL을 받지 못했습니다.");
-    }
-
-    console.log("✅ 글쓰기 이미지 생성 완료:", data.imageUrl);
-    return data.imageUrl;
+    console.log("✅ 글쓰기 이미지 생성 완료");
+    return imageData;  // imageData 우선 (Data URL)
   } catch (error) {
     console.error("❌ 글쓰기 이미지 생성 오류:", error);
     throw error;

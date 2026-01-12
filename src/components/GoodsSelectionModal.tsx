@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import "./GoodsSelectionModal.css";
 
 interface GoodsSelectionModalProps {
@@ -15,6 +16,7 @@ export default function GoodsSelectionModal({
   artworkType
 }: GoodsSelectionModalProps) {
   const navigate = useNavigate();
+  const [imageError, setImageError] = useState(false);
 
   if (!isOpen) return null;
 
@@ -55,13 +57,38 @@ export default function GoodsSelectionModal({
         {/* 선택한 작품 미리보기 */}
         <div className="selected-artwork-preview">
           {artworkType === 'image' && artwork.image && (
-            <img src={artwork.image} alt="선택한 작품" />
+            imageError ? (
+              <div className="image-fallback">
+                <div className="fallback-icon">🖼️</div>
+                <p className="fallback-text">{artwork.prompt || artwork.title || "그림 작품"}</p>
+              </div>
+            ) : (
+              <img 
+                src={artwork.image} 
+                alt="선택한 작품"
+                onError={() => setImageError(true)}
+                crossOrigin="anonymous"
+              />
+            )
           )}
-          {artworkType === 'storybook' && artwork.coverImage && (
-            <img src={artwork.coverImage} alt="동화책 표지" />
+          {artworkType === 'storybook' && artwork.coverImageUrl && (
+            imageError ? (
+              <div className="image-fallback">
+                <div className="fallback-icon">📚</div>
+                <p className="fallback-text">{artwork.title || "동화책"}</p>
+              </div>
+            ) : (
+              <img 
+                src={artwork.coverImageUrl} 
+                alt="동화책 표지"
+                onError={() => setImageError(true)}
+                crossOrigin="anonymous"
+              />
+            )
           )}
           {artworkType === 'writing' && (
             <div className="writing-preview">
+              <div className="writing-icon">📝</div>
               <p>"{artwork.title || '글 작품'}"</p>
             </div>
           )}

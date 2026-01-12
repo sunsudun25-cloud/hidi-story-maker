@@ -27,16 +27,43 @@ export default function Result() {
       console.log("💾 [Result] IndexedDB에 이미지 저장 시작...");
       hasSaved.current = true; // 저장 플래그 설정
       
-      saveImage({
-        image: imageUrl,
-        prompt: prompt,
-        style: style
-      }).then(() => {
-        console.log("✅ [Result] 이미지가 내 작품에 저장되었습니다.");
-      }).catch((err) => {
-        console.error("❌ [Result] 이미지 저장 오류:", err);
-        hasSaved.current = false; // 실패 시 플래그 해제
-      });
+      // HTTP URL인 경우 Data URL로 변환 (CORS 문제 해결)
+      const convertAndSave = async () => {
+        let imageToSave = imageUrl;
+        
+        if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+          try {
+            console.log("🔄 [Result] HTTP URL을 Data URL로 변환 중...");
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+            imageToSave = await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            });
+            console.log("✅ [Result] Data URL 변환 완료");
+          } catch (error) {
+            console.warn("⚠️ [Result] Data URL 변환 실패, 원본 URL 사용:", error);
+            // 변환 실패 시 원본 URL 사용
+          }
+        }
+        
+        return saveImage({
+          image: imageToSave,
+          prompt: prompt,
+          style: style
+        });
+      };
+      
+      convertAndSave()
+        .then(() => {
+          console.log("✅ [Result] 이미지가 내 작품에 저장되었습니다.");
+        })
+        .catch((err) => {
+          console.error("❌ [Result] 이미지 저장 오류:", err);
+          hasSaved.current = false; // 실패 시 플래그 해제
+        });
     }
   }, []); // 빈 의존성 배열로 한 번만 실행
 

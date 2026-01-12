@@ -5,7 +5,8 @@ import { saveStory, getAllStories, type Story, type StoryImage } from "../servic
 import { generateWritingImage } from "../services/imageService";
 import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
 import { uploadImage } from "../services/imageUploadService";
-import { analyzeHandwriting } from "../services/visionService";
+// ⚠️ 손글씨 인식 기능은 현재 비활성화됨
+// import { analyzeHandwriting } from "../services/visionService";
 
 export default function WriteEditor() {
   const navigate = useNavigate();
@@ -520,19 +521,23 @@ ${content}
 
       console.log("✅ [WriteEditor] 손글씨 이미지 업로드 완료");
 
+      // ⚠️ 손글씨 인식 기능은 현재 비활성화됨
       // Vision API로 손글씨 분석
-      console.log("🔍 [WriteEditor] 손글씨 분석 시작...");
-      const extractedText = await analyzeHandwriting(result.base64);
+      // console.log("🔍 [WriteEditor] 손글씨 분석 시작...");
+      // const extractedText = await analyzeHandwriting(result.base64);
+      
+      // 임시: 손글씨 이미지만 표시
+      alert("📸 손글씨 이미지가 업로드되었습니다.\n\n현재 자동 인식 기능은 준비 중입니다.\n직접 내용을 입력해주세요.");
 
-      console.log("✅ [WriteEditor] 손글씨 분석 완료:", extractedText);
+      // console.log("✅ [WriteEditor] 손글씨 분석 완료:", extractedText);
 
-      // 인식된 텍스트를 내용에 추가
-      if (extractedText && extractedText !== "텍스트를 찾을 수 없습니다") {
-        setContent(content + (content ? "\n\n" : "") + extractedText);
-        alert(`✅ 손글씨를 성공적으로 읽었습니다!\n\n인식된 내용:\n"${extractedText.substring(0, 100)}${extractedText.length > 100 ? '...' : ''}"\n\n내용이 추가되었습니다.`);
-      } else {
-        alert("❌ 손글씨를 인식할 수 없습니다.\n\n다음을 확인해주세요:\n1. 글씨가 명확하게 보이는지\n2. 사진이 흐릿하지 않은지\n3. 조명이 충분한지");
-      }
+      // // 인식된 텍스트를 내용에 추가
+      // if (extractedText && extractedText !== "텍스트를 찾을 수 없습니다") {
+      //   setContent(content + (content ? "\n\n" : "") + extractedText);
+      //   alert(`✅ 손글씨를 성공적으로 읽었습니다!\n\n인식된 내용:\n"${extractedText.substring(0, 100)}${extractedText.length > 100 ? '...' : ''}"\n\n내용이 추가되었습니다.`);
+      // } else {
+      //   alert("❌ 손글씨를 인식할 수 없습니다.\n\n다음을 확인해주세요:\n1. 글씨가 명확하게 보이는지\n2. 사진이 흐릿하지 않은지\n3. 조명이 충분한지");
+      // }
     } catch (error) {
       console.error("❌ [WriteEditor] 손글씨 분석 실패:", error);
       alert("❌ 손글씨 분석 중 오류가 발생했습니다.\n\n" + (error instanceof Error ? error.message : "알 수 없는 오류"));

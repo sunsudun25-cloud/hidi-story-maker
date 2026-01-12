@@ -10,6 +10,9 @@ interface Env {
 interface ImageRequest {
   prompt: string;
   style?: string;
+  model?: string;
+  size?: string;
+  quality?: string;
 }
 
 export async function onRequest(context: { request: Request; env: Env }) {
@@ -32,7 +35,10 @@ export async function onRequest(context: { request: Request; env: Env }) {
 
   try {
     const body = await request.json() as ImageRequest;
-    const { prompt, style } = body;
+    const { prompt, style, model, size, quality } = body;
+    
+    // 요청 ID 생성 (추적용)
+    const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
     if (!prompt) {
       return new Response(
@@ -51,7 +57,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
       );
     }
 
-    console.log('🎨 이미지 생성 요청:', { prompt, style });
+    console.log('🎨 이미지 생성 요청:', { requestId, prompt, style, model, size, quality });
 
     // 스타일 매핑
     const styleMap: Record<string, string> = {
@@ -71,9 +77,19 @@ export async function onRequest(context: { request: Request; env: Env }) {
 
     const stylePrompt = styleMap[style || '기본'] || 'illustration style';
     
+    // ⭐ 스타일을 프롬프트 본문에 강하게 삽입
+    const styleEnforcement = `
+[STYLE ENFORCEMENT - HIGHEST PRIORITY]
+Medium: ${stylePrompt}
+Art Style: ${stylePrompt}
+This MUST be created in ${stylePrompt}.
+Style Requirements: ${stylePrompt} is MANDATORY.
+`;
+    
     // ⭐ 동화책 삽화 전용 프롬프트 강화 (텍스트 제거 + 단일 페이지)
     const noTextGuide = `
-CRITICAL REQUIREMENT: This must be a pure illustration with ABSOLUTELY NO TEXT.
+[CRITICAL REQUIREMENT - NO TEXT]
+This must be a pure illustration with ABSOLUTELY NO TEXT.
 - NO words, letters, numbers, or symbols of any kind
 - NO signs, labels, captions, or speech bubbles  
 - NO written language in any form (English, Korean, etc.)
@@ -82,19 +98,22 @@ CRITICAL REQUIREMENT: This must be a pure illustration with ABSOLUTELY NO TEXT.
 `;
 
     const singlePageGuide = `
-IMPORTANT: Create a SINGLE PAGE illustration (NOT a book spread).
+[IMPORTANT - SINGLE PAGE]
+Create a SINGLE PAGE illustration (NOT a book spread).
 - Show ONE complete scene, not two pages
 - NO center fold or gutter line
 - Full frame composition, not split pages
 - Single unified image, not left-right divided layout
 `;
     
-    const consistencyGuide = 'Consistent character design and art style';
-    const qualityGuide = 'High quality detailed illustration, clean composition';
+    const consistencyGuide = '[CONSISTENCY] Consistent character design and art style';
+    const qualityGuide = '[QUALITY] High quality detailed illustration, clean composition';
     
-    const fullPrompt = `${prompt}. ${stylePrompt}. ${singlePageGuide}. ${noTextGuide}. ${consistencyGuide}. ${qualityGuide}`;
+    // 프롬프트 구성: 스타일 강제 → 사용자 프롬프트 → 제약사항
+    const fullPrompt = `${styleEnforcement}\n\nMain Subject: ${prompt}\n\n${singlePageGuide}\n${noTextGuide}\n${consistencyGuide}\n${qualityGuide}`;
 
-    console.log('📡 OpenAI API 호출:', fullPrompt);
+    console.log('📡 OpenAI API 호출:', { requestId, model: model || 'dall-e-3', size: size || '1024x1024', quality: quality || 'standard' });
+    console.log('📝 Full Prompt:', fullPrompt);
 
     // OpenAI API 호출
     const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {
@@ -104,11 +123,11 @@ IMPORTANT: Create a SINGLE PAGE illustration (NOT a book spread).
         "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "dall-e-3",
+        model: model || "dall-e-3",
         prompt: fullPrompt,
         n: 1,
-        size: "1024x1024",
-        quality: "standard",
+        size: size || "1024x1024",
+        quality: quality || "standard",
         response_format: "b64_json",
       }),
     });
@@ -118,8 +137,11 @@ IMPORTANT: Create a SINGLE PAGE illustration (NOT a book spread).
       console.error('❌ OpenAI API 오류:', errorData);
       return new Response(
         JSON.stringify({ 
-          success: false, 
-          error: `OpenAI API error: ${openaiResponse.status}` 
+          success: false,
+          fallback: false,
+          error: `OpenAI API error: ${openaiResponse.status}`,
+          request_id: requestId,
+          model_used: model || 'dall-e-3'
         }),
         { 
           status: openaiResponse.status, 
@@ -133,22 +155,34 @@ IMPORTANT: Create a SINGLE PAGE illustration (NOT a book spread).
 
     if (!base64Data) {
       return new Response(
-        JSON.stringify({ success: false, error: 'No image data received' }),
+        JSON.stringify({ 
+          success: false,
+          fallback: false,
+          error: 'No image data received',
+          request_id: requestId,
+          model_used: model || 'dall-e-3'
+        }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     const dataUrl = `data:image/png;base64,${base64Data}`;
-    console.log('✅ 이미지 생성 완료');
+    console.log('✅ 이미지 생성 완료:', { requestId });
 
     // 성공 응답
     return new Response(
       JSON.stringify({
         success: true,
-        imageUrl: dataUrl,  // imageData → imageUrl로 변경 (imageService.ts와 일치)
+        fallback: false,
+        imageUrl: dataUrl,
         imageData: dataUrl, // 하위 호환성 유지
         prompt: fullPrompt,
         style: style || '기본',
+        request_id: requestId,
+        model_used: model || 'dall-e-3',
+        size_used: size || '1024x1024',
+        quality_used: quality || 'standard',
+        timestamp: new Date().toISOString()
       }),
       { 
         status: 200, 
@@ -158,10 +192,18 @@ IMPORTANT: Create a SINGLE PAGE illustration (NOT a book spread).
 
   } catch (error) {
     console.error('❌ Function 오류:', error);
+    
+    // 에러 시 fallback 응답 (선택적)
+    const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    
     return new Response(
       JSON.stringify({ 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+        success: false,
+        fallback: false, // fallback 이미지 반환 시 true로 변경
+        error: error instanceof Error ? error.message : 'Unknown error',
+        request_id: requestId,
+        model_used: 'dall-e-3',
+        timestamp: new Date().toISOString()
       }),
       { 
         status: 500, 

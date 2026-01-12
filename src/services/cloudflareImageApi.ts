@@ -13,7 +13,7 @@ function getApiBaseUrl(): string {
   const { protocol, hostname, port } = window.location;
   
   // localhost: http://localhost:3000
-  if (hostname === 'localhost') {
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
     return `${protocol}//${hostname}:${port || 3000}`;
   }
   
@@ -33,9 +33,20 @@ const GENERATE_IMAGE_URL = `${API_BASE_URL}/api/generate-image`;
  */
 export async function generateImageViaCloudflare(
   prompt: string,
-  style?: string
+  style?: string,
+  options?: {
+    model?: string;
+    size?: string;
+    quality?: string;
+  }
 ): Promise<string> {
-  console.log("🚀 [cloudflareImageApi] generateImageViaCloudflare 호출:", { prompt, style });
+  console.log("🚀 [cloudflareImageApi] generateImageViaCloudflare 호출:", { 
+    prompt, 
+    style,
+    model: options?.model,
+    size: options?.size,
+    quality: options?.quality
+  });
 
   try {
     console.log("📡 [cloudflareImageApi] Cloudflare Pages Function 호출:", GENERATE_IMAGE_URL);
@@ -47,7 +58,10 @@ export async function generateImageViaCloudflare(
       },
       body: JSON.stringify({
         prompt,
-        style: style || "기본"
+        style: style || "기본",
+        model: options?.model || "dall-e-3",
+        size: options?.size || "1024x1024",
+        quality: options?.quality || "standard"
       })
     });
 
@@ -66,19 +80,41 @@ export async function generateImageViaCloudflare(
     const data = await response.json();
     console.log("📦 [cloudflareImageApi] 응답 데이터:", {
       success: data.success,
+      fallback: data.fallback,
       hasImageUrl: !!data.imageUrl,
       hasImageData: !!data.imageData,
-      imageDataLength: (data.imageUrl || data.imageData)?.length
+      imageDataLength: (data.imageUrl || data.imageData)?.length,
+      request_id: data.request_id,
+      model_used: data.model_used,
+      size_used: data.size_used,
+      quality_used: data.quality_used,
+      timestamp: data.timestamp
     });
+
+    // fallback 이미지 여부 확인
+    if (data.fallback) {
+      console.warn("⚠️ [cloudflareImageApi] Fallback 이미지 반환됨");
+    }
 
     // imageUrl 또는 imageData 필드에서 이미지 데이터 가져오기
     const imageData = data.imageUrl || data.imageData;
     
     if (!data.success || !imageData) {
-      throw new Error(data.error || "이미지 데이터를 받지 못했습니다.");
+      const errorMsg = data.error || "이미지 데이터를 받지 못했습니다.";
+      console.error("❌ [cloudflareImageApi] 오류:", {
+        error: errorMsg,
+        request_id: data.request_id,
+        model_used: data.model_used
+      });
+      throw new Error(errorMsg);
     }
 
-    console.log("✅ [cloudflareImageApi] 이미지 생성 완료");
+    console.log("✅ [cloudflareImageApi] 이미지 생성 완료", {
+      request_id: data.request_id,
+      model_used: data.model_used,
+      fallback: data.fallback || false
+    });
+    
     return imageData;  // data:image/png;base64,... 형식
 
   } catch (error) {

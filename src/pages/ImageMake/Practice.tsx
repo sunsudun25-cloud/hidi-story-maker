@@ -1,38 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { generateStoryImage } from "../../services/imageService";
+import { generateImageViaCloudflare } from "../../services/cloudflareImageApi";
+import { buildAutoPrompt } from "../../utils/promptBuilder";
+import { purposeConfig, purposeKeyMap } from "../../utils/purposeConfig";
 import "./ImageMake.css";
-
-// 목적별 설정 타입
-interface PurposeConfig {
-  style: string;
-  size: string;
-  quality: string;
-}
-
-// 목적별 기본 설정
-const purposeConfigs: Record<string, PurposeConfig> = {
-  '이야기/동화': {
-    style: '동화풍',
-    size: '1024x1536',
-    quality: 'standard'
-  },
-  '감정/추억': {
-    style: '수채화',
-    size: '1024x1024',
-    quality: 'standard'
-  },
-  '발표/수업': {
-    style: '파스텔톤',
-    size: '1536x1024',
-    quality: 'standard'
-  },
-  '사진 느낌': {
-    style: '감성 사진 같은 그림',
-    size: '1024x1024',
-    quality: 'standard'
-  }
-};
 
 export default function Practice() {
   const navigate = useNavigate();
@@ -49,8 +20,8 @@ export default function Practice() {
     "달빛 아래 서 있는 고양이",
   ];
 
-  const createImage = async (prompt: string) => {
-    if (!prompt.trim()) {
+  const createImage = async (userPromptText: string) => {
+    if (!userPromptText.trim()) {
       alert("텍스트를 입력해주세요!");
       return;
     }
@@ -58,27 +29,47 @@ export default function Practice() {
     setIsGenerating(true);
 
     try {
-      // 선택한 목적에 따른 설정 가져오기
-      const config = purposeConfigs[selectedPurpose];
+      // 한글 목적 → PurposeKey 변환
+      const purposeKey = purposeKeyMap[selectedPurpose] || 'memory';
+      const mood = 'warm';  // 기본 분위기
+      const styleLabel = undefined;  // 스타일은 목적에서 자동 결정
       
-      console.log("🎨 이미지 생성 시작:", { 
-        prompt, 
-        purpose: selectedPurpose,
-        style: config.style,
-        size: config.size,
-        quality: config.quality
+      // ✅ 통일된 프롬프트 빌더 사용
+      const { finalPrompt, resolvedStyleLabel } = buildAutoPrompt({
+        userText: userPromptText,
+        purpose: purposeKey,
+        mood,
+        styleLabel
       });
       
-      const image = await generateStoryImage(prompt, {
-        style: config.style,
-        mood: "따뜻하고 부드러운",
-        model: "dall-e-3",  // 모델은 항상 dall-e-3 고정
-        size: config.size,
-        quality: config.quality
+      // ✅ 목적별 size/quality 자동 설정
+      const { size, quality } = purposeConfig[purposeKey];
+      
+      console.log("[GEN_REQUEST]", {
+        purpose: purposeKey,
+        mood,
+        selectedStyle: styleLabel,
+        resolvedStyleLabel,
+        size,
+        quality,
+        promptPreview: finalPrompt.slice(0, 140)
       });
+      
+      // ✅ generateImageViaCloudflare 직접 호출 (DrawDirect와 동일)
+      const imageBase64 = await generateImageViaCloudflare(
+        finalPrompt,
+        resolvedStyleLabel,
+        { model: "dall-e-3", size, quality }
+      );
+      
+      console.log("✅ 이미지 생성 완료", { imageLength: imageBase64.length });
       
       navigate("/image/result", {
-        state: { image, prompt },
+        state: { 
+          image: imageBase64, 
+          prompt: userPromptText,
+          style: resolvedStyleLabel
+        },
       });
     } catch (error) {
       console.error("이미지 생성 오류:", error);

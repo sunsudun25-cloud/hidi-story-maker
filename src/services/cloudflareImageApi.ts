@@ -83,6 +83,18 @@ export async function generateImageViaCloudflare(
     // ✅ 더미 이미지 감지 (is_dummy 플래그 또는 작은 이미지 크기)
     const isDummy = data.is_dummy || (data.imageData && data.imageData.length < 10000);
     
+    // ✅ 표준 응답 로그 (Practice/DrawDirect 공통)
+    console.log("[GEN_RESPONSE]", {
+      success: data.success,
+      fallback: data.fallback || false,
+      request_id: data.request_id,
+      model_used: data.model_used,
+      size_used: data.size_used,
+      quality_used: data.quality_used,
+      imageLength: (data.imageUrl || data.imageData)?.length,
+      isDummy: isDummy
+    });
+    
     console.log("📦 [cloudflareImageApi] 응답 데이터:", {
       success: data.success,
       fallback: data.fallback,

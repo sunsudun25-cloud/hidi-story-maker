@@ -81,28 +81,45 @@ export default function DrawDirect() {
     setIsGenerating(true);
 
     try {
-      // ⭐ Practice와 동일: 순수 프롬프트만 전달, 서버의 buildEnhancedPrompt에서 통일 처리
-      let basePrompt = description;
+      // ✅ userText 준비 (이미지 참고 노트 포함)
+      let userText = description;
       if (uploadedImage) {
-        basePrompt = `${description} (참고: 업로드된 이미지의 스타일과 구도를 참고하여 새로운 그림을 그려주세요)`;
+        userText = `${description} (참고: 업로드된 이미지의 스타일과 구도를 참고하여 새로운 그림을 그려주세요)`;
         console.log("📸 [DrawDirect] 업로드된 이미지 포함 모드");
       }
 
-      // ✅ 스타일 기본값 (UX 혼란 방지: 사용자 선택 그대로 유지)
-      const safeStyle = selectedStyle || '기본';
-      
-      console.log("📡 [DrawDirect] generateImageViaCloudflare 호출 중...", { 
-        originalStyle: selectedStyle,
-        safeStyle: safeStyle,
-        prompt: basePrompt.slice(0, 100) + '...'
+      // ✅ 통일된 프롬프트 빌더 사용 (Practice와 동일)
+      const purposeKey: PurposeKey = 'memory';  // DrawDirect 기본값
+      const mood: MoodKey = 'bright';
+      const styleLabel = selectedStyle && selectedStyle !== '기본' ? selectedStyle : undefined;
+
+      const { finalPrompt, resolvedStyleLabel } = buildAutoPrompt({
+        userText,
+        purpose: purposeKey,
+        mood,
+        styleLabel
       });
 
-      // ⭐ Practice와 동일: 순수 프롬프트 + 스타일 → 서버에서 buildEnhancedPrompt 처리
-      const imageBase64 = await generateImageViaCloudflare(basePrompt, safeStyle, {
-        model: 'dall-e-3',
+      console.log("[GEN_REQUEST]", {
+        purpose: purposeKey,
+        mood,
+        selectedStyle: selectedStyle,
+        resolvedStyleLabel,
         size: '1024x1024',
-        quality: 'standard'
+        quality: 'standard',
+        promptPreview: finalPrompt.slice(0, 140)
       });
+
+      // ✅ generateImageViaCloudflare 호출 (Practice와 동일)
+      const imageBase64 = await generateImageViaCloudflare(
+        finalPrompt,
+        resolvedStyleLabel,
+        {
+          model: 'dall-e-3',
+          size: '1024x1024',
+          quality: 'standard'
+        }
+      );
 
       console.log("✅ [DrawDirect] 이미지 생성 완료, Base64 길이:", imageBase64.length);
 
@@ -111,8 +128,8 @@ export default function DrawDirect() {
         state: {
           imageBase64,
           prompt: description,
-          style: safeStyle, // ✅ 실제 적용된 스타일 전달
-          sourceImage: uploadedImage, // 참고한 원본 이미지도 함께 전달
+          style: resolvedStyleLabel,
+          sourceImage: uploadedImage,
         },
       });
     } catch (err) {

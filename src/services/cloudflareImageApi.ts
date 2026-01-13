@@ -6,7 +6,7 @@
  */
 
 // Cloudflare Pages Functions 엔드포인트
-// 항상 현재 origin 사용 (Preview, Production 모두 자체 Functions 보유)
+// ✅ Production으로 고정 (Preview 환경에 API Key 없음)
 function getApiBaseUrl(): string {
   if (typeof window === 'undefined') return '';
   
@@ -17,8 +17,9 @@ function getApiBaseUrl(): string {
     return `${protocol}//${hostname}:${port || 3000}`;
   }
   
-  // Preview/Production: 현재 origin 사용
-  return `${protocol}//${hostname}`;
+  // ⭐ Preview/Production 모두 Production Functions 사용
+  // Preview 환경에는 OPENAI_API_KEY Secret이 없어 더미 이미지 반환됨
+  return 'https://story-maker-4l6.pages.dev';
 }
 
 const API_BASE_URL = getApiBaseUrl();
@@ -78,9 +79,14 @@ export async function generateImageViaCloudflare(
     }
 
     const data = await response.json();
+    
+    // ✅ 더미 이미지 감지 (is_dummy 플래그 또는 작은 이미지 크기)
+    const isDummy = data.is_dummy || (data.imageData && data.imageData.length < 10000);
+    
     console.log("📦 [cloudflareImageApi] 응답 데이터:", {
       success: data.success,
       fallback: data.fallback,
+      isDummy: isDummy,  // ✅ 더미 여부 명시
       hasImageUrl: !!data.imageUrl,
       hasImageData: !!data.imageData,
       imageDataLength: (data.imageUrl || data.imageData)?.length,
@@ -94,6 +100,11 @@ export async function generateImageViaCloudflare(
     // fallback 이미지 여부 확인
     if (data.fallback) {
       console.warn("⚠️ [cloudflareImageApi] Fallback 이미지 반환됨");
+    }
+    
+    // ✅ 더미 이미지 경고
+    if (isDummy) {
+      console.error("🚨 [cloudflareImageApi] 더미 이미지 감지! Preview 환경이거나 API Key 없음");
     }
 
     // imageUrl 또는 imageData 필드에서 이미지 데이터 가져오기

@@ -24,43 +24,42 @@ type PersonPolicy =
  * @returns 사람 포함 정책
  */
 function detectPersonPolicy(text: string): PersonPolicy {
-  const t = (text || "").toLowerCase();
+  const t = (text || "");
 
   // 1) 명시적으로 "사람 없음"을 원한 경우
-  const explicitNoPeople = /(사람\s*없|인물\s*없|no people|without people)/i.test(text);
+  const explicitNoPeople = /(사람\s*없|인물\s*없|no people|without people)/i.test(t);
   if (explicitNoPeople) return { includePeople: false };
 
-  // 2) 사람/관계/이름/대명사/직업 등 등장 여부(간단 규칙)
+  // 2) 이름/동반 표현
   const hasNamedPerson =
-    /([가-힣]{2,4})(이|가|와|과)\s*함께/.test(text) || // "철수와 함께"
-    /(철수|영희|민수|지수|준호|민지|유나|서준|지민)/.test(text); // 자주 쓰는 이름
+    /([가-힣]{2,4})(이|가|와|과)\s*함께/.test(t) || // "철수와 함께"
+    /(철수|영희|민수|지수|준호|민지|유나|서준|지민)/.test(t); // 자주 쓰는 이름
 
+  // 3) 인물 키워드
   const hasPersonKeyword =
-    /(친구|엄마|아빠|부모|할머니|할아버지|선생님|아이|어린이|학생|아들|딸|가족|남자|여자|소년|소녀|커플|연인|사람|인물)/.test(
-      text
-    );
+    /(친구|엄마|아빠|부모|할머니|할아버지|선생님|아이|어린이|학생|아들|딸|가족|남자|여자|소년|소녀|커플|연인|사람|인물)/.test(t);
 
-  const hasPronoun =
-    /(나|내가|우리|우리가|그|그녀|그들)/.test(text);
+  // ✅ 핵심 변경: "나/내가/우리" 같은 1인칭은 사람 포함 트리거로 쓰지 않음
+  // 자서전은 대부분 1인칭이므로, 대명사만으로는 사람을 그리지 않음
+  // const hasPronoun = /(나|내가|우리|우리가|그|그녀|그들)/.test(t);
 
-  // 3) 사람 포함 판단
-  if (hasNamedPerson || hasPersonKeyword || hasPronoun) {
-    // 사람 힌트(최소한만)
-    // "노년"은 사용자가 명시했을 때만 허용
+  // 4) 사람 포함 판단 (이름/인물키워드 있을 때만)
+  if (hasNamedPerson || hasPersonKeyword) {
     let peopleHint = "people present, friendly expressions, natural proportions";
-    if (/(아이|어린이|소년|소녀|학생)/.test(text)) {
+
+    if (/(아이|어린이|소년|소녀|학생)/.test(t)) {
       peopleHint = "children present, cheerful and age-appropriate, friendly faces";
-    } else if (/(할머니|할아버지|시니어|노인)/.test(text)) {
+    } else if (/(할머니|할아버지|시니어|노인)/.test(t)) {
       peopleHint = "older adults present, warm and dignified, friendly expressions";
     } else {
       // 연령중립
-      peopleHint = "adults or children only if clearly implied; otherwise age-neutral adults";
+      peopleHint = "age-neutral adults (do not assume elderly)";
     }
 
     return { includePeople: true, peopleHint };
   }
 
-  // 4) 기본은 사람 미포함
+  // 5) 기본은 사람 미포함
   return { includePeople: false };
 }
 
@@ -259,7 +258,8 @@ ${compositionDirective}
     });
 
     // ✅ generateImageViaCloudflare 호출 시 size/quality도 전달
-    const imageData = await generateImageViaCloudflare(prompt, genre || "기본", {
+    // genre를 style로 보내지 않고, 프롬프트에 이미 포함되어 있으므로 기본값만 전달
+    const imageData = await generateImageViaCloudflare(prompt, "기본", {
       model,
       size,
       quality

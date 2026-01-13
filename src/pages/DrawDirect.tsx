@@ -90,8 +90,8 @@ export default function DrawDirect() {
       const styleText = selectedStyle && selectedStyle !== "기본" ? ` (${selectedStyle} 스타일)` : "";
       const fullPrompt = `${finalPrompt}${styleText}`;
 
-      // ✅ 스타일 기본값 강제 (빈 값 방지) + "기본" 보정
-      const safeStyle = !selectedStyle || selectedStyle === '기본' ? '수채화' : selectedStyle;
+      // ✅ 스타일 기본값 (UX 혼란 방지: 사용자 선택 그대로 유지)
+      const safeStyle = selectedStyle || '기본';
       
       console.log("📡 [DrawDirect] generateImageViaCloudflare 호출 중...", { 
         originalStyle: selectedStyle,
@@ -100,7 +100,8 @@ export default function DrawDirect() {
       });
 
       // Cloudflare Functions를 통한 DALL·E 이미지 생성
-      const imageBase64 = await generateImageViaCloudflare(finalPrompt, safeStyle, {
+      // ⭐ 버그 수정: finalPrompt → fullPrompt (스타일 텍스트 포함)
+      const imageBase64 = await generateImageViaCloudflare(fullPrompt, safeStyle, {
         model: 'dall-e-3',
         size: '1024x1024',
         quality: 'standard'
@@ -113,7 +114,7 @@ export default function DrawDirect() {
         state: {
           imageBase64,
           prompt: description,
-          style: selectedStyle,
+          style: safeStyle, // ✅ 실제 적용된 스타일 전달
           sourceImage: uploadedImage, // 참고한 원본 이미지도 함께 전달
         },
       });

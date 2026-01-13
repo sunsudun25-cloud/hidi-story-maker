@@ -33,8 +33,8 @@ export default function DirectInput() {
     setIsGenerating(true);
 
     try {
-      // ✅ 스타일 기본값 강제 (빈 값 방지) + "기본" 보정
-      const safeStyle = !selectedStyle || selectedStyle === '기본' ? '수채화' : selectedStyle;
+      // ✅ 스타일 기본값 (UX 혼란 방지: 사용자 선택 그대로 유지)
+      const safeStyle = selectedStyle || '기본';
       
       console.log("📡 [DirectInput] generateImageViaCloudflare 호출 중...", { 
         originalStyle: selectedStyle,

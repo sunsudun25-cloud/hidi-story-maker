@@ -50,6 +50,21 @@ No signs, labels, captions, numbers, or symbols.
 Pure illustration only.
 `;
 
+// 🚀 P0 패키지: 연령 추론 방지 정책
+const agePolicyDirective = `
+=== AGE POLICY ===
+- Do NOT assume elderly people.
+- Only depict elderly if explicitly mentioned (할머니/할아버지/시니어/노인).
+- Otherwise keep characters age-neutral.
+`;
+
+// 🚀 P0 패키지: 사람 포함 정책
+const peoplePolicyDirective = `
+=== PEOPLE POLICY ===
+- If prompt says "DO NOT INCLUDE ANY PEOPLE" then strictly no people.
+- If prompt says "INCLUDE" then follow the specified age/character guidance.
+`;
+
 const qualityFooter = `
 === QUALITY ===
 Clean composition, readable, not busy.
@@ -91,6 +106,8 @@ ${moodText}
 [USER REQUEST]
 ${normalizedText}
 
+${agePolicyDirective}
+${peoplePolicyDirective}
 ${negativeConstraints}
 ${qualityFooter}
 `.trim();

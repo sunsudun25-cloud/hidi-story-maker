@@ -10,8 +10,63 @@ import { generateImageViaCloudflare, type ImageModel } from './cloudflareImageAp
  */
 export type SupportedModel = ImageModel;
 
+// ============================================
+// 🚀 P0 패키지: "사람 그릴까 말까" 자동 판단
+// ============================================
+
+type PersonPolicy =
+  | { includePeople: false; peopleHint?: string }
+  | { includePeople: true; peopleHint: string };
+
+/**
+ * 텍스트에서 사람 포함 여부를 자동으로 판단
+ * @param text 사용자 입력 텍스트
+ * @returns 사람 포함 정책
+ */
+function detectPersonPolicy(text: string): PersonPolicy {
+  const t = (text || "").toLowerCase();
+
+  // 1) 명시적으로 "사람 없음"을 원한 경우
+  const explicitNoPeople = /(사람\s*없|인물\s*없|no people|without people)/i.test(text);
+  if (explicitNoPeople) return { includePeople: false };
+
+  // 2) 사람/관계/이름/대명사/직업 등 등장 여부(간단 규칙)
+  const hasNamedPerson =
+    /([가-힣]{2,4})(이|가|와|과)\s*함께/.test(text) || // "철수와 함께"
+    /(철수|영희|민수|지수|준호|민지|유나|서준|지민)/.test(text); // 자주 쓰는 이름
+
+  const hasPersonKeyword =
+    /(친구|엄마|아빠|부모|할머니|할아버지|선생님|아이|어린이|학생|아들|딸|가족|남자|여자|소년|소녀|커플|연인|사람|인물)/.test(
+      text
+    );
+
+  const hasPronoun =
+    /(나|내가|우리|우리가|그|그녀|그들)/.test(text);
+
+  // 3) 사람 포함 판단
+  if (hasNamedPerson || hasPersonKeyword || hasPronoun) {
+    // 사람 힌트(최소한만)
+    // "노년"은 사용자가 명시했을 때만 허용
+    let peopleHint = "people present, friendly expressions, natural proportions";
+    if (/(아이|어린이|소년|소녀|학생)/.test(text)) {
+      peopleHint = "children present, cheerful and age-appropriate, friendly faces";
+    } else if (/(할머니|할아버지|시니어|노인)/.test(text)) {
+      peopleHint = "older adults present, warm and dignified, friendly expressions";
+    } else {
+      // 연령중립
+      peopleHint = "adults or children only if clearly implied; otherwise age-neutral adults";
+    }
+
+    return { includePeople: true, peopleHint };
+  }
+
+  // 4) 기본은 사람 미포함
+  return { includePeople: false };
+}
+
 /**
  * 동화 이미지 생성 (Cloudflare Pages Function)
+ * 🚀 P0 패키지: "사람 그릴까 말까" + 연령 중립 자동 적용
  * @param text 페이지 내용 또는 장면 설명
  * @param options 추가 옵션 (스타일, 분위기, 캐릭터 정보, 모델 선택 등)
  * @returns 이미지 URL
@@ -22,9 +77,9 @@ export async function generateStoryImage(
     style?: string;
     mood?: string;
     character?: string;  // 캐릭터 일관성 프롬프트
-    model?: SupportedModel;  // ✅ 모델 선택 (기본값: dall-e-3)
-    size?: "1024x1024" | "1024x1536" | "1536x1024";  // ✅ 이미지 크기
-    quality?: "standard" | "high";  // ✅ 이미지 품질
+    model?: SupportedModel;
+    size?: "1024x1024" | "1024x1536" | "1536x1024";
+    quality?: "standard" | "high";
   }
 ): Promise<string> {
   try {
@@ -32,30 +87,65 @@ export async function generateStoryImage(
       style = "동화풍", 
       mood = "따뜻하고 부드러운",
       character = "",
-      model = "dall-e-3",  // ✅ 기본값: dall-e-3 (안정성)
+      model = "dall-e-3",
       size = "1024x1024",
       quality = "standard"
     } = options || {};
 
-    // 순수 장면 묘사 프롬프트 (텍스트 배제)
+    // ✅ 사람 포함 여부 자동 판단
+    const personPolicy = detectPersonPolicy(text);
+
+    // ✅ 사람 포함/미포함 지시문
+    const peopleDirective = personPolicy.includePeople
+      ? `People: INCLUDE. ${personPolicy.peopleHint}`
+      : `People: DO NOT INCLUDE ANY PEOPLE. Focus on environment/objects/symbolic scene only.`;
+
+    // ✅ 연령 추론 방지
+    const ageNeutralDirective = `
+Age policy:
+- DO NOT assume elderly people.
+- Only depict elderly if explicitly mentioned (할머니/할아버지/시니어/노인).
+- Otherwise keep characters age-neutral and general.
+`.trim();
+
+    // ✅ 텍스트 방지 (동화책 중요)
+    const noTextDirective = `
+No text policy:
+- No letters, no English, no Korean text
+- No watermark, no logo, no signs, no labels
+`.trim();
+
+    // ✅ 최종 프롬프트
     const prompt = `
 Scene from a children's storybook: ${text.substring(0, 800)}
 
 ${character ? `\nMain character description (MUST be consistent): ${character}` : ''}
 
+${peopleDirective}
+
+${ageNeutralDirective}
+${noTextDirective}
+
 Mood: ${mood}
 Visual storytelling through actions, expressions, and environment only.
-Simple, clean composition suitable for children and seniors.
+Simple, clean composition suitable for children and all ages.
 Bright, not too dark. Avoid complex backgrounds.
-    `.trim();
+`.trim();
 
-    console.log("🎨 동화 이미지 생성 중:", { model, style, size, quality, prompt: prompt.substring(0, 100) + "..." });
+    console.log("🎨 [동화 이미지 P0] 생성 중:", { 
+      model, 
+      style, 
+      size, 
+      quality, 
+      personPolicy,
+      prompt: prompt.substring(0, 100) + "..." 
+    });
 
-    // ✅ generateImageViaCloudflare 재사용 (환경별 엔드포인트 일관성)
+    // ✅ generateImageViaCloudflare 재사용
     const imageData = await generateImageViaCloudflare(prompt, style, { model, size, quality });
 
-    console.log("✅ 동화 이미지 생성 완료");
-    return imageData;  // imageData 우선 (Data URL)
+    console.log("✅ [동화 이미지 P0] 생성 완료");
+    return imageData;
   } catch (error) {
     console.error("❌ 동화 이미지 생성 오류:", error);
     throw error;
@@ -64,6 +154,7 @@ Bright, not too dark. Avoid complex backgrounds.
 
 /**
  * 글쓰기 이미지 생성 (Cloudflare Pages Function)
+ * 🚀 P0 패키지: "사람 그릴까 말까" + 연령 중립 자동 적용
  * @param text 글 내용
  * @param genre 장르 (일기, 편지, 수필, 시, 소설, 자서전)
  * @param options 추가 옵션 (모델, 크기, 품질)
@@ -73,49 +164,85 @@ export async function generateWritingImage(
   text: string,
   genre?: string,
   options?: {
-    model?: SupportedModel;  // ✅ 모델 선택
+    model?: SupportedModel;
     size?: "1024x1024" | "1024x1536" | "1536x1024";
     quality?: "standard" | "high";
-    explicitAge?: string;  // ✅ 명시적 연령 정보 (선택)
   }
 ): Promise<string> {
   try {
     const {
-      model = "dall-e-3",  // ✅ 기본값: dall-e-3
+      model = "dall-e-3",
       size = "1024x1024",
-      quality = "standard",
-      explicitAge
+      quality = "standard"
     } = options || {};
 
-    // ✅ 새로운 글쓰기 전용 프롬프트 빌더 사용
-    const { buildWritingImagePrompt } = await import('../utils/writingImagePromptBuilder');
-    
-    const result = buildWritingImagePrompt({
-      text,
-      genre: genre as any,
-      explicitAge
-    });
+    const genreStyle = genre ? `${genre} 장르에 어울리는` : "글 내용에 맞는";
 
-    console.log("🎨 [글쓰기 이미지] 생성 중:", { 
+    // ✅ 사람 포함 여부 자동 판단
+    const personPolicy = detectPersonPolicy(text);
+
+    // ✅ 사람 포함/미포함 지시문
+    const peopleDirective = personPolicy.includePeople
+      ? `People: INCLUDE. ${personPolicy.peopleHint}`
+      : `People: DO NOT INCLUDE ANY PEOPLE. Focus on environment/objects/symbolic scene only.`;
+
+    // ✅ 연령 추론 방지(핵심)
+    const ageNeutralDirective = `
+Age policy:
+- DO NOT assume elderly people.
+- Only depict elderly if the user text explicitly mentions 할머니/할아버지/시니어/노인.
+- Otherwise keep characters age-neutral and general.
+`.trim();
+
+    // ✅ 텍스트/워터마크 방지(강하게)
+    const noTextDirective = `
+No text policy:
+- No letters, no English, no Korean text
+- No watermark, no logo, no signs, no labels
+- No numbers or symbols that look like writing
+`.trim();
+
+    // ✅ 최종 프롬프트
+    const prompt = `
+[STYLE DIRECTIVE]
+Rendering: warm, clean illustration, simple composition, bright and readable
+
+[CONTENT]
+Create an illustration inspired by the writing below.
+${peopleDirective}
+
+${ageNeutralDirective}
+${noTextDirective}
+
+[WRITING]
+${genreStyle} 분위기와 핵심 감정을 시각적으로 표현.
+글 내용(요약/핵심):
+${text.substring(0, 900)}
+
+[COMPOSITION]
+- simple, uncluttered
+- friendly and school-safe
+- single scene, not multi-panel
+`.trim();
+
+    console.log("🎨 [글쓰기 이미지 P0] 생성 중:", { 
       model, 
+      genre, 
       size, 
       quality, 
-      genre,
-      imageStrategy: result.imageStrategy,
-      ageNeutral: result.ageNeutral,
-      detectedCharacters: result.detectedCharacters,
-      promptPreview: result.finalPrompt.substring(0, 150) + "..."
+      personPolicy,
+      promptPreview: prompt.substring(0, 200) + "..."
     });
 
-    // ✅ generateImageViaCloudflare 재사용 (스타일은 '수채화' 고정)
-    const imageData = await generateImageViaCloudflare(
-      result.finalPrompt, 
-      "수채화",  // 글쓰기는 항상 수채화 스타일
-      { model, size, quality }
-    );
+    // ✅ generateImageViaCloudflare 호출 시 size/quality도 전달
+    const imageData = await generateImageViaCloudflare(prompt, genre || "기본", {
+      model,
+      size,
+      quality
+    });
 
-    console.log("✅ [글쓰기 이미지] 생성 완료 { imageLength:", imageData.length, "}");
-    return imageData;  // imageData 우선 (Data URL)
+    console.log("✅ [글쓰기 이미지 P0] 생성 완료 { imageLength:", imageData.length, "}");
+    return imageData;
   } catch (error) {
     console.error("❌ 글쓰기 이미지 생성 오류:", error);
     throw error;

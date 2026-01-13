@@ -78,13 +78,19 @@ export async function onRequest(context: { request: Request; env: Env }) {
       '기본 스타일': 'illustration style, balanced composition',
     };
 
-    const stylePrompt = styleMap[style || '기본'] || 'illustration style';
+    // ✅ 스타일 기본값 강제 (빈 값 방지)
+    const safeStyle = style || '수채화';
+    const stylePrompt = styleMap[safeStyle] || styleMap['기본'];
     
-    // ⭐ 간결한 프롬프트 구성 (함정 수정 완료)
+    // ⭐ 강력한 스타일 강제 프롬프트 (모든 경로 동일 적용)
     const fullPrompt = `
+[STYLE DIRECTIVE]
+Style: ${safeStyle}
+Rendering: ${stylePrompt}
+
 ${prompt}
 
-Style: ${stylePrompt}
+=== OUTPUT RULES ===
 No readable text, no letters, no typography.
 No watermark, no logo, no brand marks.
 Single illustration, one scene, clean composition.
@@ -92,7 +98,8 @@ Bright, positive, age-appropriate for all ages.
 `.trim();
 
     console.log('📡 OpenAI API 호출:', { requestId, model: model || 'dall-e-3', size: size || '1024x1024', quality: quality || 'standard' });
-    console.log('📝 Full Prompt:', fullPrompt);
+    console.log('🔍 [STYLE CHECK] Original style:', style, '→ Safe style:', safeStyle);
+    console.log('📝 [FINAL PROMPT]:', fullPrompt);
 
     // OpenAI API 호출
     const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {

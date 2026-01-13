@@ -90,10 +90,16 @@ export default function DrawDirect() {
       const styleText = selectedStyle && selectedStyle !== "기본" ? ` (${selectedStyle} 스타일)` : "";
       const fullPrompt = `${finalPrompt}${styleText}`;
 
-      console.log("📡 [DrawDirect] generateImageViaCloudflare 호출 중...", fullPrompt);
+      // ✅ 스타일 기본값 강제 (빈 값 방지)
+      const safeStyle = selectedStyle || '수채화';
+      
+      console.log("📡 [DrawDirect] generateImageViaCloudflare 호출 중...", { 
+        prompt: fullPrompt, 
+        style: safeStyle 
+      });
 
       // Cloudflare Functions를 통한 DALL·E 이미지 생성
-      const imageBase64 = await generateImageViaCloudflare(finalPrompt, selectedStyle, {
+      const imageBase64 = await generateImageViaCloudflare(finalPrompt, safeStyle, {
         model: 'dall-e-3',
         size: '1024x1024',
         quality: 'standard'

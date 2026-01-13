@@ -80,43 +80,16 @@ export async function onRequest(context: { request: Request; env: Env }) {
 
     const stylePrompt = styleMap[style || '기본'] || 'illustration style';
     
-    // ⭐ 스타일을 프롬프트 본문에 강하게 삽입 (함정 수정: ABSOLUTELY 제거)
-    const styleEnforcement = `
-[STYLE DIRECTIVE]
-Style: ${style || '기본'}
-Rendering: ${stylePrompt}
-Quality: clean composition, readable, not busy
-
-Main Subject:
+    // ⭐ 간결한 프롬프트 구성 (함정 수정 완료)
+    const fullPrompt = `
 ${prompt}
 
-=== STYLE ENFORCEMENT ===
-Medium: ${stylePrompt}
-Art Style: ${stylePrompt}
-This MUST be created in ${stylePrompt}
-Style Requirements: ${stylePrompt} is MANDATORY
-`;
-    
-    // ⭐ 출력 규칙 (함정 수정: 간결하게, No readable text)
-    const outputRules = `
-=== OUTPUT RULES ===
-- No readable text, no letters, no typography anywhere in the image
-- No watermark, no logo, no brand marks, no signatures
-- Single illustration, one scene, clean and simple composition
-`;
-
-    // ⭐ 학교용 가이드라인
-    const schoolFriendlyGuide = `
-=== SCHOOL-FRIENDLY GUIDELINES ===
-- Bright, positive, welcoming atmosphere
-- Simple, uncluttered composition
-- Friendly facial expressions (if characters present)
-- Avoid: violence, horror, scary elements, adult themes
-- Age-appropriate content for all ages
-`;
-    
-    // 프롬프트 구성: 스타일 강제 → 출력 규칙 → 학교용 가이드
-    const fullPrompt = `${styleEnforcement}${outputRules}${schoolFriendlyGuide}`.trim();
+Style: ${stylePrompt}
+No readable text, no letters, no typography.
+No watermark, no logo, no brand marks.
+Single illustration, one scene, clean composition.
+Bright, positive, age-appropriate for all ages.
+`.trim();
 
     console.log('📡 OpenAI API 호출:', { requestId, model: model || 'dall-e-3', size: size || '1024x1024', quality: quality || 'standard' });
     console.log('📝 Full Prompt:', fullPrompt);

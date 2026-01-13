@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateImageViaCloudflare } from "../services/cloudflareImageApi";
+import { buildAutoPrompt, type PurposeKey, type MoodKey } from "../utils/promptBuilder";
+import { purposeConfig } from "../utils/purposeConfig";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { friendlyErrorMessage } from "../utils/errorHandler";
 import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
@@ -121,19 +123,52 @@ export default function DrawPractice() {
       console.log("📝 [DrawPractice] 프롬프트:", description);
       console.log("🎭 [DrawPractice] 스타일:", selectedStyle ?? "기본");
       
-      // ✅ DALL-E 3 모델 사용 (강화된 스타일 프롬프트 적용)
-      const imageUrl = await generateImageViaCloudflare(description, selectedStyle ?? "기본", {
-        model: "dall-e-3"
+      // ✅ 프롬프트 연습 모드: 약한 자동 보정
+      const purposeKey: PurposeKey = 'memory';  // 기본 목적
+      const mood: MoodKey = 'bright';
+      const styleLabel = selectedStyle || undefined;
+      
+      const { finalPrompt, resolvedStyleLabel } = buildAutoPrompt({
+        userText: description,
+        purpose: purposeKey,
+        mood,
+        styleLabel,
+        lightCorrection: true  // ✅ 프롬프트 연습 모드
       });
+      
+      const { size, quality } = purposeConfig[purposeKey];
+      
+      console.log("[GEN_REQUEST - PRACTICE MODE]", {
+        mode: 'practice (약한 보정)',
+        purpose: purposeKey,
+        mood,
+        selectedStyle: styleLabel,
+        resolvedStyleLabel,
+        size,
+        quality,
+        userInput: description.slice(0, 100),
+        promptPreview: finalPrompt.slice(0, 140)
+      });
+      
+      // ✅ generateImageViaCloudflare 직접 호출
+      const imageUrl = await generateImageViaCloudflare(
+        finalPrompt,
+        resolvedStyleLabel,
+        {
+          model: "dall-e-3",
+          size,
+          quality
+        }
+      );
 
-      console.log("✅ [DrawPractice] 이미지 생성 완료");
+      console.log("✅ [DrawPractice] 이미지 생성 완료", { imageLength: imageUrl.length });
 
       // 결과 페이지로 이동 (prompt와 style 정보도 함께 전달)
       navigate("/result", { 
         state: { 
           imageUrl,
           prompt: description,
-          style: selectedStyle ?? "기본",
+          style: resolvedStyleLabel,
           model: "dall-e-3"
         } 
       });

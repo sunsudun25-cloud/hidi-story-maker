@@ -41,8 +41,8 @@ const STYLE_MAP: Record<string, string> = {
  * @returns 강화된 최종 프롬프트
  */
 function buildEnhancedPrompt(rawPrompt: string, rawStyle: string): string {
-  // 1) "기본" 또는 빈 값이면 안전 스타일로 보정
-  const normalizedStyle = !rawStyle || rawStyle === '기본' ? '수채화' : rawStyle;
+  // 1) 빈 값이면 "기본"으로, 사용자 선택은 그대로 유지 (UX 혼란 방지)
+  const normalizedStyle = rawStyle || '기본';
   const stylePrompt = STYLE_MAP[normalizedStyle] || STYLE_MAP['기본'];
   
   // 2) 강화 프롬프트 구성 (스타일 강제 + 출력 규칙)
@@ -112,8 +112,8 @@ export async function onRequest(context: { request: Request; env: Env }) {
     const rawStyle = style || '';
     const finalPrompt = buildEnhancedPrompt(rawPrompt, rawStyle);
     
-    // 최종 적용된 스타일 추출 (디버그용)
-    const normalizedStyle = !rawStyle || rawStyle === '기본' ? '수채화' : rawStyle;
+    // 최종 적용된 스타일 (사용자 선택 그대로 유지)
+    const normalizedStyle = rawStyle || '기본';
 
     // ✅ 검증용 로그
     console.log('📡 [GEN_IMAGE] style=', normalizedStyle);

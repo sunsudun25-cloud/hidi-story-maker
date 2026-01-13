@@ -93,7 +93,11 @@ export default function DrawDirect() {
       console.log("📡 [DrawDirect] generateImageViaCloudflare 호출 중...", fullPrompt);
 
       // Cloudflare Functions를 통한 DALL·E 이미지 생성
-      const imageBase64 = await generateImageViaCloudflare(finalPrompt, selectedStyle);
+      const imageBase64 = await generateImageViaCloudflare(finalPrompt, selectedStyle, {
+        model: 'dall-e-3',
+        size: '1024x1024',
+        quality: 'standard'
+      });
 
       console.log("✅ [DrawDirect] 이미지 생성 완료, Base64 길이:", imageBase64.length);
 

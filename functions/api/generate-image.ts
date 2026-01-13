@@ -163,7 +163,7 @@ Bright, positive, age-appropriate for all ages.
         imageUrl: dataUrl,
         imageData: dataUrl, // 하위 호환성 유지
         prompt: fullPrompt,
-        style: style || '기본',
+        style: safeStyle, // ✅ 실제 적용된 스타일 반환
         request_id: requestId,
         model_used: model || 'dall-e-3',
         size_used: size || '1024x1024',

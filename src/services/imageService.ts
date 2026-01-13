@@ -76,36 +76,45 @@ export async function generateWritingImage(
     model?: SupportedModel;  // ✅ 모델 선택
     size?: "1024x1024" | "1024x1536" | "1536x1024";
     quality?: "standard" | "high";
+    explicitAge?: string;  // ✅ 명시적 연령 정보 (선택)
   }
 ): Promise<string> {
   try {
     const {
       model = "dall-e-3",  // ✅ 기본값: dall-e-3
       size = "1024x1024",
-      quality = "standard"
+      quality = "standard",
+      explicitAge
     } = options || {};
 
-    const genreStyle = genre 
-      ? `${genre} 장르에 어울리는` 
-      : "글 내용에 맞는";
+    // ✅ 새로운 글쓰기 전용 프롬프트 빌더 사용
+    const { buildWritingImagePrompt } = await import('../utils/writingImagePromptBuilder');
+    
+    const result = buildWritingImagePrompt({
+      text,
+      genre: genre as any,
+      explicitAge
+    });
 
-    const prompt = `
-${genreStyle} 따뜻하고 감성적인 일러스트를 만들어 주세요.
-시니어 분들이 보시기 편한 부드럽고 차분한 스타일로 표현해주세요.
-복잡하지 않고 깔끔한 구도로, 밝고 따뜻한 색감을 사용해주세요.
-글의 핵심 감정과 분위기를 시각적으로 표현해주세요.
-텍스트나 워터마크는 포함하지 마세요.
+    console.log("🎨 [글쓰기 이미지] 생성 중:", { 
+      model, 
+      size, 
+      quality, 
+      genre,
+      imageStrategy: result.imageStrategy,
+      ageNeutral: result.ageNeutral,
+      detectedCharacters: result.detectedCharacters,
+      promptPreview: result.finalPrompt.substring(0, 150) + "..."
+    });
 
-글 내용:
-${text.substring(0, 1000)}
-`;
+    // ✅ generateImageViaCloudflare 재사용 (스타일은 '수채화' 고정)
+    const imageData = await generateImageViaCloudflare(
+      result.finalPrompt, 
+      "수채화",  // 글쓰기는 항상 수채화 스타일
+      { model, size, quality }
+    );
 
-    console.log("🎨 글쓰기 이미지 생성 중:", { model, size, quality, genre, prompt: prompt.substring(0, 100) + "..." });
-
-    // ✅ generateImageViaCloudflare 재사용 (환경별 엔드포인트 일관성)
-    const imageData = await generateImageViaCloudflare(prompt, genre || "동화풍", { model, size, quality });
-
-    console.log("✅ 글쓰기 이미지 생성 완료");
+    console.log("✅ [글쓰기 이미지] 생성 완료 { imageLength:", imageData.length, "}");
     return imageData;  // imageData 우선 (Data URL)
   } catch (error) {
     console.error("❌ 글쓰기 이미지 생성 오류:", error);

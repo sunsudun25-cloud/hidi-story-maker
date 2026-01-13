@@ -55,11 +55,29 @@
 - **작품 상세**: 다운로드, 공유, 수정, 삭제 기능
 - **버튼 레이아웃 통일**: 일관된 UI/UX
 
-## 🎨 최근 주요 업데이트 (2024-12-30)
+## 🎨 최근 주요 업데이트
 
 ### ✅ 완료된 개선사항
 
-**0. 이미지 생성 모델 다변화 (2024-12-30)** 🆕
+**0. 연령 중립 이미지 생성 시스템 (2026-01-13)** 🔥🆕
+- **문제 해결**: "고령 친화 앱인데 이미지에 할아버지 할머니가 너무 많이 나와요"
+- **핵심 변경**:
+  - ❌ 제거: "시니어 분들이 보시기 편한" 키워드
+  - ❌ 제거: 장르에서 연령 추론 (일기 = 노년 ❌)
+  - ✅ 추가: 등장인물 감지 + 연령 키워드 감지
+  - ✅ 추가: 이미지 전략 (배경/실루엣/캐릭터)
+- **장르별 이미지 방향**:
+  - 일기 → 오늘의 장면 (하늘, 방, 길)
+  - 편지 → 따뜻한 풍경, 빛, 소품
+  - 수필 → 자연, 계절, 감정 분위기
+  - 동화 → 동화풍 스타일 (어린이 ≠ 동화)
+- **연령 처리 규칙**:
+  - 등장인물 없음 → 배경 중심
+  - 연령 명시 (예: "어린 시절", "할머니") → 연령 반영 가능
+  - 연령 미명시 → 실루엣/뒷모습/얼굴 없음
+- **상세 문서**: `AGE_NEUTRAL_IMAGE_SYSTEM.md`
+
+**1. 이미지 생성 모델 다변화 (2024-12-30)** 🆕
 - **멀티 모델 지원**: DALL-E 3 외에 GPT-Image 계열 모델 추가
   - `dall-e-3`: 기본 모델 (운영 안정성)
   - `gpt-image-1.5`: 차세대 고품질 모델
@@ -165,13 +183,13 @@
 - **Cloudflare Pages/Workers** (호스팅)
 - **Cloudflare D1** (SQLite 데이터베이스)
 - **OpenAI API**:
-  - **Multi-Model Support** ✨ (2024-12-30 추가)
-    - `dall-e-3` (기본, 고품질)
-    - `gpt-image-1.5` (차세대 모델)
-    - `gpt-image-1` (표준)
-    - `gpt-image-1-mini` (빠른 생성)
-  - **Automatic Fallback**: 새 모델 실패 시 `dall-e-3`로 자동 재시도
-  - GPT-4o-mini Vision (손글씨 인식)
+  - **DALL-E 3** (이미지 생성)
+  - **GPT-4o-mini** (텍스트 생성, 손글씨 인식)
+  - **Age-Neutral Prompt System** ✨ (2026-01-13 추가)
+    - 연령 중립 이미지 생성 (`writingImagePromptBuilder.ts`)
+    - 장르 오해 차단 (일기 ≠ 노년)
+    - 등장인물 감지 + 연령 키워드 감지
+    - 이미지 전략 자동 결정 (배경/실루엣/캐릭터)
 - **Gemini API** (텍스트 생성)
 - **Web Speech API** (음성 인식)
 
@@ -200,7 +218,12 @@ webapp/
 │   │   ├── visionService.ts             # 손글씨 인식
 │   │   ├── pdfService.ts                # PDF 생성
 │   │   ├── cloudflareImageApi.ts        # DALL-E 3 연동
-│   │   └── geminiService.ts             # Gemini 연동
+│   │   ├── geminiService.ts             # Gemini 연동
+│   │   └── imageService.ts              # 글쓰기 이미지 생성
+│   ├── utils/
+│   │   ├── promptBuilder.ts             # 그림 프롬프트 빌더
+│   │   ├── writingImagePromptBuilder.ts # 글쓰기 프롬프트 빌더 (연령 중립)
+│   │   └── purposeConfig.ts             # 목적별 설정
 │   └── context/
 │       └── StoryContext.tsx         # 상태 관리
 ├── functions/api/
@@ -396,4 +419,9 @@ MIT
 
 ---
 
-**Last Updated**: 2025-01-07
+**Last Updated**: 2026-01-13
+
+## 🔗 참고 문서
+- **연령 중립 이미지 시스템**: `AGE_NEUTRAL_IMAGE_SYSTEM.md`
+- **수업 관리 시스템**: `CLASSROOM_DEPLOYMENT_GUIDE.md`
+- **테스트 가이드**: `TESTING_GUIDE.md`

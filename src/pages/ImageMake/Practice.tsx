@@ -29,29 +29,33 @@ export default function Practice() {
     setIsGenerating(true);
 
     try {
-      // 한글 목적 → PurposeKey 변환
+      // ✅ 프롬프트 연습 모드: 약한 자동 보정
+      // 사용자가 입력한 텍스트를 최대한 존중하되, 최소한의 구조만 추가
       const purposeKey = purposeKeyMap[selectedPurpose] || 'memory';
-      const mood = 'warm';  // 기본 분위기
-      const styleLabel = undefined;  // 스타일은 목적에서 자동 결정
+      const mood = 'bright';  // 밝은 기본 분위기
+      const styleLabel = undefined;  // 스타일은 목적에서 자동 결정 (실험용)
       
-      // ✅ 통일된 프롬프트 빌더 사용
+      // ✅ 통일된 프롬프트 빌더 사용 (약한 보정 모드)
       const { finalPrompt, resolvedStyleLabel } = buildAutoPrompt({
         userText: userPromptText,
         purpose: purposeKey,
         mood,
-        styleLabel
+        styleLabel,
+        lightCorrection: true  // ✅ 프롬프트 연습 모드: 사용자 입력 최대 존중
       });
       
       // ✅ 목적별 size/quality 자동 설정
       const { size, quality } = purposeConfig[purposeKey];
       
-      console.log("[GEN_REQUEST]", {
+      console.log("[GEN_REQUEST - PRACTICE MODE]", {
+        mode: 'practice (약한 보정)',
         purpose: purposeKey,
         mood,
         selectedStyle: styleLabel,
         resolvedStyleLabel,
         size,
         quality,
+        userInput: userPromptText.slice(0, 100),
         promptPreview: finalPrompt.slice(0, 140)
       });
       
@@ -86,7 +90,7 @@ export default function Practice() {
         <button className="back-btn" onClick={() => navigate(-1)}>
           ← 뒤로
         </button>
-        <h1 className="image-make-title">🎨 그림 연습하기</h1>
+        <h1 className="image-make-title">✏️ 프롬프트 연습하기</h1>
         <button className="home-btn" onClick={() => navigate("/")}>
           🏠
         </button>
@@ -94,7 +98,7 @@ export default function Practice() {
 
       <div className="image-make-content">
         <p className="description-text">
-          아래 예시 중 하나를 선택해 그림을 만들어보세요
+          💡 프롬프트 연습 공간: 예시를 이어쓰거나 자유롭게 실험해보세요
         </p>
 
         {/* ✅ 목적 선택 UI */}
@@ -108,7 +112,7 @@ export default function Practice() {
             marginBottom: '16px',
             textAlign: 'center'
           }}>
-            어떤 목적으로 쓰나요?
+            실험할 목적 (스타일 자동 적용)
           </h3>
           <div style={{
             display: 'grid',
@@ -164,19 +168,36 @@ export default function Practice() {
           </div>
         </div>
 
-        {/* 예시 프롬프트 */}
+        {/* 예시 프롬프트 - 이어쓰기 방식 */}
         <div className="prompt-grid">
           {examplePrompts.map((item, idx) => (
             <div
               key={idx}
               className="prompt-card"
-              onClick={() => createImage(item)}
+              onClick={() => {
+                // ✅ 이어쓰기: 기존 텍스트에 추가
+                const newText = text.trim() 
+                  ? `${text.trim()}, ${item}` 
+                  : item;
+                setText(newText);
+              }}
             >
-              <span className="prompt-icon">🎨</span>
+              <span className="prompt-icon">➕</span>
               <p className="prompt-text">{item}</p>
             </div>
           ))}
         </div>
+        
+        {/* 이어쓰기 안내 */}
+        <p style={{
+          fontSize: '13px',
+          color: '#6b7280',
+          textAlign: 'center',
+          marginTop: '8px',
+          marginBottom: '16px'
+        }}>
+          💡 예시를 클릭하면 아래 입력창에 이어서 추가됩니다
+        </p>
 
         {/* 직접 입력 */}
         <div className="custom-input-section">

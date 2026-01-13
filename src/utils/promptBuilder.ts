@@ -8,6 +8,7 @@ export interface PromptBuildInput {
   purpose: PurposeKey;
   mood?: MoodKey;
   styleLabel?: string; // "기본" | "수채화" | ...
+  lightCorrection?: boolean; // ✅ 약한 보정 모드 (Practice용)
 }
 
 export interface PromptBuildOutput {
@@ -95,6 +96,28 @@ export function buildAutoPrompt(input: PromptBuildInput): PromptBuildOutput {
   const purposeText = purposeDirectives[input.purpose] || purposeDirectives.memory;
   const moodText = input.mood ? moodDirectives[input.mood] : "Bright and friendly atmosphere.";
 
+  // ✅ 약한 보정 모드: 프롬프트 연습용 (Practice 전용)
+  if (input.lightCorrection) {
+    // 사용자 입력을 최대한 존중, 최소한의 스타일 가이드만 추가
+    const finalPrompt = `
+${userText}
+
+Style: ${styleLabel}
+${styleText}
+
+No readable text, no watermark.
+`.trim();
+
+    return {
+      finalPrompt,
+      resolvedStyleLabel: styleLabel,
+      resolvedStyleText: styleText,
+      purposeDirective: purposeText,
+      moodDirective: moodText
+    };
+  }
+
+  // ✅ 기본 모드: 전체 구조 적용 (DrawDirect 등)
   const finalPrompt = `
 [STYLE DIRECTIVE]
 StyleLabel: ${styleLabel}

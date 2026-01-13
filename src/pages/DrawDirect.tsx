@@ -80,15 +80,12 @@ export default function DrawDirect() {
     setIsGenerating(true);
 
     try {
-      // 업로드된 이미지가 있을 경우 프롬프트에 추가 정보 포함
-      let finalPrompt = description;
+      // ⭐ Practice와 동일: 순수 프롬프트만 전달, 서버의 buildEnhancedPrompt에서 통일 처리
+      let basePrompt = description;
       if (uploadedImage) {
-        finalPrompt = `${description} (참고: 업로드된 이미지의 스타일과 구도를 참고하여 새로운 그림을 그려주세요)`;
+        basePrompt = `${description} (참고: 업로드된 이미지의 스타일과 구도를 참고하여 새로운 그림을 그려주세요)`;
         console.log("📸 [DrawDirect] 업로드된 이미지 포함 모드");
       }
-
-      const styleText = selectedStyle && selectedStyle !== "기본" ? ` (${selectedStyle} 스타일)` : "";
-      const fullPrompt = `${finalPrompt}${styleText}`;
 
       // ✅ 스타일 기본값 (UX 혼란 방지: 사용자 선택 그대로 유지)
       const safeStyle = selectedStyle || '기본';
@@ -96,12 +93,11 @@ export default function DrawDirect() {
       console.log("📡 [DrawDirect] generateImageViaCloudflare 호출 중...", { 
         originalStyle: selectedStyle,
         safeStyle: safeStyle,
-        prompt: fullPrompt.slice(0, 100) + '...'
+        prompt: basePrompt.slice(0, 100) + '...'
       });
 
-      // Cloudflare Functions를 통한 DALL·E 이미지 생성
-      // ⭐ 버그 수정: finalPrompt → fullPrompt (스타일 텍스트 포함)
-      const imageBase64 = await generateImageViaCloudflare(fullPrompt, safeStyle, {
+      // ⭐ Practice와 동일: 순수 프롬프트 + 스타일 → 서버에서 buildEnhancedPrompt 처리
+      const imageBase64 = await generateImageViaCloudflare(basePrompt, safeStyle, {
         model: 'dall-e-3',
         size: '1024x1024',
         quality: 'standard'

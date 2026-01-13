@@ -15,6 +15,54 @@ interface ImageRequest {
   quality?: string;
 }
 
+// 스타일 매핑 (전역 상수)
+const STYLE_MAP: Record<string, string> = {
+  '수채화': 'soft watercolor wash, gentle paper texture, warm light, flowing brushstrokes',
+  'watercolor': 'soft watercolor wash, gentle paper texture, warm light',
+  '동화풍': 'children\'s book illustration style, clear lines, bright colors, storybook quality',
+  'fairytale': 'children\'s book illustration style, clear lines, bright colors',
+  '파스텔톤': 'pastel colors, soft gradients, gentle atmosphere, light and airy',
+  'pastel': 'pastel colors, soft gradients, gentle atmosphere',
+  '따뜻한 스타일': 'warm color palette, cozy atmosphere, inviting composition',
+  'warm': 'warm color palette, cozy atmosphere',
+  '만화풍': 'clean lineart, flat colors, simple shading, cartoon style, cute and friendly',
+  '감성 사진 같은 그림': 'photo-inspired illustration, natural lighting, subtle imperfections, realistic yet artistic',
+  '애니메이션': 'anime illustration style',
+  '연필스케치': 'pencil sketch style',
+  '흑백 스케치': 'pencil sketch, line drawing, monochrome, hatching and cross-hatching, artistic rendering',
+  '기본': 'illustration style, balanced composition, pleasing aesthetics',
+  '기본 스타일': 'illustration style, balanced composition',
+};
+
+/**
+ * ⭐ 핵심: 프롬프트 강화 함수 (모든 경로에서 무조건 호출)
+ * @param rawPrompt 사용자 입력 프롬프트
+ * @param rawStyle 사용자 선택 스타일
+ * @returns 강화된 최종 프롬프트
+ */
+function buildEnhancedPrompt(rawPrompt: string, rawStyle: string): string {
+  // 1) "기본" 또는 빈 값이면 안전 스타일로 보정
+  const normalizedStyle = !rawStyle || rawStyle === '기본' ? '수채화' : rawStyle;
+  const stylePrompt = STYLE_MAP[normalizedStyle] || STYLE_MAP['기본'];
+  
+  // 2) 강화 프롬프트 구성 (스타일 강제 + 출력 규칙)
+  const enhancedPrompt = `
+[STYLE DIRECTIVE]
+Style: ${normalizedStyle}
+Rendering: ${stylePrompt}
+
+${rawPrompt}
+
+=== OUTPUT RULES ===
+No readable text, no letters, no typography.
+No watermark, no logo, no brand marks.
+Single illustration, one scene, clean composition.
+Bright, positive, age-appropriate for all ages.
+`.trim();
+
+  return enhancedPrompt;
+}
+
 export async function onRequest(context: { request: Request; env: Env }) {
   const { request, env } = context;
 
@@ -59,47 +107,18 @@ export async function onRequest(context: { request: Request; env: Env }) {
 
     console.log('🎨 이미지 생성 요청:', { requestId, prompt, style, model, size, quality });
 
-    // 스타일 매핑 (photo-realistic → photo-inspired illustration)
-    const styleMap: Record<string, string> = {
-      '수채화': 'soft watercolor wash, gentle paper texture, warm light, flowing brushstrokes',
-      'watercolor': 'soft watercolor wash, gentle paper texture, warm light',
-      '동화풍': 'children\'s book illustration style, clear lines, bright colors, storybook quality',
-      'fairytale': 'children\'s book illustration style, clear lines, bright colors',
-      '파스텔톤': 'pastel colors, soft gradients, gentle atmosphere, light and airy',
-      'pastel': 'pastel colors, soft gradients, gentle atmosphere',
-      '따뜻한 스타일': 'warm color palette, cozy atmosphere, inviting composition',
-      'warm': 'warm color palette, cozy atmosphere',
-      '만화풍': 'clean lineart, flat colors, simple shading, cartoon style, cute and friendly',
-      '감성 사진 같은 그림': 'photo-inspired illustration, natural lighting, subtle imperfections, realistic yet artistic',
-      '애니메이션': 'anime illustration style',
-      '연필스케치': 'pencil sketch style',
-      '흑백 스케치': 'pencil sketch, line drawing, monochrome, hatching and cross-hatching, artistic rendering',
-      '기본': 'illustration style, balanced composition, pleasing aesthetics',
-      '기본 스타일': 'illustration style, balanced composition',
-    };
-
-    // ✅ 스타일 기본값 강제 (빈 값 방지)
-    const safeStyle = style || '수채화';
-    const stylePrompt = styleMap[safeStyle] || styleMap['기본'];
+    // ⭐⭐⭐ 핵심: 모든 경로(Practice/DrawDirect/Custom)에서 무조건 강화 프롬프트 적용
+    const rawPrompt = prompt || '';
+    const rawStyle = style || '';
+    const finalPrompt = buildEnhancedPrompt(rawPrompt, rawStyle);
     
-    // ⭐ 강력한 스타일 강제 프롬프트 (모든 경로 동일 적용)
-    const fullPrompt = `
-[STYLE DIRECTIVE]
-Style: ${safeStyle}
-Rendering: ${stylePrompt}
+    // 최종 적용된 스타일 추출 (디버그용)
+    const normalizedStyle = !rawStyle || rawStyle === '기본' ? '수채화' : rawStyle;
 
-${prompt}
-
-=== OUTPUT RULES ===
-No readable text, no letters, no typography.
-No watermark, no logo, no brand marks.
-Single illustration, one scene, clean composition.
-Bright, positive, age-appropriate for all ages.
-`.trim();
-
+    // ✅ 검증용 로그
+    console.log('📡 [GEN_IMAGE] style=', normalizedStyle);
+    console.log('📝 [FINAL_PROMPT_HEAD]', finalPrompt.slice(0, 250));
     console.log('📡 OpenAI API 호출:', { requestId, model: model || 'dall-e-3', size: size || '1024x1024', quality: quality || 'standard' });
-    console.log('🔍 [STYLE CHECK] Original style:', style, '→ Safe style:', safeStyle);
-    console.log('📝 [FINAL PROMPT]:', fullPrompt);
 
     // OpenAI API 호출
     const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {
@@ -110,7 +129,7 @@ Bright, positive, age-appropriate for all ages.
       },
       body: JSON.stringify({
         model: model || "dall-e-3",
-        prompt: fullPrompt,
+        prompt: finalPrompt, // ✅ buildEnhancedPrompt 결과 사용
         n: 1,
         size: size || "1024x1024",
         quality: quality || "standard",
@@ -162,13 +181,19 @@ Bright, positive, age-appropriate for all ages.
         fallback: false,
         imageUrl: dataUrl,
         imageData: dataUrl, // 하위 호환성 유지
-        prompt: fullPrompt,
-        style: safeStyle, // ✅ 실제 적용된 스타일 반환
+        prompt: finalPrompt, // ✅ 강화된 프롬프트 반환
+        style: normalizedStyle, // ✅ 실제 적용된 스타일 반환
         request_id: requestId,
         model_used: model || 'dall-e-3',
         size_used: size || '1024x1024',
         quality_used: quality || 'standard',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        // ✅ 임시 디버그 필드 (확인 후 제거 가능)
+        debug: {
+          style: normalizedStyle,
+          originalStyle: style || '(empty)',
+          finalPromptHead: finalPrompt.slice(0, 250)
+        }
       }),
       { 
         status: 200, 

@@ -63,7 +63,7 @@ function normalizeUserText(text: string): string {
   return t;
 }
 
-function buildServerPrompt(userText: string, purpose: string, mood: string | undefined, styleLabel: string | undefined): string {
+function buildServerPrompt(userText: string, purpose: string, mood: string | undefined, styleLabel: string | undefined): { prompt: string, finalStyle: string } {
   const normalizedText = normalizeUserText(userText);
   const purposeKey = (purpose || "memory") as PurposeKey;
   
@@ -77,7 +77,7 @@ function buildServerPrompt(userText: string, purpose: string, mood: string | und
   const purposeText = purposeDirectives[purposeKey] || purposeDirectives.memory;
   const moodText = mood ? (moodDirectives[mood as MoodKey] || "Bright and friendly atmosphere.") : "Bright and friendly atmosphere.";
 
-  return `
+  const prompt = `
 [STYLE DIRECTIVE]
 StyleLabel: ${finalStyleLabel}
 Rendering: ${styleText}
@@ -94,6 +94,8 @@ ${normalizedText}
 ${negativeConstraints}
 ${qualityFooter}
 `.trim();
+
+  return { prompt, finalStyle: finalStyleLabel };
 }
 
 interface ImageRequest {
@@ -165,11 +167,17 @@ export async function onRequest(context: { request: Request; env: Env }) {
 
     // ⭐⭐⭐ A안(서버 단일화): 서버에서 프롬프트 생성
     // userText가 있으면 서버에서 빌드, 없으면 기존 prompt 사용 (하위 호환)
-    const finalPrompt = userText 
-      ? buildServerPrompt(rawPrompt, purpose || 'memory', mood, style)
-      : (rawPrompt || 'A simple, friendly illustration.');
+    let finalPrompt: string;
+    let normalizedStyle: string;
     
-    const normalizedStyle = style || (purpose ? purposeDefaultStyle[purpose as PurposeKey] || '기본' : '기본');
+    if (userText) {
+      const { prompt, finalStyle } = buildServerPrompt(rawPrompt, purpose || 'memory', mood, style);
+      finalPrompt = prompt;
+      normalizedStyle = finalStyle;
+    } else {
+      finalPrompt = rawPrompt || 'A simple, friendly illustration.';
+      normalizedStyle = style || '기본';
+    }
 
     // ✅ 검증용 로그
     console.log('📡 [GEN_IMAGE] style=', normalizedStyle);

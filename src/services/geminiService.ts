@@ -38,9 +38,38 @@ async function callFunction(url: string, payload: any) {
   }
 }
 
-/** 텍스트 생성 */
+/** 텍스트 생성 (Cloudflare Functions 사용) */
 export async function generateText(prompt: string): Promise<string | null> {
-  return await callFunction(FUNCTIONS_URL.text, { prompt });
+  try {
+    // ✅ Cloudflare Pages Functions 사용 (Firebase Functions 대체)
+    const apiUrl = `${window.location.origin}/api/generate-text`;
+    
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ prompt })
+    });
+
+    if (!response.ok) {
+      console.error('❌ [generateText] API 오류:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    
+    if (!data.success || !data.text) {
+      console.error('❌ [generateText] 응답 오류:', data);
+      return null;
+    }
+
+    return data.text;
+
+  } catch (error) {
+    console.error('❌ [generateText] 오류:', error);
+    return null;
+  }
 }
 
 /** 이미지 생성 */
@@ -174,33 +203,48 @@ ${guideText} 3개를 만들어주세요.
   return await generateText(prompt) ?? "";
 }
 
-/** 이어쓰기 샘플 생성 */
+/** 이어쓰기 샘플 생성 (Cloudflare Functions 사용) */
 export async function generateContinuationSamples(
   currentText: string,
   mood?: string
 ): Promise<string[]> {
-  const prompt = `
-당신은 글쓰기 도우미입니다.
-아래 텍스트를 자연스럽게 이어서 2~3문장으로 이어쓰기 3개 버전을 만들어주세요.
+  try {
+    // ✅ Cloudflare Pages Functions 사용 (Firebase Functions 대체)
+    const apiUrl = `${window.location.origin}/api/continue-writing`;
+    
+    console.log('📝 [generateContinuationSamples] API 호출:', apiUrl);
+    
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        currentText,
+        mood: mood || "자연스럽고 부드럽게",
+        count: 3
+      })
+    });
 
-텍스트:
-${currentText}
+    if (!response.ok) {
+      console.error('❌ [generateContinuationSamples] API 오류:', response.status);
+      return [];
+    }
 
-분위기: ${mood || "자연스럽고 부드럽게"}
+    const data = await response.json();
+    
+    if (!data.success || !data.samples) {
+      console.error('❌ [generateContinuationSamples] 응답 오류:', data);
+      return [];
+    }
 
-형식:
-1. 이어쓰기1
-2. 이어쓰기2
-3. 이어쓰기3
-`;
+    console.log('✅ [generateContinuationSamples] 샘플 개수:', data.samples.length);
+    return data.samples;
 
-  const text = await generateText(prompt);
-  if (!text) return [];
-
-  return text
-    .split("\n")
-    .filter((l) => /^\d+\./.test(l.trim()))
-    .map((l) => l.replace(/^\d+\.\s*/, "").trim());
+  } catch (error) {
+    console.error('❌ [generateContinuationSamples] 오류:', error);
+    return [];
+  }
 }
 
 /** 감정 분석 (이미지 프롬프트 생성용) */

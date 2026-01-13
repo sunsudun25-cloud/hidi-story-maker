@@ -4,6 +4,7 @@ import { generateImageViaCloudflare } from "../services/cloudflareImageApi";
 import { friendlyErrorMessage } from "../utils/errorHandler";
 import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
 import { uploadImage } from "../services/imageUploadService";
+import { buildAutoPrompt, type PurposeKey, type MoodKey } from "../utils/promptBuilder";
 // ⚠️ 손글씨 인식 기능은 현재 비활성화됨
 // import { analyzeHandwriting } from "../services/visionService";
 import LoadingSpinner from "../components/LoadingSpinner";

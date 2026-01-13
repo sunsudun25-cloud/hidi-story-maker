@@ -15,53 +15,10 @@ interface ImageRequest {
   quality?: string;
 }
 
-// 스타일 매핑 (전역 상수)
-const STYLE_MAP: Record<string, string> = {
-  '수채화': 'soft watercolor wash, gentle paper texture, warm light, flowing brushstrokes',
-  'watercolor': 'soft watercolor wash, gentle paper texture, warm light',
-  '동화풍': 'children\'s book illustration style, clear lines, bright colors, storybook quality',
-  'fairytale': 'children\'s book illustration style, clear lines, bright colors',
-  '파스텔톤': 'pastel colors, soft gradients, gentle atmosphere, light and airy',
-  'pastel': 'pastel colors, soft gradients, gentle atmosphere',
-  '따뜻한 스타일': 'warm color palette, cozy atmosphere, inviting composition',
-  'warm': 'warm color palette, cozy atmosphere',
-  '만화풍': 'clean lineart, flat colors, simple shading, cartoon style, cute and friendly',
-  '감성 사진 같은 그림': 'photo-inspired illustration, natural lighting, subtle imperfections, realistic yet artistic',
-  '애니메이션': 'anime illustration style',
-  '연필스케치': 'pencil sketch style',
-  '흑백 스케치': 'pencil sketch, line drawing, monochrome, hatching and cross-hatching, artistic rendering',
-  '기본': 'illustration style, balanced composition, pleasing aesthetics',
-  '기본 스타일': 'illustration style, balanced composition',
-};
-
 /**
- * ⭐ 핵심: 프롬프트 강화 함수 (모든 경로에서 무조건 호출)
- * @param rawPrompt 사용자 입력 프롬프트
- * @param rawStyle 사용자 선택 스타일
- * @returns 강화된 최종 프롬프트
+ * ⭐ A안(서버 단일화): 클라이언트에서 buildAutoPrompt()로 완성된 프롬프트 받음
+ * 서버는 받은 프롬프트를 그대로 OpenAI에 전달
  */
-function buildEnhancedPrompt(rawPrompt: string, rawStyle: string): string {
-  // 1) 빈 값이면 "기본"으로, 사용자 선택은 그대로 유지 (UX 혼란 방지)
-  const normalizedStyle = rawStyle || '기본';
-  const stylePrompt = STYLE_MAP[normalizedStyle] || STYLE_MAP['기본'];
-  
-  // 2) 강화 프롬프트 구성 (스타일 강제 + 출력 규칙)
-  const enhancedPrompt = `
-[STYLE DIRECTIVE]
-Style: ${normalizedStyle}
-Rendering: ${stylePrompt}
-
-${rawPrompt}
-
-=== OUTPUT RULES ===
-No readable text, no letters, no typography.
-No watermark, no logo, no brand marks.
-Single illustration, one scene, clean composition.
-Bright, positive, age-appropriate for all ages.
-`.trim();
-
-  return enhancedPrompt;
-}
 
 export async function onRequest(context: { request: Request; env: Env }) {
   const { request, env } = context;
@@ -107,17 +64,14 @@ export async function onRequest(context: { request: Request; env: Env }) {
 
     console.log('🎨 이미지 생성 요청:', { requestId, prompt, style, model, size, quality });
 
-    // ⭐⭐⭐ 핵심: 모든 경로(Practice/DrawDirect/Custom)에서 무조건 강화 프롬프트 적용
-    const rawPrompt = prompt || '';
-    const rawStyle = style || '';
-    const finalPrompt = buildEnhancedPrompt(rawPrompt, rawStyle);
-    
-    // 최종 적용된 스타일 (사용자 선택 그대로 유지)
-    const normalizedStyle = rawStyle || '기본';
+    // ⭐⭐⭐ A안(서버 단일화): 클라이언트에서 이미 완성된 프롬프트 받음
+    // buildAutoPrompt()로 만들어진 최종 프롬프트를 그대로 사용
+    const finalPrompt = prompt || 'A simple, friendly illustration.';
+    const normalizedStyle = style || '기본';
 
     // ✅ 검증용 로그
     console.log('📡 [GEN_IMAGE] style=', normalizedStyle);
-    console.log('📝 [FINAL_PROMPT_HEAD]', finalPrompt.slice(0, 250));
+    console.log('📝 [FINAL_PROMPT_HEAD]', finalPrompt.slice(0, 300));
     console.log('📡 OpenAI API 호출:', { requestId, model: model || 'dall-e-3', size: size || '1024x1024', quality: quality || 'standard' });
 
     // OpenAI API 호출

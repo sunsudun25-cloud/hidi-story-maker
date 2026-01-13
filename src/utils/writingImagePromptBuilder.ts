@@ -66,15 +66,33 @@ export function buildWritingImagePrompt(input: WritingImageInput): WritingImageO
   if (!hasCharacters) {
     // A) 등장인물 없음 → 배경 중심
     imageStrategy = "background";
-    characterGuidance = "Landscape or object-focused illustration. No people.";
+    characterGuidance = "Landscape or object-focused illustration. NO people at all.";
   } else if (detectedAge) {
     // B) 등장인물 + 연령 명시 → 연령 반영 가능
     imageStrategy = "with-character";
-    characterGuidance = `Include people reflecting the mentioned age context: "${detectedAge}". Draw naturally based on the text's description.`;
+    characterGuidance = `People with age context: "${detectedAge}". Draw based on text description.`;
   } else {
-    // C) 등장인물 + 연령 미명시 → 실루엣/뒷모습
+    // C) 등장인물 + 연령 미명시 → 강력한 연령 차단
     imageStrategy = "silhouette";
-    characterGuidance = "If people must be shown: use silhouettes, back views, or faceless figures. NEVER assume age. Keep all people age-neutral.";
+    characterGuidance = `
+🚫 CRITICAL: NO AGE ESTIMATION ALLOWED
+- DO NOT draw children
+- DO NOT draw adults
+- DO NOT draw elderly people
+- DO NOT show faces, body details, or age indicators
+
+✅ ONLY ALLOWED:
+- Back views (뒷모습)
+- Distant silhouettes
+- Shadowy figures
+- Focus on SCENE, not people
+
+If text says "we played in the stream":
+❌ WRONG: Draw children playing
+✅ RIGHT: Draw the stream with water ripples, sunlight, and distant shadows
+
+Default approach: PREFER SCENES OVER PEOPLE.
+`.trim();
   }
   
   // Step 4: 장르 가이드 (장르는 스타일일 뿐, 연령 추론 금지)
@@ -90,29 +108,44 @@ export function buildWritingImagePrompt(input: WritingImageInput): WritingImageO
     emotionalTone = "Calm, peaceful colors with balanced lighting.";
   }
   
-  // Step 6: 최종 프롬프트 조립
+  // Step 6: 최종 프롬프트 조립 (규칙을 최우선 배치)
   const finalPrompt = `
-[IMAGE STRATEGY]
+=== 🚫 ABSOLUTE PROHIBITION - READ THIS FIRST ===
+If age is NOT explicitly mentioned in the text:
+❌ DO NOT assume or guess age (NO children, NO adults, NO elderly)
+❌ DO NOT draw recognizable faces or age-identifiable body features
+❌ DO NOT interpret story context to estimate age
+
+=== ✅ MANDATORY APPROACH ===
+When text mentions people but NO age specified:
+1️⃣ FIRST CHOICE (PREFERRED): Draw the SCENE without people
+   - Focus on: places, objects, atmosphere, environment
+   - Example: "우리는 물장구치며 놀았다" 
+     → ✅ Draw: stream, water ripples, sunlight, nature
+     → ❌ NEVER: children or people playing
+
+2️⃣ SECOND CHOICE (if people are absolutely necessary):
+   - Back views only (뒷모습)
+   - Distant silhouettes (먼 실루엣)
+   - Shadowy figures with NO age indicators
+   
+=== IMAGE STRATEGY ===
 ${characterGuidance}
 
-[GENRE GUIDANCE]
+=== GENRE GUIDANCE (Genre ≠ Age) ===
 ${genreGuidance}
+Note: "일기" ≠ elderly, "동화" ≠ children
 
-[EMOTIONAL TONE]
+=== EMOTIONAL TONE ===
 ${emotionalTone}
 
-[TEXT CONTENT - First 500 chars]
+=== TEXT CONTENT - First 500 chars ===
 ${text.substring(0, 500)}
 
-=== CRITICAL RULES ===
-1. Genre does NOT imply age. "일기" does NOT mean elderly. "동화" does NOT mean children.
-2. If no age is mentioned in text: DO NOT draw faces or detailed people. Use silhouettes, back views, or landscapes only.
-3. No text, no watermark, no logo in the image.
-4. Focus on SCENES and ATMOSPHERE, not story interpretation.
-
 === STYLE ===
-Warm, gentle watercolor illustration suitable for all ages.
-Clean composition, high quality, age-neutral.
+Warm, gentle watercolor illustration.
+Age-neutral, scene-focused, high quality.
+No text, watermark, or logo.
 `.trim();
 
   return {

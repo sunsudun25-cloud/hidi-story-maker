@@ -202,6 +202,33 @@ No text policy:
 - No numbers or symbols that look like writing
 `.trim();
 
+    // ✅ 자서전 전용: 구조 금지 규칙
+    const isAutobiography = genre === "자서전";
+    const compositionDirective = isAutobiography
+      ? `
+[COMPOSITION - CRITICAL FOR AUTOBIOGRAPHY]
+🚫 FORBIDDEN LAYOUTS:
+- NO timeline layout (어린 시절 → 청년기 → 현재)
+- NO collage or multi-panel composition
+- NO split screens or divided sections
+- NO before/after comparisons
+- NO chronological structure in one image
+
+✅ REQUIRED:
+- Draw ONE single scene only
+- Single moment in time
+- Unified composition
+- No visual separation between time periods
+
+한 장면으로만 그려주세요. 콜라주/분할/타임라인 구성은 하지 마세요.
+`.trim()
+      : `
+[COMPOSITION]
+- simple, uncluttered
+- friendly and school-safe
+- single scene, not multi-panel
+`.trim();
+
     // ✅ 최종 프롬프트
     const prompt = `
 [STYLE DIRECTIVE]
@@ -219,10 +246,7 @@ ${genreStyle} 분위기와 핵심 감정을 시각적으로 표현.
 글 내용(요약/핵심):
 ${text.substring(0, 900)}
 
-[COMPOSITION]
-- simple, uncluttered
-- friendly and school-safe
-- single scene, not multi-panel
+${compositionDirective}
 `.trim();
 
     console.log("🎨 [글쓰기 이미지 P0] 생성 중:", { 

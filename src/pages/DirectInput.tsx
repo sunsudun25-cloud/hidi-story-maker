@@ -33,13 +33,21 @@ export default function DirectInput() {
     setIsGenerating(true);
 
     try {
-      const styleText = selectedStyle ? ` (${selectedStyle} 스타일)` : "";
-      const fullPrompt = `${description}${styleText}`;
+      // ✅ 스타일 기본값 강제 (빈 값 방지) + "기본" 보정
+      const safeStyle = !selectedStyle || selectedStyle === '기본' ? '수채화' : selectedStyle;
+      
+      console.log("📡 [DirectInput] generateImageViaCloudflare 호출 중...", { 
+        originalStyle: selectedStyle,
+        safeStyle: safeStyle,
+        description: description.slice(0, 100) + '...'
+      });
 
-      console.log("📡 [DirectInput] generateImageViaCloudflare 호출 중...", fullPrompt);
-
-      // ⭐ Firebase Functions를 통한 안전한 이미지 생성
-      const imageBase64 = await generateImageViaCloudflare(description, selectedStyle ?? undefined);
+      // ⭐ Cloudflare Functions를 통한 안전한 이미지 생성
+      const imageBase64 = await generateImageViaCloudflare(description, safeStyle, {
+        model: 'dall-e-3',
+        size: '1024x1024',
+        quality: 'standard'
+      });
 
       console.log("✅ [DirectInput] 이미지 생성 완료, Base64 길이:", imageBase64.length);
 
@@ -48,7 +56,7 @@ export default function DirectInput() {
         state: {
           imageBase64,
           prompt: description,
-          style: selectedStyle ?? "기본",
+          style: safeStyle, // ✅ 실제 적용된 스타일 전달
         },
       });
     } catch (err) {

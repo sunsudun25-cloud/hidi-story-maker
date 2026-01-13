@@ -49,10 +49,10 @@ Simple, clean composition suitable for children and seniors.
 Bright, not too dark. Avoid complex backgrounds.
     `.trim();
 
-    console.log("🎨 동화 이미지 생성 중:", { model, style, prompt: prompt.substring(0, 100) + "..." });
+    console.log("🎨 동화 이미지 생성 중:", { model, style, size, quality, prompt: prompt.substring(0, 100) + "..." });
 
     // ✅ generateImageViaCloudflare 재사용 (환경별 엔드포인트 일관성)
-    const imageData = await generateImageViaCloudflare(prompt, style, { model });
+    const imageData = await generateImageViaCloudflare(prompt, style, { model, size, quality });
 
     console.log("✅ 동화 이미지 생성 완료");
     return imageData;  // imageData 우선 (Data URL)
@@ -100,10 +100,10 @@ ${genreStyle} 따뜻하고 감성적인 일러스트를 만들어 주세요.
 ${text.substring(0, 1000)}
 `;
 
-    console.log("🎨 글쓰기 이미지 생성 중:", { model, genre, prompt: prompt.substring(0, 100) + "..." });
+    console.log("🎨 글쓰기 이미지 생성 중:", { model, size, quality, genre, prompt: prompt.substring(0, 100) + "..." });
 
     // ✅ generateImageViaCloudflare 재사용 (환경별 엔드포인트 일관성)
-    const imageData = await generateImageViaCloudflare(prompt, genre || "동화풍", { model });
+    const imageData = await generateImageViaCloudflare(prompt, genre || "동화풍", { model, size, quality });
 
     console.log("✅ 글쓰기 이미지 생성 완료");
     return imageData;  // imageData 우선 (Data URL)

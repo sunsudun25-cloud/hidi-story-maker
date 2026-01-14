@@ -1,4 +1,5 @@
-import { QRCodeSVG } from "qrcode.react";
+import { useEffect, useRef, useState } from "react";
+import QRCode from "qrcode";
 
 interface QRCodeModalProps {
   isOpen: boolean;
@@ -8,10 +9,41 @@ interface QRCodeModalProps {
 }
 
 export default function QRCodeModal({ isOpen, onClose, imageUrl, title = "QR 코드로 공유하기" }: QRCodeModalProps) {
-  if (!isOpen) return null;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [qrGenerated, setQrGenerated] = useState(false);
 
-  // 디버깅: QR 코드 생성 확인
-  console.log('🔍 [QR Modal] 열림:', { isOpen, imageUrl: imageUrl?.substring(0, 100) });
+  useEffect(() => {
+    if (isOpen && imageUrl && canvasRef.current) {
+      // 디버깅: QR 코드 생성 확인
+      console.log('🔍 [QR Modal] 열림:', { isOpen, imageUrl: imageUrl?.substring(0, 100) });
+      
+      // QR 코드 생성
+      QRCode.toCanvas(
+        canvasRef.current,
+        imageUrl,
+        {
+          width: 256,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          },
+          errorCorrectionLevel: 'H'
+        },
+        (error) => {
+          if (error) {
+            console.error('❌ [QR Modal] 생성 오류:', error);
+            setQrGenerated(false);
+          } else {
+            console.log('✅ [QR Modal] 생성 완료');
+            setQrGenerated(true);
+          }
+        }
+      );
+    }
+  }, [isOpen, imageUrl]);
+
+  if (!isOpen) return null;
 
   // 인라인 스타일로 확실하게 표시
   const overlayStyle: React.CSSProperties = {
@@ -36,6 +68,21 @@ export default function QRCodeModal({ isOpen, onClose, imageUrl, title = "QR 코
     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
   };
 
+  const handleDownload = () => {
+    if (!canvasRef.current) return;
+    
+    canvasRef.current.toBlob((blob) => {
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'qrcode.png';
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+    });
+  };
+
   return (
     <div 
       style={overlayStyle}
@@ -54,17 +101,15 @@ export default function QRCodeModal({ isOpen, onClose, imageUrl, title = "QR 코
         
         <p className="text-sm text-gray-600 mb-6 text-center">
           📱 스마트폰으로 QR 코드를 스캔하여<br />
-          이미지를 확인하세요
+          작품을 확인하세요
         </p>
 
         {/* QR 코드 */}
         <div className="qrcode-modal flex justify-center mb-6 bg-white p-6 rounded-xl border-2 border-gray-200">
           {imageUrl ? (
-            <QRCodeSVG 
-              value={imageUrl}
-              size={256}
-              level="H"
-              includeMargin={true}
+            <canvas 
+              ref={canvasRef}
+              style={{ maxWidth: '100%', height: 'auto' }}
             />
           ) : (
             <div className="text-center text-gray-500 py-12">
@@ -84,36 +129,9 @@ export default function QRCodeModal({ isOpen, onClose, imageUrl, title = "QR 코
         {/* 버튼 */}
         <div className="flex gap-3">
           <button
-            onClick={() => {
-              // QR 코드 이미지 다운로드
-              const svg = document.querySelector('.qrcode-modal svg');
-              if (svg) {
-                const svgData = new XMLSerializer().serializeToString(svg);
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const img = new Image();
-                
-                img.onload = () => {
-                  canvas.width = img.width;
-                  canvas.height = img.height;
-                  ctx?.drawImage(img, 0, 0);
-                  
-                  canvas.toBlob((blob) => {
-                    if (blob) {
-                      const url = URL.createObjectURL(blob);
-                      const link = document.createElement('a');
-                      link.href = url;
-                      link.download = 'qrcode.png';
-                      link.click();
-                      URL.revokeObjectURL(url);
-                    }
-                  });
-                };
-                
-                img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
-              }
-            }}
-            className="flex-1 py-3 px-6 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors"
+            onClick={handleDownload}
+            disabled={!qrGenerated}
+            className="flex-1 py-3 px-6 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             📥 QR 코드 저장
           </button>

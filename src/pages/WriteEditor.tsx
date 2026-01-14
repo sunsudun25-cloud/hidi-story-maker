@@ -228,6 +228,11 @@ export default function WriteEditor() {
 
     setIsAiHelping(true);
     try {
+      console.log('📝 [이어쓰기] 시작:', { 
+        contentLength: content.length, 
+        genre: genreLabel 
+      });
+
       const genreContext = genre 
         ? `\n장르: ${genreLabel}\n장르 가이드: ${genreGuide}`
         : "";
@@ -251,7 +256,16 @@ ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""
 기존 내용("${content}")은 절대 포함하지 말고, 오직 새로운 문장만 출력하세요.
 `;
 
+      console.log('🚀 [이어쓰기] API 호출 시작');
       const continuation = await safeGeminiCall(prompt);
+      
+      if (!continuation) {
+        console.error('❌ [이어쓰기] API 응답이 비어있음');
+        alert('이어쓰기에 실패했습니다.\n\nOpenAI API 키가 설정되어 있는지 확인해주세요.');
+        return;
+      }
+
+      console.log('✅ [이어쓰기] API 응답 수신:', continuation.substring(0, 100));
       
       // 혹시 AI가 기존 내용을 포함했다면 제거
       let newContent = continuation.trim();
@@ -260,10 +274,19 @@ ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""
       }
       
       setContent(content + "\n" + newContent);
+      console.log('✨ [이어쓰기] 완료');
       alert("✨ AI가 이어쓴 내용이 추가되었습니다.\n\n마음에 들지 않으면 자유롭게 수정하세요.");
     } catch (error) {
-      console.error("AI 이어쓰기 오류:", error);
-      alert("이어쓰기 중 오류가 발생했습니다.");
+      console.error("❌ [이어쓰기] 오류:", error);
+      
+      // 상세 오류 메시지
+      let errorMessage = "이어쓰기 중 오류가 발생했습니다.";
+      if (error instanceof Error) {
+        errorMessage += `\n\n오류: ${error.message}`;
+      }
+      errorMessage += "\n\nF12를 눌러 콘솔을 확인해주세요.";
+      
+      alert(errorMessage);
     } finally {
       setIsAiHelping(false);
     }

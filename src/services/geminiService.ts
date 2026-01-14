@@ -44,6 +44,9 @@ export async function generateText(prompt: string): Promise<string | null> {
     // ✅ Cloudflare Pages Functions 사용 (Firebase Functions 대체)
     const apiUrl = `${window.location.origin}/api/generate-text`;
     
+    console.log('🚀 [generateText] API 호출:', apiUrl);
+    console.log('📝 [generateText] 프롬프트 길이:', prompt.length);
+    
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -52,22 +55,35 @@ export async function generateText(prompt: string): Promise<string | null> {
       body: JSON.stringify({ prompt })
     });
 
+    console.log('📡 [generateText] 응답 상태:', response.status, response.statusText);
+
     if (!response.ok) {
-      console.error('❌ [generateText] API 오류:', response.status);
+      const errorText = await response.text();
+      console.error('❌ [generateText] API 오류:', response.status, errorText);
       return null;
     }
 
     const data = await response.json();
+    
+    console.log('📦 [generateText] 응답 데이터:', { 
+      success: data.success, 
+      textLength: data.text?.length || 0 
+    });
     
     if (!data.success || !data.text) {
       console.error('❌ [generateText] 응답 오류:', data);
       return null;
     }
 
+    console.log('✅ [generateText] 성공:', data.text.substring(0, 100));
     return data.text;
 
   } catch (error) {
-    console.error('❌ [generateText] 오류:', error);
+    console.error('❌ [generateText] 예외 발생:', error);
+    if (error instanceof Error) {
+      console.error('❌ [generateText] 오류 메시지:', error.message);
+      console.error('❌ [generateText] 스택:', error.stack);
+    }
     return null;
   }
 }

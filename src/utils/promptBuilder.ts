@@ -86,11 +86,18 @@ function normalizeUserText(text: string): string {
 export function buildAutoPrompt(input: PromptBuildInput): PromptBuildOutput {
   const userText = normalizeUserText(input.userText);
 
-  // 스타일 결정: (1) 사용자가 선택한 스타일이 유효하면 사용 (2) 아니면 목적 기본값
-  const styleLabel =
-    input.styleLabel && input.styleLabel !== "기본"
-      ? input.styleLabel
-      : purposeDefaultStyle[input.purpose] || "기본";
+  // ✅ 사용자 프롬프트에 스타일 키워드가 있는지 확인
+  const hasStyleInPrompt = /스타일|style|일러스트|수채화|파스텔|동화|애니메이션|연필|사진/i.test(userText);
+  
+  // 스타일 결정: 
+  // (1) 사용자 프롬프트에 스타일이 있으면 "기본" (스타일 매핑 건너뛰기)
+  // (2) 사용자가 선택한 스타일이 유효하면 사용
+  // (3) 아니면 목적 기본값
+  const styleLabel = hasStyleInPrompt
+    ? "기본"  // 사용자 프롬프트 존중
+    : (input.styleLabel && input.styleLabel !== "기본"
+        ? input.styleLabel
+        : purposeDefaultStyle[input.purpose] || "기본");
 
   const styleText = styleMapping[styleLabel] || styleMapping["기본"];
   const purposeText = purposeDirectives[input.purpose] || purposeDirectives.memory;

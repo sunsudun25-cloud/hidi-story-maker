@@ -14,25 +14,40 @@ export default function QRCodeModal({ isOpen, onClose, imageUrl, title = "QR 코
 
   useEffect(() => {
     if (isOpen && imageUrl && canvasRef.current) {
-      // 디버깅: QR 코드 생성 확인
-      console.log('🔍 [QR Modal] 열림:', { isOpen, imageUrl: imageUrl?.substring(0, 100) });
+      // URL 길이 체크
+      const urlLength = imageUrl.length;
+      console.log('🔍 [QR Modal] 열림:', { 
+        isOpen, 
+        urlLength,
+        imageUrl: imageUrl?.substring(0, 100) 
+      });
+
+      // URL이 너무 길면 축약 (Base64 이미지 URL은 QR코드에 넣을 수 없음)
+      let qrData = imageUrl;
+      if (imageUrl.startsWith('data:image')) {
+        console.warn('⚠️ [QR Modal] Base64 이미지는 QR코드로 변환할 수 없습니다.');
+        alert('이미지 URL은 QR코드로 변환할 수 없습니다.\n\ud398이지 URL을 사용해주세요.');
+        onClose();
+        return;
+      }
       
       // QR 코드 생성
       QRCode.toCanvas(
         canvasRef.current,
-        imageUrl,
+        qrData,
         {
           width: 256,
           margin: 2,
           color: {
-            dark: '#000000',
-            light: '#FFFFFF'
+            dark: '#000000',    // 검은색 QR 코드
+            light: '#FFFFFF'    // 흰색 배경
           },
-          errorCorrectionLevel: 'H'
+          errorCorrectionLevel: 'M'  // H -> M 로 변경 (데이터 크기 축소)
         },
         (error) => {
           if (error) {
             console.error('❌ [QR Modal] 생성 오류:', error);
+            alert('QR 코드 생성에 실패했습니다.\nURL이 너무 깁니다.');
             setQrGenerated(false);
           } else {
             console.log('✅ [QR Modal] 생성 완료');
@@ -41,7 +56,7 @@ export default function QRCodeModal({ isOpen, onClose, imageUrl, title = "QR 코
         }
       );
     }
-  }, [isOpen, imageUrl]);
+  }, [isOpen, imageUrl, onClose]);
 
   if (!isOpen) return null;
 
@@ -105,12 +120,23 @@ export default function QRCodeModal({ isOpen, onClose, imageUrl, title = "QR 코
         </p>
 
         {/* QR 코드 */}
-        <div className="qrcode-modal flex justify-center mb-6 bg-white p-6 rounded-xl border-2 border-gray-200">
+        <div className="qrcode-modal flex justify-center mb-6 bg-gray-50 p-6 rounded-xl border-2 border-gray-300">
           {imageUrl ? (
-            <canvas 
-              ref={canvasRef}
-              style={{ maxWidth: '100%', height: 'auto' }}
-            />
+            <div style={{ 
+              backgroundColor: '#FFFFFF', 
+              padding: '16px',
+              borderRadius: '8px',
+              display: 'inline-block'
+            }}>
+              <canvas 
+                ref={canvasRef}
+                style={{ 
+                  display: 'block',
+                  maxWidth: '100%', 
+                  height: 'auto'
+                }}
+              />
+            </div>
           ) : (
             <div className="text-center text-gray-500 py-12">
               <p className="text-lg mb-2">⚠️</p>

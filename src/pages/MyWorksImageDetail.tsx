@@ -91,6 +91,13 @@ export default function MyWorksImageDetail() {
     }
   };
 
+  // QR 코드용 URL 생성 (페이지 URL)
+  const getShareUrl = () => {
+    const baseUrl = window.location.origin;
+    const path = window.location.pathname;
+    return `${baseUrl}${path}`;
+  };
+
   if (isLoading) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
@@ -203,8 +210,8 @@ export default function MyWorksImageDetail() {
           <QRCodeModal
             isOpen={isQRModalOpen}
             onClose={() => setIsQRModalOpen(false)}
-            imageUrl={item.image}
-            title="QR 코드로 공유하기"
+            imageUrl={getShareUrl()}
+            title="이미지 QR 코드로 공유하기"
           />
         )}
 

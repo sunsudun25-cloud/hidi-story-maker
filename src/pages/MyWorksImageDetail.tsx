@@ -91,11 +91,11 @@ export default function MyWorksImageDetail() {
     }
   };
 
-  // QR 코드용 URL 생성 (페이지 URL)
+  // QR 코드용 URL 생성 (홈 페이지로 안내)
   const getShareUrl = () => {
     const baseUrl = window.location.origin;
-    const path = window.location.pathname;
-    return `${baseUrl}${path}`;
+    // 이미지는 로컬 저장이므로 홈으로 안내
+    return `${baseUrl}/home?utm_source=qr&utm_content=image`;
   };
 
   if (isLoading) {

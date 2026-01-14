@@ -56,11 +56,24 @@ export default function MyWorksStoryDetail() {
     }
   };
 
-  // QR 코드용 URL 생성
+  // QR 코드용 URL 생성 (작품 내용을 Base64로 인코딩)
   const getShareUrl = () => {
+    if (!story) return '';
+    
+    // 작품 데이터를 JSON으로 변환
+    const shareData = {
+      title: story.title,
+      content: story.content,
+      genre: story.genre,
+      createdAt: story.createdAt,
+    };
+    
+    // Base64 인코딩
+    const encoded = btoa(encodeURIComponent(JSON.stringify(shareData)));
+    
+    // 공유 URL 생성
     const baseUrl = window.location.origin;
-    const path = window.location.pathname;
-    return `${baseUrl}${path}`;
+    return `${baseUrl}/shared/story?data=${encoded}`;
   };
 
   if (isLoading) {

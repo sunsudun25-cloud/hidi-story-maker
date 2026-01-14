@@ -70,11 +70,11 @@ export default function MyWorksStorybookDetail() {
     }
   };
 
-  // QR 코드용 URL 생성
+  // QR 코드용 URL 생성 (홈 페이지로 안내)
   const getShareUrl = () => {
     const baseUrl = window.location.origin;
-    const path = window.location.pathname;
-    return `${baseUrl}${path}`;
+    // 동화책은 로컬 저장이므로 홈으로 안내
+    return `${baseUrl}/home?utm_source=qr&utm_content=storybook`;
   };
 
   if (isLoading) {

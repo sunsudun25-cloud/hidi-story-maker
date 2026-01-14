@@ -38,6 +38,7 @@ import MyWorksStories from './pages/MyWorksStories'
 import MyWorksStoryDetail from './pages/MyWorksStoryDetail'
 import MyWorksStorybooks from './pages/MyWorksStorybooks'
 import MyWorksStorybookDetail from './pages/MyWorksStorybookDetail'
+import SharedStory from './pages/SharedStory'
 import Goods from './pages/Goods'
 import GoodsExperience from './pages/GoodsExperience'
 import GoodsPostcard from './pages/GoodsPostcard'
@@ -71,6 +72,7 @@ function AppContent() {
         <Route path="/my-works/images/:id" element={<MyWorksImageDetail />} />
         <Route path="/my-works/stories" element={<MyWorksStories />} />
         <Route path="/my-works/stories/:id" element={<MyWorksStoryDetail />} />
+        <Route path="/shared/story" element={<SharedStory />} />
         <Route path="/my-works/storybooks" element={<MyWorksStorybooks />} />
         <Route path="/my-works/storybooks/:id" element={<MyWorksStorybookDetail />} />
 

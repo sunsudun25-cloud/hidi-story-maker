@@ -70,6 +70,13 @@ export default function MyWorksStorybookDetail() {
     }
   };
 
+  // QR 코드용 URL 생성
+  const getShareUrl = () => {
+    const baseUrl = window.location.origin;
+    const path = window.location.pathname;
+    return `${baseUrl}${path}`;
+  };
+
   if (isLoading) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
@@ -298,7 +305,7 @@ export default function MyWorksStorybookDetail() {
           <QRCodeModal
             isOpen={isQRModalOpen}
             onClose={() => setIsQRModalOpen(false)}
-            imageUrl={window.location.href}
+            imageUrl={getShareUrl()}
             title="동화책 QR 코드로 공유하기"
           />
         )}

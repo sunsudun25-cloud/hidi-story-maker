@@ -10,6 +10,9 @@ interface QRCodeModalProps {
 export default function QRCodeModal({ isOpen, onClose, imageUrl, title = "QR 코드로 공유하기" }: QRCodeModalProps) {
   if (!isOpen) return null;
 
+  // 디버깅: QR 코드 생성 확인
+  console.log('🔍 [QR Modal] 열림:', { isOpen, imageUrl: imageUrl?.substring(0, 100) });
+
   // 인라인 스타일로 확실하게 표시
   const overlayStyle: React.CSSProperties = {
     position: 'fixed',
@@ -56,12 +59,19 @@ export default function QRCodeModal({ isOpen, onClose, imageUrl, title = "QR 코
 
         {/* QR 코드 */}
         <div className="qrcode-modal flex justify-center mb-6 bg-white p-6 rounded-xl border-2 border-gray-200">
-          <QRCodeSVG 
-            value={imageUrl}
-            size={256}
-            level="H"
-            includeMargin={true}
-          />
+          {imageUrl ? (
+            <QRCodeSVG 
+              value={imageUrl}
+              size={256}
+              level="H"
+              includeMargin={true}
+            />
+          ) : (
+            <div className="text-center text-gray-500 py-12">
+              <p className="text-lg mb-2">⚠️</p>
+              <p className="text-sm">URL을 불러올 수 없습니다</p>
+            </div>
+          )}
         </div>
 
         {/* URL 표시 (선택사항) */}

@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build && mkdir -p dist/functions/api && cp -r functions/api/* dist/functions/api/",
+    "build": "vite build && mkdir -p dist/functions/api && cp functions/api/*.js functions/api/*.ts dist/functions/api/ 2>/dev/null || true",
     "preview": "vite preview",
     "lint": "tsc --noEmit"
   },

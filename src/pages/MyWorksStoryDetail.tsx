@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAllStories, deleteStory, type Story } from "../services/dbService";
+import QRCodeModal from "../components/QRCodeModal";
 import GoodsSelectionModal from "../components/GoodsSelectionModal";
 
 export default function MyWorksStoryDetail() {
@@ -8,6 +9,9 @@ export default function MyWorksStoryDetail() {
   const navigate = useNavigate();
   const [story, setStory] = useState<Story | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // ✅ QR 코드 모달 상태
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   
   // ✅ 굿즈 선택 모달 상태
   const [isGoodsModalOpen, setIsGoodsModalOpen] = useState(false);
@@ -146,13 +150,21 @@ export default function MyWorksStoryDetail() {
             🎨 무엇을 만들까요?
           </button>
 
-          {/* 수정하기 */}
-          <button
-            onClick={handleEdit}
-            className="py-4 px-5 bg-blue-500 text-white rounded-xl text-[17px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
-          >
-            ✏️ 수정하기
-          </button>
+          {/* 1행: 수정하기 + QR 코드 */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={handleEdit}
+              className="py-4 px-5 bg-blue-500 text-white rounded-xl text-[17px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              ✏️ 수정하기
+            </button>
+            <button
+              onClick={() => setIsQRModalOpen(true)}
+              className="py-4 px-5 bg-orange-500 text-white rounded-xl text-[17px] font-bold hover:bg-orange-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              📱 QR 코드
+            </button>
+          </div>
 
           {/* 삭제 */}
           <button
@@ -162,6 +174,16 @@ export default function MyWorksStoryDetail() {
             🗑️ 삭제하기
           </button>
         </div>
+
+        {/* ✅ QR 코드 모달 */}
+        {story && (
+          <QRCodeModal
+            isOpen={isQRModalOpen}
+            onClose={() => setIsQRModalOpen(false)}
+            imageUrl={window.location.href}
+            title="글 QR 코드로 공유하기"
+          />
+        )}
 
         {/* ✅ 굿즈 선택 모달 */}
         {story && (

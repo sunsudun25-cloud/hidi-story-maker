@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAllStorybooks, deleteStorybook, type Storybook } from "../services/dbService";
+import QRCodeModal from "../components/QRCodeModal";
 import GoodsSelectionModal from "../components/GoodsSelectionModal";
 
 export default function MyWorksStorybookDetail() {
@@ -8,6 +9,9 @@ export default function MyWorksStorybookDetail() {
   const navigate = useNavigate();
   const [book, setBook] = useState<Storybook | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // ✅ QR 코드 모달 상태
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   
   // ✅ 굿즈 선택 모달 상태
   const [isGoodsModalOpen, setIsGoodsModalOpen] = useState(false);
@@ -191,7 +195,7 @@ export default function MyWorksStorybookDetail() {
             🎨 무엇을 만들까요?
           </button>
 
-          {/* 편집하기, 삭제하기 (2열) */}
+          {/* 편집하기, QR 코드 (2열) */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <button
               onClick={handleEdit}
@@ -211,9 +215,9 @@ export default function MyWorksStorybookDetail() {
             </button>
 
             <button
-              onClick={handleDelete}
+              onClick={() => setIsQRModalOpen(true)}
               style={{
-                backgroundColor: "#dc2626",
+                backgroundColor: "#f97316",
                 color: "white",
                 fontWeight: "600",
                 padding: "12px 16px",
@@ -224,9 +228,29 @@ export default function MyWorksStorybookDetail() {
                 fontSize: "16px"
               }}
             >
-              🗑️ 삭제하기
+              📱 QR 코드
             </button>
           </div>
+
+          {/* 삭제하기 */}
+          <button
+            onClick={handleDelete}
+            style={{
+              width: "100%",
+              backgroundColor: "#dc2626",
+              color: "white",
+              fontWeight: "600",
+              padding: "12px 16px",
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              marginTop: "12px",
+              fontSize: "16px"
+            }}
+          >
+            🗑️ 삭제하기
+          </button>
 
           {/* PDF 출력 */}
           <button
@@ -268,6 +292,16 @@ export default function MyWorksStorybookDetail() {
             ← 목록으로 돌아가기
           </button>
         </div>
+
+        {/* ✅ QR 코드 모달 */}
+        {book && (
+          <QRCodeModal
+            isOpen={isQRModalOpen}
+            onClose={() => setIsQRModalOpen(false)}
+            imageUrl={window.location.href}
+            title="동화책 QR 코드로 공유하기"
+          />
+        )}
 
         {/* ✅ 굿즈 선택 모달 */}
         {book && (

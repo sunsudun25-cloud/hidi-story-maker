@@ -1,6 +1,8 @@
 /**
  * geminiService.ts - Firebase Functions 프록시 전용
  * 프론트엔드에서는 절대 Gemini SDK를 직접 호출하지 않는다!
+ * 
+ * ✅ 요청 큐 시스템 추가 (Rate Limit 대응)
  */
 
 const REGION = "asia-northeast1"; 
@@ -10,6 +12,62 @@ export const FUNCTIONS_URL = {
   text: `https://${REGION}-${PROJECT_ID}.cloudfunctions.net/geminiText`,
   image: `https://${REGION}-${PROJECT_ID}.cloudfunctions.net/generateImage`
 };
+
+/**
+ * ✅ 글로벌 요청 큐 (동시 접속 시 Rate Limit 방지)
+ */
+class RequestQueue {
+  private queue: Array<() => Promise<any>> = [];
+  private processing = false;
+  private minDelay = 5000; // 요청 간 최소 5초 대기
+
+  async add<T>(fn: () => Promise<T>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      this.queue.push(async () => {
+        try {
+          const result = await fn();
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        }
+      });
+
+      if (!this.processing) {
+        this.processQueue();
+      }
+    });
+  }
+
+  private async processQueue() {
+    if (this.processing || this.queue.length === 0) {
+      return;
+    }
+
+    this.processing = true;
+
+    while (this.queue.length > 0) {
+      const task = this.queue.shift();
+      if (task) {
+        try {
+          await task();
+        } catch (error) {
+          console.error('❌ [RequestQueue] Task failed:', error);
+        }
+        
+        // 다음 요청 전 대기
+        if (this.queue.length > 0) {
+          console.log(`⏳ [RequestQueue] Waiting ${this.minDelay}ms before next request...`);
+          await new Promise(resolve => setTimeout(resolve, this.minDelay));
+        }
+      }
+    }
+
+    this.processing = false;
+  }
+}
+
+// 전역 큐 인스턴스
+const requestQueue = new RequestQueue();
 
 /** Firebase Functions POST 호출 */
 async function callFunction(url: string, payload: any) {
@@ -70,15 +128,17 @@ async function retryWithBackoff<T>(
   throw new Error('Max retries exceeded');
 }
 
-/** 텍스트 생성 (Cloudflare Functions 사용) + 재시도 로직 */
+/** 텍스트 생성 (Cloudflare Functions 사용) + 재시도 로직 + 요청 큐 */
 export async function generateText(prompt: string): Promise<string | null> {
   try {
-    return await retryWithBackoff(async () => {
-      // ✅ Cloudflare Pages Functions 사용 (Firebase Functions 대체)
-      const apiUrl = `${window.location.origin}/api/generate-text`;
-      
-      console.log('🚀 [generateText] API 호출:', apiUrl);
-      console.log('📝 [generateText] 프롬프트 길이:', prompt.length);
+    // ✅ 요청 큐에 추가하여 순차 처리
+    return await requestQueue.add(async () => {
+      return await retryWithBackoff(async () => {
+        // ✅ Cloudflare Pages Functions 사용 (Firebase Functions 대체)
+        const apiUrl = `${window.location.origin}/api/generate-text`;
+        
+        console.log('🚀 [generateText] API 호출:', apiUrl);
+        console.log('📝 [generateText] 프롬프트 길이:', prompt.length);
       
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -116,8 +176,9 @@ export async function generateText(prompt: string): Promise<string | null> {
         throw new Error('Invalid response from API');
       }
 
-      console.log('✅ [generateText] 성공:', data.text.substring(0, 100));
-      return data.text;
+        console.log('✅ [generateText] 성공:', data.text.substring(0, 100));
+        return data.text;
+      });
     });
 
   } catch (error) {

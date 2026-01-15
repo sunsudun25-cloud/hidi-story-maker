@@ -38,51 +38,92 @@ async function callFunction(url: string, payload: any) {
   }
 }
 
-/** 텍스트 생성 (Cloudflare Functions 사용) */
+/**
+ * 재시도 헬퍼 함수
+ */
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 2000
+): Promise<T> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error: any) {
+      const isLastAttempt = attempt === maxRetries - 1;
+      const isRateLimitError = error.status === 429 || error.message?.includes('rate limit');
+      
+      if (isLastAttempt) {
+        throw error;
+      }
+      
+      if (isRateLimitError) {
+        // Exponential backoff: 2s, 4s, 8s
+        const delay = baseDelay * Math.pow(2, attempt);
+        console.log(`⏳ [Retry] Rate limit hit, waiting ${delay}ms (attempt ${attempt + 1}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } else {
+        throw error; // Rate limit 외 에러는 즉시 throw
+      }
+    }
+  }
+  throw new Error('Max retries exceeded');
+}
+
+/** 텍스트 생성 (Cloudflare Functions 사용) + 재시도 로직 */
 export async function generateText(prompt: string): Promise<string | null> {
   try {
-    // ✅ Cloudflare Pages Functions 사용 (Firebase Functions 대체)
-    const apiUrl = `${window.location.origin}/api/generate-text`;
-    
-    console.log('🚀 [generateText] API 호출:', apiUrl);
-    console.log('📝 [generateText] 프롬프트 길이:', prompt.length);
-    
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ prompt })
+    return await retryWithBackoff(async () => {
+      // ✅ Cloudflare Pages Functions 사용 (Firebase Functions 대체)
+      const apiUrl = `${window.location.origin}/api/generate-text`;
+      
+      console.log('🚀 [generateText] API 호출:', apiUrl);
+      console.log('📝 [generateText] 프롬프트 길이:', prompt.length);
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt })
+      });
+
+      console.log('📡 [generateText] 응답 상태:', response.status, response.statusText);
+
+      // Rate limit 에러 처리
+      if (response.status === 429) {
+        const data = await response.json();
+        const error: any = new Error(data.error || 'Rate limit exceeded');
+        error.status = 429;
+        throw error;
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ [generateText] API 오류:', response.status, errorText);
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      console.log('📦 [generateText] 응답 데이터:', { 
+        success: data.success, 
+        textLength: data.text?.length || 0 
+      });
+      
+      if (!data.success || !data.text) {
+        console.error('❌ [generateText] 응답 오류:', data);
+        throw new Error('Invalid response from API');
+      }
+
+      console.log('✅ [generateText] 성공:', data.text.substring(0, 100));
+      return data.text;
     });
-
-    console.log('📡 [generateText] 응답 상태:', response.status, response.statusText);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ [generateText] API 오류:', response.status, errorText);
-      return null;
-    }
-
-    const data = await response.json();
-    
-    console.log('📦 [generateText] 응답 데이터:', { 
-      success: data.success, 
-      textLength: data.text?.length || 0 
-    });
-    
-    if (!data.success || !data.text) {
-      console.error('❌ [generateText] 응답 오류:', data);
-      return null;
-    }
-
-    console.log('✅ [generateText] 성공:', data.text.substring(0, 100));
-    return data.text;
 
   } catch (error) {
-    console.error('❌ [generateText] 예외 발생:', error);
+    console.error('❌ [generateText] 최종 실패:', error);
     if (error instanceof Error) {
       console.error('❌ [generateText] 오류 메시지:', error.message);
-      console.error('❌ [generateText] 스택:', error.stack);
     }
     return null;
   }

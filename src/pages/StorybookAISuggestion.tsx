@@ -57,9 +57,15 @@ export default function StorybookAISuggestion() {
       } else {
         alert("줄거리 생성에 실패했습니다. 다시 시도해주세요.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("AI 추천 생성 오류:", err);
-      alert("줄거리 생성 중 오류가 발생했습니다.");
+      
+      // Rate Limit 에러 처리
+      if (err?.status === 429 || err?.message?.includes('429') || err?.message?.includes('rate limit')) {
+        alert("현재 많은 사용자가 접속하여 잠시 대기 중입니다.\n10초 후에 다시 시도해주세요.");
+      } else {
+        alert("줄거리 생성 중 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.");
+      }
     } finally {
       setIsGenerating(false);
     }
@@ -68,6 +74,13 @@ export default function StorybookAISuggestion() {
   // AI 응답 파싱
   const parseAISuggestions = (text: string): PlotSuggestion[] => {
     const suggestions: PlotSuggestion[] = [];
+    
+    // null/undefined 체크
+    if (!text || typeof text !== 'string') {
+      console.error('❌ parseAISuggestions: Invalid text input:', text);
+      return [];
+    }
+    
     const blocks = text.split("---").filter(b => b.trim());
 
     blocks.forEach((block, index) => {
@@ -154,6 +167,15 @@ export default function StorybookAISuggestion() {
       // 페이지 분리 및 파싱
       // ------------------------------
       const pages: { text: string }[] = [];
+      
+      // null/undefined 체크
+      if (!raw || typeof raw !== 'string') {
+        console.error('❌ 초안 생성 실패: API 응답이 없습니다');
+        alert('동화책 초안 생성에 실패했습니다.\n잠시 후 다시 시도해주세요.');
+        setIsCreatingDraft(false);
+        return;
+      }
+      
       const blocks = raw.split(/\[page\d+\]/);
       
       blocks.forEach(block => {
@@ -191,9 +213,15 @@ export default function StorybookAISuggestion() {
         },
       });
 
-    } catch (err) {
+    } catch (err: any) {
       console.error("초안 생성 오류:", err);
-      alert("동화책 초안 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+      
+      // Rate Limit 에러 처리
+      if (err?.status === 429 || err?.message?.includes('429') || err?.message?.includes('rate limit')) {
+        alert("현재 많은 사용자가 접속하여 잠시 대기 중입니다.\n10초 후에 다시 시도해주세요.");
+      } else {
+        alert("동화책 초안 생성 중 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.");
+      }
     } finally {
       setIsCreatingDraft(false);
     }

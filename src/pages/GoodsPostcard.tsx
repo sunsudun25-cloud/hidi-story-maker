@@ -185,7 +185,7 @@ export default function GoodsPostcard() {
           {/* 이미지 영역 */}
           <div style={{
             width: "100%",
-            height: "70%",
+            height: "65%",
             overflow: "hidden"
           }}>
             {safeImageUrl ? (
@@ -207,7 +207,8 @@ export default function GoodsPostcard() {
                 alignItems: "center",
                 justifyContent: "center",
                 background: "#f0f0f0",
-                color: "#666"
+                color: "#666",
+                fontSize: "clamp(12px, 3vw, 14px)"
               }}>
                 이미지 로딩 중...
               </div>
@@ -217,32 +218,47 @@ export default function GoodsPostcard() {
           {/* 텍스트 영역 */}
           <div style={{
             width: "100%",
-            height: "30%",
+            height: "35%",
             background: "#ffffff",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
-            padding: "16px",
-            boxSizing: "border-box"
+            padding: "clamp(8px, 2vw, 16px)",
+            boxSizing: "border-box",
+            gap: "clamp(2px, 1vw, 4px)"
           }}>
             <p style={{
               ...fontStyles[selectedFont],
-              fontSize: "18px",
-              margin: "0 0 4px 0",
+              fontSize: "clamp(14px, 3.5vw, 18px)",
+              margin: 0,
               color: "#333",
               textAlign: "center",
-              lineHeight: "1.4"
+              lineHeight: "1.3",
+              wordBreak: "keep-all",
+              overflowWrap: "break-word",
+              maxWidth: "95%",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden"
             }}>
               {line1 || "첫 번째 줄을 입력하세요"}
             </p>
             <p style={{
               ...fontStyles[selectedFont],
-              fontSize: "16px",
+              fontSize: "clamp(12px, 3vw, 16px)",
               margin: 0,
               color: "#666",
               textAlign: "center",
-              lineHeight: "1.4"
+              lineHeight: "1.3",
+              wordBreak: "keep-all",
+              overflowWrap: "break-word",
+              maxWidth: "95%",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden"
             }}>
               {line2 || "두 번째 줄을 입력하세요"}
             </p>

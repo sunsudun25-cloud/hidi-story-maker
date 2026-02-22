@@ -10,7 +10,8 @@
 ## 🌐 URLs
 
 ### 프로덕션
-- **Live Site**: https://story-maker-4l6.pages.dev
+- **✨ 공식 도메인**: https://story-maker.kr (Cloudflare Pages + Custom Domain)
+- **기본 도메인**: https://story-maker-4l6.pages.dev
 - **Latest Deploy**: https://d708f95e.story-maker-4l6.pages.dev
 
 ### GitHub

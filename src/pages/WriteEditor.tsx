@@ -328,19 +328,45 @@ ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""
     try {
       const prompt = `
 다음 글의 맞춤법, 띄어쓰기, 문법을 교정해주세요.
-원래 의미와 어조는 최대한 유지하되, 자연스럽게 다듬어주세요.
+
+**중요 지시사항:**
+1. 원래 의미와 내용을 절대 바꾸지 마세요.
+2. 원래 어조와 문체를 최대한 유지하세요.
+3. 글의 길이를 유지하세요 (내용을 삭제하거나 크게 줄이지 마세요).
+4. 오직 맞춤법, 띄어쓰기, 문법 오류만 수정하세요.
+5. 교정된 전체 글을 출력하세요 (설명이나 부연 설명 불필요).
 
 ---
 ${content}
 ---
 
-교정된 버전만 출력해주세요 (설명 불필요).
+위 글을 교정한 전체 내용을 출력해주세요.
 `;
 
       const corrected = await safeGeminiCall(prompt);
       
+      if (!corrected || corrected.trim().length === 0) {
+        alert("❌ 교정 결과가 비어있습니다.\n\n다시 시도해주세요.");
+        return;
+      }
+
+      // 교정된 내용이 원본보다 너무 짧으면 경고
+      if (corrected.length < content.length * 0.5) {
+        const proceed = window.confirm(
+          "⚠️ 교정된 내용이 원본보다 많이 짧습니다.\n\n" +
+          `원본: ${content.length}자\n` +
+          `교정: ${corrected.length}자\n\n` +
+          "그래도 적용하시겠습니까?"
+        );
+        if (!proceed) {
+          return;
+        }
+      }
+      
       const confirmed = window.confirm(
         "✅ 교정이 완료되었습니다!\n\n" +
+        `원본: ${content.length}자\n` +
+        `교정: ${corrected.length}자\n\n` +
         "교정된 내용으로 바꾸시겠습니까?\n\n" +
         "(취소를 누르면 원래 내용을 유지합니다)"
       );

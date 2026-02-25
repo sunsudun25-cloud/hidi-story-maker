@@ -247,13 +247,17 @@ ${content}
 
 ---
 
-**중요: 위 내용을 반복하지 마세요. 새로 이어질 내용만 작성하세요.**
+**중요 지시사항:**
+1. 위 내용을 반복하지 마세요. 새로 이어질 내용만 작성하세요.
+2. 반드시 완전한 문장으로 끝내세요. "~다", "~습니다", "~요" 등으로 문장을 완성하세요.
+3. 문장이 중간에 끊기지 않도록 주의하세요.
 
-위 내용 다음에 자연스럽게 이어질 2-3문장을 작성해주세요.
+위 내용 다음에 자연스럽게 이어질 2-3개의 **완전한 문장**을 작성해주세요.
 ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""}
 노인 사용자가 쓴 것처럼 편안하고 따뜻한 어조로 작성해주세요.
 
-기존 내용("${content}")은 절대 포함하지 말고, 오직 새로운 문장만 출력하세요.
+기존 내용("${content}")은 절대 포함하지 말고, 오직 새로운 완전한 문장만 출력하세요.
+마지막 문장은 반드시 "다", "습니다", "요" 등으로 끝나야 합니다.
 `;
 
       console.log('🚀 [이어쓰기] API 호출 시작');
@@ -273,7 +277,28 @@ ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""
         newContent = newContent.substring(content.trim().length).trim();
       }
       
-      setContent(content + "\n" + newContent);
+      // 문장 끝 검증 - 완전한 문장인지 확인
+      const sentenceEndings = ['다.', '다!', '다?', '습니다.', '습니다!', '습니다?', '요.', '요!', '요?', '네.', '네!', '네?'];
+      const endsWithCompleteSentence = sentenceEndings.some(ending => newContent.endsWith(ending));
+      
+      if (!endsWithCompleteSentence) {
+        console.warn('⚠️ [이어쓰기] 문장이 완전하지 않음, 마지막 마침표 추가');
+        // 마지막 불완전한 문장 제거하고 완전한 문장만 유지
+        const sentences = newContent.split(/([.!?]\s+)/);
+        let completeText = '';
+        for (let i = 0; i < sentences.length; i++) {
+          const part = sentences[i];
+          if (sentenceEndings.some(ending => part.trim().endsWith(ending))) {
+            completeText += sentences.slice(0, i + 1).join('');
+            break;
+          }
+        }
+        if (completeText) {
+          newContent = completeText.trim();
+        }
+      }
+      
+      setContent(content + "\n\n" + newContent);
       console.log('✨ [이어쓰기] 완료');
       alert("✨ AI가 이어쓴 내용이 추가되었습니다.\n\n마음에 들지 않으면 자유롭게 수정하세요.");
     } catch (error) {

@@ -247,17 +247,21 @@ ${content}
 
 ---
 
-**중요 지시사항:**
-1. 위 내용을 반복하지 마세요. 새로 이어질 내용만 작성하세요.
-2. 반드시 완전한 문장으로 끝내세요. "~다", "~습니다", "~요" 등으로 문장을 완성하세요.
-3. 문장이 중간에 끊기지 않도록 주의하세요.
+**절대 지켜야 할 규칙:**
+1. 위 내용을 절대 반복하지 마세요. 오직 새로운 내용만 작성하세요.
+2. 반드시 2~3개의 완전한 문장을 작성하세요.
+3. 모든 문장은 반드시 "다.", "습니다.", "요.", "네." 등으로 끝나야 합니다.
+4. 문장이 중간에 끊기는 것은 절대 금지입니다.
+5. 마지막 문장도 반드시 완전하게 끝내야 합니다.
 
-위 내용 다음에 자연스럽게 이어질 2-3개의 **완전한 문장**을 작성해주세요.
+**출력 형식:**
+첫 번째 문장입니다. 두 번째 문장입니다. 세 번째 문장입니다.
+
+위 내용 다음에 자연스럽게 이어질 내용을 작성해주세요.
 ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""}
 노인 사용자가 쓴 것처럼 편안하고 따뜻한 어조로 작성해주세요.
 
-기존 내용("${content}")은 절대 포함하지 말고, 오직 새로운 완전한 문장만 출력하세요.
-마지막 문장은 반드시 "다", "습니다", "요" 등으로 끝나야 합니다.
+다시 한 번 강조: 마지막 문장은 "다.", "습니다.", "요." 등으로 완전히 끝나야 합니다!
 `;
 
       console.log('🚀 [이어쓰기] API 호출 시작');
@@ -277,27 +281,55 @@ ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""
         newContent = newContent.substring(content.trim().length).trim();
       }
       
-      // 문장 끝 검증 - 완전한 문장인지 확인
-      const sentenceEndings = ['다.', '다!', '다?', '습니다.', '습니다!', '습니다?', '요.', '요!', '요?', '네.', '네!', '네?'];
-      const endsWithCompleteSentence = sentenceEndings.some(ending => newContent.endsWith(ending));
+      console.log('🔍 [이어쓰기] 원본 응답:', newContent);
       
-      if (!endsWithCompleteSentence) {
-        console.warn('⚠️ [이어쓰기] 문장이 완전하지 않음, 마지막 마침표 추가');
-        // 마지막 불완전한 문장 제거하고 완전한 문장만 유지
-        const sentences = newContent.split(/([.!?]\s+)/);
-        let completeText = '';
-        for (let i = 0; i < sentences.length; i++) {
-          const part = sentences[i];
-          if (sentenceEndings.some(ending => part.trim().endsWith(ending))) {
-            completeText += sentences.slice(0, i + 1).join('');
-            break;
+      // 강화된 문장 끝 검증
+      const sentenceEndings = ['다.', '다!', '다?', '습니다.', '습니다!', '습니다?', '요.', '요!', '요?', '네.', '네!', '네?', '어요.', '어요!', '죠.', '죠!'];
+      const hasCompleteEnding = sentenceEndings.some(ending => newContent.endsWith(ending));
+      
+      if (!hasCompleteEnding) {
+        console.warn('⚠️ [이어쓰기] 불완전한 문장 감지, 수정 시작');
+        
+        // 방법 1: 마지막 완전한 문장까지만 추출
+        let lastCompleteIndex = -1;
+        for (const ending of sentenceEndings) {
+          const index = newContent.lastIndexOf(ending);
+          if (index > lastCompleteIndex) {
+            lastCompleteIndex = index;
           }
         }
-        if (completeText) {
-          newContent = completeText.trim();
+        
+        if (lastCompleteIndex > 0) {
+          // 마지막 완전한 문장까지만 잘라냄
+          const endingLength = sentenceEndings.find(e => 
+            newContent.substring(lastCompleteIndex).startsWith(e)
+          )?.length || 2;
+          newContent = newContent.substring(0, lastCompleteIndex + endingLength).trim();
+          console.log('✂️ [이어쓰기] 불완전한 부분 제거:', newContent);
+        } else {
+          // 방법 2: 완전한 문장이 없으면 마지막에 "다." 추가
+          console.warn('⚠️ [이어쓰기] 완전한 문장을 찾을 수 없음');
+          // 마지막 글자가 조사나 불완전한 단어면 제거하고 "다." 추가
+          if (!/[.!?]$/.test(newContent)) {
+            // 마지막 공백 이후 단어를 제거하고 "다." 추가
+            const lastSpaceIndex = newContent.lastIndexOf(' ');
+            if (lastSpaceIndex > 0) {
+              newContent = newContent.substring(0, lastSpaceIndex) + '다.';
+              console.log('🔧 [이어쓰기] 강제로 문장 완성:', newContent);
+            }
+          }
         }
       }
       
+      // 최종 검증
+      const finalCheck = sentenceEndings.some(ending => newContent.endsWith(ending));
+      if (!finalCheck) {
+        console.error('❌ [이어쓰기] 여전히 불완전한 문장');
+        alert('⚠️ AI가 완전한 문장을 생성하지 못했습니다.\n\n다시 시도해주세요.');
+        return;
+      }
+      
+      console.log('✅ [이어쓰기] 최종 결과:', newContent);
       setContent(content + "\n\n" + newContent);
       console.log('✨ [이어쓰기] 완료');
       alert("✨ AI가 이어쓴 내용이 추가되었습니다.\n\n마음에 들지 않으면 자유롭게 수정하세요.");

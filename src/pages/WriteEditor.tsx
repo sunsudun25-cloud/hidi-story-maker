@@ -237,7 +237,29 @@ export default function WriteEditor() {
         ? `\n장르: ${genreLabel}\n장르 가이드: ${genreGuide}`
         : "";
 
-      const prompt = `
+      // 시(poem) 장르 여부 확인
+      const isPoem = genre === 'poem';
+      
+      const prompt = isPoem ? `
+다음은 사용자가 작성 중인 시(詩)입니다:
+
+제목: ${title || "(제목 없음)"}
+
+내용:
+${content}
+
+---
+
+**시 작성 규칙:**
+1. 위 내용을 절대 반복하지 마세요. 새로운 시구(詩句)만 작성하세요.
+2. 시의 운율과 리듬을 살려주세요.
+3. 비유적, 은유적 표현을 사용하세요.
+4. 2~3행의 새로운 시구를 작성하세요.
+5. 시는 "~다"로 끝나지 않아도 됩니다. 자유롭게 표현하세요.
+
+노인 사용자가 쓴 것처럼 편안하고 감성적인 어조로 작성해주세요.
+위 시에 이어질 아름다운 시구를 작성해주세요.
+` : `
 다음은 사용자가 작성 중인 글입니다:
 
 제목: ${title || "(제목 없음)"}${genreContext}
@@ -283,50 +305,55 @@ ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""
       
       console.log('🔍 [이어쓰기] 원본 응답:', newContent);
       
-      // 강화된 문장 끝 검증
-      const sentenceEndings = ['다.', '다!', '다?', '습니다.', '습니다!', '습니다?', '요.', '요!', '요?', '네.', '네!', '네?', '어요.', '어요!', '죠.', '죠!'];
-      const hasCompleteEnding = sentenceEndings.some(ending => newContent.endsWith(ending));
-      
-      if (!hasCompleteEnding) {
-        console.warn('⚠️ [이어쓰기] 불완전한 문장 감지, 수정 시작');
+      // 시(poem) 장르는 문장 끝 검증 제외
+      if (!isPoem) {
+        // 강화된 문장 끝 검증 (시가 아닐 때만)
+        const sentenceEndings = ['다.', '다!', '다?', '습니다.', '습니다!', '습니다?', '요.', '요!', '요?', '네.', '네!', '네?', '어요.', '어요!', '죠.', '죠!'];
+        const hasCompleteEnding = sentenceEndings.some(ending => newContent.endsWith(ending));
         
-        // 방법 1: 마지막 완전한 문장까지만 추출
-        let lastCompleteIndex = -1;
-        for (const ending of sentenceEndings) {
-          const index = newContent.lastIndexOf(ending);
-          if (index > lastCompleteIndex) {
-            lastCompleteIndex = index;
+        if (!hasCompleteEnding) {
+          console.warn('⚠️ [이어쓰기] 불완전한 문장 감지, 수정 시작');
+          
+          // 방법 1: 마지막 완전한 문장까지만 추출
+          let lastCompleteIndex = -1;
+          for (const ending of sentenceEndings) {
+            const index = newContent.lastIndexOf(ending);
+            if (index > lastCompleteIndex) {
+              lastCompleteIndex = index;
+            }
           }
-        }
-        
-        if (lastCompleteIndex > 0) {
-          // 마지막 완전한 문장까지만 잘라냄
-          const endingLength = sentenceEndings.find(e => 
-            newContent.substring(lastCompleteIndex).startsWith(e)
-          )?.length || 2;
-          newContent = newContent.substring(0, lastCompleteIndex + endingLength).trim();
-          console.log('✂️ [이어쓰기] 불완전한 부분 제거:', newContent);
-        } else {
-          // 방법 2: 완전한 문장이 없으면 마지막에 "다." 추가
-          console.warn('⚠️ [이어쓰기] 완전한 문장을 찾을 수 없음');
-          // 마지막 글자가 조사나 불완전한 단어면 제거하고 "다." 추가
-          if (!/[.!?]$/.test(newContent)) {
-            // 마지막 공백 이후 단어를 제거하고 "다." 추가
-            const lastSpaceIndex = newContent.lastIndexOf(' ');
-            if (lastSpaceIndex > 0) {
-              newContent = newContent.substring(0, lastSpaceIndex) + '다.';
-              console.log('🔧 [이어쓰기] 강제로 문장 완성:', newContent);
+          
+          if (lastCompleteIndex > 0) {
+            // 마지막 완전한 문장까지만 잘라냄
+            const endingLength = sentenceEndings.find(e => 
+              newContent.substring(lastCompleteIndex).startsWith(e)
+            )?.length || 2;
+            newContent = newContent.substring(0, lastCompleteIndex + endingLength).trim();
+            console.log('✂️ [이어쓰기] 불완전한 부분 제거:', newContent);
+          } else {
+            // 방법 2: 완전한 문장이 없으면 마지막에 "다." 추가
+            console.warn('⚠️ [이어쓰기] 완전한 문장을 찾을 수 없음');
+            // 마지막 글자가 조사나 불완전한 단어면 제거하고 "다." 추가
+            if (!/[.!?]$/.test(newContent)) {
+              // 마지막 공백 이후 단어를 제거하고 "다." 추가
+              const lastSpaceIndex = newContent.lastIndexOf(' ');
+              if (lastSpaceIndex > 0) {
+                newContent = newContent.substring(0, lastSpaceIndex) + '다.';
+                console.log('🔧 [이어쓰기] 강제로 문장 완성:', newContent);
+              }
             }
           }
         }
-      }
-      
-      // 최종 검증
-      const finalCheck = sentenceEndings.some(ending => newContent.endsWith(ending));
-      if (!finalCheck) {
-        console.error('❌ [이어쓰기] 여전히 불완전한 문장');
-        alert('⚠️ AI가 완전한 문장을 생성하지 못했습니다.\n\n다시 시도해주세요.');
-        return;
+        
+        // 최종 검증 (시가 아닐 때만)
+        const finalCheck = sentenceEndings.some(ending => newContent.endsWith(ending));
+        if (!finalCheck) {
+          console.error('❌ [이어쓰기] 여전히 불완전한 문장');
+          alert('⚠️ AI가 완전한 문장을 생성하지 못했습니다.\n\n다시 시도해주세요.');
+          return;
+        }
+      } else {
+        console.log('📝 [이어쓰기] 시(poem) 장르 - 문장 끝 검증 생략');
       }
       
       console.log('✅ [이어쓰기] 최종 결과:', newContent);

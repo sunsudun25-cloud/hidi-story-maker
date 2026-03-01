@@ -21,11 +21,11 @@ export default function GoodsPostcard() {
   // CORS-safe 이미지 URL (data URL로 변환)
   const [safeImageUrl, setSafeImageUrl] = useState<string>("");
 
-  // 글자체 설정
+  // 글자체 설정 (웹폰트 로드 확실하게)
   const fontStyles = {
-    nanum: { fontFamily: "'Nanum Gothic', sans-serif", name: "기본체" },
-    cute: { fontFamily: "'Nanum Pen Script', cursive", name: "손글씨체" },
-    jua: { fontFamily: "'Jua', sans-serif", name: "둥근체" }
+    nanum: { fontFamily: "'Nanum Gothic', 'Malgun Gothic', '맑은 고딕', sans-serif", name: "기본체" },
+    cute: { fontFamily: "'Nanum Pen Script', 'Nanum Pen', cursive", name: "손글씨체" },
+    jua: { fontFamily: "'Jua', 'Nanum Barun Gothic', sans-serif", name: "둥근체" }
   };
 
   // 이미지가 없으면 뒤로가기
@@ -230,35 +230,29 @@ export default function GoodsPostcard() {
           }}>
             <p style={{
               ...fontStyles[selectedFont],
-              fontSize: "clamp(14px, 3.5vw, 18px)",
+              fontSize: "clamp(16px, 4vw, 22px)",
               margin: 0,
               color: "#333",
               textAlign: "center",
-              lineHeight: "1.3",
+              lineHeight: "1.4",
               wordBreak: "keep-all",
               overflowWrap: "break-word",
-              maxWidth: "95%",
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden"
+              maxWidth: "90%",
+              whiteSpace: "pre-wrap"
             }}>
               {line1 || "첫 번째 줄을 입력하세요"}
             </p>
             <p style={{
               ...fontStyles[selectedFont],
-              fontSize: "clamp(12px, 3vw, 16px)",
+              fontSize: "clamp(14px, 3.5vw, 18px)",
               margin: 0,
               color: "#666",
               textAlign: "center",
-              lineHeight: "1.3",
+              lineHeight: "1.4",
               wordBreak: "keep-all",
               overflowWrap: "break-word",
-              maxWidth: "95%",
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden"
+              maxWidth: "90%",
+              whiteSpace: "pre-wrap"
             }}>
               {line2 || "두 번째 줄을 입력하세요"}
             </p>

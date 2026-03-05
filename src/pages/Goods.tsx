@@ -324,6 +324,58 @@ export default function Goods() {
           </button>
         </div>
 
+        {/* QR 생성기 박스 */}
+        <div style={{
+          marginTop: "40px",
+          padding: "24px",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          borderRadius: "16px",
+          boxShadow: "0 8px 20px rgba(102, 126, 234, 0.3)"
+        }}>
+          <div style={{ textAlign: "center", marginBottom: "16px" }}>
+            <div style={{ fontSize: "48px", marginBottom: "8px" }}>📱</div>
+            <h3 style={{ fontSize: "20px", fontWeight: "bold", color: "#ffffff", marginBottom: "8px" }}>
+              QR 코드 생성기
+            </h3>
+            <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.9)", lineHeight: "1.6", marginBottom: "0" }}>
+              작품 이미지를 QR 코드로 만들어<br />
+              쉽게 공유하고 전시하세요
+            </p>
+          </div>
+          
+          <div style={{
+            background: "rgba(255,255,255,0.15)",
+            borderRadius: "12px",
+            padding: "16px",
+            marginBottom: "16px"
+          }}>
+            <p style={{ fontSize: "13px", color: "#ffffff", lineHeight: "1.8", margin: 0 }}>
+              ✅ 이미지 업로드 → QR 코드 자동 생성<br />
+              ✅ 스마트폰으로 스캔하면 작품 확인<br />
+              ✅ 전시회, 발표회, 공유에 활용
+            </p>
+          </div>
+
+          <button
+            onClick={() => navigate('/qr-generator')}
+            style={{
+              width: "100%",
+              padding: "16px",
+              fontSize: "18px",
+              fontWeight: "bold",
+              background: "#ffffff",
+              color: "#667eea",
+              border: "none",
+              borderRadius: "12px",
+              cursor: "pointer",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              transition: "all 0.3s"
+            }}
+          >
+            🎨 QR 코드 만들러 가기
+          </button>
+        </div>
+
         {/* 하단 안내 문구 */}
         <div style={{
           marginTop: "32px",

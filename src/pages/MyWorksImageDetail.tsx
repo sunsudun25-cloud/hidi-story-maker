@@ -94,7 +94,7 @@ export default function MyWorksImageDetail() {
     }
   };
 
-  // QR 코드 버튼 클릭 시 - 안내 메시지 표시
+  // QR 코드 버튼 클릭 시 - QR 생성기로 안내
   const handleQRCode = () => {
     // 이미지가 HTTP URL인 경우에만 QR 코드 생성 가능
     if (item?.image && (item.image.startsWith('http://') || item.image.startsWith('https://'))) {
@@ -103,19 +103,19 @@ export default function MyWorksImageDetail() {
       return;
     }
 
-    // 로컬 이미지인 경우 안내 메시지
-    alert(
-      '⚠️ QR 코드 생성 불가\n\n' +
-      '이 이미지는 기기에만 저장되어 있어\n' +
-      'QR 코드로 공유할 수 없습니다.\n\n' +
-      '💡 대신 이렇게 공유하세요:\n' +
+    // 로컬 이미지인 경우 QR 생성기로 안내
+    const confirmed = confirm(
+      '📱 QR 코드 만들기\n\n' +
+      '작품을 QR 코드로 만들려면:\n\n' +
       '1. "다운로드" 버튼으로 이미지 저장\n' +
-      '2. 저장된 이미지를 직접 공유\n' +
-      '   (카카오톡, 문자 등)\n\n' +
-      '또는\n\n' +
-      '3. "무엇을 만들까요?" 버튼으로\n' +
-      '   엽서를 만든 후 PDF/이미지로 저장'
+      '2. "나만의 굿즈 만들기" → QR 생성기\n' +
+      '3. 저장한 이미지 업로드 → QR 생성\n\n' +
+      '지금 QR 생성기로 이동하시겠습니까?'
     );
+
+    if (confirmed) {
+      navigate('/qr-generator');
+    }
   };
 
   // QR 코드용 URL 반환

@@ -34,6 +34,12 @@ const OnboardingLogin: React.FC = () => {
         setError('수업 코드와 학생 번호를 입력해주세요')
         return
       }
+      
+      // 수업 코드 형식 검증 (영문 1글자 + 숫자 4자리)
+      if (!/^[A-Z]\d{4}$/.test(classCode.trim())) {
+        setError('수업 코드는 영문 1글자 + 숫자 4자리 형식이어야 합니다 (예: C8683)')
+        return
+      }
     }
 
     setLoading(true)
@@ -220,17 +226,16 @@ const OnboardingLogin: React.FC = () => {
                 <>
                   <div style={{ marginBottom: '12px' }}>
                 <input
-                  type="tel"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
+                  type="text"
+                  inputMode="text"
                   className="class-code-input"
-                  placeholder="수업 코드 4자리 (예: 1004)"
+                  placeholder="수업 코드 (예: C8683)"
                   value={classCode}
                   onChange={(e) => {
                     const value = e.target.value.replace(/[^0-9A-Z]/gi, '')
                     setClassCode(value.toUpperCase())
                   }}
-                  maxLength={4}
+                  maxLength={5}
                   disabled={loading}
                   style={{
                     fontSize: '24px',
@@ -245,7 +250,7 @@ const OnboardingLogin: React.FC = () => {
                   marginTop: '4px',
                   textAlign: 'center'
                 }}>
-                  💡 숫자 4자리 (예: 1004=천사)
+                  💡 영문 1글자 + 숫자 4자리 (예: C8683)
                 </div>
               </div>
 

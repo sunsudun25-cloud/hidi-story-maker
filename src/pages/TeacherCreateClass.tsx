@@ -6,6 +6,7 @@ export default function TeacherCreateClass() {
   const [className, setClassName] = useState('');
   const [teacherName, setTeacherName] = useState('');
   const [teacherInitial, setTeacherInitial] = useState('');
+  const [expectedStudents, setExpectedStudents] = useState('');
   const [teacherPin, setTeacherPin] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -25,6 +26,11 @@ export default function TeacherCreateClass() {
 
     if (!teacherInitial.trim() || !/^[A-Z]$/.test(teacherInitial.trim())) {
       setError('강사 이니셜은 영문 대문자 1글자만 입력해주세요 (예: C, K, P)');
+      return;
+    }
+
+    if (!expectedStudents.trim() || isNaN(Number(expectedStudents)) || Number(expectedStudents) < 1 || Number(expectedStudents) > 999) {
+      setError('예상 인원은 1~999명 사이의 숫자로 입력해주세요');
       return;
     }
 
@@ -49,6 +55,7 @@ export default function TeacherCreateClass() {
             className: className.trim(),
             teacherName: teacherName.trim(),
             teacherInitial: teacherInitial.trim().toUpperCase(),
+            expectedStudents: Number(expectedStudents.trim()),
             teacherPin: teacherPin.trim(),
           }),
         }
@@ -76,6 +83,7 @@ export default function TeacherCreateClass() {
     setClassName('');
     setTeacherName('');
     setTeacherInitial('');
+    setExpectedStudents('');
     setTeacherPin('');
     setGeneratedCode('');
     setError('');
@@ -194,6 +202,50 @@ export default function TeacherCreateClass() {
               />
             </div>
 
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '600',
+                color: '#333',
+                marginBottom: '8px'
+              }}>
+                예상 인원 * <span style={{ fontSize: '12px', color: '#999' }}>(1~999명)</span>
+              </label>
+              <input
+                type="tel"
+                inputMode="numeric"
+                value={expectedStudents}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^0-9]/g, '');
+                  if (value.length <= 3) {
+                    setExpectedStudents(value);
+                  }
+                }}
+                placeholder="예: 25"
+                maxLength={3}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  border: '2px solid #ddd',
+                  borderRadius: '12px',
+                  boxSizing: 'border-box',
+                  letterSpacing: '2px'
+                }}
+              />
+              <div style={{
+                fontSize: '12px',
+                color: '#666',
+                marginTop: '6px',
+                textAlign: 'center'
+              }}>
+                💡 수업에 참여할 예상 학생 수를 입력하세요
+              </div>
+            </div>
+
             <div style={{ marginBottom: '24px' }}>
               <label style={{
                 display: 'block',
@@ -308,10 +360,30 @@ export default function TeacherCreateClass() {
                   fontWeight: 'bold',
                   color: '#ffffff',
                   letterSpacing: '4px',
-                  margin: 0
+                  margin: 0,
+                  marginBottom: '12px'
                 }}>
                   {generatedCode}
                 </p>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: '24px',
+                  marginTop: '12px'
+                }}>
+                  <div>
+                    <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', margin: 0 }}>예상 인원</p>
+                    <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#ffffff', margin: 0 }}>
+                      {expectedStudents}명
+                    </p>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', margin: 0 }}>사용 가능 번호</p>
+                    <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#ffffff', margin: 0 }}>
+                      0001 ~ {String(expectedStudents).padStart(4, '0')}
+                    </p>
+                  </div>
+                </div>
               </div>
               <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.9)', lineHeight: '1.6' }}>
                 이 코드를 학생들에게 알려주세요!
@@ -331,10 +403,24 @@ export default function TeacherCreateClass() {
               <p style={{ margin: 0, fontWeight: '600', marginBottom: '8px' }}>
                 📢 학생들에게 안내하세요
               </p>
-              <p style={{ margin: 0 }}>
+              <p style={{ margin: 0, marginBottom: '8px' }}>
                 "www.story-maker.kr 접속 후<br />
                 수업 코드 <strong>{generatedCode}</strong>를 입력하세요!"
               </p>
+              <div style={{
+                background: 'rgba(255,255,255,0.5)',
+                padding: '8px',
+                borderRadius: '6px',
+                marginTop: '8px',
+                fontSize: '13px'
+              }}>
+                <p style={{ margin: 0, fontWeight: '600' }}>💡 입력 정보:</p>
+                <p style={{ margin: 0, marginTop: '4px' }}>
+                  • 수업 코드: <strong>{generatedCode}</strong><br />
+                  • 학생 번호: <strong>0001~{String(expectedStudents).padStart(4, '0')}</strong> (출석번호 4자리)<br />
+                  • 이름: 본인 이름
+                </p>
+              </div>
             </div>
 
             {/* 버튼 */}

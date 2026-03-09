@@ -9,6 +9,7 @@ const OnboardingLogin: React.FC = () => {
   const [useUnifiedCode, setUseUnifiedCode] = useState(false)
   const [classCode, setClassCode] = useState('')
   const [learnerCode, setLearnerCode] = useState('')
+  const [learnerName, setLearnerName] = useState('')
   const [unifiedCode, setUnifiedCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -30,8 +31,8 @@ const OnboardingLogin: React.FC = () => {
       finalClassCode = unifiedCode.slice(0, 4)
       finalLearnerCode = unifiedCode.slice(4, 8)
     } else {
-      if (!classCode.trim() || !learnerCode.trim()) {
-        setError('수업 코드와 학생 번호를 입력해주세요')
+      if (!classCode.trim() || !learnerCode.trim() || !learnerName.trim()) {
+        setError('수업 코드, 학생 번호, 이름을 모두 입력해주세요')
         return
       }
       
@@ -54,7 +55,8 @@ const OnboardingLogin: React.FC = () => {
       // Firebase Functions API 호출
       const learnerInfo = await ensureLearner(
         finalClassCode.toUpperCase().trim(),
-        finalLearnerCode.trim()
+        finalLearnerCode.trim(),
+        learnerName.trim() || undefined
       )
 
       // 로컬 스토리지에 저장
@@ -254,7 +256,7 @@ const OnboardingLogin: React.FC = () => {
                 </div>
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
+              <div style={{ marginBottom: '12px' }}>
                 <input
                   type="tel"
                   inputMode="numeric"
@@ -284,12 +286,40 @@ const OnboardingLogin: React.FC = () => {
                   💡 학생 번호 (예: 0001=1번)
                 </div>
               </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <input
+                  type="text"
+                  className="learner-name-input"
+                  placeholder="이름 (예: 홍길동)"
+                  value={learnerName}
+                  onChange={(e) => setLearnerName(e.target.value)}
+                  disabled={loading}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    fontSize: '16px',
+                    textAlign: 'center',
+                    border: '2px solid #ddd',
+                    borderRadius: '8px',
+                    boxSizing: 'border-box'
+                  }}
+                />
+                <div style={{ 
+                  fontSize: '12px', 
+                  color: '#666', 
+                  marginTop: '4px',
+                  textAlign: 'center'
+                }}>
+                  💡 본인의 이름을 입력해주세요
+                </div>
+              </div>
                 </>
               )}
 
               <button
                 onClick={handleClassCodeLogin}
-                disabled={loading || (useUnifiedCode ? unifiedCode.length !== 8 : (!classCode.trim() || !learnerCode.trim()))}
+                disabled={loading || (useUnifiedCode ? unifiedCode.length !== 8 : (!classCode.trim() || !learnerCode.trim() || !learnerName.trim()))}
                 style={{
                   width: '100%',
                   padding: '14px',

@@ -42,7 +42,13 @@ export default function Gallery() {
         throw new Error(data.error || "작품을 불러올 수 없습니다.");
       }
 
-      setArtifacts(data.artifacts || []);
+      // HTTP URL을 HTTPS로 강제 변환
+      const artifacts = (data.artifacts || []).map((artifact: any) => ({
+        ...artifact,
+        thumbnail: artifact.thumbnail?.replace('http://', 'https://') || ''
+      }));
+
+      setArtifacts(artifacts);
     } catch (err: any) {
       console.error("작품 목록 로드 오류:", err);
       setError(err.message || "작품을 불러오는 중 오류가 발생했습니다.");

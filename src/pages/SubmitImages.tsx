@@ -86,8 +86,9 @@ export default function SubmitImages() {
             }
           });
           successCount++;
-        } catch (error) {
+        } catch (error: any) {
           console.error("이미지 제출 실패:", error);
+          console.error("오류 상세:", error.message, error.stack);
           failCount++;
         }
       }
@@ -102,7 +103,12 @@ export default function SubmitImages() {
       }
     } catch (error: any) {
       console.error("제출 오류:", error);
-      alert(`제출 중 오류가 발생했습니다.\n\n${error.message || "다시 시도해주세요."}`);
+      console.error("오류 상세:", error.message, error.response);
+      alert(
+        `제출 중 오류가 발생했습니다.\n\n` +
+        `오류 메시지: ${error.message || "알 수 없는 오류"}\n\n` +
+        `브라우저 콘솔(F12)에서 자세한 내용을 확인하세요.`
+      );
     } finally {
       setSubmitting(false);
     }

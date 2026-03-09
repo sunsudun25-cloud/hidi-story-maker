@@ -47,9 +47,9 @@ export default function TeacherCreateClass() {
           },
           body: JSON.stringify({
             className: className.trim(),
-            instructorName: teacherName.trim(),
+            teacherName: teacherName.trim(),
             teacherInitial: teacherInitial.trim().toUpperCase(),
-            instructorPin: teacherPin.trim(),
+            teacherPin: teacherPin.trim(),
           }),
         }
       );

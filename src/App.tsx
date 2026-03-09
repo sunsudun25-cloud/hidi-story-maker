@@ -43,6 +43,7 @@ import Goods from './pages/Goods'
 import GoodsExperience from './pages/GoodsExperience'
 import GoodsPostcard from './pages/GoodsPostcard'
 import QRGenerator from './pages/QRGenerator'
+import TeacherCreateClass from './pages/TeacherCreateClass'
 import Result from './pages/Result'
 import TestButtons from './pages/TestButtons'
 import ImageMakePractice from './pages/ImageMake/Practice'
@@ -114,6 +115,9 @@ function AppContent() {
           <Route path="/goods/experience" element={<GoodsExperience />} />
           <Route path="/goods/postcard/:id" element={<GoodsPostcard />} />
           <Route path="/qr-generator" element={<QRGenerator />} />
+
+          {/* 👨‍🏫 선생님 전용 */}
+          <Route path="/teacher/create-class" element={<TeacherCreateClass />} />
 
           {/* 기타 페이지 */}
           <Route path="/image/practice" element={<ImageMakePractice />} />

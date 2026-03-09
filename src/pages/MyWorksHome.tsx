@@ -120,6 +120,36 @@ export default function MyWorksHome() {
           </div>
         </button>
 
+        {/* 📮 엽서 */}
+        <button
+          onClick={() => navigate("/my-works/postcards")}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
+            padding: '20px',
+            backgroundColor: 'white',
+            border: '2px solid #E5E7EB',
+            borderRadius: '16px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            cursor: 'pointer',
+            textAlign: 'left',
+            transition: 'all 0.3s'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+          }}
+        >
+          <span style={{ fontSize: '36px' }}>📮</span>
+          <div>
+            <p style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '4px' }}>엽서</p>
+            <p style={{ fontSize: '14px', color: '#6B7280' }}>만든 엽서 보기</p>
+          </div>
+        </button>
+
       </div>
     </div>
   );

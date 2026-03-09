@@ -10,6 +10,7 @@ const DB_VERSION = 3;
 const STORE_NAME = "stories";
 const IMAGE_STORE_NAME = "images";
 const STORYBOOK_STORE_NAME = "storybooks";
+const POSTCARD_STORE_NAME = "postcards";
 
 /* --------------------------------------------------------
    TypeScript 타입 정의
@@ -53,6 +54,15 @@ export interface Storybook {
   style?: string;
   coverImageUrl?: string;
   pages: StorybookPage[];
+  createdAt: string;
+}
+
+export interface Postcard {
+  id?: string;
+  imageUrl: string;
+  line1: string;
+  line2: string;
+  font: 'nanum' | 'cute' | 'jua';
   createdAt: string;
 }
 
@@ -131,6 +141,10 @@ export async function openDB(): Promise<IDBDatabase | null> {
 
         if (!db.objectStoreNames.contains(STORYBOOK_STORE_NAME)) {
           db.createObjectStore(STORYBOOK_STORE_NAME, { keyPath: "id" });
+        }
+
+        if (!db.objectStoreNames.contains(POSTCARD_STORE_NAME)) {
+          db.createObjectStore(POSTCARD_STORE_NAME, { keyPath: "id" });
         }
       };
     } catch {
@@ -318,6 +332,64 @@ export async function deleteStorybook(id: string): Promise<void> {
 }
 
 /* --------------------------------------------------------
+   10) 엽서 저장/조회/삭제
+--------------------------------------------------------- */
+export async function savePostcard(data: Omit<Postcard, 'id' | 'createdAt'>): Promise<string> {
+  const id = crypto.randomUUID();
+  const record: Postcard = { 
+    id, 
+    ...data, 
+    createdAt: new Date().toISOString() 
+  };
+
+  const db = await openDB();
+  if (!db) {
+    safeSet(`postcard-${id}`, record);
+    return id;
+  }
+
+  try {
+    db.transaction(POSTCARD_STORE_NAME, "readwrite")
+      .objectStore(POSTCARD_STORE_NAME)
+      .put(record);
+  } catch {
+    safeSet(`postcard-${id}`, record);
+  }
+
+  return id;
+}
+
+export async function getAllPostcards(): Promise<Postcard[]> {
+  const db = await openDB();
+  if (!db) return [];
+
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(POSTCARD_STORE_NAME, "readonly");
+      const request = tx.objectStore(POSTCARD_STORE_NAME).getAll();
+      
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => resolve([]);
+    } catch {
+      resolve([]);
+    }
+  });
+}
+
+export async function deletePostcard(id: string): Promise<void> {
+  const db = await openDB();
+  if (!db) return;
+
+  try {
+    db.transaction(POSTCARD_STORE_NAME, "readwrite")
+      .objectStore(POSTCARD_STORE_NAME)
+      .delete(id);
+  } catch (e) {
+    console.warn("⚠️ deletePostcard failed:", e);
+  }
+}
+
+/* --------------------------------------------------------
    8) 데이터 업데이트 (안전)
 --------------------------------------------------------- */
 export async function updateStory(id: string, updates: Partial<Story>): Promise<void> {
@@ -349,10 +421,11 @@ export async function clearAll(): Promise<void> {
   if (!db) return;
 
   try {
-    const tx = db.transaction([STORE_NAME, IMAGE_STORE_NAME, STORYBOOK_STORE_NAME], "readwrite");
+    const tx = db.transaction([STORE_NAME, IMAGE_STORE_NAME, STORYBOOK_STORE_NAME, POSTCARD_STORE_NAME], "readwrite");
     tx.objectStore(STORE_NAME).clear();
     tx.objectStore(IMAGE_STORE_NAME).clear();
     tx.objectStore(STORYBOOK_STORE_NAME).clear();
+    tx.objectStore(POSTCARD_STORE_NAME).clear();
   } catch (e) {
     console.warn("⚠️ clearAll failed:", e);
   }

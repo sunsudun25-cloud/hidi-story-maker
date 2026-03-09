@@ -3,6 +3,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
+import { savePostcard } from "../services/dbService";
 
 export default function GoodsPostcard() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export default function GoodsPostcard() {
   const [line1, setLine1] = useState("");
   const [line2, setLine2] = useState("");
   const [selectedFont, setSelectedFont] = useState<"nanum" | "cute" | "jua">("nanum");
+  const [isSaving, setIsSaving] = useState(false);
   
   // CORS-safe 이미지 URL (data URL로 변환)
   const [safeImageUrl, setSafeImageUrl] = useState<string>("");
@@ -130,6 +132,44 @@ export default function GoodsPostcard() {
     } catch (error) {
       console.error("이미지 저장 오류:", error);
       alert("이미지 저장 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 내 작품에 저장
+  const handleSaveToMyWorks = async () => {
+    if (!imageData?.image) {
+      alert("이미지 정보가 없습니다.");
+      return;
+    }
+
+    if (!line1 && !line2) {
+      alert("최소 한 줄 이상의 문구를 입력해주세요.");
+      return;
+    }
+
+    if (!confirm("이 엽서를 내 작품에 저장하시겠습니까?")) return;
+
+    setIsSaving(true);
+    try {
+      await savePostcard({
+        imageUrl: imageData.image,
+        line1,
+        line2,
+        font: selectedFont
+      });
+
+      alert("✅ 내 작품에 저장되었습니다!");
+      
+      // 내 작품 > 엽서 페이지로 이동
+      const goToMyWorks = confirm("저장된 엽서를 확인하시겠습니까?");
+      if (goToMyWorks) {
+        navigate("/my-works/postcards");
+      }
+    } catch (error) {
+      console.error("저장 오류:", error);
+      alert("저장 중 오류가 발생했습니다.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -351,6 +391,29 @@ export default function GoodsPostcard() {
 
         {/* 저장 버튼들 */}
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {/* 내 작품에 저장 버튼 - 가장 상단에 강조 */}
+          <button
+            onClick={handleSaveToMyWorks}
+            disabled={isSaving}
+            style={{
+              width: "100%",
+              padding: "18px",
+              fontSize: "18px",
+              fontWeight: "bold",
+              background: isSaving 
+                ? "#cccccc" 
+                : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "12px",
+              cursor: isSaving ? "not-allowed" : "pointer",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              opacity: isSaving ? 0.7 : 1
+            }}
+          >
+            {isSaving ? "저장 중..." : "💾 내 작품에 저장하기"}
+          </button>
+
           <button
             onClick={handleSavePDF}
             style={{
@@ -358,7 +421,7 @@ export default function GoodsPostcard() {
               padding: "18px",
               fontSize: "18px",
               fontWeight: "bold",
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
               color: "#ffffff",
               border: "none",
               borderRadius: "12px",
@@ -376,7 +439,7 @@ export default function GoodsPostcard() {
               padding: "18px",
               fontSize: "18px",
               fontWeight: "bold",
-              background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+              background: "linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%)",
               color: "#ffffff",
               border: "none",
               borderRadius: "12px",

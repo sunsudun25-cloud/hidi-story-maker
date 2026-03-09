@@ -38,6 +38,8 @@ import MyWorksStories from './pages/MyWorksStories'
 import MyWorksStoryDetail from './pages/MyWorksStoryDetail'
 import MyWorksStorybooks from './pages/MyWorksStorybooks'
 import MyWorksStorybookDetail from './pages/MyWorksStorybookDetail'
+import MyWorksPostcards from './pages/MyWorksPostcards'
+import MyWorksPostcardDetail from './pages/MyWorksPostcardDetail'
 import SharedStory from './pages/SharedStory'
 import Goods from './pages/Goods'
 import GoodsExperience from './pages/GoodsExperience'
@@ -77,6 +79,8 @@ function AppContent() {
         <Route path="/shared/story" element={<SharedStory />} />
         <Route path="/my-works/storybooks" element={<MyWorksStorybooks />} />
         <Route path="/my-works/storybooks/:id" element={<MyWorksStorybookDetail />} />
+        <Route path="/my-works/postcards" element={<MyWorksPostcards />} />
+        <Route path="/my-works/postcards/:id" element={<MyWorksPostcardDetail />} />
 
         {/* ⭐ 모든 페이지는 Layout 포함 (Footer 통일) */}
         <Route element={<Layout />}>
@@ -119,11 +123,13 @@ function AppContent() {
           {/* 👨‍🏫 선생님 전용 */}
           <Route path="/teacher/create-class" element={<TeacherCreateClass />} />
 
+          {/* 🎨 갤러리 */}
+          <Route path="/gallery/:classCode" element={<Gallery />} />
+
           {/* 기타 페이지 */}
           <Route path="/image/practice" element={<ImageMakePractice />} />
           <Route path="/image/custom" element={<ImageMakeCustom />} />
           <Route path="/image/result" element={<ImageMakeResult />} />
-          <Route path="/gallery" element={<Gallery />} />
           <Route path="/result" element={<Result />} />
           <Route path="/test-buttons" element={<TestButtons />} />
         </Route>

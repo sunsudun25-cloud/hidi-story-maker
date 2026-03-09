@@ -40,6 +40,11 @@ import MyWorksStorybooks from './pages/MyWorksStorybooks'
 import MyWorksStorybookDetail from './pages/MyWorksStorybookDetail'
 import MyWorksPostcards from './pages/MyWorksPostcards'
 import MyWorksPostcardDetail from './pages/MyWorksPostcardDetail'
+import Settings from './pages/Settings'
+import SubmitImages from './pages/SubmitImages'
+import SubmitStories from './pages/SubmitStories'
+import SubmitStorybooks from './pages/SubmitStorybooks'
+import SubmitPostcards from './pages/SubmitPostcards'
 import SharedStory from './pages/SharedStory'
 import Goods from './pages/Goods'
 import GoodsExperience from './pages/GoodsExperience'
@@ -81,6 +86,13 @@ function AppContent() {
         <Route path="/my-works/storybooks/:id" element={<MyWorksStorybookDetail />} />
         <Route path="/my-works/postcards" element={<MyWorksPostcards />} />
         <Route path="/my-works/postcards/:id" element={<MyWorksPostcardDetail />} />
+
+        {/* ⚙️ 설정 페이지 - Layout 없이 독립 렌더링 */}
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/settings/submit/images" element={<SubmitImages />} />
+        <Route path="/settings/submit/stories" element={<SubmitStories />} />
+        <Route path="/settings/submit/storybooks" element={<SubmitStorybooks />} />
+        <Route path="/settings/submit/postcards" element={<SubmitPostcards />} />
 
         {/* ⭐ 모든 페이지는 Layout 포함 (Footer 통일) */}
         <Route element={<Layout />}>

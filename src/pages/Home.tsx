@@ -39,7 +39,7 @@ export default function Home() {
 
       {/* 추가 메뉴 */}
       <div className="home-extra-menu">
-        <button className="extra-menu-item" onClick={() => alert('설정 기능 준비중입니다.')}>
+        <button className="extra-menu-item" onClick={() => navigate("/settings")}>
           ⚙️ 설정
         </button>
         <button className="extra-menu-item" onClick={() => alert('다른 기기에서 보기 기능 준비중입니다.')}>

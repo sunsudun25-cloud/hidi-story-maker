@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import Layout from './components/Layout'
 import Header from './components/Header'
+import InstallPrompt from './components/InstallPrompt'
 import Welcome from './pages/Welcome'
 import OnboardingLogin from './pages/OnboardingLogin'
 import Home from './pages/Home'
@@ -154,6 +155,7 @@ function App() {
   return (
     <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
       <AppContent />
+      <InstallPrompt />
     </BrowserRouter>
   );
 }

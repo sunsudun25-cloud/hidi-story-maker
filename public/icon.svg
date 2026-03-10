@@ -1,0 +1,42 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="512" height="512" fill="url(#bgGradient)" rx="80"/>
+  
+  <!-- Book icon -->
+  <g transform="translate(100, 140)">
+    <!-- Left page -->
+    <rect x="0" y="0" width="140" height="200" fill="#ffffff" rx="12"/>
+    <line x1="25" y1="40" x2="115" y2="40" stroke="#667eea" stroke-width="6" stroke-linecap="round"/>
+    <line x1="25" y1="70" x2="115" y2="70" stroke="#667eea" stroke-width="6" stroke-linecap="round"/>
+    <line x1="25" y1="100" x2="115" y2="100" stroke="#667eea" stroke-width="6" stroke-linecap="round"/>
+    <line x1="25" y1="130" x2="90" y2="130" stroke="#667eea" stroke-width="6" stroke-linecap="round"/>
+    
+    <!-- Right page -->
+    <rect x="172" y="0" width="140" height="200" fill="#ffffff" rx="12"/>
+    <line x1="197" y1="40" x2="287" y2="40" stroke="#667eea" stroke-width="6" stroke-linecap="round"/>
+    <line x1="197" y1="70" x2="287" y2="70" stroke="#667eea" stroke-width="6" stroke-linecap="round"/>
+    <line x1="197" y1="100" x2="287" y2="100" stroke="#667eea" stroke-width="6" stroke-linecap="round"/>
+    <line x1="197" y1="130" x2="262" y2="130" stroke="#667eea" stroke-width="6" stroke-linecap="round"/>
+    
+    <!-- Center binding -->
+    <rect x="138" y="-8" width="36" height="216" fill="#764ba2" rx="4"/>
+  </g>
+  
+  <!-- AI Sparkle top right -->
+  <g transform="translate(380, 120)">
+    <circle cx="0" cy="0" r="50" fill="#ffd700"/>
+    <polygon points="0,-60 8,-18 18,-12 8,-6 0,25 -8,-6 -18,-12 -8,-18" fill="#ffffff"/>
+  </g>
+  
+  <!-- Small stars decoration -->
+  <circle cx="120" cy="420" r="8" fill="#ffd700"/>
+  <circle cx="390" cy="430" r="6" fill="#ffd700"/>
+  <circle cx="150" cy="100" r="10" fill="#ffd700" opacity="0.7"/>
+</svg>

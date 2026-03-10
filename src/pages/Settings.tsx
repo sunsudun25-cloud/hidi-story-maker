@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getCurrentLearner, clearCurrentLearner } from "../services/classroomService";
+import { getCurrentLearner, clearCurrentLearner, saveArtifact } from "../services/classroomService";
 import { getAllImages, getAllStories, getAllStorybooks, getAllPostcards } from "../services/dbService";
 
 export default function Settings() {
@@ -12,6 +12,12 @@ export default function Settings() {
     storybooks: 0,
     postcards: 0
   });
+
+  // 파일 업로드 상태
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadTitle, setUploadTitle] = useState("");
+  const [uploadPreview, setUploadPreview] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -70,6 +76,97 @@ export default function Settings() {
     if (confirmed) {
       // 모든 작품 제출 (추후 구현)
       alert("⚠️ 일괄 제출 기능은 개발 중입니다.\n각 작품 유형별로 제출해주세요.");
+    }
+  };
+
+  // 파일 선택 핸들러
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 이미지 파일만 허용
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
+
+    // 파일 크기 제한 (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('파일 크기는 10MB 이하여야 합니다.');
+      return;
+    }
+
+    setUploadFile(file);
+
+    // 미리보기 생성
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setUploadPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // 기본 제목 설정
+    const now = new Date();
+    const defaultTitle = `업로드 이미지 - ${now.getFullYear()}. ${now.getMonth() + 1}. ${now.getDate()}.`;
+    setUploadTitle(defaultTitle);
+  };
+
+  // 파일 업로드 제출
+  const handleUploadSubmit = async () => {
+    if (!uploadFile || !uploadPreview) {
+      alert('업로드할 파일을 선택해주세요.');
+      return;
+    }
+
+    if (!uploadTitle.trim()) {
+      alert('작품 제목을 입력해주세요.');
+      return;
+    }
+
+    if (!learner) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    const confirmed = confirm(
+      `"${uploadTitle}"\n\n이 작품을 선생님께 제출하시겠습니까?`
+    );
+
+    if (!confirmed) return;
+
+    setIsUploading(true);
+
+    try {
+      await saveArtifact({
+        learnerId: learner.learnerId,
+        type: 'image',
+        title: uploadTitle,
+        data: {
+          source: 'upload',
+          fileName: uploadFile.name,
+          uploadedAt: new Date().toISOString()
+        },
+        files: {
+          image: uploadPreview
+        }
+      });
+
+      alert('✅ 제출되었습니다!');
+      
+      // 상태 초기화
+      setUploadFile(null);
+      setUploadTitle('');
+      setUploadPreview('');
+      
+      // 파일 input 초기화
+      const fileInput = document.getElementById('upload-file-input') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+
+    } catch (error) {
+      console.error('업로드 제출 오류:', error);
+      alert('❌ 제출 중 오류가 발생했습니다.');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -379,6 +476,172 @@ export default function Settings() {
             >
               ⬇️ 한 번에 모두 제출하기
             </button>
+          </div>
+        )}
+
+        {/* 파일 업로드 제출 섹션 */}
+        {learner && (
+          <div style={{
+            background: "#ffffff",
+            borderRadius: "16px",
+            padding: "24px",
+            marginBottom: "20px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+          }}>
+            <h3 style={{
+              fontSize: "18px",
+              fontWeight: "bold",
+              color: "#333",
+              marginBottom: "16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}>
+              📤 파일 업로드 제출하기
+            </h3>
+
+            <p style={{
+              fontSize: "14px",
+              color: "#666",
+              marginBottom: "16px",
+              lineHeight: "1.5"
+            }}>
+              작품을 만들지 않았거나 제출이 안 될 경우, 이미지 파일을 직접 업로드하여 제출할 수 있습니다.
+            </p>
+
+            {/* 파일 선택 */}
+            <div style={{
+              marginBottom: "16px"
+            }}>
+              <input
+                id="upload-file-input"
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                style={{ display: "none" }}
+              />
+              <button
+                onClick={() => document.getElementById('upload-file-input')?.click()}
+                style={{
+                  width: "100%",
+                  padding: "16px 20px",
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  color: "#ffffff",
+                  border: "none",
+                  borderRadius: "12px",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "8px"
+                }}
+              >
+                📁 이미지 파일 선택하기
+              </button>
+            </div>
+
+            {/* 미리보기 및 제목 입력 */}
+            {uploadPreview && (
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px"
+              }}>
+                {/* 미리보기 */}
+                <div style={{
+                  width: "100%",
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                  border: "2px solid #E5E7EB"
+                }}>
+                  <img
+                    src={uploadPreview}
+                    alt="미리보기"
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      maxHeight: "300px",
+                      objectFit: "contain",
+                      background: "#F9FAFB"
+                    }}
+                  />
+                </div>
+
+                {/* 제목 입력 */}
+                <div>
+                  <label style={{
+                    display: "block",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    color: "#333",
+                    marginBottom: "8px"
+                  }}>
+                    작품 제목
+                  </label>
+                  <input
+                    type="text"
+                    value={uploadTitle}
+                    onChange={(e) => setUploadTitle(e.target.value)}
+                    placeholder="작품 제목을 입력하세요"
+                    style={{
+                      width: "100%",
+                      padding: "12px 16px",
+                      border: "1px solid #E5E7EB",
+                      borderRadius: "8px",
+                      fontSize: "15px",
+                      outline: "none"
+                    }}
+                  />
+                </div>
+
+                {/* 제출 버튼 */}
+                <button
+                  onClick={handleUploadSubmit}
+                  disabled={isUploading}
+                  style={{
+                    width: "100%",
+                    padding: "16px 20px",
+                    background: isUploading 
+                      ? "#9CA3AF" 
+                      : "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: "12px",
+                    cursor: isUploading ? "not-allowed" : "pointer",
+                    fontSize: "16px",
+                    fontWeight: "600"
+                  }}
+                >
+                  {isUploading ? "제출 중..." : "✅ 업로드하여 제출하기"}
+                </button>
+
+                {/* 취소 버튼 */}
+                <button
+                  onClick={() => {
+                    setUploadFile(null);
+                    setUploadTitle('');
+                    setUploadPreview('');
+                    const fileInput = document.getElementById('upload-file-input') as HTMLInputElement;
+                    if (fileInput) fileInput.value = '';
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "12px 20px",
+                    background: "#F3F4F6",
+                    color: "#666",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    fontWeight: "600"
+                  }}
+                >
+                  취소
+                </button>
+              </div>
+            )}
           </div>
         )}
 

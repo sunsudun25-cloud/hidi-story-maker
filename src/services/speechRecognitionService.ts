@@ -131,9 +131,11 @@ function getSpeechRecognitionErrorMessage(error: string): string {
  * 
  * @example
  * ```typescript
- * const stopListening = startListening((text) => {
- *   console.log("인식된 텍스트:", text);
- * });
+ * const stopListening = startListening(
+ *   (text) => console.log("인식된 텍스트:", text),
+ *   (error) => console.error(error),
+ *   () => console.log("음성 인식 종료")
+ * );
  * 
  * // 중지하려면
  * stopListening();
@@ -141,7 +143,8 @@ function getSpeechRecognitionErrorMessage(error: string): string {
  */
 export function startListening(
   onResult: (text: string) => void,
-  onError?: (error: string) => void
+  onError?: (error: string) => void,
+  onEnd?: () => void
 ): () => void {
   if (!isSpeechRecognitionSupported()) {
     const errorMsg = "이 브라우저는 음성 인식을 지원하지 않습니다.\n\nChrome, Edge, Safari 브라우저를 사용해주세요.";
@@ -163,6 +166,11 @@ export function startListening(
         onError(error);
       } else {
         alert(error);
+      }
+    },
+    onEnd: () => {
+      if (onEnd) {
+        onEnd();
       }
     },
   });

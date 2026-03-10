@@ -97,6 +97,11 @@ export default function StorybookManual() {
       (error) => {
         alert(error);
         setIsListening(false);
+      },
+      () => {
+        // ✅ 음성 인식 종료 시 상태 업데이트
+        console.log("🎤 음성 인식 자동 종료");
+        setIsListening(false);
       }
     );
 

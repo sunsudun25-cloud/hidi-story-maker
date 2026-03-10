@@ -4,7 +4,7 @@
  */
 
 const DB_NAME = "AIStoryMakerDB";
-const DB_VERSION = 3;
+const DB_VERSION = 4; // postcards 스토어 확실히 생성하기 위해 버전 업
 
 // Object Store Names
 const STORE_NAME = "stories";

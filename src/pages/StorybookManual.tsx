@@ -4,6 +4,7 @@ import { safeGeminiCall } from "../services/geminiService";
 import { useStorybook } from "../context/StorybookContext";
 import LoadingSpinner from "../components/LoadingSpinner";
 import StorybookLayout from "../components/storybook/StorybookLayout";
+import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
 import "./Storybook/Storybook.css";
 import "./StorybookManual.css";
 
@@ -23,6 +24,7 @@ export default function StorybookManual() {
   const [showAiModal, setShowAiModal] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   // 전달받은 데이터가 있으면 설정
   useEffect(() => {
@@ -74,6 +76,38 @@ export default function StorybookManual() {
   const handleSelectSuggestion = (suggestion: string) => {
     setStoryPrompt(suggestion);
     setShowAiModal(false);
+  };
+
+  // 🎤 음성 입력 (줄거리)
+  const handleVoiceInput = () => {
+    if (!isSpeechRecognitionSupported()) {
+      alert("이 브라우저는 음성 인식을 지원하지 않습니다.\n\nChrome, Edge, Safari 브라우저를 사용해주세요.");
+      return;
+    }
+
+    setIsListening(true);
+
+    const stopListening = startListening(
+      (text) => {
+        // 인식된 텍스트를 기존 줄거리에 추가
+        setStoryPrompt(storyPrompt + (storyPrompt ? " " : "") + text);
+      },
+      (error) => {
+        alert(error);
+        setIsListening(false);
+      }
+    );
+
+    // 컴포넌트가 언마운트될 때 음성 인식 중지
+    return () => {
+      stopListening();
+      setIsListening(false);
+    };
+  };
+
+  // 🎤 음성 입력 중지
+  const handleStopVoice = () => {
+    setIsListening(false);
   };
 
   const styles = [
@@ -208,20 +242,85 @@ export default function StorybookManual() {
 
           {/* 줄거리 입력 영역 */}
           <div className="manual-section">
-            <label className="manual-label">📖 줄거리</label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+              <label className="manual-label">📖 줄거리</label>
+              
+              {/* 🎤 음성 입력 버튼 */}
+              {isListening ? (
+                <button
+                  onClick={handleStopVoice}
+                  style={{
+                    padding: "8px 16px",
+                    fontSize: "14px",
+                    backgroundColor: "#F44336",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px"
+                  }}
+                >
+                  <span>⏹️</span>
+                  <span>중지</span>
+                </button>
+              ) : (
+                <button
+                  onClick={handleVoiceInput}
+                  style={{
+                    padding: "8px 16px",
+                    fontSize: "14px",
+                    backgroundColor: "#E91E63",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px"
+                  }}
+                >
+                  <span>🎤</span>
+                  <span>음성 입력</span>
+                </button>
+              )}
+            </div>
+            
             <textarea
               className="manual-plot-textarea"
-              placeholder="동화책 줄거리를 입력하거나 아래 버튼으로 AI 추천을 받아보세요..."
+              placeholder="동화책 줄거리를 입력하거나 음성 입력, AI 추천 버튼을 사용해보세요..."
               value={storyPrompt}
               onChange={(e) => setStoryPrompt(e.target.value)}
               rows={8}
             />
+            
+            {/* 듣고 있어요 표시 */}
+            {isListening && (
+              <div style={{
+                marginTop: "10px",
+                padding: "12px",
+                backgroundColor: "#FFF3E0",
+                border: "2px solid #FF9800",
+                borderRadius: "8px",
+                textAlign: "center",
+                fontSize: "16px",
+                fontWeight: "600",
+                color: "#E65100"
+              }}>
+                <span style={{ fontSize: "20px", marginRight: "8px" }}>👂</span>
+                듣고 있어요... 말씀해주세요!
+              </div>
+            )}
           </div>
 
           {/* AI 줄거리 추천 버튼 */}
           <button 
             className="ai-suggest-btn"
             onClick={handleAiSuggestion}
+            disabled={isListening}
           >
             <span className="ai-suggest-icon">✨</span>
             <span className="ai-suggest-text">AI에게 줄거리 추천받기</span>

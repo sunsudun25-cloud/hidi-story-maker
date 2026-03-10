@@ -76,17 +76,21 @@ export function startSpeechRecognition(options: SpeechRecognitionOptions): () =>
   };
 
   recognition.onresult = (event: any) => {
-    // 모든 결과를 합쳐서 전체 텍스트 생성
-    let transcript = "";
-    for (let i = 0; i < event.results.length; i++) {
-      transcript += event.results[i][0].transcript;
-      if (i < event.results.length - 1) {
-        transcript += " ";
+    // continuous 모드: 최종 결과(isFinal=true)만 콜백으로 전달
+    // 중간 결과는 무시하여 중복 방지
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const result = event.results[i];
+      
+      // 최종 결과만 처리
+      if (result.isFinal) {
+        const transcript = result[0].transcript.trim();
+        console.log("✅ 음성 인식 최종 결과:", transcript);
+        options.onResult(transcript);
+      } else {
+        // 중간 결과는 로그만 출력
+        console.log("⏳ 중간 결과:", result[0].transcript);
       }
     }
-    
-    console.log("✅ 음성 인식 결과:", transcript);
-    options.onResult(transcript);
   };
 
   // 인식 시작

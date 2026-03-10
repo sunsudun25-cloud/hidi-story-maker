@@ -82,7 +82,12 @@ export default function Settings() {
   // 파일 선택 핸들러
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    console.log('파일 선택됨:', file);
+    
+    if (!file) {
+      console.log('파일이 선택되지 않음');
+      return;
+    }
 
     // 이미지 파일만 허용
     if (!file.type.startsWith('image/')) {
@@ -96,12 +101,20 @@ export default function Settings() {
       return;
     }
 
+    console.log('파일 검증 통과, 미리보기 생성 시작');
     setUploadFile(file);
 
     // 미리보기 생성
     const reader = new FileReader();
     reader.onloadend = () => {
-      setUploadPreview(reader.result as string);
+      console.log('FileReader 완료, 미리보기 설정');
+      const result = reader.result as string;
+      console.log('미리보기 데이터 길이:', result?.length);
+      setUploadPreview(result);
+    };
+    reader.onerror = (error) => {
+      console.error('FileReader 오류:', error);
+      alert('파일 읽기 중 오류가 발생했습니다.');
     };
     reader.readAsDataURL(file);
 
@@ -109,6 +122,7 @@ export default function Settings() {
     const now = new Date();
     const defaultTitle = `업로드 이미지 - ${now.getFullYear()}. ${now.getMonth() + 1}. ${now.getDate()}.`;
     setUploadTitle(defaultTitle);
+    console.log('기본 제목 설정:', defaultTitle);
   };
 
   // 파일 업로드 제출

@@ -335,6 +335,8 @@ export async function deleteStorybook(id: string): Promise<void> {
    10) 엽서 저장/조회/삭제
 --------------------------------------------------------- */
 export async function savePostcard(data: Omit<Postcard, 'id' | 'createdAt'>): Promise<string> {
+  console.log('📮 savePostcard 호출됨:', data);
+  
   const id = crypto.randomUUID();
   const record: Postcard = { 
     id, 
@@ -342,35 +344,74 @@ export async function savePostcard(data: Omit<Postcard, 'id' | 'createdAt'>): Pr
     createdAt: new Date().toISOString() 
   };
 
+  console.log('📮 생성된 엽서 레코드:', record);
+
   const db = await openDB();
   if (!db) {
+    console.warn('⚠️ IndexedDB 사용 불가, localStorage에 저장');
     safeSet(`postcard-${id}`, record);
     return id;
   }
 
-  try {
-    db.transaction(POSTCARD_STORE_NAME, "readwrite")
-      .objectStore(POSTCARD_STORE_NAME)
-      .put(record);
-  } catch {
-    safeSet(`postcard-${id}`, record);
-  }
+  return new Promise((resolve, reject) => {
+    try {
+      const tx = db.transaction(POSTCARD_STORE_NAME, "readwrite");
+      const store = tx.objectStore(POSTCARD_STORE_NAME);
+      const request = store.put(record);
 
-  return id;
+      request.onsuccess = () => {
+        console.log('✅ 엽서 저장 성공:', id);
+        resolve(id);
+      };
+
+      request.onerror = (event) => {
+        console.error('❌ 엽서 저장 실패:', event);
+        safeSet(`postcard-${id}`, record);
+        resolve(id);
+      };
+
+      tx.oncomplete = () => {
+        console.log('✅ Transaction 완료');
+      };
+
+      tx.onerror = (event) => {
+        console.error('❌ Transaction 오류:', event);
+        reject(event);
+      };
+    } catch (error) {
+      console.error('❌ savePostcard 예외:', error);
+      safeSet(`postcard-${id}`, record);
+      resolve(id);
+    }
+  });
 }
 
 export async function getAllPostcards(): Promise<Postcard[]> {
+  console.log('📮 getAllPostcards 호출됨');
+  
   const db = await openDB();
-  if (!db) return [];
+  if (!db) {
+    console.warn('⚠️ IndexedDB 사용 불가');
+    return [];
+  }
 
   return new Promise((resolve) => {
     try {
       const tx = db.transaction(POSTCARD_STORE_NAME, "readonly");
       const request = tx.objectStore(POSTCARD_STORE_NAME).getAll();
       
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => resolve([]);
-    } catch {
+      request.onsuccess = () => {
+        const result = request.result || [];
+        console.log(`✅ 엽서 ${result.length}개 조회됨:`, result);
+        resolve(result);
+      };
+      
+      request.onerror = (event) => {
+        console.error('❌ 엽서 조회 실패:', event);
+        resolve([]);
+      };
+    } catch (error) {
+      console.error('❌ getAllPostcards 예외:', error);
       resolve([]);
     }
   });

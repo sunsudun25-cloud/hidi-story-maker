@@ -662,9 +662,10 @@ ${content}
 
     const stopListening = startListening(
       (text) => {
-        // 인식된 텍스트를 기존 내용에 추가
-        setContent(content + (content ? "\n\n" : "") + text);
-        setIsListening(false);
+        // ✅ 함수형 업데이트로 최신 상태 값 사용
+        setContent((prevContent) => {
+          return prevContent + (prevContent ? " " : "") + text;
+        });
       },
       (error) => {
         alert(error);

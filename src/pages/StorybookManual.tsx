@@ -89,8 +89,10 @@ export default function StorybookManual() {
 
     const stopListening = startListening(
       (text) => {
-        // 인식된 텍스트를 기존 줄거리에 추가
-        setStoryPrompt(storyPrompt + (storyPrompt ? " " : "") + text);
+        // ✅ 함수형 업데이트로 최신 상태 값 사용
+        setStoryPrompt((prevPrompt) => {
+          return prevPrompt + (prevPrompt ? " " : "") + text;
+        });
       },
       (error) => {
         alert(error);

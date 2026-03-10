@@ -76,7 +76,15 @@ export function startSpeechRecognition(options: SpeechRecognitionOptions): () =>
   };
 
   recognition.onresult = (event: any) => {
-    const transcript = event.results[0][0].transcript as string;
+    // 모든 결과를 합쳐서 전체 텍스트 생성
+    let transcript = "";
+    for (let i = 0; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+      if (i < event.results.length - 1) {
+        transcript += " ";
+      }
+    }
+    
     console.log("✅ 음성 인식 결과:", transcript);
     options.onResult(transcript);
   };
@@ -143,8 +151,8 @@ export function startListening(
 
   return startSpeechRecognition({
     lang: "ko-KR",
-    continuous: false,
-    interimResults: false,
+    continuous: true,  // ✅ 연속 인식 모드
+    interimResults: true,  // ✅ 중간 결과도 표시
     onResult,
     onError: (error) => {
       if (onError) {

@@ -1,8 +1,45 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { getCurrentLearner } from "../services/classroomService";
 import "./Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 뒤로가기 방지 로직
+  useEffect(() => {
+    // 로그인한 사용자만 뒤로가기 방지
+    const learner = getCurrentLearner();
+    if (!learner) return;
+
+    // 브라우저 히스토리에 현재 페이지 추가
+    window.history.pushState(null, "", window.location.href);
+
+    // 뒤로가기 이벤트 감지
+    const handlePopState = (e: PopStateEvent) => {
+      // 뒤로가기 시도 시 경고 메시지
+      const confirmExit = window.confirm(
+        "⚠️ 지금 나가면 로그인 화면으로 돌아갑니다.\n\n다시 로그인하셔야 합니다.\n\n정말 나가시겠습니까?"
+      );
+
+      if (confirmExit) {
+        // 사용자가 확인을 누르면 로그인 페이지로 이동
+        navigate("/", { replace: true });
+      } else {
+        // 취소하면 다시 현재 페이지로
+        window.history.pushState(null, "", window.location.href);
+      }
+    };
+
+    // 이벤트 리스너 등록
+    window.addEventListener("popstate", handlePopState);
+
+    // 정리 함수
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [navigate, location]);
 
   return (
     <div className="home-container">

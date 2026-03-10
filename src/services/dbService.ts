@@ -125,10 +125,15 @@ export async function openDB(): Promise<IDBDatabase | null> {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
 
       request.onerror = () => resolve(null);
-      request.onsuccess = () => resolve(request.result);
+      request.onsuccess = () => {
+        console.log(`✅ IndexedDB 열림: ${DB_NAME} v${DB_VERSION}`);
+        resolve(request.result);
+      };
 
       request.onupgradeneeded = (event) => {
         const db = request.result;
+        const oldVersion = event.oldVersion;
+        console.log(`🔄 IndexedDB 업그레이드: v${oldVersion} → v${DB_VERSION}`);
 
         if (!db.objectStoreNames.contains(STORE_NAME)) {
           const s = db.createObjectStore(STORE_NAME, { keyPath: "id" });

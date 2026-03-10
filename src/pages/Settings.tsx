@@ -556,6 +556,20 @@ export default function Settings() {
               </button>
             </div>
 
+            {/* 디버그 정보 */}
+            {uploadFile && (
+              <div style={{
+                padding: "12px",
+                background: "#F0F9FF",
+                borderRadius: "8px",
+                marginTop: "12px",
+                fontSize: "14px",
+                color: "#0369a1"
+              }}>
+                ✅ 파일 선택됨: {uploadFile.name} ({(uploadFile.size / 1024).toFixed(1)}KB)
+              </div>
+            )}
+
             {/* 미리보기 및 제목 입력 */}
             {uploadPreview && (
               <div style={{
@@ -573,6 +587,8 @@ export default function Settings() {
                   <img
                     src={uploadPreview}
                     alt="미리보기"
+                    onLoad={() => console.log('이미지 로드 성공')}
+                    onError={(e) => console.error('이미지 로드 실패:', e)}
                     style={{
                       width: "100%",
                       height: "auto",

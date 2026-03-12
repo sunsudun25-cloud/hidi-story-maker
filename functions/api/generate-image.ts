@@ -275,13 +275,25 @@ export async function onRequest(context: { request: Request; env: Env }) {
     }
 
     const dataUrl = `data:image/png;base64,${base64Data}`;
-    console.log('✅ 이미지 생성 완료:', { requestId });
+    
+    // ⭐ 더미 이미지 감지
+    const imageSize = base64Data.length;
+    const isDummy = imageSize < 10000; // 10KB 미만은 더미일 가능성
+    
+    console.log('✅ 이미지 생성 완료:', { 
+      requestId, 
+      imageSize,
+      isDummy,
+      promptPreview: finalPrompt.substring(0, 200) + "..."
+    });
 
     // 성공 응답
     return new Response(
       JSON.stringify({
         success: true,
         fallback: false,
+        isDummy: isDummy,  // ⭐ 더미 여부 추가
+        usePlaceholder: isDummy,  // ⭐ 플레이스홀더 여부
         imageUrl: dataUrl,
         imageData: dataUrl, // 하위 호환성 유지
         prompt: finalPrompt, // ✅ 강화된 프롬프트 반환
@@ -291,11 +303,14 @@ export async function onRequest(context: { request: Request; env: Env }) {
         size_used: size || '1024x1024',
         quality_used: quality || 'hd',
         timestamp: new Date().toISOString(),
-        // ✅ 임시 디버그 필드 (확인 후 제거 가능)
+        // ✅ 디버그 필드
         debug: {
           style: normalizedStyle,
           originalStyle: style || '(empty)',
-          finalPromptHead: finalPrompt.slice(0, 250)
+          finalPromptHead: finalPrompt.slice(0, 250),
+          finalPromptFull: finalPrompt,  // ⭐ 전체 프롬프트
+          imageSize: imageSize,
+          isDummy: isDummy
         }
       }),
       { 

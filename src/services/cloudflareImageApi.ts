@@ -81,28 +81,38 @@ export async function generateImageViaCloudflare(
 
     const data = await response.json();
     
-    // ✅ 더미 이미지 감지 (is_dummy 플래그 또는 작은 이미지 크기)
-    const isDummy = data.is_dummy || (data.imageData && data.imageData.length < 10000);
+    // ✅ 더미 이미지 감지
+    const responseImageData = data.imageUrl || data.imageData;
+    const imageSize = responseImageData?.length || 0;
+    const isDummy = data.isDummy || data.usePlaceholder || imageSize < 10000;
     
-    // ✅ 표준 응답 로그 (Practice/DrawDirect 공통)
+    // ⭐ 전체 프롬프트 로그 출력
+    if (data.debug?.finalPromptFull) {
+      console.log("📝 [FULL_PROMPT]", data.debug.finalPromptFull);
+    }
+    
+    // ✅ 표준 응답 로그
     console.log("[GEN_RESPONSE]", {
       success: data.success,
       fallback: data.fallback || false,
+      isDummy: isDummy,
+      usePlaceholder: data.usePlaceholder || false,
       request_id: data.request_id,
       model_used: data.model_used,
       size_used: data.size_used,
       quality_used: data.quality_used,
-      imageLength: (data.imageUrl || data.imageData)?.length,
-      isDummy: isDummy
+      imageSize: imageSize,
+      imageLength: imageSize
     });
     
     console.log("📦 [cloudflareImageApi] 응답 데이터:", {
       success: data.success,
       fallback: data.fallback,
-      isDummy: isDummy,  // ✅ 더미 여부 명시
+      isDummy: isDummy,
+      usePlaceholder: data.usePlaceholder,
       hasImageUrl: !!data.imageUrl,
       hasImageData: !!data.imageData,
-      imageDataLength: (data.imageUrl || data.imageData)?.length,
+      imageSize: imageSize,
       request_id: data.request_id,
       model_used: data.model_used,
       size_used: data.size_used,
@@ -117,7 +127,13 @@ export async function generateImageViaCloudflare(
     
     // ✅ 더미 이미지 경고
     if (isDummy) {
-      console.error("🚨 [cloudflareImageApi] 더미 이미지 감지! Preview 환경이거나 API Key 없음");
+      console.error("🚨 [cloudflareImageApi] 더미 이미지 감지!", {
+        isDummy: data.isDummy,
+        usePlaceholder: data.usePlaceholder,
+        imageSize: imageSize,
+        reason: imageSize < 10000 ? "이미지 크기 너무 작음 (< 10KB)" : "서버에서 더미 플래그"
+      });
+      alert(`⚠️ 더미 이미지가 생성되었습니다!\n\n이미지 크기: ${imageSize} bytes\n확인: Preview 환경이거나 OpenAI API 키가 없습니다.`);
     }
 
     // imageUrl 또는 imageData 필드에서 이미지 데이터 가져오기

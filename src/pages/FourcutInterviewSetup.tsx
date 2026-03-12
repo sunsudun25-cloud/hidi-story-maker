@@ -169,8 +169,42 @@ export default function FourcutInterviewSetup() {
       const stylePrompt = selectedStyleInfo.prompt;
       const styleModel = selectedStyleInfo.model;
 
-      // 프롬프트 생성
-      const prompt = `
+      // 프롬프트 생성 (실사 스타일은 한국어 기반으로 특별 처리)
+      let prompt: string;
+      
+      if (selectedStyle === "realistic") {
+        // 실사 스타일: 한국어 포토저널리즘 프롬프트
+        const interviewerKorean = selectedInterviewer === "male" ? "한국인 남성 아나운서" : "한국인 여자 아나운서";
+        const intervieweeMap: Record<string, string> = {
+          grandmother: "한국인 할머니",
+          grandfather: "한국인 할아버지",
+          youngMan: "한국인 젊은 남성",
+          youngWoman: "한국인 젊은 여성",
+          boyChild: "한국인 남자 어린이",
+          girlChild: "한국인 여자 어린이",
+          dog: "강아지 (리트리버)",
+          cat: "고양이"
+        };
+        const intervieweeKorean = intervieweeMap[selectedInterviewee] || "인터뷰 대상";
+        
+        // 캐릭터 DNA가 있으면 추가
+        let dnaText = "";
+        if (characterDNA.appearance || characterDNA.clothes || characterDNA.features) {
+          const dnaParts = [
+            characterDNA.appearance && `외모: ${characterDNA.appearance}`,
+            characterDNA.clothes && `옷차림: ${characterDNA.clothes}`,
+            characterDNA.features && `특징: ${characterDNA.features}`
+          ].filter(Boolean);
+          dnaText = dnaParts.length > 0 ? `. ${dnaParts.join(", ")}` : "";
+        }
+        
+        const scenePrompt = `${selectedLocation}에서 ${interviewerKorean}가 ${intervieweeKorean}를 마이크로 인터뷰하는 장면${dnaText}`;
+        const styleGuide = `실제 뉴스 현장 사진처럼 표현. 포토저널리즘 스타일. 자연광. 현실적인 피부 질감. 실제 카메라 촬영 느낌. 한국인 인물 비율과 얼굴. 3D 렌더링, 일러스트, 애니메이션, 게임 그래픽 느낌 없이. 과하게 매끈한 플라스틱 피부 없이. 동화풍 스타일 없이. 읽을 수 있는 간판 글자 없이. 진짜 사진.`;
+        
+        prompt = `${scenePrompt}. ${styleGuide}`;
+      } else {
+        // 다른 스타일: 영어 프롬프트
+        prompt = `
 A warm interview scene in ${selectedLocation}.
 ${interviewerDesc} holding a microphone, interviewing ${intervieweeDesc}.
 
@@ -186,6 +220,7 @@ People/Animals:
 No text, no Korean letters, no English words, no labels.
 Clear, simple composition suitable for storytelling.
 `.trim();
+      }
 
       console.log("🎨 인터뷰 장면 생성:", {
         location: selectedLocation,
@@ -244,15 +279,21 @@ Clear, simple composition suitable for storytelling.
     setShowMasterConfirm(false);
     
     try {
-      const updatedPrompt = basePrompt + "\n\nAdditional requirements: " + customPrompt;
+      // 실사 스타일이면 한국어로, 아니면 영어로 추가 요구사항 작성
+      const additionalReq = selectedStyle === "realistic" 
+        ? `추가 요구사항: ${customPrompt}`
+        : `Additional requirements: ${customPrompt}`;
+      
+      const updatedPrompt = basePrompt + "\n\n" + additionalReq;
       
       console.log("🔄 마스터 이미지 재생성:", {
         customPrompt,
+        style: selectedStyle,
         updatedPrompt: updatedPrompt.substring(0, 200) + "..."
       });
 
       // 원래 선택한 스타일의 모델 사용
-      const selectedStyleObj = styles.find(s => s.key === selectedStyle);
+      const selectedStyleObj = artStyles.find(s => s.key === selectedStyle);
       const modelToUse = selectedStyleObj?.model || "dall-e-3";
       
       const imageUrl = await generateWritingImage(updatedPrompt, "인터뷰", {

@@ -88,8 +88,8 @@ export default function FourcutInterviewSetup() {
       label: "실사", 
       icon: "📸", 
       desc: "사실적인 사진 같은 이미지",
-      prompt: "Photorealistic photograph, shot with professional DSLR camera, natural lighting, real people, detailed skin textures, realistic human features, high resolution photography, documentary style, candid moment, authentic environment, NO 3D render, NO CGI, NO illustration, realistic depth of field, genuine photographic quality",
-      model: "fal-ai/flux-2-pro" as const
+      prompt: "Photorealistic photograph style",
+      model: "dall-e-3" as const
     },
     { 
       key: "cinematic", 
@@ -199,9 +199,32 @@ export default function FourcutInterviewSetup() {
         }
         
         const scenePrompt = `${selectedLocation}에서 ${interviewerKorean}가 ${intervieweeKorean}를 마이크로 인터뷰하는 장면${dnaText}`;
-        const styleGuide = `실제 뉴스 현장 사진처럼 표현. 포토저널리즘 스타일. 자연광. 현실적인 피부 질감. 실제 카메라 촬영 느낌. 한국인 인물 비율과 얼굴. 3D 렌더링, 일러스트, 애니메이션, 게임 그래픽 느낌 없이. 과하게 매끈한 플라스틱 피부 없이. 동화풍 스타일 없이. 읽을 수 있는 간판 글자 없이. 진짜 사진.`;
+        const styleGuide = `
+CRITICAL PHOTOREALISM REQUIREMENTS:
+- This MUST be a real photograph taken with a professional DSLR camera
+- Real photojournalism style like actual news coverage
+- Natural lighting with realistic shadows and highlights
+- Real human skin with pores, wrinkles, natural imperfections
+- Authentic Korean facial features and body proportions
+- Documentary photography aesthetic
+- Genuine candid moment captured on camera
+- Real depth of field with bokeh effect
+- Professional photography composition
+
+STRICTLY FORBIDDEN (이것들은 절대 안됨):
+- NO 3D rendering or CGI
+- NO illustration or digital art
+- NO animation or cartoon style
+- NO game graphics or cel-shading
+- NO fairy tale or storybook style (동화풍 금지)
+- NO smooth plastic skin or overly perfect features
+- NO readable text, signs, or Korean/English letters
+
+This must look like a real photograph from a Korean news broadcast or documentary, not artwork.
+진짜 사진처럼 보여야 합니다. 일러스트나 3D가 아닌 실제 카메라로 찍은 것처럼.
+`;
         
-        prompt = `${scenePrompt}. ${styleGuide}`;
+        prompt = `${scenePrompt}\n\n${styleGuide.trim()}`;
       } else {
         // 다른 스타일: 영어 프롬프트
         prompt = `

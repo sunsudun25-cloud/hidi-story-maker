@@ -64,10 +64,11 @@ export default function FourcutInterviewSetup() {
       label: "실사", 
       icon: "📸", 
       desc: "사실적인 사진 같은 이미지",
-      style: "실제 뉴스 현장 사진처럼 표현. 포토저널리즘 스타일. 자연광. 현실적인 피부 질감. 실제 카메라 촬영 느낌. 자연스러운 한국인 얼굴 비율과 인물 표현. 일러스트, 만화, 애니메이션, 3D 렌더링 느낌 없이.",
-      composition: "두 사람이 자연스럽게 마주 보고 있는 실제 인터뷰 사진 구도. 중간 거리 촬영. 배경은 실제 장소처럼 보이게 하고, 인물에 자연스럽게 초점을 맞춘다. 표지 그림처럼 정면 대칭 배치하지 않는다.",
-      negative: "글자, 간판, 포스터, 자막, 읽을 수 있는 텍스트 없이. 그림책 삽화, 캐릭터 일러스트, 만화풍 선화, 애니메이션 느낌, 3D 렌더링 느낌 없이.",
-      model: "dall-e-3" as const
+      style: "CRITICAL: This MUST be a REAL PHOTOGRAPH, not an illustration. Shot with professional DSLR camera (Canon EOS, Nikon D850, Sony A7). Photojournalism documentary photography style. Candid photo, natural moment, authentic scene. Shallow depth of field with natural bokeh. Realistic skin texture with pores, wrinkles, imperfections. Natural asymmetry in faces and poses. Slight grain, natural lighting imperfections. 실제 뉴스 현장 사진. 포토저널리즘. DSLR 촬영. 자연광. 현실적 피부 질감.",
+      composition: "Real news interview photo composition. Documentary photography framing. Medium shot, 50mm lens equivalent. Natural candid positioning, not posed. Background slightly out of focus (bokeh). Realistic depth and perspective. Not centered, not symmetrical, not poster-like. 실제 인터뷰 사진 구도. 다큐멘터리 프레이밍. 중간 거리 촬영. 배경 자연스러운 아웃포커스.",
+      negative: "ABSOLUTELY FORBIDDEN: NO illustration, NO digital art, NO drawing, NO 3D render, NO CGI, NO computer graphics, NO animation, NO cartoon, NO anime, NO manga, NO stylized, NO artistic interpretation, NO line art, NO cel shading, NO comic style, NO smooth edges, NO perfect symmetry, NO fantasy, NO storybook, NO children's book, NO graphic design, NO poster. 글자, 간판, 포스터, 자막 없이. 일러스트, 만화, 애니메이션, 3D 렌더링, 디지털 아트, 그래픽 디자인 절대 금지.",
+      model: "gpt-image-1" as const,  // GPT Image 1 시도
+      size: "1536x1024" as const  // 가로형 사진 비율
     },
     { 
       key: "3d", 
@@ -77,7 +78,8 @@ export default function FourcutInterviewSetup() {
       style: "중립적인 3D CGI 렌더링. 자연스러운 인체 비율. 입체감 있는 조명과 그림자. 선명한 재질 표현. 전문적인 3D 장면 구성. 과장된 만화 얼굴 없이.",
       composition: "입체감 있는 장면 구성. 인물과 배경이 분리되어 보이고, 카메라 시점이 자연스러운 3D 장면 구도. 지나치게 정면 고정된 포스터 느낌 없이.",
       negative: "글자, 간판, 포스터, 자막, 읽을 수 있는 텍스트 없이. 픽사풍, 장난감 같은 캐릭터, 과장된 큰 눈, 지나치게 귀여운 얼굴 없이.",
-      model: "dall-e-3" as const
+      model: "dall-e-3" as const,
+      size: "1024x1024" as const
     },
     { 
       key: "illustration", 
@@ -87,7 +89,8 @@ export default function FourcutInterviewSetup() {
       style: "따뜻하고 깔끔한 디지털 일러스트. 부드러운 색감. 친근한 인물 표현. 교육용 그림처럼 이해하기 쉬운 장면. 단순하고 정돈된 배경.",
       composition: "동화책 장면처럼 정돈된 구도. 인물이 잘 보이고 배경은 단순하게 정리된 화면.",
       negative: "글자, 간판, 포스터, 자막, 읽을 수 있는 텍스트 없이.",
-      model: "dall-e-3" as const
+      model: "dall-e-3" as const,
+      size: "1024x1024" as const
     },
     { 
       key: "animation", 
@@ -97,7 +100,8 @@ export default function FourcutInterviewSetup() {
       style: "밝고 생동감 있는 애니메이션 스타일. 감정이 잘 보이는 표정. 선명한 색감. 이야기 전달이 쉬운 장면.",
       composition: "이야기 장면이 잘 보이는 애니메이션 구도. 인물의 표정과 동작이 잘 드러나도록 구성.",
       negative: "글자, 간판, 포스터, 자막, 읽을 수 있는 텍스트 없이.",
-      model: "dall-e-3" as const
+      model: "dall-e-3" as const,
+      size: "1024x1024" as const
     }
   ];
 
@@ -211,6 +215,10 @@ export default function FourcutInterviewSetup() {
       // 최종 프롬프트 조합: A + B + C + D
       const prompt = `${scenePrompt} ${styleGuide} ${compositionGuide} ${negativePrompt}`.trim();
 
+      // 스타일별 이미지 크기 및 품질 설정
+      const imageSize = selectedStyleInfo.size || "1024x1024";
+      const imageQuality = selectedStyle === "realistic" ? "high" : "hd";  // GPT Image: high, DALL-E: hd
+
       // ⭐ 상세 디버깅 로그 (4단 구조 확인)
       const debugPayload = {
         styleMode: selectedStyle,
@@ -221,17 +229,17 @@ export default function FourcutInterviewSetup() {
         finalPrompt: prompt,
         requestBody: {
           model: styleModel,
-          size: "1024x1024",
-          quality: "hd"
+          size: imageSize,
+          quality: imageQuality
         }
       };
       console.log("🔍 [IMAGE DEBUG - CLIENT]", JSON.stringify(debugPayload, null, 2));
 
-      // 선택된 스타일의 모델을 사용하여 이미지 생성 (DALL-E 3)
+      // 선택된 스타일의 모델을 사용하여 이미지 생성
       const imageUrl = await generateWritingImage(prompt, "인터뷰", {
         model: styleModel as any,
-        size: "1024x1024",
-        quality: "hd"  // DALL-E 3: standard | hd
+        size: imageSize,
+        quality: imageQuality
       });
 
       console.log("✅ 인터뷰 장면 생성 완료");
@@ -286,14 +294,16 @@ export default function FourcutInterviewSetup() {
         updatedPrompt: updatedPrompt.substring(0, 200) + "..."
       });
 
-      // 원래 선택한 스타일의 모델 사용
+      // 원래 선택한 스타일의 모델, 크기, 품질 사용
       const selectedStyleObj = artStyles.find(s => s.key === selectedStyle);
       const modelToUse = selectedStyleObj?.model || "dall-e-3";
+      const sizeToUse = selectedStyleObj?.size || "1024x1024";
+      const qualityToUse = selectedStyle === "realistic" ? "high" : "hd";
       
       const imageUrl = await generateWritingImage(updatedPrompt, "인터뷰", {
         model: modelToUse as any,
-        size: "1024x1024",
-        quality: "hd"  // DALL-E 3: standard | hd
+        size: sizeToUse,
+        quality: qualityToUse
       });
 
       console.log("✅ 마스터 이미지 재생성 완료");

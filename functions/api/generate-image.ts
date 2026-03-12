@@ -204,8 +204,17 @@ export async function onRequest(context: { request: Request; env: Env }) {
     }
 
     // ⭐ 상세 디버깅 로그 (서버)
+    // ⚠️ 클라이언트가 모델을 명시하지 않은 경우에만 기본값 사용
     const defaultModel = "dall-e-3";
     const defaultQuality = "hd";
+    const actualModel = model || defaultModel;  // 클라이언트 모델 우선
+    
+    console.log('🔍 [MODEL CHECK]:', {
+      clientModel: model,
+      defaultModel,
+      actualModelUsed: actualModel,
+      isGptImage: actualModel?.includes('gpt-image')
+    });
     
     const serverDebugPayload = {
       requestId,
@@ -213,7 +222,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
       finalPrompt,
       promptLength: finalPrompt.length,
       requestBody: {
-        model: model || defaultModel,
+        model: actualModel,
         prompt: finalPrompt,
         size: size || "1024x1024",
         quality: quality || defaultQuality,
@@ -232,7 +241,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
     console.log('[SERVER FINAL PROMPT]', finalPrompt);
     console.log('[SERVER STYLE MODE]', normalizedStyle);
     console.log('[SERVER REQUEST BODY]', JSON.stringify({
-      model: model || defaultModel,
+      model: actualModel,
       prompt: finalPrompt.substring(0, 500) + '...',
       size: size || "1024x1024",
       quality: quality || defaultQuality
@@ -246,7 +255,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
         "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: model || defaultModel,
+        model: actualModel,
         prompt: finalPrompt,
         n: 1,
         size: size || "1024x1024",

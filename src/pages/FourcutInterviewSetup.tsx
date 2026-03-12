@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { generateWritingImage } from "../services/imageService";
+import { generateImageViaCloudflare } from "../services/cloudflareImageApi";
+import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
 
 export default function FourcutInterviewSetup() {
   const navigate = useNavigate();
@@ -10,8 +12,9 @@ export default function FourcutInterviewSetup() {
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedInterviewer, setSelectedInterviewer] = useState("");
   const [selectedInterviewee, setSelectedInterviewee] = useState("");
-  const [selectedStyle, setSelectedStyle] = useState("watercolor");
+  const [selectedStyle, setSelectedStyle] = useState("animation");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isListening, setIsListening] = useState<string | null>(null); // "appearance" | "clothes" | "features" | null
   
   // 마스터 이미지 확인
   const [masterImageUrl, setMasterImageUrl] = useState("");
@@ -57,41 +60,72 @@ export default function FourcutInterviewSetup() {
   // 그림 스타일
   const artStyles = [
     { 
-      key: "watercolor", 
-      label: "수채화", 
-      icon: "🎨", 
-      desc: "따뜻하고 부드러운 수채화",
-      prompt: "Soft watercolor illustration, warm pastel colors, gentle brush strokes"
-    },
-    { 
       key: "animation", 
       label: "애니메이션", 
       icon: "🎬", 
       desc: "밝고 생동감 있는 애니메이션",
-      prompt: "Vibrant animation style, bright colors, clean lines, cartoon aesthetic"
+      prompt: "Vibrant animation style, bright colors, clean lines, cartoon aesthetic",
+      model: "dall-e-3" as const
     },
     { 
       key: "illustration", 
       label: "일러스트", 
       icon: "✏️", 
       desc: "세련된 디지털 일러스트",
-      prompt: "Modern digital illustration, clean vector style, professional artwork"
+      prompt: "Modern digital illustration, clean vector style, professional artwork",
+      model: "dall-e-3" as const
+    },
+    { 
+      key: "3d", 
+      label: "3D", 
+      icon: "🎮", 
+      desc: "입체적인 3D 렌더링",
+      prompt: "3D rendered style, volumetric lighting, detailed textures, Pixar-like quality",
+      model: "dall-e-3" as const
     },
     { 
       key: "realistic", 
       label: "실사", 
       icon: "📸", 
       desc: "사실적인 사진 같은 이미지",
-      prompt: "Photorealistic style, natural lighting, detailed textures, high quality photography"
+      prompt: "Photorealistic photograph, natural lighting, detailed textures, high quality DSLR camera shot, professional photography",
+      model: "fal-ai/flux-2-pro" as const
     },
     { 
       key: "cinematic", 
       label: "시네마풍", 
       icon: "🎥", 
       desc: "영화 같은 분위기",
-      prompt: "Cinematic style, dramatic lighting, film grain, movie scene aesthetic"
+      prompt: "Cinematic movie scene, dramatic lighting, film grain, Hollywood production quality, anamorphic lens",
+      model: "dall-e-3" as const
     }
   ];
+
+  // 음성 입력 핸들러
+  const handleVoiceInput = (field: "appearance" | "clothes" | "features") => {
+    if (!isSpeechRecognitionSupported()) {
+      alert("음성 인식을 지원하지 않는 브라우저입니다.\nChrome, Edge, Safari를 사용해주세요.");
+      return;
+    }
+
+    setIsListening(field);
+    startListening({
+      onResult: (text) => {
+        setCharacterDNA(prev => ({
+          ...prev,
+          [field]: prev[field] + (prev[field] ? " " : "") + text
+        }));
+      },
+      onError: (error) => {
+        console.error("음성 인식 오류:", error);
+        alert(`음성 인식 오류: ${error}`);
+        setIsListening(null);
+      },
+      onEnd: () => {
+        setIsListening(null);
+      }
+    });
+  };
 
   const handleGenerateScene = async () => {
     if (!selectedLocation || !selectedInterviewer || !selectedInterviewee) {
@@ -130,8 +164,10 @@ export default function FourcutInterviewSetup() {
         intervieweeDesc += `. ${dnaDetails}`;
       }
       
-      // 선택된 스타일 프롬프트
-      const stylePrompt = artStyles.find(s => s.key === selectedStyle)?.prompt || artStyles[0].prompt;
+      // 선택된 스타일 정보
+      const selectedStyleInfo = artStyles.find(s => s.key === selectedStyle) || artStyles[0];
+      const stylePrompt = selectedStyleInfo.prompt;
+      const styleModel = selectedStyleInfo.model;
 
       // 프롬프트 생성
       const prompt = `
@@ -155,10 +191,18 @@ Clear, simple composition suitable for storytelling.
         location: selectedLocation,
         interviewer: selectedInterviewer,
         interviewee: selectedInterviewee,
+        style: selectedStyle,
+        model: styleModel,
         prompt: prompt.substring(0, 200) + "..."
       });
 
-      const imageUrl = await generateWritingImage(prompt, "인터뷰");
+      // 실사 스타일일 경우 다른 모델 사용
+      let imageUrl: string;
+      if (selectedStyle === "realistic") {
+        imageUrl = await generateImageViaCloudflare(prompt, styleModel);
+      } else {
+        imageUrl = await generateWritingImage(prompt, "인터뷰");
+      }
 
       console.log("✅ 인터뷰 장면 생성 완료");
 
@@ -627,6 +671,24 @@ Clear, simple composition suitable for storytelling.
                     resize: "vertical"
                   }}
                 />
+                <button
+                  onClick={() => handleVoiceInput("appearance")}
+                  disabled={isListening !== null}
+                  style={{
+                    width: "100%",
+                    marginTop: "8px",
+                    padding: "10px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    backgroundColor: isListening === "appearance" ? "#D1D5DB" : "#10B981",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: isListening !== null ? "not-allowed" : "pointer"
+                  }}
+                >
+                  {isListening === "appearance" ? "👂 듣고 있어요..." : "🎤 음성으로 입력하기"}
+                </button>
               </div>
 
               {/* 옷차림 */}
@@ -655,6 +717,24 @@ Clear, simple composition suitable for storytelling.
                     resize: "vertical"
                   }}
                 />
+                <button
+                  onClick={() => handleVoiceInput("clothes")}
+                  disabled={isListening !== null}
+                  style={{
+                    width: "100%",
+                    marginTop: "8px",
+                    padding: "10px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    backgroundColor: isListening === "clothes" ? "#D1D5DB" : "#10B981",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: isListening !== null ? "not-allowed" : "pointer"
+                  }}
+                >
+                  {isListening === "clothes" ? "👂 듣고 있어요..." : "🎤 음성으로 입력하기"}
+                </button>
               </div>
 
               {/* 특징 */}
@@ -683,6 +763,24 @@ Clear, simple composition suitable for storytelling.
                     resize: "vertical"
                   }}
                 />
+                <button
+                  onClick={() => handleVoiceInput("features")}
+                  disabled={isListening !== null}
+                  style={{
+                    width: "100%",
+                    marginTop: "8px",
+                    padding: "10px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    backgroundColor: isListening === "features" ? "#D1D5DB" : "#10B981",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: isListening !== null ? "not-allowed" : "pointer"
+                  }}
+                >
+                  {isListening === "features" ? "👂 듣고 있어요..." : "🎤 음성으로 입력하기"}
+                </button>
               </div>
 
               {/* 버튼 */}

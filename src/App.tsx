@@ -20,6 +20,7 @@ import WritingAiQuestions from './pages/WritingAiQuestions'
 import FourcutInterviewTheme from './pages/FourcutInterviewTheme'
 import FourcutInterviewSetup from './pages/FourcutInterviewSetup'
 import FourcutInterviewPractice from './pages/FourcutInterviewPractice'
+import FourcutImageGeneration from './pages/FourcutImageGeneration'
 import WritingPhoto from './pages/WritingPhoto'
 import WritingVoice from './pages/WritingVoice'
 import WritingHelp from './pages/WritingHelp'
@@ -123,6 +124,7 @@ function AppContent() {
           <Route path="/write/fourcut-theme" element={<FourcutInterviewTheme />} />
           <Route path="/write/fourcut-setup" element={<FourcutInterviewSetup />} />
           <Route path="/write/fourcut-practice" element={<FourcutInterviewPractice />} />
+          <Route path="/write/fourcut-images" element={<FourcutImageGeneration />} />
           <Route path="/writing/practice" element={<WritingPractice />} />
           <Route path="/writing/photo" element={<WritingPhoto />} />
           <Route path="/writing/voice" element={<WritingVoice />} />

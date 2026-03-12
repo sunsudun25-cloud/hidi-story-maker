@@ -11,6 +11,12 @@ export default function FourcutInterviewSetup() {
   const [selectedInterviewer, setSelectedInterviewer] = useState("");
   const [selectedInterviewee, setSelectedInterviewee] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  
+  // 마스터 이미지 확인
+  const [masterImageUrl, setMasterImageUrl] = useState("");
+  const [showMasterConfirm, setShowMasterConfirm] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState("");
+  const [basePrompt, setBasePrompt] = useState("");
 
   // 테마별 장소
   const locations: { [key: string]: string[] } = {
@@ -92,21 +98,64 @@ Clear, simple composition suitable for storytelling.
 
       console.log("✅ 인터뷰 장면 생성 완료");
 
-      // 연습 모드로 이동
-      navigate("/write/fourcut-practice", {
-        state: {
-          theme,
-          interviewScene: {
-            imageUrl,
-            location: selectedLocation,
-            interviewer: selectedInterviewer,
-            interviewee: selectedInterviewee
-          }
-        }
-      });
+      // 마스터 이미지 확인 단계로 이동
+      setMasterImageUrl(imageUrl);
+      setBasePrompt(prompt);
+      setShowMasterConfirm(true);
     } catch (error) {
       console.error("❌ 인터뷰 장면 생성 오류:", error);
       alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // 마스터 이미지 승인
+  const handleMasterApprove = () => {
+    navigate("/write/fourcut-practice", {
+      state: {
+        theme,
+        interviewScene: {
+          imageUrl: masterImageUrl,
+          location: selectedLocation,
+          interviewer: selectedInterviewer,
+          interviewee: selectedInterviewee,
+          prompt: basePrompt
+        }
+      }
+    });
+  };
+
+  // 마스터 이미지 재생성
+  const handleMasterRegenerate = async () => {
+    if (!customPrompt.trim()) {
+      alert("수정하고 싶은 내용을 입력해주세요!");
+      return;
+    }
+
+    setIsGenerating(true);
+    setShowMasterConfirm(false);
+    
+    try {
+      const updatedPrompt = basePrompt + "\n\nAdditional requirements: " + customPrompt;
+      
+      console.log("🔄 마스터 이미지 재생성:", {
+        customPrompt,
+        updatedPrompt: updatedPrompt.substring(0, 200) + "..."
+      });
+
+      const imageUrl = await generateWritingImage(updatedPrompt, "인터뷰");
+
+      console.log("✅ 마스터 이미지 재생성 완료");
+
+      // 다시 확인 단계로
+      setMasterImageUrl(imageUrl);
+      setBasePrompt(updatedPrompt);
+      setCustomPrompt("");
+      setShowMasterConfirm(true);
+    } catch (error) {
+      console.error("❌ 마스터 이미지 재생성 오류:", error);
+      alert("이미지 재생성 중 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
       setIsGenerating(false);
     }
@@ -341,49 +390,189 @@ Clear, simple composition suitable for storytelling.
         </div>
 
         {/* 버튼 */}
-        <div style={{
-          display: "flex",
-          gap: "10px"
-        }}>
-          <button
-            onClick={() => navigate("/write/fourcut-theme")}
-            style={{
-              flex: 1,
+        {!showMasterConfirm && (
+          <div style={{
+            display: "flex",
+            gap: "10px"
+          }}>
+            <button
+              onClick={() => navigate("/write/fourcut-theme")}
+              style={{
+                flex: 1,
+                padding: "16px",
+                fontSize: "16px",
+                fontWeight: "600",
+                backgroundColor: "white",
+                color: "#6B7280",
+                border: "2px solid #E5E7EB",
+                borderRadius: "12px",
+                cursor: "pointer"
+              }}
+            >
+              ← 테마 다시 선택
+            </button>
+            <button
+              onClick={handleGenerateScene}
+              disabled={isGenerating || !selectedLocation || !selectedInterviewer || !selectedInterviewee}
+              style={{
+                flex: 2,
+                padding: "16px",
+                fontSize: "18px",
+                fontWeight: "700",
+                backgroundColor: (isGenerating || !selectedLocation || !selectedInterviewer || !selectedInterviewee) 
+                  ? "#D1D5DB" 
+                  : "#9C27B0",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                cursor: (isGenerating || !selectedLocation || !selectedInterviewer || !selectedInterviewee) 
+                  ? "not-allowed" 
+                  : "pointer",
+                boxShadow: "0 4px 12px rgba(156, 39, 176, 0.3)"
+              }}
+            >
+              {isGenerating ? "🎨 인터뷰 장면 만드는 중..." : "🎬 인터뷰 장면 만들기"}
+            </button>
+          </div>
+        )}
+
+        {/* 마스터 이미지 확인 */}
+        {showMasterConfirm && (
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "30px",
+            marginTop: "20px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+          }}>
+            <div style={{
+              textAlign: "center",
+              marginBottom: "30px"
+            }}>
+              <div style={{ fontSize: "64px", marginBottom: "10px" }}>🎬</div>
+              <h2 style={{
+                fontSize: "24px",
+                fontWeight: "700",
+                color: "#1F2937",
+                marginBottom: "10px"
+              }}>
+                마스터 이미지 완성!
+              </h2>
+              <p style={{
+                fontSize: "16px",
+                color: "#6B7280"
+              }}>
+                이 이미지가 마음에 드시나요?<br />
+                이 스타일로 4컷 이미지를 만들어요!
+              </p>
+            </div>
+
+            {/* 마스터 이미지 */}
+            <div style={{
+              marginBottom: "30px",
+              textAlign: "center"
+            }}>
+              <img
+                src={masterImageUrl}
+                alt="마스터 이미지"
+                style={{
+                  width: "100%",
+                  maxWidth: "500px",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
+                }}
+              />
+            </div>
+
+            {/* 이미지 정보 */}
+            <div style={{
+              backgroundColor: "#F9FAFB",
+              borderRadius: "8px",
               padding: "16px",
-              fontSize: "16px",
-              fontWeight: "600",
-              backgroundColor: "white",
+              marginBottom: "20px",
+              fontSize: "14px",
               color: "#6B7280",
-              border: "2px solid #E5E7EB",
-              borderRadius: "12px",
-              cursor: "pointer"
-            }}
-          >
-            ← 테마 다시 선택
-          </button>
-          <button
-            onClick={handleGenerateScene}
-            disabled={isGenerating || !selectedLocation || !selectedInterviewer || !selectedInterviewee}
-            style={{
-              flex: 2,
-              padding: "16px",
-              fontSize: "18px",
-              fontWeight: "700",
-              backgroundColor: (isGenerating || !selectedLocation || !selectedInterviewer || !selectedInterviewee) 
-                ? "#D1D5DB" 
-                : "#9C27B0",
-              color: "white",
-              border: "none",
-              borderRadius: "12px",
-              cursor: (isGenerating || !selectedLocation || !selectedInterviewer || !selectedInterviewee) 
-                ? "not-allowed" 
-                : "pointer",
-              boxShadow: "0 4px 12px rgba(156, 39, 176, 0.3)"
-            }}
-          >
-            {isGenerating ? "🎨 인터뷰 장면 만드는 중..." : "🎬 인터뷰 장면 만들기"}
-          </button>
-        </div>
+              lineHeight: "1.6"
+            }}>
+              📍 <strong>장소:</strong> {selectedLocation}<br />
+              🎤 <strong>인터뷰어:</strong> {selectedInterviewer === "male" ? "남자 아나운서" : "여자 아나운서"}<br />
+              👤 <strong>답변자:</strong> {interviewees.find(i => i.key === selectedInterviewee)?.label}
+            </div>
+
+            {/* 프롬프트 수정 */}
+            <div style={{
+              marginBottom: "20px"
+            }}>
+              <label style={{
+                display: "block",
+                fontSize: "14px",
+                fontWeight: "600",
+                color: "#374151",
+                marginBottom: "8px"
+              }}>
+                💡 수정하고 싶은 부분이 있나요? (선택사항)
+              </label>
+              <textarea
+                value={customPrompt}
+                onChange={(e) => setCustomPrompt(e.target.value)}
+                placeholder="예: 더 밝게, 웃는 표정으로, 배경을 흐리게..."
+                style={{
+                  width: "100%",
+                  minHeight: "80px",
+                  padding: "12px",
+                  fontSize: "14px",
+                  border: "2px solid #E5E7EB",
+                  borderRadius: "8px",
+                  fontFamily: "'Noto Sans KR', sans-serif",
+                  resize: "vertical"
+                }}
+              />
+            </div>
+
+            {/* 버튼 */}
+            <div style={{
+              display: "flex",
+              gap: "10px"
+            }}>
+              {customPrompt.trim() && (
+                <button
+                  onClick={handleMasterRegenerate}
+                  disabled={isGenerating}
+                  style={{
+                    flex: 1,
+                    padding: "16px",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    backgroundColor: isGenerating ? "#D1D5DB" : "#F59E0B",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "12px",
+                    cursor: isGenerating ? "not-allowed" : "pointer"
+                  }}
+                >
+                  {isGenerating ? "🔄 다시 만드는 중..." : "🔄 다시 만들기"}
+                </button>
+              )}
+              <button
+                onClick={handleMasterApprove}
+                style={{
+                  flex: 2,
+                  padding: "16px",
+                  fontSize: "18px",
+                  fontWeight: "700",
+                  backgroundColor: "#9C27B0",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "12px",
+                  cursor: "pointer",
+                  boxShadow: "0 4px 12px rgba(156, 39, 176, 0.3)"
+                }}
+              >
+                ✅ 마음에 들어요! 다음 단계로
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

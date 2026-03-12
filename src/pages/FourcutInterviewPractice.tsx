@@ -212,34 +212,14 @@ export default function FourcutInterviewPractice() {
       return;
     }
 
-    const story = `
-1컷 (만남):
-📺 인터뷰어: ${questions[0]}
-👤 답변: ${answers[0]}
-
-2컷 (이야기):
-📺 인터뷰어: ${questions[1]}
-👤 답변: ${answers[1]}
-
-3컷 (감동):
-📺 인터뷰어: ${questions[2]}
-👤 답변: ${answers[2]}
-
-4컷 (작별):
-📺 인터뷰어: ${questions[3]}
-👤 답변: ${answers[3]}
-`.trim();
-
-    navigate("/write/editor", {
+    // 4컷 이미지 생성 페이지로 이동
+    navigate("/write/fourcut-images", {
       state: {
-        genre: "fourcut",
-        genreLabel: "🎤 4컷 인터뷰",
-        genreGuide: "1컷(만남) → 2컷(이야기) → 3컷(감동) → 4컷(작별)",
-        themeTitle: theme.title,
-        themeKey: theme.key,
+        theme,
+        interviewScene,
         title,
-        initialContent: story,
-        interviewScene
+        questions,
+        answers
       }
     });
   };

@@ -1,176 +1,137 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { safeGeminiCall } from "../services/geminiService";
+import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
 
 export default function FourcutInterviewPractice() {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = location.state?.theme;
+  const interviewScene = location.state?.interviewScene;
 
-  const [exampleSynopsis, setExampleSynopsis] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [answers, setAnswers] = useState<string[]>(["", "", "", ""]);
+  const [isListening, setIsListening] = useState(false);
+  const [title, setTitle] = useState("");
 
   useEffect(() => {
-    if (!theme) {
+    if (!theme || !interviewScene) {
       navigate("/write/fourcut-theme");
       return;
     }
-    generateExampleSynopsis();
-  }, [theme]);
+  }, [theme, interviewScene]);
 
-  const generateExampleSynopsis = async () => {
-    if (!theme) return;
+  // 테마별 질문 세트
+  const getQuestions = (themeKey: string): string[] => {
+    const questionSets: { [key: string]: string[] } = {
+      home: [
+        "안녕하세요! 지금 어디 가시는 길이세요?",
+        "얼마나 오랜만에 가시는 건가요?",
+        "어떤 기분이 드세요?",
+        "마지막으로 한 말씀 해주세요!"
+      ],
+      work: [
+        "안녕하세요! 지금 무슨 일을 하고 계세요?",
+        "이 일을 하신 지 얼마나 되셨어요?",
+        "일하면서 가장 보람찬 순간은 언제인가요?",
+        "앞으로의 계획이나 바람이 있으시다면?"
+      ],
+      season: [
+        "안녕하세요! 오늘 어디 나오셨어요?",
+        "이 계절에 특별히 떠오르는 추억이 있으신가요?",
+        "지금 이 순간 어떤 기분이 드세요?",
+        "이 계절을 즐기는 당신만의 방법이 있나요?"
+      ],
+      family: [
+        "오늘은 누구를 소개해주실 건가요?",
+        "그분과 가장 좋은 추억은 무엇인가요?",
+        "그분에게 해주고 싶은 말이 있다면?",
+        "그분은 당신에게 어떤 의미인가요?"
+      ],
+      memory: [
+        "오늘은 어떤 추억을 들려주실 건가요?",
+        "그때는 어떤 모습이었나요?",
+        "그 순간 어떤 기분이었어요?",
+        "지금 그때를 돌아보니 어떤 생각이 드세요?"
+      ]
+    };
 
-    setIsLoading(true);
-    try {
-      const prompt = `
-당신은 4컷 인터뷰 작가입니다.
-다음 테마로 4컷 인터뷰 예시를 작성해주세요.
+    return questionSets[themeKey] || questionSets.home;
+  };
 
-테마: ${theme.title}
-설명: ${theme.desc}
-인터뷰 대상 예시: ${theme.examples[0]}
-장소 예시: ${theme.locations[0]}
+  const questions = theme ? getQuestions(theme.key) : [];
 
----
+  // 음성 입력 핸들러
+  const handleVoiceInput = () => {
+    if (!isSpeechRecognitionSupported()) {
+      alert("음성 인식을 지원하지 않는 브라우저입니다.\nChrome, Edge, Safari를 사용해주세요.");
+      return;
+    }
 
-**4컷 구성 규칙:**
-- 각 컷은 2-3줄의 짧은 문장으로 구성
-- 1컷: 만남 (인터뷰 대상과 첫 만남)
-- 2컷: 이야기 (대상의 이야기나 상황)
-- 3컷: 감동 (깊은 이야기나 감정)
-- 4컷: 작별 (따뜻한 마무리)
+    setIsListening(true);
+    startListening({
+      onResult: (text) => {
+        const newAnswers = [...answers];
+        newAnswers[currentStep] = newAnswers[currentStep] + (newAnswers[currentStep] ? " " : "") + text;
+        setAnswers(newAnswers);
+      },
+      onError: (error) => {
+        console.error("음성 인식 오류:", error);
+        alert(`음성 인식 오류: ${error}`);
+        setIsListening(false);
+      },
+      onEnd: () => {
+        setIsListening(false);
+      }
+    });
+  };
 
----
+  // 다음 단계
+  const handleNext = () => {
+    if (!answers[currentStep].trim()) {
+      alert("답변을 입력해주세요!");
+      return;
+    }
 
-**출력 형식 (정확히 이 형식으로):**
-
-제목: (제목)
-
-1컷 (만남):
-(2-3줄 내용)
-
-2컷 (이야기):
-(2-3줄 내용)
-
-3컷 (감동):
-(2-3줄 내용)
-
-4컷 (작별):
-(2-3줄 내용)
-
----
-
-노인 학습자가 쉽게 이해하고 따라 쓸 수 있도록 간단하고 따뜻한 예시를 작성해주세요.
-`;
-
-      const response = await safeGeminiCall(prompt);
-      setExampleSynopsis(response);
-    } catch (error) {
-      console.error("예시 생성 오류:", error);
-      setExampleSynopsis(getDefaultExample(theme.key));
-    } finally {
-      setIsLoading(false);
+    if (currentStep < 3) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      // 완료 → 에디터로 이동
+      handleComplete();
     }
   };
 
-  const getDefaultExample = (themeKey: string): string => {
-    const examples: { [key: string]: string } = {
-      home: `제목: 추석 귀성길의 만남
-
-1컷 (만남):
-고속도로 휴게소 벤치에 앉아 계신 분을 봤습니다.
-"안녕하세요, 어디 가시는 길이세요?" 물었습니다.
-
-2컷 (이야기):
-"고향에 가는 길이에요. 부모님이 기다리고 계세요."
-손에는 선물 봉투가 가득 들려있었습니다.
-
-3컷 (감동):
-"올해는 코로나 때문에 3년 만에 가는 거예요."
-목소리에 설렘과 그리움이 묻어났습니다.
-
-4컷 (작별):
-"부모님 건강하시길 바랄게요!" 인사를 나눴습니다.
-그분은 환하게 웃으며 차로 돌아갔습니다.`,
-
-      work: `제목: 늦은 밤 편의점에서
-
-1컷 (만남):
-편의점에 들어가니 젊은 직원이 있었습니다.
-"늦은 시간까지 일하시네요?" 물었습니다.
-
-2컷 (이야기):
-"네, 대학 등록금 벌려고 야간 알바 해요."
-피곤해 보이지만 밝게 웃었습니다.
-
-3컷 (감동):
-"힘들지 않으세요?" 걱정스럽게 물었습니다.
-"괜찮아요, 꿈이 있으니까요!" 힘차게 대답했습니다.
-
-4컷 (작별):
-작은 간식을 선물로 드렸습니다.
-"고맙습니다! 조심히 가세요!" 환하게 웃었습니다.`,
-
-      season: `제목: 봄날 공원의 할머니
-
-1컷 (만남):
-공원 벤치에서 꽃을 보고 계신 할머니를 만났습니다.
-"벚꽃이 참 예쁘죠?" 말을 걸었습니다.
-
-2컷 (이야기):
-"네, 매년 이맘때면 여기 와요. 남편과 추억이 있거든요."
-할머니 눈가에 그리움이 어렸습니다.
-
-3컷 (감동):
-"남편 분이 꽃을 좋아하셨나 봐요."
-"네, 매년 여기서 함께 꽃구경 했었지요." 미소 지으셨습니다.
-
-4컷 (작별):
-"올해도 예쁜 꽃 보셨으니 기뻐하실 거예요."
-할머니는 고개를 끄덕이며 꽃을 바라보셨습니다.`,
-
-      family: `제목: 우리 손주 이야기
-
-1컷 (만남):
-오늘은 우리 손주를 소개하려고 합니다.
-이름은 민준이, 올해 7살입니다.
-
-2컷 (이야기):
-주말마다 우리 집에 놀러 옵니다.
-할아버지 손을 잡고 공원 산책을 좋아해요.
-
-3컷 (감동):
-"할아버지, 나 커서도 할아버지랑 같이 살래요!"
-그 말에 가슴이 뭉클했습니다.
-
-4컷 (작별):
-민준이는 나의 큰 기쁨입니다.
-건강하게 자라주길 매일 기도합니다.`,
-
-      memory: `제목: 50년 만에 만난 친구
-
-1컷 (만남):
-동창회에서 옛 친구를 만났습니다.
-"자네가 철수야?" 반갑게 손을 잡았습니다.
-
-2컷 (이야기):
-"50년 만이네! 그때 그 개구쟁이가 맞나?"
-둘이서 옛날 이야기에 웃음꽃이 피었습니다.
-
-3컷 (감동):
-"우리 젊었을 때가 그립네. 다들 어디 갔을까?"
-친구 눈가에 그리움이 어렸습니다.
-
-4컷 (작별):
-"자주 만나세! 전화번호 교환하자고."
-50년 만에 다시 찾은 소중한 인연이었습니다.`
-    };
-
-    return examples[themeKey] || examples.home;
+  // 이전 단계
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
-  const handleStartWriting = () => {
+  // 완료
+  const handleComplete = () => {
+    if (!title.trim()) {
+      alert("제목을 입력해주세요!");
+      return;
+    }
+
+    const story = `
+1컷 (만남):
+📺 인터뷰어: ${questions[0]}
+👤 답변: ${answers[0]}
+
+2컷 (이야기):
+📺 인터뷰어: ${questions[1]}
+👤 답변: ${answers[1]}
+
+3컷 (감동):
+📺 인터뷰어: ${questions[2]}
+👤 답변: ${answers[2]}
+
+4컷 (작별):
+📺 인터뷰어: ${questions[3]}
+👤 답변: ${answers[3]}
+`.trim();
+
     navigate("/write/editor", {
       state: {
         genre: "fourcut",
@@ -178,12 +139,14 @@ export default function FourcutInterviewPractice() {
         genreGuide: "1컷(만남) → 2컷(이야기) → 3컷(감동) → 4컷(작별)",
         themeTitle: theme.title,
         themeKey: theme.key,
-        exampleSynopsis
+        title,
+        initialContent: story,
+        interviewScene
       }
     });
   };
 
-  if (!theme) return null;
+  if (!theme || !interviewScene) return null;
 
   return (
     <div style={{
@@ -212,51 +175,133 @@ export default function FourcutInterviewPractice() {
             color: "#1F2937",
             marginBottom: "10px"
           }}>
-            {theme.title}
+            🎤 4컷 인터뷰 연습
           </h1>
           <p style={{
             fontSize: "16px",
             color: "#6B7280"
           }}>
-            {theme.desc}
+            {theme.title}
           </p>
         </div>
 
-        {/* 연습 안내 */}
+        {/* 인터뷰 장면 이미지 */}
         <div style={{
-          backgroundColor: "#EEF2FF",
-          border: "2px solid #818CF8",
+          backgroundColor: "white",
           borderRadius: "12px",
           padding: "20px",
-          marginBottom: "20px"
+          marginBottom: "20px",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
         }}>
           <h3 style={{
             fontSize: "18px",
             fontWeight: "700",
-            color: "#3730A3",
-            marginBottom: "10px"
+            color: "#1F2937",
+            marginBottom: "15px",
+            textAlign: "center"
           }}>
-            📚 연습하기
+            🎬 인터뷰 장면
           </h3>
-          <p style={{
-            fontSize: "14px",
-            color: "#4338CA",
-            lineHeight: "1.6",
-            marginBottom: "10px"
-          }}>
-            먼저 예시를 보고 어떻게 쓰는지 익혀보세요!<br />
-            예시를 참고하여 나만의 이야기를 만들 수 있어요.
-          </p>
+          <img
+            src={interviewScene.imageUrl}
+            alt="인터뷰 장면"
+            style={{
+              width: "100%",
+              borderRadius: "8px",
+              marginBottom: "15px"
+            }}
+          />
           <div style={{
-            fontSize: "12px",
-            color: "#6366F1",
-            fontWeight: "600"
+            fontSize: "14px",
+            color: "#6B7280",
+            textAlign: "center",
+            lineHeight: "1.6"
           }}>
-            💡 꿀팁: 예시를 그대로 따라 쓰거나, 일부만 바꿔서 써도 좋아요!
+            📍 장소: {interviewScene.location}<br />
+            🎤 인터뷰어: {interviewScene.interviewer === "male" ? "남자 아나운서" : "여자 아나운서"}<br />
+            👤 답변자: {interviewScene.interviewee}
           </div>
         </div>
 
-        {/* 예시 시놉시스 */}
+        {/* 제목 입력 (첫 단계에서만) */}
+        {currentStep === 0 && (
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "20px",
+            marginBottom: "20px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+          }}>
+            <h3 style={{
+              fontSize: "18px",
+              fontWeight: "700",
+              color: "#1F2937",
+              marginBottom: "15px"
+            }}>
+              📝 인터뷰 제목을 입력하세요
+            </h3>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="예: 추석 귀성길의 만남"
+              style={{
+                width: "100%",
+                padding: "12px",
+                fontSize: "16px",
+                border: "2px solid #E5E7EB",
+                borderRadius: "8px",
+                fontFamily: "'Noto Sans KR', sans-serif"
+              }}
+            />
+          </div>
+        )}
+
+        {/* 진행 상황 */}
+        <div style={{
+          backgroundColor: "#EEF2FF",
+          border: "2px solid #818CF8",
+          borderRadius: "12px",
+          padding: "16px",
+          marginBottom: "20px"
+        }}>
+          <div style={{
+            fontSize: "16px",
+            fontWeight: "700",
+            color: "#3730A3",
+            marginBottom: "10px",
+            textAlign: "center"
+          }}>
+            {currentStep + 1}컷 / 4컷
+          </div>
+          <div style={{
+            display: "flex",
+            gap: "8px",
+            marginBottom: "10px"
+          }}>
+            {[0, 1, 2, 3].map((step) => (
+              <div
+                key={step}
+                style={{
+                  flex: 1,
+                  height: "8px",
+                  backgroundColor: step <= currentStep ? "#818CF8" : "#E5E7EB",
+                  borderRadius: "4px",
+                  transition: "all 0.3s"
+                }}
+              />
+            ))}
+          </div>
+          <div style={{
+            fontSize: "14px",
+            color: "#4338CA",
+            textAlign: "center"
+          }}>
+            {["만남", "이야기", "감동", "작별"][currentStep]}
+          </div>
+        </div>
+
+        {/* 질문 및 답변 */}
         <div style={{
           backgroundColor: "white",
           borderRadius: "12px",
@@ -264,104 +309,79 @@ export default function FourcutInterviewPractice() {
           marginBottom: "20px",
           boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
         }}>
+          {/* 인터뷰어 질문 */}
           <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: "15px"
+            backgroundColor: "#F3E8FF",
+            borderRadius: "8px",
+            padding: "16px",
+            marginBottom: "20px"
           }}>
-            <h3 style={{
-              fontSize: "18px",
+            <div style={{
+              fontSize: "14px",
               fontWeight: "700",
-              color: "#1F2937"
+              color: "#7C3AED",
+              marginBottom: "8px"
             }}>
-              ✏️ 예시 작품
-            </h3>
-            {isLoading && (
-              <span style={{
-                fontSize: "14px",
-                color: "#9C27B0"
-              }}>
-                🔄 예시 생성 중...
-              </span>
-            )}
+              📺 인터뷰어
+            </div>
+            <div style={{
+              fontSize: "16px",
+              color: "#1F2937",
+              lineHeight: "1.6"
+            }}>
+              {questions[currentStep]}
+            </div>
           </div>
 
-          {isLoading ? (
+          {/* 답변 입력 */}
+          <div>
             <div style={{
-              textAlign: "center",
-              padding: "40px",
-              color: "#9CA3AF"
+              fontSize: "16px",
+              fontWeight: "700",
+              color: "#1F2937",
+              marginBottom: "10px"
             }}>
-              <div style={{ fontSize: "32px", marginBottom: "10px" }}>⏳</div>
-              <p>AI가 예시를 만들고 있어요...</p>
+              👤 당신의 답변
             </div>
-          ) : (
-            <pre style={{
-              fontSize: "15px",
-              lineHeight: "1.8",
-              color: "#374151",
-              whiteSpace: "pre-wrap",
-              fontFamily: "'Noto Sans KR', sans-serif",
-              margin: 0
-            }}>
-              {exampleSynopsis}
-            </pre>
-          )}
-        </div>
+            <textarea
+              value={answers[currentStep]}
+              onChange={(e) => {
+                const newAnswers = [...answers];
+                newAnswers[currentStep] = e.target.value;
+                setAnswers(newAnswers);
+              }}
+              placeholder="여기에 답변을 입력하세요..."
+              style={{
+                width: "100%",
+                minHeight: "120px",
+                padding: "12px",
+                fontSize: "15px",
+                border: "2px solid #E5E7EB",
+                borderRadius: "8px",
+                fontFamily: "'Noto Sans KR', sans-serif",
+                resize: "vertical"
+              }}
+            />
 
-        {/* 4컷 구성 가이드 */}
-        <div style={{
-          backgroundColor: "#FEF3C7",
-          border: "2px solid #F59E0B",
-          borderRadius: "12px",
-          padding: "20px",
-          marginBottom: "20px"
-        }}>
-          <h3 style={{
-            fontSize: "16px",
-            fontWeight: "700",
-            color: "#92400E",
-            marginBottom: "12px"
-          }}>
-            📝 4컷 작성 가이드
-          </h3>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "10px"
-          }}>
-            {[
-              { num: "1컷", title: "만남", desc: "인터뷰 대상과 첫 만남" },
-              { num: "2컷", title: "이야기", desc: "대상의 이야기나 상황" },
-              { num: "3컷", title: "감동", desc: "깊은 이야기나 감정" },
-              { num: "4컷", title: "작별", desc: "따뜻한 마무리" }
-            ].map((cut) => (
-              <div
-                key={cut.num}
-                style={{
-                  backgroundColor: "white",
-                  padding: "12px",
-                  borderRadius: "8px",
-                  border: "1px solid #FCD34D"
-                }}
-              >
-                <div style={{
-                  fontSize: "14px",
-                  fontWeight: "700",
-                  color: "#D97706",
-                  marginBottom: "4px"
-                }}>
-                  {cut.num} ({cut.title})
-                </div>
-                <div style={{
-                  fontSize: "12px",
-                  color: "#92400E"
-                }}>
-                  {cut.desc}
-                </div>
-              </div>
-            ))}
+            {/* 음성 입력 버튼 */}
+            <button
+              onClick={handleVoiceInput}
+              disabled={isListening}
+              style={{
+                width: "100%",
+                marginTop: "10px",
+                padding: "12px",
+                fontSize: "15px",
+                fontWeight: "600",
+                backgroundColor: isListening ? "#D1D5DB" : "#10B981",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: isListening ? "not-allowed" : "pointer"
+              }}
+            >
+              {isListening ? "👂 듣고 있어요..." : "🎤 음성으로 답변하기"}
+            </button>
           </div>
         </div>
 
@@ -370,39 +390,61 @@ export default function FourcutInterviewPractice() {
           display: "flex",
           gap: "10px"
         }}>
+          {currentStep > 0 && (
+            <button
+              onClick={handlePrevious}
+              style={{
+                flex: 1,
+                padding: "16px",
+                fontSize: "16px",
+                fontWeight: "600",
+                backgroundColor: "white",
+                color: "#6B7280",
+                border: "2px solid #E5E7EB",
+                borderRadius: "12px",
+                cursor: "pointer"
+              }}
+            >
+              ← 이전
+            </button>
+          )}
           <button
-            onClick={() => navigate("/write/fourcut-theme")}
-            style={{
-              flex: 1,
-              padding: "16px",
-              fontSize: "16px",
-              fontWeight: "600",
-              backgroundColor: "white",
-              color: "#6B7280",
-              border: "2px solid #E5E7EB",
-              borderRadius: "12px",
-              cursor: "pointer"
-            }}
-          >
-            ← 테마 다시 선택
-          </button>
-          <button
-            onClick={handleStartWriting}
+            onClick={handleNext}
+            disabled={!answers[currentStep].trim() || (currentStep === 0 && !title.trim())}
             style={{
               flex: 2,
               padding: "16px",
               fontSize: "18px",
               fontWeight: "700",
-              backgroundColor: "#9C27B0",
+              backgroundColor: (!answers[currentStep].trim() || (currentStep === 0 && !title.trim()))
+                ? "#D1D5DB"
+                : "#9C27B0",
               color: "white",
               border: "none",
               borderRadius: "12px",
-              cursor: "pointer",
+              cursor: (!answers[currentStep].trim() || (currentStep === 0 && !title.trim()))
+                ? "not-allowed"
+                : "pointer",
               boxShadow: "0 4px 12px rgba(156, 39, 176, 0.3)"
             }}
           >
-            ✍️ 이제 내 이야기 쓰기 →
+            {currentStep < 3 ? "다음 →" : "✅ 완료"}
           </button>
+        </div>
+
+        {/* 안내 */}
+        <div style={{
+          marginTop: "20px",
+          padding: "16px",
+          backgroundColor: "#FEF3C7",
+          border: "2px solid #F59E0B",
+          borderRadius: "12px",
+          fontSize: "14px",
+          color: "#92400E",
+          lineHeight: "1.6"
+        }}>
+          💡 <strong>꿀팁:</strong> 각 질문에 2-3문장으로 답변하세요!<br />
+          음성 입력을 사용하면 더 편하게 작성할 수 있어요.
         </div>
       </div>
     </div>

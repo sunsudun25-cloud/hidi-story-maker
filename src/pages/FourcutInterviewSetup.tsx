@@ -64,11 +64,11 @@ export default function FourcutInterviewSetup() {
       label: "실사", 
       icon: "📸", 
       desc: "사실적인 사진 같은 이미지",
-      style: "CRITICAL: This MUST be a REAL PHOTOGRAPH, not an illustration. Shot with professional DSLR camera (Canon EOS, Nikon D850, Sony A7). Photojournalism documentary photography style. Candid photo, natural moment, authentic scene. Shallow depth of field with natural bokeh. Realistic skin texture with pores, wrinkles, imperfections. Natural asymmetry in faces and poses. Slight grain, natural lighting imperfections. 실제 뉴스 현장 사진. 포토저널리즘. DSLR 촬영. 자연광. 현실적 피부 질감.",
-      composition: "Real news interview photo composition. Documentary photography framing. Medium shot, 50mm lens equivalent. Natural candid positioning, not posed. Background slightly out of focus (bokeh). Realistic depth and perspective. Not centered, not symmetrical, not poster-like. 실제 인터뷰 사진 구도. 다큐멘터리 프레이밍. 중간 거리 촬영. 배경 자연스러운 아웃포커스.",
-      negative: "ABSOLUTELY FORBIDDEN: NO illustration, NO digital art, NO drawing, NO 3D render, NO CGI, NO computer graphics, NO animation, NO cartoon, NO anime, NO manga, NO stylized, NO artistic interpretation, NO line art, NO cel shading, NO comic style, NO smooth edges, NO perfect symmetry, NO fantasy, NO storybook, NO children's book, NO graphic design, NO poster. 글자, 간판, 포스터, 자막 없이. 일러스트, 만화, 애니메이션, 3D 렌더링, 디지털 아트, 그래픽 디자인 절대 금지.",
-      model: "gpt-image-1" as const,  // GPT Image 1 시도
-      size: "1536x1024" as const  // 가로형 사진 비율
+      style: "실제 뉴스 현장 사진. 포토저널리즘. 자연광. DSLR 촬영 느낌. 현실적인 피부 질감.",
+      composition: "실제 인터뷰 사진 구도. 중간 거리 촬영. 배경 자연스러운 아웃포커스.",
+      negative: "일러스트, 만화, 애니메이션, 3D 렌더링 느낌 없이. 글자, 간판, 포스터 없이.",
+      model: "gpt-image-1" as const,
+      size: "1536x1024" as const
     },
     { 
       key: "3d", 

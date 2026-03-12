@@ -250,29 +250,40 @@ export async function onRequest(context: { request: Request; env: Env }) {
     // ⭐ GPT Image vs DALL-E 파라미터 분기
     const isGptImage = actualModel.includes('gpt-image');
     
+    // ⭐ 프롬프트 길이 체크
+    const promptLength = finalPrompt.length;
+    console.log('📏 [PROMPT LENGTH]', {
+      length: promptLength,
+      maxDallE3: 4000,
+      isOverLimit: promptLength > 4000,
+      preview: finalPrompt.substring(0, 100) + '...'
+    });
+    
     let requestBody: any;
     if (isGptImage) {
       // GPT Image 모델용 파라미터
-      // GPT Image quality: "low" | "medium" | "high"
+      // GPT Image quality: "low" | "medium" | "high" | "auto"
       const gptQuality = quality === "hd" ? "high" : (quality || "high");
       
       requestBody = {
         model: actualModel,
         prompt: finalPrompt,
         n: 1,
-        size: size || "1024x1024",
-        quality: gptQuality,  // GPT Image는 low/medium/high
-        response_format: "url"  // GPT Image는 URL로 반환 (b64_json 불가)
+        size: size || "1024x1024",  // GPT Image: 1024x1024/1536x1024/1024x1536/auto
+        quality: gptQuality  // GPT Image는 low/medium/high/auto
+        // ⚠️ style 파라미터 제거 (GPT Image는 지원 안 함)
+        // ⚠️ response_format 제거 (GPT Image는 기본 b64_json 반환)
       };
     } else {
-      // DALL-E 모델용 파라미터
+      // DALL-E 3 모델용 파라미터
       requestBody = {
         model: actualModel,
         prompt: finalPrompt,
         n: 1,
-        size: size || "1024x1024",
+        size: size || "1024x1024",  // DALL-E: 1024x1024/1792x1024/1024x1792
         quality: quality || defaultQuality,  // DALL-E는 standard/hd
         response_format: "b64_json"
+        // DALL-E는 style: "natural" | "vivid" 가능 (선택사항)
       };
     }
     
@@ -322,35 +333,8 @@ export async function onRequest(context: { request: Request; env: Env }) {
       firstItem: data.data?.[0] ? Object.keys(data.data[0]) : []
     });
 
-    // ⭐ GPT Image vs DALL-E 응답 처리 분기
-    let base64Data: string;
-    
-    if (isGptImage) {
-      // GPT Image는 URL 또는 PNG 바이너리 반환
-      const imageUrl = data.data[0]?.url;
-      if (imageUrl) {
-        // URL을 base64로 변환
-        const imageResponse = await fetch(imageUrl);
-        const imageBuffer = await imageResponse.arrayBuffer();
-        const base64 = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
-        base64Data = base64;
-        console.log('✅ GPT Image URL을 base64로 변환 완료');
-      } else {
-        console.error('❌ GPT Image URL 없음:', data);
-        return new Response(
-          JSON.stringify({ 
-            success: false,
-            fallback: false,
-            error: 'GPT Image 응답에 URL이 없습니다.',
-            raw_response: data
-          }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-    } else {
-      // DALL-E는 b64_json 반환
-      base64Data = data.data[0].b64_json;
-    }
+    // ⭐ GPT Image와 DALL-E 모두 b64_json 반환
+    const base64Data = data.data[0]?.b64_json;
 
     if (!base64Data) {
       console.error('❌ 이미지 데이터 없음:', data);

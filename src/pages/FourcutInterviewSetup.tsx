@@ -30,10 +30,10 @@ export default function FourcutInterviewSetup() {
     features: ""
   });
 
-  // 테마별 장소
+  // 테마별 장소 (인터뷰 장면에 적합하게 수정)
   const locations: { [key: string]: string[] } = {
-    home: ["고속도로 휴게소", "기차역 플랫폼", "버스 터미널", "공항 로비"],
-    work: ["편의점 계산대", "시장 골목", "택배 차량 앞", "거리 청소 중"],
+    home: ["고속도로 휴게소 보행로", "기차역 플랫폼", "버스 터미널 대합실", "공항 로비"],
+    work: ["편의점 앞", "시장 골목", "택배 차량 옆", "거리 청소 현장"],
     season: ["봄꽃 가득한 공원", "여름 해변", "가을 단풍길", "눈 내리는 거리"],
     family: ["집 거실", "가족 식당", "공원 벤치", "할머니 댁 마당"],
     memory: ["옛날 골목", "고향 학교 앞", "오래된 카페", "추억의 장소"]
@@ -57,46 +57,38 @@ export default function FourcutInterviewSetup() {
     { key: "cat", label: "고양이", icon: "🐈", desc: "우아하고 독립적인 고양이 (상상 인터뷰)" }
   ];
 
-  // 그림 스타일
+  // 그림 스타일 (한국어 안정 프롬프트)
   const artStyles = [
     { 
-      key: "animation", 
-      label: "애니메이션", 
-      icon: "🎬", 
-      desc: "밝고 생동감 있는 애니메이션",
-      prompt: "ANIMATION STYLE REQUIRED: Bright vibrant cartoon animation, bold outlines, flat colors, playful character design, studio animation quality like Disney or Ghibli. NOT photorealistic, NOT 3D render, NOT illustration.",
+      key: "realistic", 
+      label: "실사", 
+      icon: "📸", 
+      desc: "사실적인 사진 같은 이미지",
+      prompt: "실제 사진처럼 표현. 포토저널리즘 분위기. 자연광. 현실적인 피부 질감. 실제 카메라로 촬영한 느낌. 자연스러운 인물 비율과 얼굴. 과하게 매끈한 피부 없이. 3D 렌더링, 일러스트, 애니메이션, 만화 느낌 없이.",
+      model: "dall-e-3" as const
+    },
+    { 
+      key: "3d", 
+      label: "3D 렌더링", 
+      icon: "🎮", 
+      desc: "입체적인 3D CGI",
+      prompt: "중립적인 3D CGI 렌더링. 자연스러운 인체 비율. 입체감 있는 조명과 그림자. 깔끔한 재질 표현. 전문적인 3D 장면 구성. 과장된 만화 얼굴 없이. 지나치게 귀엽거나 장난감 같은 느낌 없이. 실사도 아니고 동화풍도 아닌 선명한 3D 렌더링.",
       model: "dall-e-3" as const
     },
     { 
       key: "illustration", 
       label: "일러스트", 
       icon: "✏️", 
-      desc: "세련된 디지털 일러스트",
-      prompt: "DIGITAL ILLUSTRATION STYLE REQUIRED: Professional editorial illustration, clean vector art, modern graphic design, flat or gradient shading, magazine quality. NOT photorealistic, NOT 3D render, NOT cartoon animation.",
+      desc: "따뜻한 디지털 일러스트",
+      prompt: "따뜻하고 깔끔한 디지털 일러스트. 부드러운 색감. 친근한 인물 표현. 선명하지만 부담스럽지 않은 화면 구성. 교육용 그림책처럼 이해하기 쉬운 장면. 단순하고 정돈된 배경. 과하게 사실적이지 않게.",
       model: "dall-e-3" as const
     },
     { 
-      key: "3d", 
-      label: "3D", 
-      icon: "🎮", 
-      desc: "입체적인 3D 렌더링",
-      prompt: "3D CGI RENDER STYLE REQUIRED: Professional 3D computer graphics, volumetric lighting, ray tracing, detailed textures, Pixar/Blender quality rendering, smooth plastic materials, stylized 3D characters. NOT photorealistic, NOT flat illustration, NOT 2D animation.",
-      model: "dall-e-3" as const
-    },
-    { 
-      key: "realistic", 
-      label: "실사", 
-      icon: "📸", 
-      desc: "사실적인 사진 같은 이미지",
-      prompt: "PHOTOREALISTIC STYLE REQUIRED: Real photograph taken with professional DSLR camera, documentary journalism style, natural lighting, realistic human skin texture with pores and imperfections. NOT 3D render, NOT CGI, NOT illustration, NOT animation.",
-      model: "dall-e-3" as const
-    },
-    { 
-      key: "cinematic", 
-      label: "시네마풍", 
-      icon: "🎥", 
-      desc: "영화 같은 분위기",
-      prompt: "CINEMATIC FILM STYLE REQUIRED: Professional movie cinematography, dramatic lighting, film grain, anamorphic lens bokeh, Hollywood production quality, real actors and sets. NOT 3D animation, NOT illustration, NOT cartoon.",
+      key: "animation", 
+      label: "애니메이션", 
+      icon: "🎬", 
+      desc: "생동감 있는 애니메이션",
+      prompt: "밝고 생동감 있는 애니메이션 스타일. 부드러운 표정과 움직임이 느껴지는 장면. 선명한 색감. 친근하고 감정이 잘 보이는 캐릭터. 화면이 단순하고 이야기 전달이 쉬운 구도. 너무 복잡한 배경 없이. 실사 느낌 없이.",
       model: "dall-e-3" as const
     }
   ];
@@ -169,120 +161,44 @@ export default function FourcutInterviewSetup() {
       const stylePrompt = selectedStyleInfo.prompt;
       const styleModel = selectedStyleInfo.model;
 
-      // 프롬프트 생성 (실사 스타일은 한국어 기반으로 특별 처리)
-      let prompt: string;
+      // 인터뷰어 한국어 설명
+      const interviewerKorean = selectedInterviewer === "male" ? "남자 아나운서" : "여자 아나운서";
       
-      if (selectedStyle === "realistic") {
-        // 실사 스타일: 순수 영어 포토저널리즘 프롬프트
-        const interviewerEnglish = selectedInterviewer === "male" ? "Korean male news reporter" : "Korean female news reporter";
-        const intervieweeEnglishMap: Record<string, string> = {
-          grandmother: "Korean elderly grandmother",
-          grandfather: "Korean elderly grandfather",
-          youngMan: "Korean young man",
-          youngWoman: "Korean young woman",
-          boyChild: "Korean boy child",
-          girlChild: "Korean girl child",
-          dog: "friendly dog (golden retriever)",
-          cat: "elegant cat"
-        };
-        const intervieweeEnglish = intervieweeEnglishMap[selectedInterviewee] || "interviewee";
-        
-        // 캐릭터 DNA 영어로 변환
-        let dnaText = "";
-        if (characterDNA.appearance || characterDNA.clothes || characterDNA.features) {
-          const dnaParts = [
-            characterDNA.appearance && `Appearance: ${characterDNA.appearance}`,
-            characterDNA.clothes && `Clothing: ${characterDNA.clothes}`,
-            characterDNA.features && `Features: ${characterDNA.features}`
-          ].filter(Boolean);
-          dnaText = dnaParts.length > 0 ? `\nCharacter details: ${dnaParts.join(", ")}` : "";
-        }
-        
-        // 장소 영어 변환 매핑
-        const locationEnglishMap: Record<string, string> = {
-          "고속도로 휴게소": "highway rest stop convenience store",
-          "기차역 플랫폼": "train station platform",
-          "버스 터미널": "bus terminal waiting area",
-          "공항 로비": "airport lobby",
-          "편의점 계산대": "convenience store checkout counter",
-          "시장 골목": "traditional market alley",
-          "택배 차량": "delivery truck",
-          "거리 청소": "street cleaning area",
-          "봄꽃이 핀 공원": "park with spring flowers",
-          "여름 바닷가": "summer beach",
-          "단풍길": "autumn foliage path",
-          "눈 내린 거리": "snowy street",
-          "집 거실": "home living room",
-          "가족 식당": "family restaurant",
-          "공원 벤치": "park bench",
-          "할머니 댁 마당": "grandmother's house yard",
-          "오래된 골목": "old alley",
-          "고향 학교 앞": "hometown school entrance",
-          "추억의 카페": "nostalgic vintage cafe",
-          "특별한 장소": "special memorable place"
-        };
-        const locationEnglish = locationEnglishMap[selectedLocation] || selectedLocation;
-        
-        prompt = `
-A photojournalistic documentary photograph: ${interviewerEnglish} interviewing ${intervieweeEnglish} with a microphone at ${locationEnglish}.${dnaText}
-
-CRITICAL SCENE REQUIREMENTS:
-- Setting: ${locationEnglish} with realistic, detailed background appropriate for this location
-- Two people: ${interviewerEnglish} (holding microphone) and ${intervieweeEnglish}
-- Both subjects clearly visible in frame, facing each other
-- Microphone prominently visible between them
-- Natural interview posture and positioning
-- Authentic Korean people with realistic Korean facial features and proportions
-
-PHOTOREALISM REQUIREMENTS:
-- REAL photograph taken with professional DSLR camera (Canon/Nikon/Sony)
-- Photojournalism / documentary photography style
-- Natural lighting with realistic shadows and highlights
-- Real human skin with pores, wrinkles, texture, and natural imperfections
-- Genuine candid moment captured on camera
-- Realistic depth of field with natural bokeh
-- Professional news photography composition
-
-STRICTLY FORBIDDEN:
-- NO 3D rendering, CGI, or computer graphics
-- NO illustration, digital art, or drawing
-- NO animation, cartoon, or anime style
-- NO game graphics or cel-shading
-- NO storybook or fairy tale illustration
-- NO smooth plastic skin or overly perfect features
-- NO readable text, signs, Korean letters, or English words
-- NO stock photo aesthetic or overly posed look
-
-This must look EXACTLY like a real photograph from an actual Korean news broadcast or documentary, NOT artwork or illustration.
-`.trim();
-      } else {
-        // 다른 스타일: 영어 프롬프트 (스타일 강조)
-        prompt = `
-${stylePrompt}
-
-SCENE DESCRIPTION:
-An interview scene at ${selectedLocation}.
-${interviewerDesc} holding a microphone, interviewing ${intervieweeDesc}.
-
-COMPOSITION REQUIREMENTS:
-- Two subjects: interviewer and interviewee
-- Microphone clearly visible between them
-- Natural conversation posture
-- Appropriate background setting for ${selectedLocation}
-- Friendly, professional, welcoming mood
-
-CHARACTERS:
-- Interviewer: ${interviewerDesc}
-- Interviewee: ${intervieweeDesc}
-
-STRICTLY FORBIDDEN:
-- NO readable text, Korean letters, English words, or labels
-- NO mixed styles (stick to ${selectedStyle} style only)
-- NO photorealistic look unless style is realistic
-
-This image MUST be in ${selectedStyle} style as specified above.
-`.trim();
+      // 답변자 한국어 설명 매핑
+      const intervieweeKoreanMap: Record<string, string> = {
+        grandmother: "할머니",
+        grandfather: "할아버지",
+        youngman: "젊은 남자",
+        youngwoman: "젊은 여자",
+        boyChild: "남자 어린이",
+        girlChild: "여자 어린이",
+        dog: "강아지",
+        cat: "고양이"
+      };
+      const intervieweeKorean = intervieweeKoreanMap[selectedInterviewee] || "답변자";
+      
+      // 캐릭터 DNA 추가
+      let dnaText = "";
+      if (characterDNA.appearance || characterDNA.clothes || characterDNA.features) {
+        const dnaParts = [
+          characterDNA.appearance && `외모: ${characterDNA.appearance}`,
+          characterDNA.clothes && `옷차림: ${characterDNA.clothes}`,
+          characterDNA.features && `특징: ${characterDNA.features}`
+        ].filter(Boolean);
+        dnaText = dnaParts.length > 0 ? ` ${dnaParts.join(", ")}.` : "";
       }
+      
+      // 1단: 장면 프롬프트 (한국어)
+      const scenePrompt = `${selectedLocation}에서 ${interviewerKorean}가 ${intervieweeKorean}를 마이크로 인터뷰하는 장면.${dnaText} 두 사람은 서로 마주 보고 서 있고, 마이크를 들고 자연스럽게 대화하고 있다.`;
+      
+      // 2단: 스타일 프롬프트 (한국어)
+      const styleGuide = stylePrompt;
+      
+      // 3단: 공통 금지 프롬프트 (한국어)
+      const forbiddenPrompt = "글자, 간판, 자막, 포스터, 읽을 수 있는 텍스트 없이.";
+      
+      // 최종 프롬프트 조합
+      const prompt = `${scenePrompt} ${styleGuide} ${forbiddenPrompt}`.trim();
 
       console.log("🎨 인터뷰 장면 생성:", {
         location: selectedLocation,
@@ -341,12 +257,10 @@ This image MUST be in ${selectedStyle} style as specified above.
     setShowMasterConfirm(false);
     
     try {
-      // 실사 스타일이면 한국어로, 아니면 영어로 추가 요구사항 작성
-      const additionalReq = selectedStyle === "realistic" 
-        ? `추가 요구사항: ${customPrompt}`
-        : `Additional requirements: ${customPrompt}`;
+      // 모든 스타일에서 한국어로 추가 요구사항 작성
+      const additionalReq = `추가 요구사항: ${customPrompt}`;
       
-      const updatedPrompt = basePrompt + "\n\n" + additionalReq;
+      const updatedPrompt = basePrompt + " " + additionalReq;
       
       console.log("🔄 마스터 이미지 재생성:", {
         customPrompt,

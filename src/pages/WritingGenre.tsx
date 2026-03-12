@@ -43,9 +43,9 @@ export default function WritingGenre() {
     },
     { 
       key: "fourcut", 
-      label: "🎬 4컷 이야기", 
-      desc: "짧은 4장면으로 이야기를 만들어요",
-      guide: "1컷(시작) → 2컷(전개) → 3컷(반전) → 4컷(결말)"
+      label: "🎤 4컷 인터뷰", 
+      desc: "인터뷰 작가가 되어 4컷 이야기를 만들어요",
+      guide: "만남 → 이야기 → 감동 → 작별"
     },
   ];
 
@@ -63,8 +63,12 @@ export default function WritingGenre() {
               key={g.key}
               className="genre-card"
               onClick={() => {
-                // 시와 소설은 질문 페이지로, 나머지는 바로 편집기로
-                if (g.key === "poem" || g.key === "novel") {
+                // 4컷 인터뷰는 테마 선택 페이지로
+                if (g.key === "fourcut") {
+                  navigate("/write/fourcut-theme");
+                }
+                // 시와 소설은 질문 페이지로
+                else if (g.key === "poem" || g.key === "novel") {
                   navigate("/writing/genre/questions", { 
                     state: { 
                       genre: g.key, 
@@ -72,7 +76,9 @@ export default function WritingGenre() {
                       genreGuide: g.guide 
                     } 
                   });
-                } else {
+                } 
+                // 나머지는 바로 편집기로
+                else {
                   navigate("/write/editor", { 
                     state: { 
                       genre: g.key, 

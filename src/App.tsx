@@ -17,6 +17,8 @@ import WritingPracticeNew from './pages/WritingPracticeNew'
 import WritingGenre from './pages/WritingGenre'
 import WritingQuestions from './pages/WritingQuestions'
 import WritingAiQuestions from './pages/WritingAiQuestions'
+import FourcutInterviewTheme from './pages/FourcutInterviewTheme'
+import FourcutInterviewPractice from './pages/FourcutInterviewPractice'
 import WritingPhoto from './pages/WritingPhoto'
 import WritingVoice from './pages/WritingVoice'
 import WritingHelp from './pages/WritingHelp'
@@ -117,6 +119,8 @@ function AppContent() {
           <Route path="/write" element={<Write />} />
           <Route path="/write/practice" element={<WritingPracticeNew />} />
           <Route path="/write/editor" element={<WriteEditor />} />
+          <Route path="/write/fourcut-theme" element={<FourcutInterviewTheme />} />
+          <Route path="/write/fourcut-practice" element={<FourcutInterviewPractice />} />
           <Route path="/writing/practice" element={<WritingPractice />} />
           <Route path="/writing/photo" element={<WritingPhoto />} />
           <Route path="/writing/voice" element={<WritingVoice />} />

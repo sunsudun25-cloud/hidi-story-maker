@@ -18,12 +18,18 @@ export default function WriteEditor() {
     genre?: string;
     genreLabel?: string;
     genreGuide?: string;
+    themeTitle?: string;
+    themeKey?: string;
+    exampleSynopsis?: string;
   } | undefined;
   
   const mode = state?.mode || "free";
   const genre = state?.genre || null;
   const genreLabel = state?.genreLabel || null;
   const genreGuide = state?.genreGuide || null;
+  const themeTitle = state?.themeTitle || null;
+  const themeKey = state?.themeKey || null;
+  const exampleSynopsis = state?.exampleSynopsis || null;
   
   const [title, setTitle] = useState(state?.title || "");
   const [content, setContent] = useState(state?.initialContent || "");
@@ -323,6 +329,20 @@ export default function WriteEditor() {
       const exampleText = examples.join("\n\n");
       setContent(content + (content ? "\n\n" : "") + exampleText);
       alert(`📝 ${genreLabel} 예시 문장이 추가되었습니다! 자유롭게 수정하세요.`);
+    }
+  };
+
+  // 🎤 4컷 인터뷰 예시 삽입
+  const handleInsertInterviewExample = () => {
+    if (exampleSynopsis) {
+      const confirmed = window.confirm(
+        "연습 예시를 내용에 추가하시겠습니까?\n\n" +
+        "예시를 그대로 쓰거나, 일부만 바꿔서 작성하셔도 좋아요!"
+      );
+      if (confirmed) {
+        setContent(exampleSynopsis);
+        alert("✏️ 예시가 추가되었습니다! 자유롭게 수정하세요.");
+      }
     }
   };
 
@@ -999,32 +1019,61 @@ ${content}
           ✏️ 내용
         </h3>
 
-        {/* 4컷 이야기 전용 안내 */}
+        {/* 4컷 인터뷰 전용 안내 */}
         {genre === "fourcut" && (
           <div style={{
-            backgroundColor: "#FFF9E6",
-            border: "2px solid #FFC107",
+            backgroundColor: "#F3E8FF",
+            border: "2px solid #9C27B0",
             borderRadius: "12px",
             padding: "16px",
             marginBottom: "15px",
           }}>
-            <div style={{ fontSize: "18px", fontWeight: "bold", color: "#F57C00", marginBottom: "12px" }}>
-              🎬 4컷 이야기 작성 가이드
+            <div style={{ fontSize: "18px", fontWeight: "bold", color: "#7C3AED", marginBottom: "12px" }}>
+              🎤 4컷 인터뷰 작성 가이드
+              {themeTitle && (
+                <span style={{ fontSize: "16px", fontWeight: "600", color: "#9C27B0", marginLeft: "8px" }}>
+                  - {themeTitle}
+                </span>
+              )}
             </div>
             <div style={{ fontSize: "15px", color: "#555", lineHeight: "1.8" }}>
               <div style={{ marginBottom: "8px" }}>
-                <strong style={{ color: "#1976D2" }}>1컷 (시작):</strong> 이야기의 시작을 2줄로 써주세요
+                <strong style={{ color: "#1976D2" }}>1컷 (만남):</strong> 인터뷰 대상과 첫 만남을 2-3줄로
               </div>
               <div style={{ marginBottom: "8px" }}>
-                <strong style={{ color: "#388E3C" }}>2컷 (전개):</strong> 무슨 일이 일어났나요? 2줄로
+                <strong style={{ color: "#388E3C" }}>2컷 (이야기):</strong> 대상의 이야기나 상황을 2-3줄로
               </div>
               <div style={{ marginBottom: "8px" }}>
-                <strong style={{ color: "#F57C00" }}>3컷 (반전):</strong> 예상치 못한 일이나 변화를 2줄로
+                <strong style={{ color: "#F57C00" }}>3컷 (감동):</strong> 깊은 이야기나 감정을 2-3줄로
               </div>
               <div>
-                <strong style={{ color: "#E91E63" }}>4컷 (결말):</strong> 이야기를 마무리하는 2줄
+                <strong style={{ color: "#E91E63" }}>4컷 (작별):</strong> 따뜻한 마무리를 2-3줄로
               </div>
             </div>
+            
+            {/* 예시 삽입 버튼 */}
+            {exampleSynopsis && (
+              <div style={{ marginTop: "12px" }}>
+                <button
+                  onClick={handleInsertInterviewExample}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    fontSize: "15px",
+                    fontWeight: "600",
+                    backgroundColor: "#9C27B0",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    boxShadow: "0 2px 4px rgba(156, 39, 176, 0.3)"
+                  }}
+                >
+                  ✏️ 연습 예시 가져오기
+                </button>
+              </div>
+            )}
+            
             <div style={{ 
               marginTop: "12px", 
               padding: "10px", 
@@ -1033,7 +1082,7 @@ ${content}
               fontSize: "14px",
               color: "#666"
             }}>
-              💡 <strong>꿀팁:</strong> 각 컷마다 줄바꿈(엔터)을 넣어서 구분하면 읽기 편해요!
+              💡 <strong>꿀팁:</strong> 예시를 그대로 쓰거나, 일부만 바꿔서 작성하셔도 좋아요!
             </div>
           </div>
         )}

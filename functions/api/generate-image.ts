@@ -180,20 +180,27 @@ export async function onRequest(context: { request: Request; env: Env }) {
       );
     }
 
-    console.log('🎨 이미지 생성 요청:', { requestId, userText, purpose, mood, style, model, size, quality });
+    console.log('🎨 이미지 생성 요청:', { requestId, userText, purpose, mood, style, prompt, model, size, quality });
 
-    // ⭐⭐⭐ A안(서버 단일화): 서버에서 프롬프트 생성
-    // userText가 있으면 서버에서 빌드, 없으면 기존 prompt 사용 (하위 호환)
+    // ⭐⭐⭐ 클라이언트 프롬프트를 그대로 사용 (서버에서 재생성하지 않음)
     let finalPrompt: string;
     let normalizedStyle: string;
     
-    if (userText) {
-      const { prompt, finalStyle } = buildServerPrompt(rawPrompt, purpose || 'memory', mood, style);
+    if (prompt) {
+      // 클라이언트에서 완성된 프롬프트를 보냈을 때 (4단 구조 프롬프트)
       finalPrompt = prompt;
+      normalizedStyle = style || '기본';
+      console.log('✅ 클라이언트 프롬프트 사용:', { finalPromptLength: finalPrompt.length, style: normalizedStyle });
+    } else if (userText) {
+      // 레거시: userText만 있을 때 서버에서 빌드
+      const { prompt: builtPrompt, finalStyle } = buildServerPrompt(rawPrompt, purpose || 'memory', mood, style);
+      finalPrompt = builtPrompt;
       normalizedStyle = finalStyle;
+      console.log('⚠️ 서버 프롬프트 빌드 사용 (레거시):', { finalPromptLength: finalPrompt.length, style: normalizedStyle });
     } else {
       finalPrompt = rawPrompt || 'A simple, friendly illustration.';
       normalizedStyle = style || '기본';
+      console.log('⚠️ 기본 프롬프트 사용:', { finalPromptLength: finalPrompt.length });
     }
 
     // ⭐ 상세 디버깅 로그 (서버)
@@ -202,7 +209,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
     
     const serverDebugPayload = {
       requestId,
-      normalizedStyle,
+      styleMode: normalizedStyle,
       finalPrompt,
       promptLength: finalPrompt.length,
       requestBody: {
@@ -212,15 +219,24 @@ export async function onRequest(context: { request: Request; env: Env }) {
         quality: quality || defaultQuality,
         response_format: "b64_json"
       },
-      // 키워드 검사
-      containsStorybook: finalPrompt.includes('storybook') || finalPrompt.includes('동화책'),
-      containsIllustrative: finalPrompt.includes('illustrative') || finalPrompt.includes('일러스트'),
+      // ⭐ 키워드 검사 (동화책 문구 혼입 확인)
+      containsStorybook: finalPrompt.includes('storybook') || finalPrompt.includes('동화책') || finalPrompt.includes('그림책'),
+      containsIllustrative: finalPrompt.includes('illustrative') || finalPrompt.includes('일러스트') || finalPrompt.includes('삽화'),
       containsWarm: finalPrompt.includes('warm') || finalPrompt.includes('따뜻'),
-      containsPhotoRealistic: finalPrompt.includes('photorealistic') || finalPrompt.includes('실제 사진') || finalPrompt.includes('포토저널리즘'),
-      contains3D: finalPrompt.includes('3D') || finalPrompt.includes('렌더링'),
+      containsEducational: finalPrompt.includes('educational') || finalPrompt.includes('교육용'),
+      containsPhotoRealistic: finalPrompt.includes('photorealistic') || finalPrompt.includes('실제 사진') || finalPrompt.includes('포토저널리즘') || finalPrompt.includes('뉴스 현장'),
+      contains3D: finalPrompt.includes('3D') || finalPrompt.includes('렌더링') || finalPrompt.includes('CGI'),
     };
     
     console.log('🔍 [IMAGE DEBUG - SERVER]', JSON.stringify(serverDebugPayload, null, 2));
+    console.log('[SERVER FINAL PROMPT]', finalPrompt);
+    console.log('[SERVER STYLE MODE]', normalizedStyle);
+    console.log('[SERVER REQUEST BODY]', JSON.stringify({
+      model: model || defaultModel,
+      prompt: finalPrompt.substring(0, 500) + '...',
+      size: size || "1024x1024",
+      quality: quality || defaultQuality
+    }, null, 2));
 
     // OpenAI API 호출 (DALL-E 3)
     const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {

@@ -64,7 +64,7 @@ export default function FourcutInterviewSetup() {
       label: "애니메이션", 
       icon: "🎬", 
       desc: "밝고 생동감 있는 애니메이션",
-      prompt: "Vibrant animation style, bright colors, clean lines, cartoon aesthetic",
+      prompt: "ANIMATION STYLE REQUIRED: Bright vibrant cartoon animation, bold outlines, flat colors, playful character design, studio animation quality like Disney or Ghibli. NOT photorealistic, NOT 3D render, NOT illustration.",
       model: "dall-e-3" as const
     },
     { 
@@ -72,7 +72,7 @@ export default function FourcutInterviewSetup() {
       label: "일러스트", 
       icon: "✏️", 
       desc: "세련된 디지털 일러스트",
-      prompt: "Modern digital illustration, clean vector style, professional artwork",
+      prompt: "DIGITAL ILLUSTRATION STYLE REQUIRED: Professional editorial illustration, clean vector art, modern graphic design, flat or gradient shading, magazine quality. NOT photorealistic, NOT 3D render, NOT cartoon animation.",
       model: "dall-e-3" as const
     },
     { 
@@ -80,7 +80,7 @@ export default function FourcutInterviewSetup() {
       label: "3D", 
       icon: "🎮", 
       desc: "입체적인 3D 렌더링",
-      prompt: "3D rendered style, volumetric lighting, detailed textures, Pixar-like quality",
+      prompt: "3D CGI RENDER STYLE REQUIRED: Professional 3D computer graphics, volumetric lighting, ray tracing, detailed textures, Pixar/Blender quality rendering, smooth plastic materials, stylized 3D characters. NOT photorealistic, NOT flat illustration, NOT 2D animation.",
       model: "dall-e-3" as const
     },
     { 
@@ -88,7 +88,7 @@ export default function FourcutInterviewSetup() {
       label: "실사", 
       icon: "📸", 
       desc: "사실적인 사진 같은 이미지",
-      prompt: "Photorealistic photograph style",
+      prompt: "PHOTOREALISTIC STYLE REQUIRED: Real photograph taken with professional DSLR camera, documentary journalism style, natural lighting, realistic human skin texture with pores and imperfections. NOT 3D render, NOT CGI, NOT illustration, NOT animation.",
       model: "dall-e-3" as const
     },
     { 
@@ -96,7 +96,7 @@ export default function FourcutInterviewSetup() {
       label: "시네마풍", 
       icon: "🎥", 
       desc: "영화 같은 분위기",
-      prompt: "Cinematic movie scene, dramatic lighting, film grain, Hollywood production quality, anamorphic lens",
+      prompt: "CINEMATIC FILM STYLE REQUIRED: Professional movie cinematography, dramatic lighting, film grain, anamorphic lens bokeh, Hollywood production quality, real actors and sets. NOT 3D animation, NOT illustration, NOT cartoon.",
       model: "dall-e-3" as const
     }
   ];
@@ -256,22 +256,31 @@ STRICTLY FORBIDDEN:
 This must look EXACTLY like a real photograph from an actual Korean news broadcast or documentary, NOT artwork or illustration.
 `.trim();
       } else {
-        // 다른 스타일: 영어 프롬프트
+        // 다른 스타일: 영어 프롬프트 (스타일 강조)
         prompt = `
-A warm interview scene in ${selectedLocation}.
+${stylePrompt}
+
+SCENE DESCRIPTION:
+An interview scene at ${selectedLocation}.
 ${interviewerDesc} holding a microphone, interviewing ${intervieweeDesc}.
 
-Style: ${stylePrompt}
-Mood: Friendly, professional, welcoming
-Composition: Two subjects in conversation, natural interview setting
-Details: Microphone clearly visible, appropriate background for ${selectedLocation}
+COMPOSITION REQUIREMENTS:
+- Two subjects: interviewer and interviewee
+- Microphone clearly visible between them
+- Natural conversation posture
+- Appropriate background setting for ${selectedLocation}
+- Friendly, professional, welcoming mood
 
-People/Animals:
+CHARACTERS:
 - Interviewer: ${interviewerDesc}
 - Interviewee: ${intervieweeDesc}
 
-No text, no Korean letters, no English words, no labels.
-Clear, simple composition suitable for storytelling.
+STRICTLY FORBIDDEN:
+- NO readable text, Korean letters, English words, or labels
+- NO mixed styles (stick to ${selectedStyle} style only)
+- NO photorealistic look unless style is realistic
+
+This image MUST be in ${selectedStyle} style as specified above.
 `.trim();
       }
 

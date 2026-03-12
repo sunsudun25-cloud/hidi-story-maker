@@ -200,21 +200,18 @@ export async function onRequest(context: { request: Request; env: Env }) {
     console.log('📡 [GEN_IMAGE] style=', normalizedStyle);
     console.log('📝 [FINAL_PROMPT_HEAD]', finalPrompt.slice(0, 300));
     
-    // ⭐ GPT Image 모델 사용
-    const defaultModel = "gpt-image-1";  // gpt-image-1, gpt-image-1.5, gpt-image-1-mini
-    const defaultQuality = "medium";  // low | medium | high | auto
-    const defaultOutputFormat = "png";  // png | webp | jpeg
+    // ⭐ DALL-E 3 사용 (안정적이고 검증됨)
+    const defaultModel = "dall-e-3";
+    const defaultQuality = "hd";  // standard | hd
     
     console.log('📡 OpenAI API 호출:', { 
       requestId, 
       model: model || defaultModel, 
       size: size || '1024x1024', 
-      quality: quality || defaultQuality,
-      output_format: defaultOutputFormat
+      quality: quality || defaultQuality
     });
 
-    // OpenAI API 호출 (GPT Image)
-    // 주의: GPT Image는 b64_json만 지원, url 응답 형식 없음
+    // OpenAI API 호출 (DALL-E 3)
     const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
       headers: {
@@ -224,10 +221,10 @@ export async function onRequest(context: { request: Request; env: Env }) {
       body: JSON.stringify({
         model: model || defaultModel,
         prompt: finalPrompt,
+        n: 1,
         size: size || "1024x1024",
         quality: quality || defaultQuality,
-        output_format: defaultOutputFormat,
-        // GPT Image에서는 n, response_format 파라미터 사용 안함
+        response_format: "b64_json",
       }),
     });
 
@@ -290,10 +287,9 @@ export async function onRequest(context: { request: Request; env: Env }) {
         prompt: finalPrompt, // ✅ 강화된 프롬프트 반환
         style: normalizedStyle, // ✅ 실제 적용된 스타일 반환
         request_id: requestId,
-        model_used: model || 'gpt-image-1',
+        model_used: model || 'dall-e-3',
         size_used: size || '1024x1024',
-        quality_used: quality || 'medium',
-        output_format_used: 'png',
+        quality_used: quality || 'hd',
         timestamp: new Date().toISOString(),
         // ✅ 임시 디버그 필드 (확인 후 제거 가능)
         debug: {

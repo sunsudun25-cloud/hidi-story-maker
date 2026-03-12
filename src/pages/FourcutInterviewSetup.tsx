@@ -65,7 +65,7 @@ export default function FourcutInterviewSetup() {
       icon: "🎬", 
       desc: "밝고 생동감 있는 애니메이션",
       prompt: "Vibrant animation style, bright colors, clean lines, cartoon aesthetic",
-      model: "gpt-image-1" as const
+      model: "dall-e-3" as const
     },
     { 
       key: "illustration", 
@@ -73,7 +73,7 @@ export default function FourcutInterviewSetup() {
       icon: "✏️", 
       desc: "세련된 디지털 일러스트",
       prompt: "Modern digital illustration, clean vector style, professional artwork",
-      model: "gpt-image-1" as const
+      model: "dall-e-3" as const
     },
     { 
       key: "3d", 
@@ -81,7 +81,7 @@ export default function FourcutInterviewSetup() {
       icon: "🎮", 
       desc: "입체적인 3D 렌더링",
       prompt: "3D rendered style, volumetric lighting, detailed textures, Pixar-like quality",
-      model: "gpt-image-1" as const
+      model: "dall-e-3" as const
     },
     { 
       key: "realistic", 
@@ -89,7 +89,7 @@ export default function FourcutInterviewSetup() {
       icon: "📸", 
       desc: "사실적인 사진 같은 이미지",
       prompt: "Photorealistic photograph style",
-      model: "gpt-image-1" as const
+      model: "dall-e-3" as const
     },
     { 
       key: "cinematic", 
@@ -97,7 +97,7 @@ export default function FourcutInterviewSetup() {
       icon: "🎥", 
       desc: "영화 같은 분위기",
       prompt: "Cinematic movie scene, dramatic lighting, film grain, Hollywood production quality, anamorphic lens",
-      model: "gpt-image-1" as const
+      model: "dall-e-3" as const
     }
   ];
 
@@ -258,7 +258,7 @@ Clear, simple composition suitable for storytelling.
       const imageUrl = await generateWritingImage(prompt, "인터뷰", {
         model: styleModel as any,
         size: "1024x1024",
-        quality: "medium"  // GPT Image: low | medium | high
+        quality: "hd"  // DALL-E 3: standard | hd
       });
 
       console.log("✅ 인터뷰 장면 생성 완료");
@@ -322,7 +322,7 @@ Clear, simple composition suitable for storytelling.
       const imageUrl = await generateWritingImage(updatedPrompt, "인터뷰", {
         model: modelToUse as any,
         size: "1024x1024",
-        quality: "medium"  // GPT Image: low | medium | high
+        quality: "hd"  // DALL-E 3: standard | hd
       });
 
       console.log("✅ 마스터 이미지 재생성 완료");

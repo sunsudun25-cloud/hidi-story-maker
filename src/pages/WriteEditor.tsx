@@ -75,6 +75,12 @@ export default function WriteEditor() {
       "나는 1950년 경상남도 작은 마을에서 태어났다.",
       "어린 시절, 우리 집은 가난했지만 행복했다.",
       "20대 청년이 되어 서울로 상경했을 때가 기억난다."
+    ],
+    fourcut: [
+      "1컷: 아침에 일어나 창문을 열었다.\n햇살이 방 안 가득 들어왔다.",
+      "2컷: 손주가 갑자기 놀러 왔다.\n깜짝 선물을 들고 있었다.",
+      "3컷: 함께 공원을 산책했다.\n손주 손을 잡으니 마음이 따뜻했다.",
+      "4컷: 저녁에 작별 인사를 했다.\n다음 만남을 기약하며 손을 흔들었다."
     ]
   };
 
@@ -858,6 +864,45 @@ ${content}
         <h3 style={{ fontSize: "20px", fontWeight: "600", marginBottom: "15px" }}>
           ✏️ 내용
         </h3>
+
+        {/* 4컷 이야기 전용 안내 */}
+        {genre === "fourcut" && (
+          <div style={{
+            backgroundColor: "#FFF9E6",
+            border: "2px solid #FFC107",
+            borderRadius: "12px",
+            padding: "16px",
+            marginBottom: "15px",
+          }}>
+            <div style={{ fontSize: "18px", fontWeight: "bold", color: "#F57C00", marginBottom: "12px" }}>
+              🎬 4컷 이야기 작성 가이드
+            </div>
+            <div style={{ fontSize: "15px", color: "#555", lineHeight: "1.8" }}>
+              <div style={{ marginBottom: "8px" }}>
+                <strong style={{ color: "#1976D2" }}>1컷 (시작):</strong> 이야기의 시작을 2줄로 써주세요
+              </div>
+              <div style={{ marginBottom: "8px" }}>
+                <strong style={{ color: "#388E3C" }}>2컷 (전개):</strong> 무슨 일이 일어났나요? 2줄로
+              </div>
+              <div style={{ marginBottom: "8px" }}>
+                <strong style={{ color: "#F57C00" }}>3컷 (반전):</strong> 예상치 못한 일이나 변화를 2줄로
+              </div>
+              <div>
+                <strong style={{ color: "#E91E63" }}>4컷 (결말):</strong> 이야기를 마무리하는 2줄
+              </div>
+            </div>
+            <div style={{ 
+              marginTop: "12px", 
+              padding: "10px", 
+              backgroundColor: "#FFF", 
+              borderRadius: "8px",
+              fontSize: "14px",
+              color: "#666"
+            }}>
+              💡 <strong>꿀팁:</strong> 각 컷마다 줄바꿈(엔터)을 넣어서 구분하면 읽기 편해요!
+            </div>
+          </div>
+        )}
 
         {/* 기본 AI 도우미 메뉴 - 항상 표시 */}
         <div style={{

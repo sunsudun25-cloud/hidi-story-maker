@@ -41,6 +41,12 @@ export default function WritingGenre() {
       desc: "내 인생 이야기를 기록해요",
       guide: "어린 시절 → 청년기 → 현재 순으로"
     },
+    { 
+      key: "fourcut", 
+      label: "🎬 4컷 이야기", 
+      desc: "짧은 4장면으로 이야기를 만들어요",
+      guide: "1컷(시작) → 2컷(전개) → 3컷(반전) → 4컷(결말)"
+    },
   ];
 
   return (

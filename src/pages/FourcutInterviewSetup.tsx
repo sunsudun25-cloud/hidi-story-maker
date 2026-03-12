@@ -88,7 +88,7 @@ export default function FourcutInterviewSetup() {
       label: "실사", 
       icon: "📸", 
       desc: "사실적인 사진 같은 이미지",
-      prompt: "Photorealistic photograph, natural lighting, detailed textures, high quality DSLR camera shot, professional photography",
+      prompt: "Photorealistic photograph, shot with professional DSLR camera, natural lighting, real people, detailed skin textures, realistic human features, high resolution photography, documentary style, candid moment, authentic environment, NO 3D render, NO CGI, NO illustration, realistic depth of field, genuine photographic quality",
       model: "fal-ai/flux-2-pro" as const
     },
     { 
@@ -196,13 +196,12 @@ Clear, simple composition suitable for storytelling.
         prompt: prompt.substring(0, 200) + "..."
       });
 
-      // 실사 스타일일 경우 다른 모델 사용
-      let imageUrl: string;
-      if (selectedStyle === "realistic") {
-        imageUrl = await generateImageViaCloudflare(prompt, styleModel);
-      } else {
-        imageUrl = await generateWritingImage(prompt, "인터뷰");
-      }
+      // 선택된 스타일의 모델을 사용하여 이미지 생성
+      const imageUrl = await generateWritingImage(prompt, "인터뷰", {
+        model: styleModel as any,
+        size: "1024x1024",
+        quality: "standard"
+      });
 
       console.log("✅ 인터뷰 장면 생성 완료");
 
@@ -252,7 +251,15 @@ Clear, simple composition suitable for storytelling.
         updatedPrompt: updatedPrompt.substring(0, 200) + "..."
       });
 
-      const imageUrl = await generateWritingImage(updatedPrompt, "인터뷰");
+      // 원래 선택한 스타일의 모델 사용
+      const selectedStyleObj = styles.find(s => s.key === selectedStyle);
+      const modelToUse = selectedStyleObj?.model || "dall-e-3";
+      
+      const imageUrl = await generateWritingImage(updatedPrompt, "인터뷰", {
+        model: modelToUse as any,
+        size: "1024x1024",
+        quality: "standard"
+      });
 
       console.log("✅ 마스터 이미지 재생성 완료");
 

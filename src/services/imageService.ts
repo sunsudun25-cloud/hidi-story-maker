@@ -165,16 +165,44 @@ export async function generateWritingImage(
   options?: {
     model?: SupportedModel;
     size?: "1024x1024" | "1024x1536" | "1536x1024";
-    quality?: "standard" | "hd";
+    quality?: "standard" | "hd" | "low" | "medium" | "high";
+    useRawPrompt?: boolean;  // ⭐ 새로운 옵션: 프롬프트를 그대로 사용
   }
 ): Promise<string> {
   try {
     const {
       model = "dall-e-3",
       size = "1024x1024",
-      quality = "hd"
+      quality = "hd",
+      useRawPrompt = false  // ⭐ 기본값: false (기존 동작 유지)
     } = options || {};
 
+    console.log("🎨 [generateWritingImage] 시작:", { 
+      model, 
+      genre, 
+      size, 
+      quality,
+      useRawPrompt,
+      textLength: text.length,
+      textPreview: text.substring(0, 100) + "..."
+    });
+
+    // ⭐ useRawPrompt가 true면 text를 프롬프트로 그대로 사용
+    if (useRawPrompt) {
+      console.log("✅ [RAW PROMPT MODE] 클라이언트 프롬프트를 그대로 사용합니다");
+      console.log("📋 [FINAL PROMPT TO API]", text);
+      
+      const imageData = await generateImageViaCloudflare(text, "기본", {
+        model,
+        size,
+        quality
+      });
+      
+      console.log("✅ [RAW PROMPT MODE] 이미지 생성 완료");
+      return imageData;
+    }
+
+    // ⭐ 기존 로직 (useRawPrompt = false일 때만 실행)
     const genreStyle = genre ? `${genre} 장르에 어울리는` : "글 내용에 맞는";
 
     // ✅ 사람 포함 여부 자동 판단

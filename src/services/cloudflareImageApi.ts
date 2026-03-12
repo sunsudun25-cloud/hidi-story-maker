@@ -42,7 +42,8 @@ export async function generateImageViaCloudflare(
   }
 ): Promise<string> {
   console.log("🚀 [cloudflareImageApi] generateImageViaCloudflare 호출:", { 
-    prompt, 
+    promptLength: prompt.length,
+    promptPreview: prompt.substring(0, 200) + "...",
     style,
     model: options?.model,
     size: options?.size,
@@ -52,19 +53,24 @@ export async function generateImageViaCloudflare(
   try {
     console.log("📡 [cloudflareImageApi] Cloudflare Pages Function 호출:", GENERATE_IMAGE_URL);
 
+    const requestBody = {
+      // ✅ 프롬프트에 스타일이 포함되어 있으면 prompt로 보내서 서버 스타일 매핑 건너뛰기
+      // userText가 아닌 prompt로 보내면 서버가 스타일 매핑을 적용하지 않음
+      prompt: prompt,  // 완성된 프롬프트를 그대로 전달
+      model: options?.model || "dall-e-3",
+      size: options?.size || "1024x1024",
+      quality: options?.quality || "hd"
+    };
+
+    console.log("📤 [STEP 3 - 서버 전송 직전] Request Body:", JSON.stringify(requestBody, null, 2));
+    console.log("📤 [STEP 3 - FULL PROMPT]", prompt);
+
     const response = await fetch(GENERATE_IMAGE_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        // ✅ 프롬프트에 스타일이 포함되어 있으면 prompt로 보내서 서버 스타일 매핑 건너뛰기
-        // userText가 아닌 prompt로 보내면 서버가 스타일 매핑을 적용하지 않음
-        prompt: prompt,  // 완성된 프롬프트를 그대로 전달
-        model: options?.model || "dall-e-3",
-        size: options?.size || "1024x1024",
-        quality: options?.quality || "hd"
-      })
+      body: JSON.stringify(requestBody)
     });
 
     console.log("📥 [cloudflareImageApi] 응답 수신:", {

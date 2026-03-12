@@ -235,11 +235,15 @@ export default function FourcutInterviewSetup() {
       };
       console.log("🔍 [IMAGE DEBUG - CLIENT]", JSON.stringify(debugPayload, null, 2));
 
-      // 선택된 스타일의 모델을 사용하여 이미지 생성
+      // ⭐ useRawPrompt: true로 설정하여 프롬프트를 그대로 사용
+      console.log("📤 [API 호출 직전] 최종 프롬프트:", prompt);
+      console.log("📤 [API 호출 직전] 모델:", styleModel, "크기:", imageSize, "품질:", imageQuality);
+      
       const imageUrl = await generateWritingImage(prompt, "인터뷰", {
         model: styleModel as any,
         size: imageSize,
-        quality: imageQuality
+        quality: imageQuality,
+        useRawPrompt: true  // ⭐ 클라이언트 프롬프트를 그대로 사용
       });
 
       console.log("✅ 인터뷰 장면 생성 완료");
@@ -303,7 +307,8 @@ export default function FourcutInterviewSetup() {
       const imageUrl = await generateWritingImage(updatedPrompt, "인터뷰", {
         model: modelToUse as any,
         size: sizeToUse,
-        quality: qualityToUse
+        quality: qualityToUse,
+        useRawPrompt: true  // ⭐ 재생성 시에도 프롬프트 그대로 사용
       });
 
       console.log("✅ 마스터 이미지 재생성 완료");

@@ -211,14 +211,21 @@ export default function FourcutInterviewSetup() {
       // 최종 프롬프트 조합: A + B + C + D
       const prompt = `${scenePrompt} ${styleGuide} ${compositionGuide} ${negativePrompt}`.trim();
 
-      console.log("🎨 인터뷰 장면 생성:", {
-        location: selectedLocation,
-        interviewer: selectedInterviewer,
-        interviewee: selectedInterviewee,
-        style: selectedStyle,
-        model: styleModel,
-        prompt: prompt.substring(0, 200) + "..."
-      });
+      // ⭐ 상세 디버깅 로그 (4단 구조 확인)
+      const debugPayload = {
+        styleMode: selectedStyle,
+        scenePrompt,
+        stylePrompt: styleGuide,
+        compositionPrompt: compositionGuide,
+        negativePrompt,
+        finalPrompt: prompt,
+        requestBody: {
+          model: styleModel,
+          size: "1024x1024",
+          quality: "hd"
+        }
+      };
+      console.log("🔍 [IMAGE DEBUG - CLIENT]", JSON.stringify(debugPayload, null, 2));
 
       // 선택된 스타일의 모델을 사용하여 이미지 생성 (DALL-E 3)
       const imageUrl = await generateWritingImage(prompt, "인터뷰", {

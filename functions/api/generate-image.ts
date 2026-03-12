@@ -196,20 +196,31 @@ export async function onRequest(context: { request: Request; env: Env }) {
       normalizedStyle = style || '기본';
     }
 
-    // ✅ 검증용 로그
-    console.log('📡 [GEN_IMAGE] style=', normalizedStyle);
-    console.log('📝 [FINAL_PROMPT_HEAD]', finalPrompt.slice(0, 300));
-    
-    // ⭐ DALL-E 3 사용 (안정적, 검증됨)
+    // ⭐ 상세 디버깅 로그 (서버)
     const defaultModel = "dall-e-3";
-    const defaultQuality = "hd";  // standard | hd
+    const defaultQuality = "hd";
     
-    console.log('📡 OpenAI API 호출:', { 
-      requestId, 
-      model: model || defaultModel, 
-      size: size || '1024x1024', 
-      quality: quality || defaultQuality
-    });
+    const serverDebugPayload = {
+      requestId,
+      normalizedStyle,
+      finalPrompt,
+      promptLength: finalPrompt.length,
+      requestBody: {
+        model: model || defaultModel,
+        prompt: finalPrompt,
+        size: size || "1024x1024",
+        quality: quality || defaultQuality,
+        response_format: "b64_json"
+      },
+      // 키워드 검사
+      containsStorybook: finalPrompt.includes('storybook') || finalPrompt.includes('동화책'),
+      containsIllustrative: finalPrompt.includes('illustrative') || finalPrompt.includes('일러스트'),
+      containsWarm: finalPrompt.includes('warm') || finalPrompt.includes('따뜻'),
+      containsPhotoRealistic: finalPrompt.includes('photorealistic') || finalPrompt.includes('실제 사진') || finalPrompt.includes('포토저널리즘'),
+      contains3D: finalPrompt.includes('3D') || finalPrompt.includes('렌더링'),
+    };
+    
+    console.log('🔍 [IMAGE DEBUG - SERVER]', JSON.stringify(serverDebugPayload, null, 2));
 
     // OpenAI API 호출 (DALL-E 3)
     const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {

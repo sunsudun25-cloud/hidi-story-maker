@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { generateWritingImage } from "../services/imageService";
 import { saveStory } from "../services/dbService";
 
-interface CutImage {
+interface CutData {
   cutNumber: number;
-  imageUrl: string;
   question: string;
   answer: string;
-  isGenerating: boolean;
 }
 
 export default function FourcutImageGeneration() {
@@ -16,17 +13,13 @@ export default function FourcutImageGeneration() {
   const location = useLocation();
   const { theme, interviewScene, title, questions, answers } = location.state || {};
 
-  const [cutImages, setCutImages] = useState<CutImage[]>([
-    { cutNumber: 1, imageUrl: "", question: questions?.[0] || "", answer: answers?.[0] || "", isGenerating: false },
-    { cutNumber: 2, imageUrl: "", question: questions?.[1] || "", answer: answers?.[1] || "", isGenerating: false },
-    { cutNumber: 3, imageUrl: "", question: questions?.[2] || "", answer: answers?.[2] || "", isGenerating: false },
-    { cutNumber: 4, imageUrl: "", question: questions?.[3] || "", answer: answers?.[3] || "", isGenerating: false }
+  const [cutData] = useState<CutData[]>([
+    { cutNumber: 1, question: questions?.[0] || "", answer: answers?.[0] || "" },
+    { cutNumber: 2, question: questions?.[1] || "", answer: answers?.[1] || "" },
+    { cutNumber: 3, question: questions?.[2] || "", answer: answers?.[2] || "" },
+    { cutNumber: 4, question: questions?.[3] || "", answer: answers?.[3] || "" }
   ]);
 
-  const [currentGenerating, setCurrentGenerating] = useState(0);
-  const [showRegenerateModal, setShowRegenerateModal] = useState(false);
-  const [regeneratingCut, setRegeneratingCut] = useState<number | null>(null);
-  const [customPrompt, setCustomPrompt] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -34,123 +27,7 @@ export default function FourcutImageGeneration() {
       navigate("/write/fourcut-theme");
       return;
     }
-
-    // 자동으로 4컷 순차 생성 시작
-    generateAllCuts();
   }, []);
-
-  const generateAllCuts = async () => {
-    for (let i = 0; i < 4; i++) {
-      await generateCutImage(i);
-    }
-  };
-
-  const generateCutImage = async (cutIndex: number, customPrompt = "") => {
-    setCurrentGenerating(cutIndex);
-    
-    // 이미지 상태 업데이트 (생성 중)
-    setCutImages(prev => prev.map((cut, idx) => 
-      idx === cutIndex ? { ...cut, isGenerating: true } : cut
-    ));
-
-    try {
-      // 인터뷰어 설명
-      const interviewerDesc = interviewScene.interviewer === "male" 
-        ? "professional male news reporter in business attire"
-        : "professional female news reporter in business attire";
-
-      // 답변자 설명
-      const intervieweeDescMap: { [key: string]: string } = {
-        grandmother: "kind elderly grandmother, warm smile",
-        grandfather: "wise elderly grandfather, gentle expression",
-        youngman: "young man in casual clothes, friendly",
-        youngwoman: "young woman in casual clothes, bright smile",
-        friend: "middle-aged person, friendly appearance",
-        dog: "cute friendly dog, golden retriever style",
-        cat: "elegant cat, sitting calmly"
-      };
-      const intervieweeDesc = intervieweeDescMap[interviewScene.interviewee];
-
-      // 컷별 상황 설명
-      const cutDescriptions = [
-        "First meeting - interviewer greeting interviewee, friendly introduction",
-        "Deep conversation - engaged dialogue, expressing story",
-        "Emotional moment - touching scene, meaningful expression",
-        "Farewell - warm goodbye, gentle conclusion"
-      ];
-
-      // 마스터 이미지 스타일 참조 프롬프트
-      const basePrompt = `
-Korean webtoon style 4-panel story illustration - Panel ${cutIndex + 1}/4
-
-MASTER IMAGE STYLE REFERENCE:
-(Match the exact visual style, character design, and composition from the master image)
-
-Scene: ${interviewScene.location}
-Situation: ${cutDescriptions[cutIndex]}
-
-Characters:
-- Interviewer: ${interviewerDesc} holding microphone
-- Interviewee: ${intervieweeDesc}
-
-Panel ${cutIndex + 1} Story Content:
-Interviewer asks: "${questions[cutIndex]}"
-Interviewee responds: "${answers[cutIndex]}"
-
-Visual Style (CRITICAL - Must match master image):
-- Art style: Soft watercolor illustration, warm pastel colors
-- Character consistency: Same character design as master image
-- Color palette: Warm afternoon tones, gentle lighting
-- Composition: Simple, clean, webtoon shorts format
-- Mood: Friendly, professional interview atmosphere
-
-Technical Requirements:
-- No text overlay, no Korean letters, no English words
-- Clear focus on characters' expressions and body language
-- Microphone clearly visible in interviewer's hand
-- Background appropriate for ${interviewScene.location}
-
-${customPrompt ? `\nAdditional requirements: ${customPrompt}` : ""}
-`.trim();
-
-      console.log(`🎨 ${cutIndex + 1}컷 생성 중:`, {
-        question: questions[cutIndex].substring(0, 50),
-        answer: answers[cutIndex].substring(0, 50)
-      });
-
-      const imageUrl = await generateWritingImage(basePrompt, "인터뷰");
-
-      console.log(`✅ ${cutIndex + 1}컷 생성 완료`);
-
-      // 이미지 상태 업데이트 (완료)
-      setCutImages(prev => prev.map((cut, idx) => 
-        idx === cutIndex 
-          ? { ...cut, imageUrl, isGenerating: false } 
-          : cut
-      ));
-    } catch (error) {
-      console.error(`❌ ${cutIndex + 1}컷 생성 오류:`, error);
-      alert(`${cutIndex + 1}컷 생성 실패. 다시 시도해주세요.`);
-      
-      setCutImages(prev => prev.map((cut, idx) => 
-        idx === cutIndex ? { ...cut, isGenerating: false } : cut
-      ));
-    }
-  };
-
-  const handleRegenerateCut = (cutIndex: number) => {
-    setRegeneratingCut(cutIndex);
-    setShowRegenerateModal(true);
-  };
-
-  const handleRegenerateConfirm = async () => {
-    if (regeneratingCut === null) return;
-    
-    setShowRegenerateModal(false);
-    await generateCutImage(regeneratingCut, customPrompt);
-    setCustomPrompt("");
-    setRegeneratingCut(null);
-  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -174,21 +51,16 @@ ${customPrompt ? `\nAdditional requirements: ${customPrompt}` : ""}
 👤 답변: ${answers[3]}
 `.trim();
 
-      // DB 저장
-      const storyImages = [
-        interviewScene.imageUrl, // 마스터 이미지
-        ...cutImages.map(cut => cut.imageUrl)
-      ];
-
+      // DB 저장 - 마스터 이미지 1장만 사용
       await saveStory({
         title,
         content: storyContent,
         genre: "fourcut",
-        images: storyImages
+        images: [interviewScene.imageUrl] // 마스터 이미지만 저장
       });
 
       alert("🎉 4컷 인터뷰가 저장되었습니다!");
-      navigate("/myworks/stories");
+      navigate("/my-works/stories");
     } catch (error) {
       console.error("❌ 저장 오류:", error);
       alert("저장 중 오류가 발생했습니다.");
@@ -200,7 +72,6 @@ ${customPrompt ? `\nAdditional requirements: ${customPrompt}` : ""}
   if (!theme || !interviewScene || !questions || !answers) return null;
 
   const cutLabels = ["만남", "이야기", "감동", "작별"];
-  const allImagesGenerated = cutImages.every(cut => cut.imageUrl);
 
   return (
     <div style={{ minHeight: "100vh", padding: "20px", backgroundColor: "#F3F4F6" }}>
@@ -214,10 +85,37 @@ ${customPrompt ? `\nAdditional requirements: ${customPrompt}` : ""}
             color: "#1F2937",
             marginBottom: "10px"
           }}>
-            🎬 4컷 이미지 만들기
+            🎬 4컷 인터뷰 완성
           </h1>
           <p style={{ fontSize: "18px", fontWeight: "600", color: "#6B7280" }}>
             {title}
+          </p>
+        </div>
+
+        {/* 안내 박스 */}
+        <div style={{
+          backgroundColor: "#EEF2FF",
+          border: "2px solid #818CF8",
+          borderRadius: "12px",
+          padding: "20px",
+          marginBottom: "30px",
+          textAlign: "center"
+        }}>
+          <h3 style={{
+            fontSize: "18px",
+            fontWeight: "700",
+            color: "#3730A3",
+            marginBottom: "10px"
+          }}>
+            ✨ 완벽한 스타일 일관성!
+          </h3>
+          <p style={{
+            fontSize: "14px",
+            color: "#4338CA",
+            lineHeight: "1.6"
+          }}>
+            마스터 이미지를 4컷 모두에 사용하여<br />
+            스타일이 완벽하게 일치해요!
           </p>
         </div>
 
@@ -236,80 +134,40 @@ ${customPrompt ? `\nAdditional requirements: ${customPrompt}` : ""}
             color: "#1F2937",
             marginBottom: "15px"
           }}>
-            📍 마스터 이미지 (스타일 기준)
+            📍 인터뷰 장면 (마스터 이미지)
           </h3>
           <img 
             src={interviewScene.imageUrl} 
             alt="마스터 이미지" 
             style={{ 
               width: "100%", 
-              maxWidth: "400px", 
+              maxWidth: "500px", 
               borderRadius: "12px",
               boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
             }} 
           />
           <p style={{
-            marginTop: "12px",
+            marginTop: "15px",
             fontSize: "14px",
-            color: "#6B7280"
+            color: "#6B7280",
+            lineHeight: "1.6"
           }}>
-            📍 {interviewScene.location} • 🎤 {interviewScene.interviewer === "male" ? "남자 아나운서" : "여자 아나운서"} • 
+            📍 {interviewScene.location}<br />
+            🎤 {interviewScene.interviewer === "male" ? "남자 아나운서" : "여자 아나운서"} • 
             👤 {["할머니", "할아버지", "젊은 남자", "젊은 여자", "친구", "강아지", "고양이"][
               ["grandmother", "grandfather", "youngman", "youngwoman", "friend", "dog", "cat"].indexOf(interviewScene.interviewee)
             ]}
           </p>
         </div>
 
-        {/* 진행 상태 */}
-        {!allImagesGenerated && (
-          <div style={{
-            backgroundColor: "#EEF2FF",
-            border: "2px solid #818CF8",
-            borderRadius: "12px",
-            padding: "20px",
-            marginBottom: "30px",
-            textAlign: "center"
-          }}>
-            <p style={{
-              fontSize: "16px",
-              fontWeight: "700",
-              color: "#3730A3",
-              marginBottom: "12px"
-            }}>
-              🎨 4컷 생성 중... ({currentGenerating + 1}/4)
-            </p>
-            <div style={{
-              width: "100%",
-              height: "12px",
-              backgroundColor: "#E5E7EB",
-              borderRadius: "6px",
-              overflow: "hidden"
-            }}>
-              <div style={{ 
-                width: `${((currentGenerating + 1) / 4) * 100}%`, 
-                height: "100%", 
-                backgroundColor: "#9C27B0", 
-                transition: "width 0.5s ease"
-              }} />
-            </div>
-            <p style={{
-              marginTop: "10px",
-              fontSize: "14px",
-              color: "#6B7280"
-            }}>
-              이미지 생성에는 약 1-2분 정도 소요됩니다. 잠시만 기다려주세요!
-            </p>
-          </div>
-        )}
-
-        {/* 2x2 그리드 */}
+        {/* 2x2 그리드 - 동일한 이미지 + 각 컷 내용 */}
         <div style={{ 
           display: "grid", 
           gridTemplateColumns: "1fr 1fr", 
           gap: "20px",
           marginBottom: "30px"
         }}>
-          {cutImages.map((cut, index) => (
+          {cutData.map((cut, index) => (
             <div key={index} style={{
               backgroundColor: "white",
               borderRadius: "12px",
@@ -326,53 +184,25 @@ ${customPrompt ? `\nAdditional requirements: ${customPrompt}` : ""}
                 {cut.cutNumber}컷 - {cutLabels[index]}
               </h3>
 
-              {/* 이미지 */}
-              {cut.isGenerating ? (
-                <div style={{ 
+              {/* 마스터 이미지 (모든 컷 동일) */}
+              <img 
+                src={interviewScene.imageUrl} 
+                alt={`${cut.cutNumber}컷`} 
+                style={{ 
                   width: "100%", 
                   aspectRatio: "1/1",
-                  backgroundColor: "#F3F4F6",
-                  borderRadius: "8px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "16px",
-                  color: "#6B7280",
-                  marginBottom: "15px"
-                }}>
-                  <div style={{ fontSize: "48px", marginBottom: "10px" }}>🎨</div>
-                  <div>생성 중...</div>
-                </div>
-              ) : cut.imageUrl ? (
-                <img 
-                  src={cut.imageUrl} 
-                  alt={`${cut.cutNumber}컷`} 
-                  style={{ 
-                    width: "100%", 
-                    aspectRatio: "1/1",
-                    objectFit: "cover",
-                    borderRadius: "8px", 
-                    marginBottom: "15px",
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
-                  }} 
-                />
-              ) : (
-                <div style={{ 
-                  width: "100%", 
-                  aspectRatio: "1/1",
-                  backgroundColor: "#F3F4F6",
-                  borderRadius: "8px",
-                  marginBottom: "15px"
-                }} />
-              )}
+                  objectFit: "cover",
+                  borderRadius: "8px", 
+                  marginBottom: "15px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
+                }} 
+              />
 
               {/* 인터뷰 내용 */}
               <div style={{ 
                 backgroundColor: "#F9FAFB", 
                 borderRadius: "8px", 
                 padding: "12px",
-                marginBottom: "12px",
                 fontSize: "13px",
                 lineHeight: "1.6"
               }}>
@@ -383,146 +213,67 @@ ${customPrompt ? `\nAdditional requirements: ${customPrompt}` : ""}
                   👤 {cut.answer}
                 </div>
               </div>
-
-              {/* 재생성 버튼 */}
-              {cut.imageUrl && (
-                <button
-                  onClick={() => handleRegenerateCut(index)}
-                  disabled={cut.isGenerating}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    backgroundColor: "white",
-                    color: "#7C3AED",
-                    border: "2px solid #7C3AED",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    transition: "all 0.2s"
-                  }}
-                >
-                  🔄 이 컷 다시 만들기
-                </button>
-              )}
             </div>
           ))}
         </div>
 
-        {/* 완료 버튼 */}
-        {allImagesGenerated && (
-          <div style={{ 
-            display: "flex", 
-            gap: "12px",
-            justifyContent: "center"
-          }}>
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              style={{
-                padding: "18px 40px",
-                fontSize: "18px",
-                fontWeight: "700",
-                backgroundColor: isSaving ? "#D1D5DB" : "#9C27B0",
-                color: "white",
-                border: "none",
-                borderRadius: "12px",
-                cursor: isSaving ? "not-allowed" : "pointer",
-                boxShadow: "0 4px 12px rgba(156, 39, 176, 0.3)"
-              }}
-            >
-              {isSaving ? "💾 저장 중..." : "✅ 저장하기"}
-            </button>
-          </div>
-        )}
-
-        {/* 재생성 모달 */}
-        {showRegenerateModal && (
-          <div style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000
-          }}>
-            <div style={{
+        {/* 저장 버튼 */}
+        <div style={{ 
+          display: "flex", 
+          gap: "12px",
+          justifyContent: "center"
+        }}>
+          <button
+            onClick={() => navigate("/write/fourcut-practice", { 
+              state: { theme, interviewScene } 
+            })}
+            style={{
+              padding: "16px 32px",
+              fontSize: "16px",
+              fontWeight: "600",
               backgroundColor: "white",
+              color: "#6B7280",
+              border: "2px solid #E5E7EB",
               borderRadius: "12px",
-              padding: "30px",
-              maxWidth: "500px",
-              width: "90%"
-            }}>
-              <h2 style={{ marginBottom: "20px", fontSize: "22px", fontWeight: "700", color: "#1F2937" }}>
-                🔄 {regeneratingCut !== null && regeneratingCut + 1}컷 다시 만들기
-              </h2>
-              
-              <p style={{ marginBottom: "15px", color: "#6B7280", fontSize: "15px" }}>
-                수정하고 싶은 내용을 입력하세요:
-              </p>
-              
-              <textarea
-                value={customPrompt}
-                onChange={(e) => setCustomPrompt(e.target.value)}
-                placeholder="예: 더 밝게, 웃는 표정으로, 배경을 흐리게..."
-                style={{
-                  width: "100%",
-                  minHeight: "100px",
-                  padding: "12px",
-                  fontSize: "15px",
-                  border: "2px solid #E5E7EB",
-                  borderRadius: "8px",
-                  marginBottom: "20px",
-                  fontFamily: "'Noto Sans KR', sans-serif",
-                  resize: "vertical"
-                }}
-              />
+              cursor: "pointer"
+            }}
+          >
+            ← 답변 수정하기
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            style={{
+              padding: "18px 40px",
+              fontSize: "18px",
+              fontWeight: "700",
+              backgroundColor: isSaving ? "#D1D5DB" : "#9C27B0",
+              color: "white",
+              border: "none",
+              borderRadius: "12px",
+              cursor: isSaving ? "not-allowed" : "pointer",
+              boxShadow: "0 4px 12px rgba(156, 39, 176, 0.3)"
+            }}
+          >
+            {isSaving ? "💾 저장 중..." : "✅ 저장하기"}
+          </button>
+        </div>
 
-              <div style={{ display: "flex", gap: "10px" }}>
-                <button
-                  onClick={() => {
-                    setShowRegenerateModal(false);
-                    setCustomPrompt("");
-                    setRegeneratingCut(null);
-                  }}
-                  style={{
-                    flex: 1,
-                    padding: "12px",
-                    fontSize: "16px",
-                    fontWeight: "600",
-                    backgroundColor: "white",
-                    color: "#6B7280",
-                    border: "2px solid #E5E7EB",
-                    borderRadius: "8px",
-                    cursor: "pointer"
-                  }}
-                >
-                  취소
-                </button>
-                <button
-                  onClick={handleRegenerateConfirm}
-                  style={{
-                    flex: 1,
-                    padding: "12px",
-                    fontSize: "16px",
-                    fontWeight: "600",
-                    backgroundColor: "#7C3AED",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "8px",
-                    cursor: "pointer"
-                  }}
-                >
-                  다시 만들기
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* 하단 안내 */}
+        <div style={{
+          marginTop: "30px",
+          padding: "16px",
+          backgroundColor: "#FEF3C7",
+          border: "2px solid #F59E0B",
+          borderRadius: "12px",
+          fontSize: "14px",
+          color: "#92400E",
+          lineHeight: "1.6",
+          textAlign: "center"
+        }}>
+          💡 <strong>Tip:</strong> 마스터 이미지가 마음에 안 드시면<br />
+          "← 답변 수정하기"를 누르고 처음부터 다시 만들어보세요!
+        </div>
       </div>
     </div>
   );

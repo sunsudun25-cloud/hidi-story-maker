@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
+import { safeGeminiCall } from "../services/geminiService";
 
 export default function FourcutInterviewPractice() {
   const navigate = useNavigate();
@@ -12,6 +13,15 @@ export default function FourcutInterviewPractice() {
   const [answers, setAnswers] = useState<string[]>(["", "", "", ""]);
   const [isListening, setIsListening] = useState(false);
   const [title, setTitle] = useState("");
+  
+  // AI 조언 관련 상태
+  const [showCompletion, setShowCompletion] = useState(false);
+  const [showAdvice, setShowAdvice] = useState(false);
+  const [aiAdvice, setAiAdvice] = useState("");
+  const [isGeneratingAdvice, setIsGeneratingAdvice] = useState(false);
+  const [suggestedCut, setSuggestedCut] = useState<number | null>(null);
+  const [isRevising, setIsRevising] = useState(false);
+  const [revisingCut, setRevisingCut] = useState<number | null>(null);
 
   useEffect(() => {
     if (!theme || !interviewScene) {
@@ -67,11 +77,14 @@ export default function FourcutInterviewPractice() {
       return;
     }
 
+    // 보완 모드일 경우 revisingCut 사용, 아니면 currentStep 사용
+    const targetStep = isRevising && revisingCut !== null ? revisingCut : currentStep;
+
     setIsListening(true);
     startListening({
       onResult: (text) => {
         const newAnswers = [...answers];
-        newAnswers[currentStep] = newAnswers[currentStep] + (newAnswers[currentStep] ? " " : "") + text;
+        newAnswers[targetStep] = newAnswers[targetStep] + (newAnswers[targetStep] ? " " : "") + text;
         setAnswers(newAnswers);
       },
       onError: (error) => {
@@ -95,8 +108,8 @@ export default function FourcutInterviewPractice() {
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     } else {
-      // 완료 → 에디터로 이동
-      handleComplete();
+      // 4컷 완료 → 완료 화면 표시
+      setShowCompletion(true);
     }
   };
 
@@ -107,8 +120,93 @@ export default function FourcutInterviewPractice() {
     }
   };
 
-  // 완료
-  const handleComplete = () => {
+  // AI 조언 생성
+  const handleGetAdvice = async () => {
+    setIsGeneratingAdvice(true);
+    try {
+      const prompt = `
+당신은 따뜻하고 친절한 글쓰기 선생님입니다.
+노인 학습자가 작성한 4컷 인터뷰를 보고, 
+짧고 따뜻한 조언 1개만 해주세요.
+
+인터뷰 내용:
+
+1컷 (만남):
+질문: ${questions[0]}
+답변: ${answers[0]}
+
+2컷 (이야기):
+질문: ${questions[1]}
+답변: ${answers[1]}
+
+3컷 (감동):
+질문: ${questions[2]}
+답변: ${answers[2]}
+
+4컷 (작별):
+질문: ${questions[3]}
+답변: ${answers[3]}
+
+---
+
+**조언 규칙:**
+1. 평가하지 말고, 제안만 하세요
+2. 구체적으로 어느 컷을 어떻게 보완할지 알려주세요 (예: "3컷에서...")
+3. 한 문장으로 간결하게 (최대 2줄)
+4. 따뜻하고 긍정적인 톤으로
+5. "~하면 좋을 것 같아요", "~해보면 어떨까요?" 같은 부드러운 표현 사용
+
+**나쁜 예:**
+- "3컷이 부족합니다."
+- "감정 표현이 약해요."
+- "더 잘 써야 합니다."
+
+**좋은 예:**
+- "3컷에서 할머니의 표정이나 목소리 톤을 조금 더 추가하면 더욱 생동감 있을 것 같아요!"
+- "2컷에서 구체적인 상황(예: 어떤 선물을 들고 있었는지)을 추가하면 더 좋을 것 같아요!"
+- "4컷에서 작별 인사를 나누며 느낀 감정을 한 문장 더하면 따뜻한 마무리가 될 거예요!"
+
+---
+
+조언 (한 문장):
+`;
+
+      const advice = await safeGeminiCall(prompt);
+      setAiAdvice(advice.trim());
+      
+      // 조언에서 컷 번호 추출 (1컷, 2컷, 3컷, 4컷)
+      const match = advice.match(/([1-4])컷/);
+      if (match) {
+        setSuggestedCut(parseInt(match[1]) - 1); // 0-indexed
+      }
+      
+      setShowAdvice(true);
+    } catch (error) {
+      console.error("AI 조언 생성 오류:", error);
+      alert("조언 생성 중 오류가 발생했습니다.");
+    } finally {
+      setIsGeneratingAdvice(false);
+    }
+  };
+
+  // 컷 다시 쓰기
+  const handleReviseAnswer = (cutIndex: number) => {
+    setRevisingCut(cutIndex);
+    setIsRevising(true);
+    setShowAdvice(false);
+    setShowCompletion(false);
+    setCurrentStep(cutIndex);
+  };
+
+  // 보완 완료
+  const handleRevisionComplete = () => {
+    setIsRevising(false);
+    setRevisingCut(null);
+    handleDirectComplete();
+  };
+
+  // 바로 완료
+  const handleDirectComplete = () => {
     if (!title.trim()) {
       alert("제목을 입력해주세요!");
       return;
@@ -433,19 +531,347 @@ export default function FourcutInterviewPractice() {
         </div>
 
         {/* 안내 */}
-        <div style={{
-          marginTop: "20px",
-          padding: "16px",
-          backgroundColor: "#FEF3C7",
-          border: "2px solid #F59E0B",
-          borderRadius: "12px",
-          fontSize: "14px",
-          color: "#92400E",
-          lineHeight: "1.6"
-        }}>
-          💡 <strong>꿀팁:</strong> 각 질문에 2-3문장으로 답변하세요!<br />
-          음성 입력을 사용하면 더 편하게 작성할 수 있어요.
-        </div>
+        {!showCompletion && !showAdvice && !isRevising && (
+          <div style={{
+            marginTop: "20px",
+            padding: "16px",
+            backgroundColor: "#FEF3C7",
+            border: "2px solid #F59E0B",
+            borderRadius: "12px",
+            fontSize: "14px",
+            color: "#92400E",
+            lineHeight: "1.6"
+          }}>
+            💡 <strong>꿀팁:</strong> 각 질문에 2-3문장으로 답변하세요!<br />
+            음성 입력을 사용하면 더 편하게 작성할 수 있어요.
+          </div>
+        )}
+
+        {/* 4컷 완료 화면 */}
+        {showCompletion && !showAdvice && (
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "30px",
+            marginTop: "20px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+          }}>
+            <div style={{
+              textAlign: "center",
+              marginBottom: "30px"
+            }}>
+              <div style={{ fontSize: "64px", marginBottom: "10px" }}>🎉</div>
+              <h2 style={{
+                fontSize: "24px",
+                fontWeight: "700",
+                color: "#1F2937",
+                marginBottom: "10px"
+              }}>
+                4컷 인터뷰 완성!
+              </h2>
+              <p style={{
+                fontSize: "16px",
+                color: "#6B7280"
+              }}>
+                AI 조언을 받고 한 문장을 더 다듬어볼까요?
+              </p>
+            </div>
+
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px"
+            }}>
+              <button
+                onClick={handleGetAdvice}
+                disabled={isGeneratingAdvice}
+                style={{
+                  width: "100%",
+                  padding: "18px",
+                  fontSize: "18px",
+                  fontWeight: "700",
+                  backgroundColor: isGeneratingAdvice ? "#D1D5DB" : "#7C3AED",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "12px",
+                  cursor: isGeneratingAdvice ? "not-allowed" : "pointer",
+                  boxShadow: "0 4px 12px rgba(124, 58, 237, 0.3)"
+                }}
+              >
+                {isGeneratingAdvice ? "💭 AI가 생각 중..." : "✨ AI 조언 받기"}
+              </button>
+
+              <button
+                onClick={handleDirectComplete}
+                style={{
+                  width: "100%",
+                  padding: "18px",
+                  fontSize: "18px",
+                  fontWeight: "700",
+                  backgroundColor: "white",
+                  color: "#6B7280",
+                  border: "2px solid #E5E7EB",
+                  borderRadius: "12px",
+                  cursor: "pointer"
+                }}
+              >
+                바로 완료하기 →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* AI 조언 화면 */}
+        {showAdvice && (
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "30px",
+            marginTop: "20px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+          }}>
+            <div style={{
+              textAlign: "center",
+              marginBottom: "30px"
+            }}>
+              <div style={{ fontSize: "64px", marginBottom: "10px" }}>💡</div>
+              <h2 style={{
+                fontSize: "24px",
+                fontWeight: "700",
+                color: "#1F2937",
+                marginBottom: "10px"
+              }}>
+                AI 선생님의 따뜻한 조언
+              </h2>
+            </div>
+
+            <div style={{
+              backgroundColor: "#F3E8FF",
+              borderRadius: "12px",
+              padding: "20px",
+              marginBottom: "30px"
+            }}>
+              <div style={{
+                fontSize: "16px",
+                color: "#1F2937",
+                lineHeight: "1.8"
+              }}>
+                {aiAdvice}
+              </div>
+            </div>
+
+            {/* 컷 선택 버튼 */}
+            <div style={{
+              marginBottom: "20px"
+            }}>
+              <h3 style={{
+                fontSize: "16px",
+                fontWeight: "700",
+                color: "#1F2937",
+                marginBottom: "15px",
+                textAlign: "center"
+              }}>
+                어느 컷을 다시 쓸까요?
+              </h3>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "10px"
+              }}>
+                {["1컷 (만남)", "2컷 (이야기)", "3컷 (감동)", "4컷 (작별)"].map((label, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleReviseAnswer(index)}
+                    style={{
+                      padding: "14px",
+                      fontSize: "15px",
+                      fontWeight: "600",
+                      backgroundColor: suggestedCut === index ? "#7C3AED" : "white",
+                      color: suggestedCut === index ? "white" : "#374151",
+                      border: suggestedCut === index ? "none" : "2px solid #E5E7EB",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    {suggestedCut === index && "⭐ "}
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={handleDirectComplete}
+              style={{
+                width: "100%",
+                padding: "16px",
+                fontSize: "16px",
+                fontWeight: "600",
+                backgroundColor: "white",
+                color: "#6B7280",
+                border: "2px solid #E5E7EB",
+                borderRadius: "12px",
+                cursor: "pointer"
+              }}
+            >
+              조언 건너뛰고 바로 완료하기 →
+            </button>
+          </div>
+        )}
+
+        {/* 보완 화면 */}
+        {isRevising && revisingCut !== null && (
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "30px",
+            marginTop: "20px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+          }}>
+            <div style={{
+              textAlign: "center",
+              marginBottom: "30px"
+            }}>
+              <div style={{ fontSize: "64px", marginBottom: "10px" }}>✍️</div>
+              <h2 style={{
+                fontSize: "24px",
+                fontWeight: "700",
+                color: "#1F2937",
+                marginBottom: "10px"
+              }}>
+                {revisingCut + 1}컷 다시 쓰기
+              </h2>
+            </div>
+
+            {/* AI 조언 다시 보기 */}
+            <div style={{
+              backgroundColor: "#FEF3C7",
+              border: "2px solid #F59E0B",
+              borderRadius: "12px",
+              padding: "16px",
+              marginBottom: "20px",
+              fontSize: "14px",
+              color: "#92400E",
+              lineHeight: "1.6"
+            }}>
+              💡 <strong>AI 조언:</strong><br />
+              {aiAdvice}
+            </div>
+
+            {/* 원래 질문과 답변 */}
+            <div style={{
+              backgroundColor: "#F9FAFB",
+              borderRadius: "8px",
+              padding: "16px",
+              marginBottom: "20px"
+            }}>
+              <div style={{
+                fontSize: "14px",
+                fontWeight: "700",
+                color: "#7C3AED",
+                marginBottom: "8px"
+              }}>
+                📺 인터뷰어
+              </div>
+              <div style={{
+                fontSize: "15px",
+                color: "#1F2937",
+                marginBottom: "15px",
+                lineHeight: "1.6"
+              }}>
+                {questions[revisingCut]}
+              </div>
+              <div style={{
+                fontSize: "14px",
+                fontWeight: "700",
+                color: "#374151",
+                marginBottom: "8px"
+              }}>
+                👤 이전 답변
+              </div>
+              <div style={{
+                fontSize: "14px",
+                color: "#6B7280",
+                lineHeight: "1.6"
+              }}>
+                {answers[revisingCut]}
+              </div>
+            </div>
+
+            {/* 새로운 답변 입력 */}
+            <div>
+              <div style={{
+                fontSize: "16px",
+                fontWeight: "700",
+                color: "#1F2937",
+                marginBottom: "10px"
+              }}>
+                ✨ 보완한 답변
+              </div>
+              <textarea
+                value={answers[revisingCut]}
+                onChange={(e) => {
+                  const newAnswers = [...answers];
+                  newAnswers[revisingCut] = e.target.value;
+                  setAnswers(newAnswers);
+                }}
+                placeholder="조언을 참고해서 답변을 다시 써보세요..."
+                style={{
+                  width: "100%",
+                  minHeight: "140px",
+                  padding: "12px",
+                  fontSize: "15px",
+                  border: "2px solid #7C3AED",
+                  borderRadius: "8px",
+                  fontFamily: "'Noto Sans KR', sans-serif",
+                  resize: "vertical"
+                }}
+              />
+
+              {/* 음성 입력 버튼 */}
+              <button
+                onClick={handleVoiceInput}
+                disabled={isListening}
+                style={{
+                  width: "100%",
+                  marginTop: "10px",
+                  padding: "12px",
+                  fontSize: "15px",
+                  fontWeight: "600",
+                  backgroundColor: isListening ? "#D1D5DB" : "#10B981",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: isListening ? "not-allowed" : "pointer"
+                }}
+              >
+                {isListening ? "👂 듣고 있어요..." : "🎤 음성으로 답변하기"}
+              </button>
+            </div>
+
+            {/* 완료 버튼 */}
+            <button
+              onClick={handleRevisionComplete}
+              disabled={!answers[revisingCut]?.trim()}
+              style={{
+                width: "100%",
+                marginTop: "20px",
+                padding: "18px",
+                fontSize: "18px",
+                fontWeight: "700",
+                backgroundColor: !answers[revisingCut]?.trim() ? "#D1D5DB" : "#9C27B0",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                cursor: !answers[revisingCut]?.trim() ? "not-allowed" : "pointer",
+                boxShadow: "0 4px 12px rgba(156, 39, 176, 0.3)"
+              }}
+            >
+              ✅ 보완 완료하고 저장하기
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

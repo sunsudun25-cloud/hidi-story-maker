@@ -61,9 +61,9 @@ export async function generateImageViaCloudflare(
         // ✅ 프롬프트에 스타일이 포함되어 있으면 prompt로 보내서 서버 스타일 매핑 건너뛰기
         // userText가 아닌 prompt로 보내면 서버가 스타일 매핑을 적용하지 않음
         prompt: prompt,  // 완성된 프롬프트를 그대로 전달
-        model: options?.model || "dall-e-3",
+        model: options?.model || "gpt-image-1.5",
         size: options?.size || "1024x1024",
-        quality: options?.quality || "standard"
+        quality: options?.quality || "high"
       })
     });
 

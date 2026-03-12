@@ -78,7 +78,7 @@ export async function generateStoryImage(
     character?: string;  // 캐릭터 일관성 프롬프트
     model?: SupportedModel;
     size?: "1024x1024" | "1024x1536" | "1536x1024";
-    quality?: "standard" | "high";
+    quality?: "low" | "medium" | "high";
   }
 ): Promise<string> {
   try {
@@ -86,9 +86,9 @@ export async function generateStoryImage(
       style = "동화풍", 
       mood = "따뜻하고 부드러운",
       character = "",
-      model = "dall-e-3",
+      model = "gpt-image-1.5",
       size = "1024x1024",
-      quality = "standard"
+      quality = "high"
     } = options || {};
 
     // ✅ 사람 포함 여부 자동 판단
@@ -165,14 +165,14 @@ export async function generateWritingImage(
   options?: {
     model?: SupportedModel;
     size?: "1024x1024" | "1024x1536" | "1536x1024";
-    quality?: "standard" | "high";
+    quality?: "low" | "medium" | "high";
   }
 ): Promise<string> {
   try {
     const {
-      model = "dall-e-3",
+      model = "gpt-image-1.5",
       size = "1024x1024",
-      quality = "standard"
+      quality = "high"
     } = options || {};
 
     const genreStyle = genre ? `${genre} 장르에 어울리는` : "글 내용에 맞는";
@@ -784,7 +784,7 @@ export async function generate4PanelStoryImages(
     onProgress?: (status: string, progress: number) => void;
     model?: SupportedModel;
     size?: "1024x1024" | "1024x1536" | "1536x1024";
-    quality?: "standard" | "high";
+    quality?: "low" | "medium" | "high";
   }
 ): Promise<{
   masterImage: string;
@@ -794,9 +794,9 @@ export async function generate4PanelStoryImages(
     onMasterProgress,
     onPanelProgress,
     onProgress,
-    model = "dall-e-3",
+    model = "gpt-image-1.5",
     size = "1024x1024",
-    quality = "standard"
+    quality = "high"
   } = options || {};
 
   try {

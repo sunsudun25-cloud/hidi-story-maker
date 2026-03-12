@@ -199,9 +199,19 @@ export async function onRequest(context: { request: Request; env: Env }) {
     // ✅ 검증용 로그
     console.log('📡 [GEN_IMAGE] style=', normalizedStyle);
     console.log('📝 [FINAL_PROMPT_HEAD]', finalPrompt.slice(0, 300));
-    console.log('📡 OpenAI API 호출:', { requestId, model: model || 'dall-e-3', size: size || '1024x1024', quality: quality || 'standard' });
+    
+    // ⭐ GPT Image 모델 사용 (gpt-image-1.5 권장)
+    const defaultModel = "gpt-image-1.5";  // 최고 품질
+    const defaultQuality = "high";  // low, medium, high
+    
+    console.log('📡 OpenAI API 호출:', { 
+      requestId, 
+      model: model || defaultModel, 
+      size: size || '1024x1024', 
+      quality: quality || defaultQuality 
+    });
 
-    // OpenAI API 호출
+    // OpenAI API 호출 (GPT Image 계열)
     const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
       headers: {
@@ -209,12 +219,11 @@ export async function onRequest(context: { request: Request; env: Env }) {
         "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: model || "dall-e-3",
-        prompt: finalPrompt, // ✅ buildEnhancedPrompt 결과 사용
-        n: 1,
+        model: model || defaultModel,  // gpt-image-1.5
+        prompt: finalPrompt,
         size: size || "1024x1024",
-        quality: quality || "standard",
-        response_format: "b64_json",
+        quality: quality || defaultQuality,  // high
+        output_format: "png",  // png, webp, jpeg
       }),
     });
 
@@ -227,7 +236,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
           fallback: false,
           error: `OpenAI API error: ${openaiResponse.status}`,
           request_id: requestId,
-          model_used: model || 'dall-e-3'
+          model_used: model || 'gpt-image-1.5'
         }),
         { 
           status: openaiResponse.status, 
@@ -246,7 +255,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
           fallback: false,
           error: 'No image data received',
           request_id: requestId,
-          model_used: model || 'dall-e-3'
+          model_used: model || 'gpt-image-1.5'
         }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -294,7 +303,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
         fallback: false, // fallback 이미지 반환 시 true로 변경
         error: error instanceof Error ? error.message : 'Unknown error',
         request_id: requestId,
-        model_used: 'dall-e-3',
+        model_used: 'gpt-image-1.5',
         timestamp: new Date().toISOString()
       }),
       { 

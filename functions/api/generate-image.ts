@@ -200,9 +200,9 @@ export async function onRequest(context: { request: Request; env: Env }) {
     console.log('📡 [GEN_IMAGE] style=', normalizedStyle);
     console.log('📝 [FINAL_PROMPT_HEAD]', finalPrompt.slice(0, 300));
     
-    // ⭐ GPT Image 모델 사용 (gpt-image-1.5 권장)
-    const defaultModel = "gpt-image-1.5";  // 최고 품질
-    const defaultQuality = "high";  // low, medium, high
+    // ⭐ DALL-E 3 사용 (안정적이고 검증된 모델)
+    const defaultModel = "dall-e-3";
+    const defaultQuality = "hd";  // standard | hd
     
     console.log('📡 OpenAI API 호출:', { 
       requestId, 
@@ -211,7 +211,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
       quality: quality || defaultQuality 
     });
 
-    // OpenAI API 호출 (GPT Image 계열)
+    // OpenAI API 호출 (DALL-E 3)
     const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
       headers: {
@@ -219,11 +219,12 @@ export async function onRequest(context: { request: Request; env: Env }) {
         "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: model || defaultModel,  // gpt-image-1.5
+        model: model || defaultModel,  // dall-e-3
         prompt: finalPrompt,
+        n: 1,
         size: size || "1024x1024",
-        quality: quality || defaultQuality,  // high
-        output_format: "png",  // png, webp, jpeg
+        quality: quality || defaultQuality,  // hd (최고 품질)
+        response_format: "b64_json",
       }),
     });
 
@@ -236,7 +237,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
           fallback: false,
           error: `OpenAI API error: ${openaiResponse.status}`,
           request_id: requestId,
-          model_used: model || 'gpt-image-1.5'
+          model_used: model || 'dall-e-3'
         }),
         { 
           status: openaiResponse.status, 
@@ -255,7 +256,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
           fallback: false,
           error: 'No image data received',
           request_id: requestId,
-          model_used: model || 'gpt-image-1.5'
+          model_used: model || 'dall-e-3'
         }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );

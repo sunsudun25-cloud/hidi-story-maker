@@ -173,58 +173,88 @@ export default function FourcutInterviewSetup() {
       let prompt: string;
       
       if (selectedStyle === "realistic") {
-        // 실사 스타일: 한국어 포토저널리즘 프롬프트
-        const interviewerKorean = selectedInterviewer === "male" ? "한국인 남성 아나운서" : "한국인 여자 아나운서";
-        const intervieweeMap: Record<string, string> = {
-          grandmother: "한국인 할머니",
-          grandfather: "한국인 할아버지",
-          youngMan: "한국인 젊은 남성",
-          youngWoman: "한국인 젊은 여성",
-          boyChild: "한국인 남자 어린이",
-          girlChild: "한국인 여자 어린이",
-          dog: "강아지 (리트리버)",
-          cat: "고양이"
+        // 실사 스타일: 순수 영어 포토저널리즘 프롬프트
+        const interviewerEnglish = selectedInterviewer === "male" ? "Korean male news reporter" : "Korean female news reporter";
+        const intervieweeEnglishMap: Record<string, string> = {
+          grandmother: "Korean elderly grandmother",
+          grandfather: "Korean elderly grandfather",
+          youngMan: "Korean young man",
+          youngWoman: "Korean young woman",
+          boyChild: "Korean boy child",
+          girlChild: "Korean girl child",
+          dog: "friendly dog (golden retriever)",
+          cat: "elegant cat"
         };
-        const intervieweeKorean = intervieweeMap[selectedInterviewee] || "인터뷰 대상";
+        const intervieweeEnglish = intervieweeEnglishMap[selectedInterviewee] || "interviewee";
         
-        // 캐릭터 DNA가 있으면 추가
+        // 캐릭터 DNA 영어로 변환
         let dnaText = "";
         if (characterDNA.appearance || characterDNA.clothes || characterDNA.features) {
           const dnaParts = [
-            characterDNA.appearance && `외모: ${characterDNA.appearance}`,
-            characterDNA.clothes && `옷차림: ${characterDNA.clothes}`,
-            characterDNA.features && `특징: ${characterDNA.features}`
+            characterDNA.appearance && `Appearance: ${characterDNA.appearance}`,
+            characterDNA.clothes && `Clothing: ${characterDNA.clothes}`,
+            characterDNA.features && `Features: ${characterDNA.features}`
           ].filter(Boolean);
-          dnaText = dnaParts.length > 0 ? `. ${dnaParts.join(", ")}` : "";
+          dnaText = dnaParts.length > 0 ? `\nCharacter details: ${dnaParts.join(", ")}` : "";
         }
         
-        const scenePrompt = `${selectedLocation}에서 ${interviewerKorean}가 ${intervieweeKorean}를 마이크로 인터뷰하는 장면${dnaText}`;
-        const styleGuide = `
-CRITICAL PHOTOREALISM REQUIREMENTS:
-- This MUST be a real photograph taken with a professional DSLR camera
-- Real photojournalism style like actual news coverage
-- Natural lighting with realistic shadows and highlights
-- Real human skin with pores, wrinkles, natural imperfections
-- Authentic Korean facial features and body proportions
-- Documentary photography aesthetic
-- Genuine candid moment captured on camera
-- Real depth of field with bokeh effect
-- Professional photography composition
-
-STRICTLY FORBIDDEN (이것들은 절대 안됨):
-- NO 3D rendering or CGI
-- NO illustration or digital art
-- NO animation or cartoon style
-- NO game graphics or cel-shading
-- NO fairy tale or storybook style (동화풍 금지)
-- NO smooth plastic skin or overly perfect features
-- NO readable text, signs, or Korean/English letters
-
-This must look like a real photograph from a Korean news broadcast or documentary, not artwork.
-진짜 사진처럼 보여야 합니다. 일러스트나 3D가 아닌 실제 카메라로 찍은 것처럼.
-`;
+        // 장소 영어 변환 매핑
+        const locationEnglishMap: Record<string, string> = {
+          "고속도로 휴게소": "highway rest stop convenience store",
+          "기차역 플랫폼": "train station platform",
+          "버스 터미널": "bus terminal waiting area",
+          "공항 로비": "airport lobby",
+          "편의점 계산대": "convenience store checkout counter",
+          "시장 골목": "traditional market alley",
+          "택배 차량": "delivery truck",
+          "거리 청소": "street cleaning area",
+          "봄꽃이 핀 공원": "park with spring flowers",
+          "여름 바닷가": "summer beach",
+          "단풍길": "autumn foliage path",
+          "눈 내린 거리": "snowy street",
+          "집 거실": "home living room",
+          "가족 식당": "family restaurant",
+          "공원 벤치": "park bench",
+          "할머니 댁 마당": "grandmother's house yard",
+          "오래된 골목": "old alley",
+          "고향 학교 앞": "hometown school entrance",
+          "추억의 카페": "nostalgic vintage cafe",
+          "특별한 장소": "special memorable place"
+        };
+        const locationEnglish = locationEnglishMap[selectedLocation] || selectedLocation;
         
-        prompt = `${scenePrompt}\n\n${styleGuide.trim()}`;
+        prompt = `
+A photojournalistic documentary photograph: ${interviewerEnglish} interviewing ${intervieweeEnglish} with a microphone at ${locationEnglish}.${dnaText}
+
+CRITICAL SCENE REQUIREMENTS:
+- Setting: ${locationEnglish} with realistic, detailed background appropriate for this location
+- Two people: ${interviewerEnglish} (holding microphone) and ${intervieweeEnglish}
+- Both subjects clearly visible in frame, facing each other
+- Microphone prominently visible between them
+- Natural interview posture and positioning
+- Authentic Korean people with realistic Korean facial features and proportions
+
+PHOTOREALISM REQUIREMENTS:
+- REAL photograph taken with professional DSLR camera (Canon/Nikon/Sony)
+- Photojournalism / documentary photography style
+- Natural lighting with realistic shadows and highlights
+- Real human skin with pores, wrinkles, texture, and natural imperfections
+- Genuine candid moment captured on camera
+- Realistic depth of field with natural bokeh
+- Professional news photography composition
+
+STRICTLY FORBIDDEN:
+- NO 3D rendering, CGI, or computer graphics
+- NO illustration, digital art, or drawing
+- NO animation, cartoon, or anime style
+- NO game graphics or cel-shading
+- NO storybook or fairy tale illustration
+- NO smooth plastic skin or overly perfect features
+- NO readable text, signs, Korean letters, or English words
+- NO stock photo aesthetic or overly posed look
+
+This must look EXACTLY like a real photograph from an actual Korean news broadcast or documentary, NOT artwork or illustration.
+`.trim();
       } else {
         // 다른 스타일: 영어 프롬프트
         prompt = `

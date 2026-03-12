@@ -200,18 +200,21 @@ export async function onRequest(context: { request: Request; env: Env }) {
     console.log('📡 [GEN_IMAGE] style=', normalizedStyle);
     console.log('📝 [FINAL_PROMPT_HEAD]', finalPrompt.slice(0, 300));
     
-    // ⭐ DALL-E 3 사용 (안정적이고 검증된 모델)
-    const defaultModel = "dall-e-3";
-    const defaultQuality = "hd";  // standard | hd
+    // ⭐ GPT Image 모델 사용
+    const defaultModel = "gpt-image-1";  // gpt-image-1, gpt-image-1.5, gpt-image-1-mini
+    const defaultQuality = "medium";  // low | medium | high | auto
+    const defaultOutputFormat = "png";  // png | webp | jpeg
     
     console.log('📡 OpenAI API 호출:', { 
       requestId, 
       model: model || defaultModel, 
       size: size || '1024x1024', 
-      quality: quality || defaultQuality 
+      quality: quality || defaultQuality,
+      output_format: defaultOutputFormat
     });
 
-    // OpenAI API 호출 (DALL-E 3)
+    // OpenAI API 호출 (GPT Image)
+    // 주의: GPT Image는 b64_json만 지원, url 응답 형식 없음
     const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
       headers: {
@@ -219,25 +222,29 @@ export async function onRequest(context: { request: Request; env: Env }) {
         "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: model || defaultModel,  // dall-e-3
+        model: model || defaultModel,
         prompt: finalPrompt,
-        n: 1,
         size: size || "1024x1024",
-        quality: quality || defaultQuality,  // hd (최고 품질)
-        response_format: "b64_json",
+        quality: quality || defaultQuality,
+        output_format: defaultOutputFormat,
+        // GPT Image에서는 n, response_format 파라미터 사용 안함
       }),
     });
 
     if (!openaiResponse.ok) {
       const errorData = await openaiResponse.text();
-      console.error('❌ OpenAI API 오류:', errorData);
+      console.error('❌ OpenAI API 오류:', {
+        status: openaiResponse.status,
+        statusText: openaiResponse.statusText,
+        body: errorData
+      });
       return new Response(
         JSON.stringify({ 
           success: false,
           fallback: false,
-          error: `OpenAI API error: ${openaiResponse.status}`,
+          error: `OpenAI API error: ${openaiResponse.status} - ${errorData}`,
           request_id: requestId,
-          model_used: model || 'dall-e-3'
+          model_used: model || defaultModel
         }),
         { 
           status: openaiResponse.status, 
@@ -247,16 +254,24 @@ export async function onRequest(context: { request: Request; env: Env }) {
     }
 
     const data = await openaiResponse.json() as any;
+    console.log('📦 OpenAI 응답 데이터:', {
+      hasData: !!data.data,
+      dataLength: data.data?.length,
+      firstItem: data.data?.[0] ? Object.keys(data.data[0]) : []
+    });
+
     const base64Data = data.data[0].b64_json;
 
     if (!base64Data) {
+      console.error('❌ b64_json 데이터 없음:', data);
       return new Response(
         JSON.stringify({ 
           success: false,
           fallback: false,
-          error: 'No image data received',
+          error: 'No b64_json data received from OpenAI',
           request_id: requestId,
-          model_used: model || 'dall-e-3'
+          model_used: model || defaultModel,
+          response_keys: data.data?.[0] ? Object.keys(data.data[0]) : []
         }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -275,9 +290,10 @@ export async function onRequest(context: { request: Request; env: Env }) {
         prompt: finalPrompt, // ✅ 강화된 프롬프트 반환
         style: normalizedStyle, // ✅ 실제 적용된 스타일 반환
         request_id: requestId,
-        model_used: model || 'dall-e-3',
+        model_used: model || 'gpt-image-1',
         size_used: size || '1024x1024',
-        quality_used: quality || 'standard',
+        quality_used: quality || 'medium',
+        output_format_used: 'png',
         timestamp: new Date().toISOString(),
         // ✅ 임시 디버그 필드 (확인 후 제거 가능)
         debug: {

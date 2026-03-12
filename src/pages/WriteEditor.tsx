@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { safeGeminiCall } from "../services/geminiService";
 import { saveStory, getAllStories, type Story, type StoryImage } from "../services/dbService";
-import { generateWritingImage } from "../services/imageService";
+import { generateWritingImage, generate4PanelStoryImages } from "../services/imageService";
 import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
 import { uploadImage } from "../services/imageUploadService";
 // ⚠️ 손글씨 인식 기능은 현재 비활성화됨
@@ -37,6 +37,11 @@ export default function WriteEditor() {
   // 이미지 상태
   const [storyImages, setStoryImages] = useState<StoryImage[]>([]);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  
+  // 4컷 이미지 생성 상태
+  const [masterImage, setMasterImage] = useState<string | null>(null);
+  const [panelImages, setPanelImages] = useState<string[]>([]);
+  const [imageProgress, setImageProgress] = useState<{ status: string; progress: number } | null>(null);
   
   // 손글씨 인식 상태
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -123,6 +128,12 @@ export default function WriteEditor() {
       return;
     }
 
+    // 4컷 이야기 장르인 경우 4컷 이미지 생성
+    if (genre === "fourcut") {
+      await handleGenerate4CutImages();
+      return;
+    }
+
     setIsGeneratingImage(true);
     try {
       console.log("🎨 이미지 생성 시작:", { genre: genreLabel, contentLength: content.length });
@@ -146,6 +157,129 @@ export default function WriteEditor() {
       alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
       setIsGeneratingImage(false);
+    }
+  };
+
+  // 🎬 4컷 이미지 생성
+  const handleGenerate4CutImages = async () => {
+    if (!content.trim()) {
+      alert("먼저 4컷 이야기를 작성해주세요!");
+      return;
+    }
+
+    // 4컷 패널 분리
+    const panels = parse4CutContent(content);
+    if (!panels) {
+      alert("4컷 형식이 올바르지 않습니다.\n\n각 컷을 구분할 수 있도록 작성해주세요.\n\n예시:\n1컷: ...\n2컷: ...\n3컷: ...\n4컷: ...");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "🎬 4컷 이미지를 생성하시겠습니까?\n\n" +
+      "마스터 이미지 1장 + 각 컷별 이미지 4장이 생성됩니다.\n" +
+      "소요 시간: 약 60초\n\n" +
+      "생성 중에는 다른 작업을 하지 마세요."
+    );
+
+    if (!confirmed) return;
+
+    setIsGeneratingImage(true);
+    setMasterImage(null);
+    setPanelImages([]);
+    
+    try {
+      console.log("🎬 [4컷 이야기] 이미지 생성 시작:", panels);
+      
+      const result = await generate4PanelStoryImages(panels, {
+        onMasterProgress: (imageUrl) => {
+          console.log("✅ [4컷 이야기] 마스터 이미지 생성 완료");
+          setMasterImage(imageUrl);
+        },
+        onPanelProgress: (panelIndex, imageUrl) => {
+          console.log(`✅ [4컷 이야기] ${panelIndex + 1}컷 이미지 생성 완료`);
+          setPanelImages(prev => {
+            const newImages = [...prev];
+            newImages[panelIndex] = imageUrl;
+            return newImages;
+          });
+        },
+        onProgress: (status, progress) => {
+          console.log(`📊 [4컷 이야기] ${status} - ${progress}%`);
+          setImageProgress({ status, progress });
+        }
+      });
+
+      // 결과를 storyImages에 추가 (마스터 + 4컷)
+      const allImages: StoryImage[] = [
+        {
+          id: crypto.randomUUID(),
+          url: result.masterImage,
+          prompt: "마스터 이미지 (스타일 기준)",
+          createdAt: new Date().toISOString()
+        },
+        ...result.panelImages.map((url, index) => ({
+          id: crypto.randomUUID(),
+          url,
+          prompt: `${index + 1}컷 - ${panels[index].substring(0, 30)}...`,
+          createdAt: new Date().toISOString()
+        }))
+      ];
+
+      setStoryImages([...storyImages, ...allImages]);
+      setImageProgress(null);
+      
+      alert("✨ 4컷 이미지가 모두 생성되었습니다!\n\n마스터 이미지 1장 + 각 컷 4장 = 총 5장");
+      
+    } catch (error) {
+      console.error("❌ [4컷 이야기] 이미지 생성 오류:", error);
+      alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+      setImageProgress(null);
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
+  // 4컷 내용 파싱 (1컷, 2컷, 3컷, 4컷 분리)
+  const parse4CutContent = (text: string): [string, string, string, string] | null => {
+    try {
+      // 패턴 1: "1컷:", "2컷:", ... 형식
+      const pattern1 = /[1１]컷[:\s：]*([^\n]*(?:\n(?![2-4２-４]컷)[^\n]*)*)/i;
+      const pattern2 = /[2２]컷[:\s：]*([^\n]*(?:\n(?![3-4３-４]컷)[^\n]*)*)/i;
+      const pattern3 = /[3３]컷[:\s：]*([^\n]*(?:\n(?![4４]컷)[^\n]*)*)/i;
+      const pattern4 = /[4４]컷[:\s：]*([^\n]*(?:\n[^\n]*)*)/i;
+      
+      const match1 = text.match(pattern1);
+      const match2 = text.match(pattern2);
+      const match3 = text.match(pattern3);
+      const match4 = text.match(pattern4);
+      
+      if (match1 && match2 && match3 && match4) {
+        return [
+          match1[1].trim(),
+          match2[1].trim(),
+          match3[1].trim(),
+          match4[1].trim()
+        ];
+      }
+
+      // 패턴 2: 줄바꿈으로 구분된 4개 단락 (각 단락이 2줄 정도)
+      const lines = text.split('\n').filter(line => line.trim());
+      if (lines.length >= 4) {
+        // 4개 그룹으로 나누기
+        const group1 = lines.slice(0, Math.ceil(lines.length / 4)).join('\n');
+        const group2 = lines.slice(Math.ceil(lines.length / 4), Math.ceil(lines.length / 2)).join('\n');
+        const group3 = lines.slice(Math.ceil(lines.length / 2), Math.ceil(lines.length * 3 / 4)).join('\n');
+        const group4 = lines.slice(Math.ceil(lines.length * 3 / 4)).join('\n');
+        
+        if (group1 && group2 && group3 && group4) {
+          return [group1, group2, group3, group4];
+        }
+      }
+
+      return null;
+    } catch (error) {
+      console.error("4컷 파싱 오류:", error);
+      return null;
     }
   };
 
@@ -1030,8 +1164,56 @@ ${content}
               boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
             }}
           >
-            {isGeneratingImage ? "🎨 이미지 생성 중..." : storyImages.length > 0 ? "➕ 이미지 추가" : "🎨 이미지 만들기"}
+            {isGeneratingImage 
+              ? (genre === "fourcut" ? "🎬 4컷 이미지 생성 중..." : "🎨 이미지 생성 중...") 
+              : (genre === "fourcut" 
+                ? (storyImages.length > 0 ? "➕ 4컷 이미지 추가" : "🎬 4컷 이미지 만들기")
+                : (storyImages.length > 0 ? "➕ 이미지 추가" : "🎨 이미지 만들기")
+              )
+            }
           </button>
+          
+          {/* 4컷 이미지 생성 진행 상황 */}
+          {imageProgress && (
+            <div style={{
+              marginTop: "10px",
+              padding: "12px",
+              backgroundColor: "#F3E8FF",
+              borderRadius: "8px",
+              border: "2px solid #9C27B0"
+            }}>
+              <div style={{
+                fontSize: "14px",
+                fontWeight: "600",
+                color: "#6B21A8",
+                marginBottom: "8px"
+              }}>
+                {imageProgress.status}
+              </div>
+              <div style={{
+                width: "100%",
+                height: "20px",
+                backgroundColor: "#E9D5FF",
+                borderRadius: "10px",
+                overflow: "hidden"
+              }}>
+                <div style={{
+                  width: `${imageProgress.progress}%`,
+                  height: "100%",
+                  backgroundColor: "#9C27B0",
+                  transition: "width 0.3s ease"
+                }} />
+              </div>
+              <div style={{
+                fontSize: "12px",
+                color: "#6B21A8",
+                marginTop: "4px",
+                textAlign: "right"
+              }}>
+                {imageProgress.progress}%
+              </div>
+            </div>
+          )}
         </div>
 
         {/* AI 보조작가 (고급) - 자유 글쓰기 전용 */}

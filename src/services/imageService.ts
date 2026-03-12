@@ -770,9 +770,137 @@ export async function downloadImagesAsZip(
   throw new Error("ZIP 다운로드 기능은 아직 구현되지 않았습니다.");
 }
 
+/**
+ * 4컷 이야기 이미지 생성 (마스터 이미지 기반 일관성 유지)
+ * @param panels 4개 패널의 텍스트 배열
+ * @param options 생성 옵션
+ * @returns 마스터 이미지 + 4개 패널 이미지 URL 배열
+ */
+export async function generate4PanelStoryImages(
+  panels: [string, string, string, string],
+  options?: {
+    onMasterProgress?: (imageUrl: string) => void;
+    onPanelProgress?: (panelIndex: number, imageUrl: string) => void;
+    onProgress?: (status: string, progress: number) => void;
+    model?: SupportedModel;
+    size?: "1024x1024" | "1024x1536" | "1536x1024";
+    quality?: "standard" | "high";
+  }
+): Promise<{
+  masterImage: string;
+  panelImages: [string, string, string, string];
+}> {
+  const {
+    onMasterProgress,
+    onPanelProgress,
+    onProgress,
+    model = "dall-e-3",
+    size = "1024x1024",
+    quality = "standard"
+  } = options || {};
+
+  try {
+    // ============================================
+    // Step 1: 마스터 이미지 생성 (스타일 기준)
+    // ============================================
+    onProgress?.("마스터 이미지 생성 중...", 10);
+    
+    const allText = panels.join(" ");
+    const masterPrompt = `
+[MASTER STYLE REFERENCE FOR 4-PANEL STORY]
+
+Create a consistent art style reference for a 4-panel story.
+This image will be used as a style guide for all 4 panels.
+
+Story overview: ${allText.substring(0, 400)}
+
+Requirements:
+- Simple, clean illustration style (watercolor or soft digital painting)
+- Warm, friendly color palette with soft pastels
+- Clear character design with recognizable features
+- Consistent lighting and mood throughout
+- No text, no letters, no Korean/English words
+- Single unified scene showing the main character and setting
+- Art style suitable for short-form content (like webtoons or shorts)
+
+Style keywords for consistency:
+- Character: consistent face, clothing, proportions
+- Colors: warm tones, soft shadows, gentle lighting
+- Composition: simple, uncluttered, easy to read
+- Mood: friendly, approachable, optimistic
+`.trim();
+
+    console.log("🎨 [4컷 이야기] 마스터 이미지 생성 중...");
+    const masterImage = await generateImageViaCloudflare(masterPrompt, "기본", {
+      model,
+      size,
+      quality
+    });
+    
+    onMasterProgress?.(masterImage);
+    onProgress?.("마스터 이미지 생성 완료!", 25);
+    console.log("✅ [4컷 이야기] 마스터 이미지 생성 완료");
+
+    // ============================================
+    // Step 2: 각 패널 이미지 생성 (마스터 스타일 참조)
+    // ============================================
+    const panelImages: string[] = [];
+    const panelTitles = ["1컷 (시작)", "2컷 (전개)", "3컷 (반전)", "4컷 (결말)"];
+
+    for (let i = 0; i < 4; i++) {
+      const progressPercent = 25 + ((i + 1) * 18);
+      onProgress?.(`${panelTitles[i]} 생성 중...`, progressPercent);
+
+      const panelPrompt = `
+[PANEL ${i + 1} OF 4-PANEL STORY - MUST MATCH MASTER STYLE]
+
+CRITICAL STYLE CONSISTENCY REQUIREMENTS:
+- Use the EXACT same art style as the master reference
+- Keep the SAME character design (face, clothing, proportions)
+- Use the SAME color palette and lighting
+- Maintain the SAME illustration technique (watercolor/soft digital)
+- Simple, clean composition like webtoon shorts
+
+Panel content: ${panels[i]}
+
+Panel context:
+- This is panel ${i + 1} of 4 in a short story
+- Previous context: ${panels.slice(0, i).join(" ")}
+
+No text, no letters, no Korean/English words.
+Single clear scene showing this moment in the story.
+Consistent with master style reference.
+`.trim();
+
+      console.log(`🎨 [4컷 이야기] ${panelTitles[i]} 생성 중...`);
+      const panelImage = await generateImageViaCloudflare(panelPrompt, "기본", {
+        model,
+        size,
+        quality
+      });
+
+      panelImages.push(panelImage);
+      onPanelProgress?.(i, panelImage);
+      console.log(`✅ [4컷 이야기] ${panelTitles[i]} 생성 완료`);
+    }
+
+    onProgress?.("4컷 이미지 생성 완료!", 100);
+    console.log("✅ [4컷 이야기] 모든 이미지 생성 완료");
+
+    return {
+      masterImage,
+      panelImages: panelImages as [string, string, string, string]
+    };
+  } catch (error) {
+    console.error("❌ [4컷 이야기] 이미지 생성 오류:", error);
+    throw error;
+  }
+}
+
 export default {
   generateStoryImage,
   generateWritingImage,
+  generate4PanelStoryImages,
   imageUrlToBlob,
   base64ToBlob,
   downloadImage,

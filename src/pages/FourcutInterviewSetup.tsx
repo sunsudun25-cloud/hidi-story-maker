@@ -10,6 +10,7 @@ export default function FourcutInterviewSetup() {
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedInterviewer, setSelectedInterviewer] = useState("");
   const [selectedInterviewee, setSelectedInterviewee] = useState("");
+  const [selectedStyle, setSelectedStyle] = useState("watercolor");
   const [isGenerating, setIsGenerating] = useState(false);
   
   // 마스터 이미지 확인
@@ -17,6 +18,14 @@ export default function FourcutInterviewSetup() {
   const [showMasterConfirm, setShowMasterConfirm] = useState(false);
   const [customPrompt, setCustomPrompt] = useState("");
   const [basePrompt, setBasePrompt] = useState("");
+  
+  // 캐릭터 DNA 설정
+  const [showCharacterModal, setShowCharacterModal] = useState(false);
+  const [characterDNA, setCharacterDNA] = useState({
+    appearance: "",
+    clothes: "",
+    features: ""
+  });
 
   // 테마별 장소
   const locations: { [key: string]: string[] } = {
@@ -39,9 +48,49 @@ export default function FourcutInterviewSetup() {
     { key: "grandfather", label: "할아버지", icon: "👴", desc: "인자하고 지혜로운 할아버지" },
     { key: "youngman", label: "젊은 남자", icon: "👨", desc: "활기찬 청년" },
     { key: "youngwoman", label: "젊은 여자", icon: "👩", desc: "밝고 긍정적인 여성" },
-    { key: "friend", label: "친구", icon: "🧑‍🤝‍🧑", desc: "오랜 친구" },
+    { key: "boyChild", label: "남자 어린이", icon: "👦", desc: "귀엽고 밝은 남자아이" },
+    { key: "girlChild", label: "여자 어린이", icon: "👧", desc: "귀엽고 밝은 여자아이" },
     { key: "dog", label: "강아지", icon: "🐕", desc: "귀엽고 충성스러운 강아지 (상상 인터뷰)" },
     { key: "cat", label: "고양이", icon: "🐈", desc: "우아하고 독립적인 고양이 (상상 인터뷰)" }
+  ];
+
+  // 그림 스타일
+  const artStyles = [
+    { 
+      key: "watercolor", 
+      label: "수채화", 
+      icon: "🎨", 
+      desc: "따뜻하고 부드러운 수채화",
+      prompt: "Soft watercolor illustration, warm pastel colors, gentle brush strokes"
+    },
+    { 
+      key: "animation", 
+      label: "애니메이션", 
+      icon: "🎬", 
+      desc: "밝고 생동감 있는 애니메이션",
+      prompt: "Vibrant animation style, bright colors, clean lines, cartoon aesthetic"
+    },
+    { 
+      key: "illustration", 
+      label: "일러스트", 
+      icon: "✏️", 
+      desc: "세련된 디지털 일러스트",
+      prompt: "Modern digital illustration, clean vector style, professional artwork"
+    },
+    { 
+      key: "realistic", 
+      label: "실사", 
+      icon: "📸", 
+      desc: "사실적인 사진 같은 이미지",
+      prompt: "Photorealistic style, natural lighting, detailed textures, high quality photography"
+    },
+    { 
+      key: "cinematic", 
+      label: "시네마풍", 
+      icon: "🎥", 
+      desc: "영화 같은 분위기",
+      prompt: "Cinematic style, dramatic lighting, film grain, movie scene aesthetic"
+    }
   ];
 
   const handleGenerateScene = async () => {
@@ -63,18 +112,33 @@ export default function FourcutInterviewSetup() {
         grandfather: "wise elderly grandfather, gentle expression",
         youngman: "young man in casual clothes, friendly",
         youngwoman: "young woman in casual clothes, bright smile",
-        friend: "middle-aged person, friendly appearance",
+        boyChild: "cute young boy, cheerful expression",
+        girlChild: "cute young girl, cheerful expression",
         dog: "cute friendly dog, golden retriever style",
         cat: "elegant cat, sitting calmly"
       };
-      const intervieweeDesc = intervieweeDescMap[selectedInterviewee];
+      let intervieweeDesc = intervieweeDescMap[selectedInterviewee];
+      
+      // 캐릭터 DNA 추가
+      if (characterDNA.appearance || characterDNA.clothes || characterDNA.features) {
+        const dnaDetails = [
+          characterDNA.appearance && `Appearance: ${characterDNA.appearance}`,
+          characterDNA.clothes && `Clothing: ${characterDNA.clothes}`,
+          characterDNA.features && `Features: ${characterDNA.features}`
+        ].filter(Boolean).join(", ");
+        
+        intervieweeDesc += `. ${dnaDetails}`;
+      }
+      
+      // 선택된 스타일 프롬프트
+      const stylePrompt = artStyles.find(s => s.key === selectedStyle)?.prompt || artStyles[0].prompt;
 
       // 프롬프트 생성
       const prompt = `
 A warm interview scene in ${selectedLocation}.
 ${interviewerDesc} holding a microphone, interviewing ${intervieweeDesc}.
 
-Style: Soft watercolor illustration, warm pastel colors
+Style: ${stylePrompt}
 Mood: Friendly, professional, welcoming
 Composition: Two subjects in conversation, natural interview setting
 Details: Microphone clearly visible, appropriate background for ${selectedLocation}
@@ -277,7 +341,7 @@ Clear, simple composition suitable for storytelling.
           </div>
         </div>
 
-        {/* 2. 인터뷰어 선택 */}
+        {/* 2. 그림 스타일 선택 */}
         <div style={{
           backgroundColor: "white",
           borderRadius: "12px",
@@ -291,7 +355,63 @@ Clear, simple composition suitable for storytelling.
             color: "#1F2937",
             marginBottom: "15px"
           }}>
-            🎤 2. 인터뷰어를 선택하세요 (항상 사람)
+            🎨 2. 그림 스타일을 선택하세요
+          </h3>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "10px"
+          }}>
+            {artStyles.map((style) => (
+              <button
+                key={style.key}
+                onClick={() => setSelectedStyle(style.key)}
+                style={{
+                  padding: "16px",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  backgroundColor: selectedStyle === style.key ? "#EC4899" : "white",
+                  color: selectedStyle === style.key ? "white" : "#374151",
+                  border: selectedStyle === style.key ? "2px solid #EC4899" : "2px solid #E5E7EB",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  textAlign: "left"
+                }}
+              >
+                <div style={{ fontSize: "28px", marginBottom: "6px" }}>
+                  {style.icon}
+                </div>
+                <div style={{ fontWeight: "700", marginBottom: "4px" }}>
+                  {style.label}
+                </div>
+                <div style={{ 
+                  fontSize: "11px", 
+                  opacity: 0.8,
+                  fontWeight: "400"
+                }}>
+                  {style.desc}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 3. 인터뷰어 선택 */}
+        <div style={{
+          backgroundColor: "white",
+          borderRadius: "12px",
+          padding: "24px",
+          marginBottom: "20px",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+        }}>
+          <h3 style={{
+            fontSize: "18px",
+            fontWeight: "700",
+            color: "#1F2937",
+            marginBottom: "15px"
+          }}>
+            🎤 3. 인터뷰어를 선택하세요 (항상 사람)
           </h3>
           <div style={{
             display: "grid",
@@ -333,7 +453,7 @@ Clear, simple composition suitable for storytelling.
           </div>
         </div>
 
-        {/* 3. 답변자 선택 */}
+        {/* 4. 답변자 선택 + 캐릭터 DNA */}
         <div style={{
           backgroundColor: "white",
           borderRadius: "12px",
@@ -347,7 +467,7 @@ Clear, simple composition suitable for storytelling.
             color: "#1F2937",
             marginBottom: "15px"
           }}>
-            👤 3. 인터뷰 답변자를 선택하세요
+            👤 4. 인터뷰 답변자를 선택하세요
           </h3>
           <div style={{
             display: "grid",
@@ -357,7 +477,10 @@ Clear, simple composition suitable for storytelling.
             {interviewees.map((interviewee) => (
               <button
                 key={interviewee.key}
-                onClick={() => setSelectedInterviewee(interviewee.key)}
+                onClick={() => {
+                  setSelectedInterviewee(interviewee.key);
+                  setShowCharacterModal(true);
+                }}
                 style={{
                   padding: "16px",
                   fontSize: "14px",
@@ -433,6 +556,174 @@ Clear, simple composition suitable for storytelling.
             >
               {isGenerating ? "🎨 인터뷰 장면 만드는 중..." : "🎬 인터뷰 장면 만들기"}
             </button>
+          </div>
+        )}
+
+        {/* 캐릭터 DNA 설정 모달 */}
+        {showCharacterModal && (
+          <div style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000
+          }}>
+            <div style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              padding: "30px",
+              maxWidth: "500px",
+              width: "90%",
+              maxHeight: "80vh",
+              overflowY: "auto"
+            }}>
+              <h2 style={{ 
+                marginBottom: "20px", 
+                fontSize: "22px", 
+                fontWeight: "700", 
+                color: "#1F2937" 
+              }}>
+                {interviewees.find(i => i.key === selectedInterviewee)?.icon} {interviewees.find(i => i.key === selectedInterviewee)?.label} 캐릭터 DNA 설정
+              </h2>
+              
+              <p style={{ 
+                marginBottom: "20px", 
+                color: "#6B7280", 
+                fontSize: "14px",
+                lineHeight: "1.6"
+              }}>
+                캐릭터의 외모, 옷차림, 특징을 자유롭게 설명해주세요!<br />
+                (선택사항입니다. 입력하지 않으면 기본 설정이 적용돼요)
+              </p>
+
+              {/* 외모 */}
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{
+                  display: "block",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  color: "#374151",
+                  marginBottom: "8px"
+                }}>
+                  👁️ 외모 (얼굴, 머리, 눈 등)
+                </label>
+                <textarea
+                  value={characterDNA.appearance}
+                  onChange={(e) => setCharacterDNA({ ...characterDNA, appearance: e.target.value })}
+                  placeholder="예: 은발, 둥근 안경, 따뜻한 미소, 주름진 얼굴"
+                  style={{
+                    width: "100%",
+                    minHeight: "80px",
+                    padding: "12px",
+                    fontSize: "14px",
+                    border: "2px solid #E5E7EB",
+                    borderRadius: "8px",
+                    fontFamily: "'Noto Sans KR', sans-serif",
+                    resize: "vertical"
+                  }}
+                />
+              </div>
+
+              {/* 옷차림 */}
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{
+                  display: "block",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  color: "#374151",
+                  marginBottom: "8px"
+                }}>
+                  👔 옷차림
+                </label>
+                <textarea
+                  value={characterDNA.clothes}
+                  onChange={(e) => setCharacterDNA({ ...characterDNA, clothes: e.target.value })}
+                  placeholder="예: 한복, 꽃무늬 카디건, 면 바지"
+                  style={{
+                    width: "100%",
+                    minHeight: "80px",
+                    padding: "12px",
+                    fontSize: "14px",
+                    border: "2px solid #E5E7EB",
+                    borderRadius: "8px",
+                    fontFamily: "'Noto Sans KR', sans-serif",
+                    resize: "vertical"
+                  }}
+                />
+              </div>
+
+              {/* 특징 */}
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{
+                  display: "block",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  color: "#374151",
+                  marginBottom: "8px"
+                }}>
+                  ✨ 특징 (키, 체형, 악세사리 등)
+                </label>
+                <textarea
+                  value={characterDNA.features}
+                  onChange={(e) => setCharacterDNA({ ...characterDNA, features: e.target.value })}
+                  placeholder="예: 작은 키, 지팡이를 짚고 있음, 금목걸이"
+                  style={{
+                    width: "100%",
+                    minHeight: "80px",
+                    padding: "12px",
+                    fontSize: "14px",
+                    border: "2px solid #E5E7EB",
+                    borderRadius: "8px",
+                    fontFamily: "'Noto Sans KR', sans-serif",
+                    resize: "vertical"
+                  }}
+                />
+              </div>
+
+              {/* 버튼 */}
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  onClick={() => {
+                    setShowCharacterModal(false);
+                    setSelectedInterviewee("");
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: "12px",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    backgroundColor: "white",
+                    color: "#6B7280",
+                    border: "2px solid #E5E7EB",
+                    borderRadius: "8px",
+                    cursor: "pointer"
+                  }}
+                >
+                  취소
+                </button>
+                <button
+                  onClick={() => setShowCharacterModal(false)}
+                  style={{
+                    flex: 1,
+                    padding: "12px",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    backgroundColor: "#10B981",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer"
+                  }}
+                >
+                  확인
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

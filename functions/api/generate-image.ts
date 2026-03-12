@@ -247,21 +247,49 @@ export async function onRequest(context: { request: Request; env: Env }) {
       quality: quality || defaultQuality
     }, null, 2));
 
-    // OpenAI API 호출 (DALL-E 3)
+    // ⭐ GPT Image vs DALL-E 파라미터 분기
+    const isGptImage = actualModel.includes('gpt-image');
+    
+    let requestBody: any;
+    if (isGptImage) {
+      // GPT Image 모델용 파라미터
+      // GPT Image quality: "low" | "medium" | "high"
+      const gptQuality = quality === "hd" ? "high" : (quality || "high");
+      
+      requestBody = {
+        model: actualModel,
+        prompt: finalPrompt,
+        n: 1,
+        size: size || "1024x1024",
+        quality: gptQuality,  // GPT Image는 low/medium/high
+        response_format: "url"  // GPT Image는 URL로 반환 (b64_json 불가)
+      };
+    } else {
+      // DALL-E 모델용 파라미터
+      requestBody = {
+        model: actualModel,
+        prompt: finalPrompt,
+        n: 1,
+        size: size || "1024x1024",
+        quality: quality || defaultQuality,  // DALL-E는 standard/hd
+        response_format: "b64_json"
+      };
+    }
+    
+    console.log('🚀 [API REQUEST]', {
+      model: actualModel,
+      isGptImage,
+      requestBody
+    });
+    
+    // OpenAI API 호출
     const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
       },
-      body: JSON.stringify({
-        model: actualModel,
-        prompt: finalPrompt,
-        n: 1,
-        size: size || "1024x1024",
-        quality: quality || defaultQuality,
-        response_format: "b64_json"
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!openaiResponse.ok) {
@@ -294,10 +322,38 @@ export async function onRequest(context: { request: Request; env: Env }) {
       firstItem: data.data?.[0] ? Object.keys(data.data[0]) : []
     });
 
-    const base64Data = data.data[0].b64_json;
+    // ⭐ GPT Image vs DALL-E 응답 처리 분기
+    let base64Data: string;
+    
+    if (isGptImage) {
+      // GPT Image는 URL 또는 PNG 바이너리 반환
+      const imageUrl = data.data[0]?.url;
+      if (imageUrl) {
+        // URL을 base64로 변환
+        const imageResponse = await fetch(imageUrl);
+        const imageBuffer = await imageResponse.arrayBuffer();
+        const base64 = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+        base64Data = base64;
+        console.log('✅ GPT Image URL을 base64로 변환 완료');
+      } else {
+        console.error('❌ GPT Image URL 없음:', data);
+        return new Response(
+          JSON.stringify({ 
+            success: false,
+            fallback: false,
+            error: 'GPT Image 응답에 URL이 없습니다.',
+            raw_response: data
+          }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    } else {
+      // DALL-E는 b64_json 반환
+      base64Data = data.data[0].b64_json;
+    }
 
     if (!base64Data) {
-      console.error('❌ b64_json 데이터 없음:', data);
+      console.error('❌ 이미지 데이터 없음:', data);
       return new Response(
         JSON.stringify({ 
           success: false,

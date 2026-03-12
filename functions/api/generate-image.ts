@@ -200,18 +200,20 @@ export async function onRequest(context: { request: Request; env: Env }) {
     console.log('📡 [GEN_IMAGE] style=', normalizedStyle);
     console.log('📝 [FINAL_PROMPT_HEAD]', finalPrompt.slice(0, 300));
     
-    // ⭐ DALL-E 3 사용 (안정적이고 검증됨)
-    const defaultModel = "dall-e-3";
-    const defaultQuality = "hd";  // standard | hd
+    // ⭐ GPT Image 1.5 사용 (OpenAI 최신 권장 모델, 생성+편집 지원)
+    const defaultModel = "gpt-image-1.5";
+    const defaultQuality = "medium";  // low | medium | high
+    const defaultOutputFormat = "png";  // png | webp | jpeg
     
     console.log('📡 OpenAI API 호출:', { 
       requestId, 
       model: model || defaultModel, 
       size: size || '1024x1024', 
-      quality: quality || defaultQuality
+      quality: quality || defaultQuality,
+      output_format: defaultOutputFormat
     });
 
-    // OpenAI API 호출 (DALL-E 3)
+    // OpenAI API 호출 (GPT Image 1.5)
     const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
       headers: {
@@ -221,10 +223,9 @@ export async function onRequest(context: { request: Request; env: Env }) {
       body: JSON.stringify({
         model: model || defaultModel,
         prompt: finalPrompt,
-        n: 1,
         size: size || "1024x1024",
         quality: quality || defaultQuality,
-        response_format: "b64_json",
+        output_format: defaultOutputFormat
       }),
     });
 
@@ -241,7 +242,8 @@ export async function onRequest(context: { request: Request; env: Env }) {
           fallback: false,
           error: `OpenAI API error: ${openaiResponse.status} - ${errorData}`,
           request_id: requestId,
-          model_used: model || defaultModel
+          model_used: model || defaultModel,
+          hint: openaiResponse.status === 400 ? 'GPT Image 모델 파라미터 오류. quality는 low/medium/high, output_format은 png/webp/jpeg만 허용됩니다.' : undefined
         }),
         { 
           status: openaiResponse.status, 
@@ -332,7 +334,8 @@ export async function onRequest(context: { request: Request; env: Env }) {
         error: error instanceof Error ? error.message : 'Unknown error',
         request_id: requestId,
         model_used: 'gpt-image-1.5',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        output_format_used: defaultOutputFormat
       }),
       { 
         status: 500, 

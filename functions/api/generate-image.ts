@@ -200,20 +200,18 @@ export async function onRequest(context: { request: Request; env: Env }) {
     console.log('📡 [GEN_IMAGE] style=', normalizedStyle);
     console.log('📝 [FINAL_PROMPT_HEAD]', finalPrompt.slice(0, 300));
     
-    // ⭐ GPT Image 1.5 사용 (OpenAI 최신 권장 모델, 생성+편집 지원)
-    const defaultModel = "gpt-image-1.5";
-    const defaultQuality = "medium";  // low | medium | high
-    const defaultOutputFormat = "png";  // png | webp | jpeg
+    // ⭐ DALL-E 3 사용 (안정적, 검증됨)
+    const defaultModel = "dall-e-3";
+    const defaultQuality = "hd";  // standard | hd
     
     console.log('📡 OpenAI API 호출:', { 
       requestId, 
       model: model || defaultModel, 
       size: size || '1024x1024', 
-      quality: quality || defaultQuality,
-      output_format: defaultOutputFormat
+      quality: quality || defaultQuality
     });
 
-    // OpenAI API 호출 (GPT Image 1.5)
+    // OpenAI API 호출 (DALL-E 3)
     const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
       headers: {
@@ -223,9 +221,10 @@ export async function onRequest(context: { request: Request; env: Env }) {
       body: JSON.stringify({
         model: model || defaultModel,
         prompt: finalPrompt,
+        n: 1,
         size: size || "1024x1024",
         quality: quality || defaultQuality,
-        output_format: defaultOutputFormat
+        response_format: "b64_json"
       }),
     });
 
@@ -333,9 +332,8 @@ export async function onRequest(context: { request: Request; env: Env }) {
         fallback: false, // fallback 이미지 반환 시 true로 변경
         error: error instanceof Error ? error.message : 'Unknown error',
         request_id: requestId,
-        model_used: 'gpt-image-1.5',
-        timestamp: new Date().toISOString(),
-        output_format_used: defaultOutputFormat
+        model_used: 'dall-e-3',
+        timestamp: new Date().toISOString()
       }),
       { 
         status: 500, 

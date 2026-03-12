@@ -57,23 +57,62 @@ export default function FourcutInterviewSetup() {
     { key: "cat", label: "고양이", icon: "🐈", desc: "우아하고 독립적인 고양이 (상상 인터뷰)" }
   ];
 
-  // 그림 스타일 (GPT Image 1.5용 한국어 안정 프롬프트)
+  // 그림 스타일 (DALL-E 3용 매우 강력한 한국어 프롬프트)
   const artStyles = [
     { 
       key: "realistic", 
       label: "실사", 
       icon: "📸", 
       desc: "사실적인 사진 같은 이미지",
-      prompt: "실제 사진처럼 표현. 포토저널리즘 분위기. 자연광. 현실적인 피부 질감. 실제 카메라로 촬영한 느낌. 자연스러운 인물 비율과 얼굴. 과하게 매끈한 피부 없이. 3D 렌더링, 일러스트, 애니메이션, 만화 느낌 없이.",
-      model: "gpt-image-1.5" as const
+      prompt: `
+🎯 스타일 정의: 실제 뉴스 사진 (REAL PHOTO ONLY)
+✅ 필수 요소:
+- 실제 사진처럼 표현
+- 포토저널리즘 분위기
+- 자연광
+- 현실적인 피부 질감
+- 실제 카메라로 촬영한 느낌
+- 자연스러운 인물 비율과 얼굴
+- 과하게 매끈한 피부 없이
+
+❌ 절대 금지 (이것이 나오면 실패):
+- 3D 렌더링
+- 일러스트
+- 애니메이션
+- 만화
+- 동화풍
+- CGI
+- 디지털 아트
+- 게임 그래픽
+- 플라스틱 피부
+`.trim(),
+      model: "dall-e-3" as const
     },
     { 
       key: "3d", 
       label: "3D 렌더링", 
       icon: "🎮", 
       desc: "입체적인 3D CGI",
-      prompt: "중립적인 3D CGI 렌더링. 자연스러운 인체 비율. 입체감 있는 조명과 그림자. 깔끔한 재질 표현. 전문적인 3D 장면 구성. 과장된 만화 얼굴 없이. 지나치게 귀엽거나 장난감 같은 느낌 없이. 실사도 아니고 동화풍도 아닌 선명한 3D 렌더링.",
-      model: "gpt-image-1.5" as const
+      prompt: `
+🎯 스타일 정의: 3D CGI 렌더링 (LIKE PIXAR/BLENDER)
+✅ 필수 요소:
+- 중립적인 3D CGI 렌더링
+- 자연스러운 인체 비율
+- 입체감 있는 조명과 그림자
+- 깔끔한 재질 표현
+- 전문적인 3D 장면 구성
+- 과장된 만화 얼굴 없이
+- 지나치게 귀엽거나 장난감 같은 느낌 없이
+
+❌ 절대 금지 (이것이 나오면 실패):
+- 실사 사진
+- 평면 일러스트
+- 2D 애니메이션
+- 동화풍
+- 수채화
+- 만화책 스타일
+`.trim(),
+      model: "dall-e-3" as const
     },
     { 
       key: "illustration", 
@@ -81,7 +120,7 @@ export default function FourcutInterviewSetup() {
       icon: "✏️", 
       desc: "따뜻한 디지털 일러스트",
       prompt: "따뜻하고 깔끔한 디지털 일러스트. 부드러운 색감. 친근한 인물 표현. 선명하지만 부담스럽지 않은 화면 구성. 교육용 그림책처럼 이해하기 쉬운 장면. 단순하고 정돈된 배경. 과하게 사실적이지 않게.",
-      model: "gpt-image-1.5" as const
+      model: "dall-e-3" as const
     },
     { 
       key: "animation", 
@@ -89,7 +128,7 @@ export default function FourcutInterviewSetup() {
       icon: "🎬", 
       desc: "생동감 있는 애니메이션",
       prompt: "밝고 생동감 있는 애니메이션 스타일. 부드러운 표정과 움직임이 느껴지는 장면. 선명한 색감. 친근하고 감정이 잘 보이는 캐릭터. 화면이 단순하고 이야기 전달이 쉬운 구도. 너무 복잡한 배경 없이. 실사 느낌 없이.",
-      model: "gpt-image-1.5" as const
+      model: "dall-e-3" as const
     }
   ];
 
@@ -209,11 +248,11 @@ export default function FourcutInterviewSetup() {
         prompt: prompt.substring(0, 200) + "..."
       });
 
-      // 선택된 스타일의 모델을 사용하여 이미지 생성 (GPT Image 1.5)
+      // 선택된 스타일의 모델을 사용하여 이미지 생성 (DALL-E 3)
       const imageUrl = await generateWritingImage(prompt, "인터뷰", {
         model: styleModel as any,
         size: "1024x1024",
-        quality: "high"  // GPT Image 1.5: low | medium | high
+        quality: "hd"  // DALL-E 3: standard | hd
       });
 
       console.log("✅ 인터뷰 장면 생성 완료");
@@ -270,12 +309,12 @@ export default function FourcutInterviewSetup() {
 
       // 원래 선택한 스타일의 모델 사용
       const selectedStyleObj = artStyles.find(s => s.key === selectedStyle);
-      const modelToUse = selectedStyleObj?.model || "gpt-image-1.5";
+      const modelToUse = selectedStyleObj?.model || "dall-e-3";
       
       const imageUrl = await generateWritingImage(updatedPrompt, "인터뷰", {
         model: modelToUse as any,
         size: "1024x1024",
-        quality: "high"  // GPT Image 1.5: low | medium | high
+        quality: "hd"  // DALL-E 3: standard | hd
       });
 
       console.log("✅ 마스터 이미지 재생성 완료");

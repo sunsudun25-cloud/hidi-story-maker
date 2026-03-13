@@ -62,9 +62,15 @@ self.addEventListener('fetch', (event) => {
         const responseToCache = response.clone();
         
         // Cache the fetched response for future use (GET 요청만)
-        if (event.request.method === 'GET') {
+        // ⭐ Chrome Extension URL 제외
+        if (event.request.method === 'GET' && 
+            !event.request.url.startsWith('chrome-extension://') &&
+            !event.request.url.startsWith('moz-extension://')) {
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
+          }).catch((err) => {
+            // 캐시 실패 시 조용히 무시 (확장 프로그램 등)
+            console.debug('Cache put failed:', err.message);
           });
         }
         

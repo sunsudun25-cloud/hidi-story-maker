@@ -22,6 +22,7 @@ import FourcutInterviewSetup from './pages/FourcutInterviewSetup'
 import FourcutInterviewResult from './pages/FourcutInterviewResult'
 import FourcutInterviewPractice from './pages/FourcutInterviewPractice'
 import FourcutImageGeneration from './pages/FourcutImageGeneration'
+import FourcutStoryResult from './pages/FourcutStoryResult'
 import WritingPhoto from './pages/WritingPhoto'
 import WritingVoice from './pages/WritingVoice'
 import WritingHelp from './pages/WritingHelp'
@@ -127,6 +128,7 @@ function AppContent() {
           <Route path="/write/fourcut-result" element={<FourcutInterviewResult />} />
           <Route path="/write/fourcut-practice" element={<FourcutInterviewPractice />} />
           <Route path="/write/fourcut-images" element={<FourcutImageGeneration />} />
+          <Route path="/write/fourcut-story-result" element={<FourcutStoryResult />} />
           <Route path="/writing/practice" element={<WritingPractice />} />
           <Route path="/writing/photo" element={<WritingPhoto />} />
           <Route path="/writing/voice" element={<WritingVoice />} />

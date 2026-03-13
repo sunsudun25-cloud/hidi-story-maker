@@ -52,15 +52,23 @@ export default function FourcutImageGeneration() {
 `.trim();
 
       // DB 저장 - 마스터 이미지 1장만 사용
-      await saveStory({
+      const savedId = await saveStory({
         title,
         content: storyContent,
         genre: "fourcut",
         images: [interviewScene.imageUrl] // 마스터 이미지만 저장
       });
 
-      alert("🎉 4컷 인터뷰가 저장되었습니다!");
-      navigate("/my-works/stories");
+      // 결과 페이지로 이동 (저장된 ID와 함께)
+      navigate("/write/fourcut-story-result", {
+        state: {
+          savedId,
+          title,
+          storyContent,
+          imageUrl: interviewScene.imageUrl,
+          theme
+        }
+      });
     } catch (error) {
       console.error("❌ 저장 오류:", error);
       alert("저장 중 오류가 발생했습니다.");

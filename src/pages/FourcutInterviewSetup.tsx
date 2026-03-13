@@ -75,9 +75,9 @@ export default function FourcutInterviewSetup() {
       label: "3D 렌더링", 
       icon: "🎮", 
       desc: "입체적인 3D CGI",
-      style: "중립적인 3D CGI 렌더링. 자연스러운 인체 비율. 입체감 있는 조명과 그림자. 선명한 재질 표현. 전문적인 3D 장면 구성. 과장된 만화 얼굴 없이.",
-      composition: "입체감 있는 장면 구성. 인물과 배경이 분리되어 보이고, 카메라 시점이 자연스러운 3D 장면 구도. 지나치게 정면 고정된 포스터 느낌 없이. 손은 주머니에 넣지 않고 자연스럽게 보이도록.",
-      negative: "글자, 간판, 포스터, 자막, 읽을 수 있는 텍스트 없이. 픽사풍, 장난감 같은 캐릭터, 과장된 큰 눈, 지나치게 귀여운 얼굴 없이. 주머니에 손 넣은 포즈 없이.",
+      style: "Neutral 3D CGI rendering. Natural human proportions. Volumetric lighting and shadows. Clean material textures. Professional 3D scene composition. No exaggerated cartoon faces.",
+      composition: "3D scene with depth. Characters separated from background. Natural camera angle. NOT flat poster-like. Hands visible and naturally positioned, NEVER in pockets.",
+      negative: "NO text, NO signs, NO Korean text, NO English text, NO numbers, NO letters, NO posters, NO captions, NO watermarks. NO Pixar style, NO toy-like characters, NO oversized eyes, NO cute faces. ABSOLUTELY NO hands in pockets.",
       model: "dall-e-3" as const,
       size: "1024x1024" as const
     },
@@ -86,9 +86,9 @@ export default function FourcutInterviewSetup() {
       label: "일러스트", 
       icon: "✏️", 
       desc: "따뜻한 디지털 일러스트",
-      style: "따뜻하고 깔끔한 디지털 일러스트. 부드러운 색감. 친근한 인물 표현. 교육용 그림처럼 이해하기 쉬운 장면. 단순하고 정돈된 배경.",
-      composition: "동화책 장면처럼 정돈된 구도. 인물이 잘 보이고 배경은 단순하게 정리된 화면. 손은 주머니에 넣지 않고 자연스럽게 보이도록.",
-      negative: "글자, 간판, 포스터, 자막, 읽을 수 있는 텍스트 없이. 주머니에 손 넣은 포즈 없이.",
+      style: "Warm clean digital illustration. Soft color palette. Friendly character design. Educational illustration style. Simple organized background.",
+      composition: "Storybook-like organized composition. Characters clearly visible, background simple and clean. Hands visible and naturally positioned, NEVER in pockets.",
+      negative: "NO text, NO signs, NO Korean text, NO English text, NO numbers, NO letters, NO posters, NO captions, NO watermarks. ABSOLUTELY NO hands in pockets.",
       model: "dall-e-3" as const,
       size: "1024x1024" as const
     },
@@ -97,9 +97,9 @@ export default function FourcutInterviewSetup() {
       label: "애니메이션", 
       icon: "🎬", 
       desc: "생동감 있는 애니메이션",
-      style: "밝고 생동감 있는 애니메이션 스타일. 감정이 잘 보이는 표정. 선명한 색감. 이야기 전달이 쉬운 장면.",
-      composition: "이야기 장면이 잘 보이는 애니메이션 구도. 인물의 표정과 동작이 잘 드러나도록 구성. 손은 주머니에 넣지 않고 자연스럽게 보이도록.",
-      negative: "글자, 간판, 포스터, 자막, 읽을 수 있는 텍스트 없이. 주머니에 손 넣은 포즈 없이.",
+      style: "Bright vibrant animation style. Expressive facial emotions. Vivid clear colors. Easy storytelling scene.",
+      composition: "Animation composition with clear storytelling. Character expressions and actions clearly visible. Hands visible and naturally positioned, NEVER in pockets.",
+      negative: "NO text, NO signs, NO Korean text, NO English text, NO numbers, NO letters, NO posters, NO captions, NO watermarks. ABSOLUTELY NO hands in pockets.",
       model: "dall-e-3" as const,
       size: "1024x1024" as const
     }
@@ -172,23 +172,23 @@ export default function FourcutInterviewSetup() {
       const selectedStyleInfo = artStyles.find(s => s.key === selectedStyle) || artStyles[0];
       const styleModel = selectedStyleInfo.model;
 
-      // ⭐ 아나운서 DNA (고정된 외모와 복장 + 손 포즈)
+      // ⭐ 아나운서 DNA (고정된 외모와 복장 + 손 포즈 강화)
       const interviewerDNA = selectedInterviewer === "male"
-        ? "한국인 남성 아나운서 30대, 검은 단발머리, 정장에 넥타이, 한 손에 마이크 들고 다른 손은 자연스럽게 내려놓음"
-        : "한국인 여성 아나운서 30대, 단정한 헤어스타일, 정장 차림, 한 손에 마이크 들고 다른 손은 자연스럽게 내려놓음";
+        ? "Korean male reporter age 30, short black hair, business suit with tie, holding microphone in one hand and other hand naturally at side. NOT in pockets"
+        : "Korean female reporter age 30, neat hairstyle, business suit, holding microphone in one hand and other hand naturally at side. NOT in pockets";
       
       const interviewerKorean = selectedInterviewer === "male" ? "남자 아나운서" : "여자 아나운서";
       
-      // ⭐ 답변자 DNA (한국인 특징 강조 + 손 포즈)
+      // ⭐ 답변자 DNA (한국인 특징 강조 + 손 포즈 강화)
       const intervieweeDetailMap: Record<string, string> = {
-        grandmother: "한국인 할머니 70대, 흰 머리, 따뜻한 미소, 양손 자연스럽게 앞에",
-        grandfather: "한국인 할아버지 70대, 흰 머리, 온화한 표정, 양손 자연스럽게 앞에",
-        youngman: "한국인 젊은 남자 20대, 검은 머리, 캐주얼한 옷차림, 양손 자연스럽게 몸 옆에",
-        youngwoman: "한국인 젊은 여자 20대, 검은 머리, 캐주얼한 옷차림, 양손 자연스럽게 몸 옆에",
-        boyChild: "한국인 남자 어린이 7-10세, 검은 머리, 밝은 표정, 양손 자연스럽게",
-        girlChild: "한국인 여자 어린이 7-10세, 검은 머리, 밝은 표정, 양손 자연스럽게",
-        dog: "골든 리트리버 강아지, 밝은 갈색 털",
-        cat: "회색 고양이, 조용히 앉아 있는 모습"
+        grandmother: "Korean grandmother age 70, white hair, warm smile, both hands naturally in front. NOT in pockets",
+        grandfather: "Korean grandfather age 70, white hair, gentle expression, both hands naturally in front. NOT in pockets",
+        youngman: "Korean young man age 20, black hair, casual clothes, both hands naturally at sides. NOT in pockets",
+        youngwoman: "Korean young woman age 20, black hair, casual clothes, both hands naturally at sides. NOT in pockets",
+        boyChild: "Korean boy age 7-10, black hair, bright expression, both hands naturally visible. NOT in pockets",
+        girlChild: "Korean girl age 7-10, black hair, bright expression, both hands naturally visible. NOT in pockets",
+        dog: "golden retriever dog, light brown fur",
+        cat: "gray cat, sitting calmly"
       };
       let intervieweeDetail = intervieweeDetailMap[selectedInterviewee] || "답변자";
       
@@ -219,9 +219,24 @@ export default function FourcutInterviewSetup() {
         }
       }
       
+      // ⭐ 장소 이름 영어 매핑 (한글 표기 방지)
+      const locationEnglishMap: Record<string, string> = {
+        "편의점 앞": "in front of convenience store",
+        "고속도로 휴게소": "at highway rest area",
+        "기차역 플랫폼": "at train station platform",
+        "공원 벤치": "at park bench",
+        "버스 정류장": "at bus stop",
+        "카페 테라스": "at cafe terrace",
+        "도서관 입구": "at library entrance",
+        "아파트 단지": "at apartment complex",
+        "학교 운동장": "at school playground",
+        "병원 로비": "at hospital lobby"
+      };
+      const locationEnglish = locationEnglishMap[selectedLocation] || "at outdoor location";
+      
       // ⭐ 4단 구조 프롬프트 조합
       // A. 장면 프롬프트 (위치 명시: 왼쪽=아나운서, 오른쪽=답변자)
-      const scenePrompt = `${selectedLocation}에서 인터뷰 장면. 왼쪽에 ${interviewerDNA}, 오른쪽에 ${intervieweeDetail}. 두 사람은 마주 보고 대화 중.${dnaText}`;
+      const scenePrompt = `Interview scene ${locationEnglish}. On left: ${interviewerDNA}. On right: ${intervieweeDetail}. They face each other talking.${dnaText}`;
       
       // B. 스타일 프롬프트
       const styleGuide = selectedStyleInfo.style;

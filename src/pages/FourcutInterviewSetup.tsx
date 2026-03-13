@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { generateWritingImage } from "../services/imageService";
-import { generateImageViaCloudflare } from "../services/cloudflareImageApi";
+import { generateImage, type ImageGenerationRequest } from "../services/imageGenerationEngine";
+import { ALL_STYLE_PRESETS } from "../services/stylePresets";
 import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
 
 export default function FourcutInterviewSetup() {
@@ -57,53 +57,15 @@ export default function FourcutInterviewSetup() {
     { key: "cat", label: "고양이", icon: "🐈", desc: "우아하고 독립적인 고양이 (상상 인터뷰)" }
   ];
 
-  // 그림 스타일 (4단 구조: 스타일 + 구도 + 금지)
-  const artStyles = [
-    { 
-      key: "realistic", 
-      label: "실사", 
-      icon: "📸", 
-      desc: "사실적인 사진 같은 이미지",
-      style: "실제 뉴스 현장 사진. 포토저널리즘. 자연광. DSLR 촬영 느낌. 현실적인 피부 질감.",
-      composition: "실제 인터뷰 사진 구도. 중간 거리 촬영. 배경 자연스러운 아웃포커스.",
-      negative: "일러스트, 만화, 애니메이션, 3D 렌더링 느낌 없이. 글자, 간판, 포스터 없이.",
-      model: "gpt-image-1" as const,
-      size: "1536x1024" as const
-    },
-    { 
-      key: "3d", 
-      label: "3D 렌더링", 
-      icon: "🎮", 
-      desc: "입체적인 3D CGI",
-      style: "Neutral 3D CGI rendering. Natural human proportions. Volumetric lighting and shadows. Clean material textures. Professional 3D scene composition. No exaggerated cartoon faces.",
-      composition: "3D scene with depth. Characters separated from background. Natural camera angle. NOT flat poster-like. Hands visible and naturally positioned, NEVER in pockets.",
-      negative: "NO text, NO signs, NO Korean text, NO English text, NO numbers, NO letters, NO posters, NO captions, NO watermarks. NO Pixar style, NO toy-like characters, NO oversized eyes, NO cute faces. ABSOLUTELY NO hands in pockets.",
-      model: "dall-e-3" as const,
-      size: "1024x1024" as const
-    },
-    { 
-      key: "illustration", 
-      label: "일러스트", 
-      icon: "✏️", 
-      desc: "따뜻한 디지털 일러스트",
-      style: "Warm clean digital illustration. Soft color palette. Friendly character design. Educational illustration style. Simple organized background.",
-      composition: "Storybook-like organized composition. Characters clearly visible, background simple and clean. Hands visible and naturally positioned, NEVER in pockets.",
-      negative: "NO text, NO signs, NO Korean text, NO English text, NO numbers, NO letters, NO posters, NO captions, NO watermarks. ABSOLUTELY NO hands in pockets.",
-      model: "dall-e-3" as const,
-      size: "1024x1024" as const
-    },
-    { 
-      key: "animation", 
-      label: "애니메이션", 
-      icon: "🎬", 
-      desc: "생동감 있는 애니메이션",
-      style: "Bright vibrant animation style. Expressive facial emotions. Vivid clear colors. Easy storytelling scene.",
-      composition: "Animation composition with clear storytelling. Character expressions and actions clearly visible. Hands visible and naturally positioned, NEVER in pockets.",
-      negative: "NO text, NO signs, NO Korean text, NO English text, NO numbers, NO letters, NO posters, NO captions, NO watermarks. ABSOLUTELY NO hands in pockets.",
-      model: "dall-e-3" as const,
-      size: "1024x1024" as const
-    }
-  ];
+  // 그림 스타일 (새 스타일 프리셋 사용)
+  const artStyles = ALL_STYLE_PRESETS.map(preset => ({
+    key: preset.key,
+    label: preset.label,
+    icon: preset.icon,
+    desc: preset.description,
+    model: preset.model,
+    size: preset.size
+  }));
 
   // 음성 입력 핸들러
   const handleVoiceInput = (field: "appearance" | "clothes" | "features") => {
@@ -139,157 +101,39 @@ export default function FourcutInterviewSetup() {
 
     setIsGenerating(true);
     try {
-      // 인터뷰어 설명
-      const interviewerDesc = selectedInterviewer === "male" 
-        ? "professional male news reporter in business attire"
-        : "professional female news reporter in business attire";
-
-      // 답변자 설명
-      const intervieweeDescMap: { [key: string]: string } = {
-        grandmother: "kind elderly grandmother, warm smile",
-        grandfather: "wise elderly grandfather, gentle expression",
-        youngman: "young man in casual clothes, friendly",
-        youngwoman: "young woman in casual clothes, bright smile",
-        boyChild: "cute young boy, cheerful expression",
-        girlChild: "cute young girl, cheerful expression",
-        dog: "cute friendly dog, golden retriever style",
-        cat: "elegant cat, sitting calmly"
-      };
-      let intervieweeDesc = intervieweeDescMap[selectedInterviewee];
+      console.log("🎬 [NEW ENGINE] Starting master image generation...");
       
-      // 캐릭터 DNA 추가
-      if (characterDNA.appearance || characterDNA.clothes || characterDNA.features) {
-        const dnaDetails = [
-          characterDNA.appearance && `Appearance: ${characterDNA.appearance}`,
-          characterDNA.clothes && `Clothing: ${characterDNA.clothes}`,
-          characterDNA.features && `Features: ${characterDNA.features}`
-        ].filter(Boolean).join(", ");
-        
-        intervieweeDesc += `. ${dnaDetails}`;
-      }
-      
-      // 선택된 스타일 정보
-      const selectedStyleInfo = artStyles.find(s => s.key === selectedStyle) || artStyles[0];
-      const styleModel = selectedStyleInfo.model;
-
-      // ⭐ 아나운서 DNA (고정된 외모와 복장 + 손 포즈 강화)
-      const interviewerDNA = selectedInterviewer === "male"
-        ? "Korean male reporter age 30, short black hair, business suit with tie, holding microphone in one hand and other hand naturally at side. NOT in pockets"
-        : "Korean female reporter age 30, neat hairstyle, business suit, holding microphone in one hand and other hand naturally at side. NOT in pockets";
-      
-      const interviewerKorean = selectedInterviewer === "male" ? "남자 아나운서" : "여자 아나운서";
-      
-      // ⭐ 답변자 DNA (한국인 특징 강조 + 손 포즈 강화)
-      const intervieweeDetailMap: Record<string, string> = {
-        grandmother: "Korean grandmother age 70, white hair, warm smile, both hands naturally in front. NOT in pockets",
-        grandfather: "Korean grandfather age 70, white hair, gentle expression, both hands naturally in front. NOT in pockets",
-        youngman: "Korean young man age 20, black hair, casual clothes, both hands naturally at sides. NOT in pockets",
-        youngwoman: "Korean young woman age 20, black hair, casual clothes, both hands naturally at sides. NOT in pockets",
-        boyChild: "Korean boy age 7-10, black hair, bright expression, both hands naturally visible. NOT in pockets",
-        girlChild: "Korean girl age 7-10, black hair, bright expression, both hands naturally visible. NOT in pockets",
-        dog: "golden retriever dog, light brown fur",
-        cat: "gray cat, sitting calmly"
-      };
-      let intervieweeDetail = intervieweeDetailMap[selectedInterviewee] || "답변자";
-      
-      const intervieweeKoreanMap: Record<string, string> = {
-        grandmother: "할머니",
-        grandfather: "할아버지",
-        youngman: "젊은 남자",
-        youngwoman: "젊은 여자",
-        boyChild: "남자 어린이",
-        girlChild: "여자 어린이",
-        dog: "강아지",
-        cat: "고양이"
-      };
-      const intervieweeKorean = intervieweeKoreanMap[selectedInterviewee] || "답변자";
-      
-      // ⭐ 사용자가 추가한 캐릭터 DNA
-      let dnaText = "";
-      if (characterDNA.appearance || characterDNA.clothes || characterDNA.features) {
-        const dnaParts = [
-          characterDNA.appearance && `외모: ${characterDNA.appearance}`,
-          characterDNA.clothes && `옷차림: ${characterDNA.clothes}`,
-          characterDNA.features && `특징: ${characterDNA.features}`
-        ].filter(Boolean);
-        if (dnaParts.length > 0) {
-          dnaText = ` 추가 설명: ${dnaParts.join(", ")}.`;
-          // 사용자 DNA가 있으면 기본 설명 대체
-          intervieweeDetail = `${intervieweeKorean} - ${dnaParts.join(", ")}`;
-        }
-      }
-      
-      // ⭐ 장소 이름 영어 매핑 (한글 표기 방지)
-      const locationEnglishMap: Record<string, string> = {
-        "편의점 앞": "in front of convenience store",
-        "고속도로 휴게소": "at highway rest area",
-        "기차역 플랫폼": "at train station platform",
-        "공원 벤치": "at park bench",
-        "버스 정류장": "at bus stop",
-        "카페 테라스": "at cafe terrace",
-        "도서관 입구": "at library entrance",
-        "아파트 단지": "at apartment complex",
-        "학교 운동장": "at school playground",
-        "병원 로비": "at hospital lobby"
-      };
-      const locationEnglish = locationEnglishMap[selectedLocation] || "at outdoor location";
-      
-      // ⭐ 4단 구조 프롬프트 조합
-      // A. 장면 프롬프트 (위치 명시: 왼쪽=아나운서, 오른쪽=답변자)
-      const scenePrompt = `Interview scene ${locationEnglish}. On left: ${interviewerDNA}. On right: ${intervieweeDetail}. They face each other talking.${dnaText}`;
-      
-      // B. 스타일 프롬프트
-      const styleGuide = selectedStyleInfo.style;
-      
-      // C. 구도 프롬프트 (스타일별 다름)
-      const compositionGuide = selectedStyleInfo.composition;
-      
-      // D. 금지 프롬프트 (스타일별 다름)
-      const negativePrompt = selectedStyleInfo.negative;
-      
-      // 최종 프롬프트 조합: A + B + C + D
-      const prompt = `${scenePrompt} ${styleGuide} ${compositionGuide} ${negativePrompt}`.trim();
-
-      // 스타일별 이미지 크기 및 품질 설정
-      const imageSize = selectedStyleInfo.size || "1024x1024";
-      const imageQuality = selectedStyle === "realistic" ? "high" : "hd";  // GPT Image: high, DALL-E: hd
-
-      // ⭐ 상세 디버깅 로그 (4단 구조 확인)
-      const debugPayload = {
-        styleMode: selectedStyle,
-        scenePrompt,
-        stylePrompt: styleGuide,
-        compositionPrompt: compositionGuide,
-        negativePrompt,
-        finalPrompt: prompt,
-        requestBody: {
-          model: styleModel,
-          size: imageSize,
-          quality: imageQuality
+      // 🆕 새 이미지 생성 엔진 사용
+      const request: ImageGenerationRequest = {
+        type: "master",
+        masterRequest: {
+          location: selectedLocation,
+          interviewer: selectedInterviewer as "male" | "female",
+          interviewee: selectedInterviewee as any,
+          styleKey: selectedStyle,
+          customAppearance: characterDNA.appearance,
+          customClothing: characterDNA.clothes,
+          customFeatures: characterDNA.features
         }
       };
-      console.log("🔍 [IMAGE DEBUG - CLIENT]", JSON.stringify(debugPayload, null, 2));
-
-      // ⭐ useRawPrompt: true로 설정하여 프롬프트를 그대로 사용
-      console.log("📤 [API 호출 직전] 최종 프롬프트:", prompt);
-      console.log("📤 [API 호출 직전] 모델:", styleModel, "크기:", imageSize, "품질:", imageQuality);
       
-      const imageUrl = await generateWritingImage(prompt, "인터뷰", {
-        model: styleModel as any,
-        size: imageSize,
-        quality: imageQuality,
-        useRawPrompt: true  // ⭐ 클라이언트 프롬프트를 그대로 사용
-      });
-
-      console.log("✅ 인터뷰 장면 생성 완료");
-
+      const response = await generateImage(request);
+      
+      if (!response.success || !response.imageUrl) {
+        throw new Error(response.error || "이미지 생성 실패");
+      }
+      
+      console.log("✅ [NEW ENGINE] Master image generated");
+      console.log("🔍 [NEW ENGINE] Debug info:", response.debug);
+      
       // 마스터 이미지 확인 단계로 이동
-      setMasterImageUrl(imageUrl);
-      setBasePrompt(prompt);
+      setMasterImageUrl(response.imageUrl);
+      setBasePrompt(response.debug?.finalPrompt || "");
       setShowMasterConfirm(true);
-    } catch (error) {
-      console.error("❌ 인터뷰 장면 생성 오류:", error);
-      alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+      
+    } catch (error: any) {
+      console.error("❌ [NEW ENGINE] Generation failed:", error);
+      alert(`이미지 생성 중 오류가 발생했습니다.\n${error.message || "다시 시도해주세요."}`);
     } finally {
       setIsGenerating(false);
     }
@@ -323,40 +167,40 @@ export default function FourcutInterviewSetup() {
     setShowMasterConfirm(false);
     
     try {
-      // 모든 스타일에서 한국어로 추가 요구사항 작성
-      const additionalReq = `추가 요구사항: ${customPrompt}`;
+      console.log("🔄 [NEW ENGINE] Regenerating master image with custom prompt...");
       
-      const updatedPrompt = basePrompt + " " + additionalReq;
+      // 🆕 커스텀 프롬프트와 함께 재생성
+      const request: ImageGenerationRequest = {
+        type: "master",
+        masterRequest: {
+          location: selectedLocation,
+          interviewer: selectedInterviewer as "male" | "female",
+          interviewee: selectedInterviewee as any,
+          styleKey: selectedStyle,
+          customAppearance: characterDNA.appearance,
+          customClothing: characterDNA.clothes,
+          customFeatures: characterDNA.features
+        },
+        customPrompt: customPrompt  // 추가 요구사항
+      };
       
-      console.log("🔄 마스터 이미지 재생성:", {
-        customPrompt,
-        style: selectedStyle,
-        updatedPrompt: updatedPrompt.substring(0, 200) + "..."
-      });
-
-      // 원래 선택한 스타일의 모델, 크기, 품질 사용
-      const selectedStyleObj = artStyles.find(s => s.key === selectedStyle);
-      const modelToUse = selectedStyleObj?.model || "dall-e-3";
-      const sizeToUse = selectedStyleObj?.size || "1024x1024";
-      const qualityToUse = selectedStyle === "realistic" ? "high" : "hd";
+      const response = await generateImage(request);
       
-      const imageUrl = await generateWritingImage(updatedPrompt, "인터뷰", {
-        model: modelToUse as any,
-        size: sizeToUse,
-        quality: qualityToUse,
-        useRawPrompt: true  // ⭐ 재생성 시에도 프롬프트 그대로 사용
-      });
-
-      console.log("✅ 마스터 이미지 재생성 완료");
-
+      if (!response.success || !response.imageUrl) {
+        throw new Error(response.error || "이미지 재생성 실패");
+      }
+      
+      console.log("✅ [NEW ENGINE] Master image regenerated");
+      
       // 다시 확인 단계로
-      setMasterImageUrl(imageUrl);
-      setBasePrompt(updatedPrompt);
+      setMasterImageUrl(response.imageUrl);
+      setBasePrompt(response.debug?.finalPrompt || "");
       setCustomPrompt("");
       setShowMasterConfirm(true);
-    } catch (error) {
-      console.error("❌ 마스터 이미지 재생성 오류:", error);
-      alert("이미지 재생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+      
+    } catch (error: any) {
+      console.error("❌ [NEW ENGINE] Regeneration failed:", error);
+      alert(`이미지 재생성 중 오류가 발생했습니다.\n${error.message || "다시 시도해주세요."}`);
     } finally {
       setIsGenerating(false);
     }

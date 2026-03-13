@@ -90,7 +90,7 @@ export default function FourcutInterviewTheme() {
             <button
               key={theme.key}
               onClick={() => {
-                navigate("/write/fourcut-setup", {
+                navigate("/write/fourcut-interview", {
                   state: { theme }
                 });
               }}

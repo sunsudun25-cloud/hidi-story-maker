@@ -295,10 +295,11 @@ export default function FourcutInterviewSetup() {
     }
   };
 
-  // 마스터 이미지 승인
+  // 마스터 이미지 승인 → 결과 페이지로 이동
   const handleMasterApprove = () => {
-    navigate("/write/fourcut-practice", {
+    navigate("/write/fourcut-result", {
       state: {
+        imageUrl: masterImageUrl,
         theme,
         interviewScene: {
           imageUrl: masterImageUrl,

@@ -5,6 +5,7 @@
 
 interface Env {
   OPENAI_API_KEY: string;
+  OPENAI_API_KEY_GPT_IMAGE: string;  // 실사 전용 API 키
 }
 
 // ⭐ A안: 서버에서 프롬프트 빌드 (promptBuilder 로직 복사)
@@ -170,12 +171,34 @@ export async function onRequest(context: { request: Request; env: Env }) {
       );
     }
 
+    // ⭐ 모델별 API 키 분기
+    const actualModel = model || "dall-e-3";
+    const isGptImage = actualModel.includes("gpt-image");
+    
+    // GPT Image는 OPENAI_API_KEY_GPT_IMAGE, 그 외는 OPENAI_API_KEY
+    const apiKey = isGptImage
+      ? env.OPENAI_API_KEY_GPT_IMAGE
+      : env.OPENAI_API_KEY;
+    
+    // 🔍 키 디버깅 로그 (prefix만)
+    console.log("[KEY DEBUG]", {
+      model: actualModel,
+      isGptImage,
+      usingKey: isGptImage ? "OPENAI_API_KEY_GPT_IMAGE" : "OPENAI_API_KEY",
+      keyPrefix: apiKey ? apiKey.slice(0, 8) : "missing",
+      hasGptImageKey: !!env.OPENAI_API_KEY_GPT_IMAGE,
+      hasDefaultKey: !!env.OPENAI_API_KEY
+    });
+    
     // API 키 확인
-    if (!env.OPENAI_API_KEY) {
-      console.error('❌ OPENAI_API_KEY not configured');
-      console.error('📝 Please add OPENAI_API_KEY to Cloudflare Pages environment variables');
+    if (!apiKey) {
+      const keyName = isGptImage ? "OPENAI_API_KEY_GPT_IMAGE" : "OPENAI_API_KEY";
+      console.error(`❌ ${keyName} not configured`);
       return new Response(
-        JSON.stringify({ success: false, error: 'OpenAI API key not configured. Please add OPENAI_API_KEY to environment variables.' }),
+        JSON.stringify({ 
+          success: false, 
+          error: `${keyName} not configured. Please add to environment variables.` 
+        }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -204,16 +227,12 @@ export async function onRequest(context: { request: Request; env: Env }) {
     }
 
     // ⭐ 상세 디버깅 로그 (서버)
-    // ⚠️ 클라이언트가 모델을 명시하지 않은 경우에만 기본값 사용
-    const defaultModel = "dall-e-3";
     const defaultQuality = "hd";
-    const actualModel = model || defaultModel;  // 클라이언트 모델 우선
     
     console.log('🔍 [MODEL CHECK]:', {
       clientModel: model,
-      defaultModel,
       actualModelUsed: actualModel,
-      isGptImage: actualModel?.includes('gpt-image')
+      isGptImage: isGptImage
     });
     
     const serverDebugPayload = {
@@ -248,7 +267,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
     }, null, 2));
 
     // ⭐ GPT Image vs DALL-E 파라미터 분기
-    const isGptImage = actualModel.includes('gpt-image');
+    // (isGptImage는 이미 위에서 선언됨)
     
     // ⭐ 프롬프트 길이 체크
     const promptLength = finalPrompt.length;
@@ -293,12 +312,12 @@ export async function onRequest(context: { request: Request; env: Env }) {
       requestBody
     });
     
-    // OpenAI API 호출
+    // OpenAI API 호출 (모델별 API 키 사용)
     const openaiResponse = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
+        "Authorization": `Bearer ${apiKey}`,  // ⭐ 분기된 API 키 사용
       },
       body: JSON.stringify(requestBody),
     });

@@ -150,7 +150,11 @@ async function callImageAPI(
   size: string,
   quality: string
 ): Promise<string> {
-  const API_URL = "/api/generate-image";
+  // 🆕 실사 스타일은 GPT Image 1.5 전용 엔드포인트 사용
+  const isRealistic = model.startsWith("gpt-image");
+  const API_URL = isRealistic 
+    ? "/api/generate-image-realistic"  // 🆕 실사 전용 (GPT Image 1.5)
+    : "/api/generate-image";           // 기존 (DALL-E 3)
   
   const requestBody: any = {
     prompt,
@@ -177,6 +181,7 @@ async function callImageAPI(
     size,
     quality,
     promptLength: prompt.length,
+    isRealistic,  // 🆕 실사 여부 로그
     requestBody
   });
   
@@ -198,7 +203,8 @@ async function callImageAPI(
     hasImageUrl: !!data.imageUrl,
     hasImageData: !!data.imageData,
     model: data.model,
-    size: data.size
+    size: data.size,
+    isRealistic  // 🆕 실사 여부 로그
   });
   
   return data.imageUrl || data.imageData;

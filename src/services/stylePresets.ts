@@ -24,42 +24,55 @@ export interface StylePreset {
 }
 
 /**
- * 실사 스타일 (📸)
- * - GPT Image 모델 사용
- * - 포토저널리즘 스타일
- * - DSLR 촬영 느낌
+ * 실사 스타일 (📸) - GPT Image 1.5
+ * - 🆕 최신 GPT Image 1.5 모델 사용
+ * - 초사실적 포토저널리즘
+ * - 프로페셔널 DSLR 품질
  */
 export const REALISTIC_STYLE: StylePreset = {
   key: "realistic",
   label: "실사 (📸)",
   icon: "📸",
-  description: "실제 사진처럼 사실적인 이미지",
+  description: "실제 사진처럼 사실적인 이미지 (GPT Image 1.5)",
   
-  model: "gpt-image-1",
+  model: "gpt-image-1.5",  // 🆕 최신 모델
   size: "1536x1024",
   quality: "high",
   
   scenePrefix: "A real news interview photo.",
   styleSuffix: `
-Photojournalism style.
-Natural lighting, shallow depth of field.
-DSLR camera, 50mm lens.
+Ultra-realistic photojournalism style.
+Professional DSLR camera, 50mm f/1.8 lens.
+Natural daylight, soft ambient lighting.
+Cinematic depth of field, bokeh background.
+Sharp focus on subjects, 4K quality.
 Realistic skin texture, natural expressions.
-Documentary feel, candid moment.
-Professional news photography.
+Documentary news photography aesthetic.
+Film grain, authentic moment captured.
   `.trim(),
   
   compositionGuide: `
-Composition: Medium shot, eye-level angle.
-Background: Natural bokeh, out of focus.
-Lighting: Soft natural light, no harsh shadows.
+Composition: Professional news interview framing.
+Camera angle: Eye-level, medium shot.
+Background: Natural environment, out of focus bokeh.
+Lighting: Soft natural light, gentle shadows.
+Focus: Sharp on faces, shallow depth of field.
+Atmosphere: Authentic documentary feel.
   `.trim(),
   
   negativePrompt: `
-ABSOLUTELY NO: illustration, cartoon, anime, 3D render, CGI, painting, drawing, 
-stylized, artistic, fantasy, unrealistic, overly perfect skin, 
-plastic look, video game, Pixar style, cute eyes, exaggerated features,
-text, Korean text, English text, signs, watermarks, logos.
+ABSOLUTELY FORBIDDEN:
+- NO illustration, cartoon, anime, comic style
+- NO 3D render, CGI, computer graphics
+- NO painting, drawing, digital art, artistic interpretation
+- NO stylized, fantasy, unrealistic effects
+- NO overly perfect skin, plastic look, artificial smoothing
+- NO video game graphics, Pixar style, animated look
+- NO cute eyes, exaggerated features, caricature
+- NO text, Korean hangul, English letters, numbers
+- NO signs, watermarks, logos, captions, labels
+- NO studio lighting, artificial setup
+Pure authentic photojournalism only.
   `.trim()
 };
 

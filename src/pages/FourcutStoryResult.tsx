@@ -6,6 +6,7 @@ interface LocationState {
   title: string;
   storyContent: string;
   imageUrl: string;
+  cutImages?: string[]; // 4컷 이미지들 (옵션)
   theme: { key: string; icon: string; label: string; desc: string };
 }
 
@@ -31,28 +32,54 @@ export default function FourcutStoryResult() {
   // 다운로드 (폰에 저장)
   const handleDownload = async () => {
     try {
-      // 이미지를 Blob으로 변환
-      const response = await fetch(state.imageUrl);
-      const blob = await response.blob();
+      const timestamp = Date.now();
+      const baseFilename = state.title.replace(/[^a-zA-Z0-9가-힣]/g, '_');
       
-      // 파일명 생성
-      const filename = `4cut-story-${state.title.replace(/[^a-zA-Z0-9가-힣]/g, '_')}-${Date.now()}.png`;
-      
-      // 다운로드
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // 마스터 이미지 다운로드
+      const masterResponse = await fetch(state.imageUrl);
+      const masterBlob = await masterResponse.blob();
+      const masterUrl = URL.createObjectURL(masterBlob);
+      const masterLink = document.createElement('a');
+      masterLink.href = masterUrl;
+      masterLink.download = `${baseFilename}-master-${timestamp}.png`;
+      document.body.appendChild(masterLink);
+      masterLink.click();
+      document.body.removeChild(masterLink);
+      URL.revokeObjectURL(masterUrl);
+
+      // 4컷 이미지들 다운로드 (있는 경우)
+      if (state.cutImages && state.cutImages.length > 0) {
+        for (let i = 0; i < state.cutImages.length; i++) {
+          // Base64 이미지를 Blob으로 변환
+          const base64Data = state.cutImages[i].split(',')[1];
+          const byteCharacters = atob(base64Data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let j = 0; j < byteCharacters.length; j++) {
+            byteNumbers[j] = byteCharacters.charCodeAt(j);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'image/png' });
+          
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${baseFilename}-cut${i + 1}-${timestamp}.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          
+          // 브라우저가 여러 다운로드를 처리할 시간 제공
+          await new Promise(resolve => setTimeout(resolve, 300));
+        }
+      }
 
       // 모바일 안내
+      const totalImages = 1 + (state.cutImages?.length || 0);
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        alert(`📱 이미지 저장 방법:\n\n✅ iOS: 사진 앱 → 다운로드 폴더\n✅ Android: 갤러리 → Downloads 폴더\n\n"${filename}" 파일을 확인하세요!`);
+        alert(`📱 이미지 저장 방법:\n\n✅ iOS: 사진 앱 → 다운로드 폴더\n✅ Android: 갤러리 → Downloads 폴더\n\n총 ${totalImages}개 파일이 다운로드되었습니다!`);
       } else {
-        alert(`✅ 이미지가 다운로드되었습니다!\n파일명: ${filename}`);
+        alert(`✅ 총 ${totalImages}개 이미지가 다운로드되었습니다!\n\n• 마스터 이미지 1개\n• 4컷 이미지 ${state.cutImages?.length || 0}개`);
       }
     } catch (error) {
       console.error("❌ 다운로드 오류:", error);
@@ -151,7 +178,7 @@ export default function FourcutStoryResult() {
           </div>
         </div>
 
-        {/* 이미지 미리보기 */}
+        {/* 마스터 이미지 */}
         <div style={{
           backgroundColor: "white",
           borderRadius: "16px",
@@ -166,7 +193,7 @@ export default function FourcutStoryResult() {
             color: "#1F2937",
             marginBottom: "20px"
           }}>
-            📸 인터뷰 장면
+            📸 마스터 이미지
           </h3>
           <img 
             src={state.imageUrl} 
@@ -179,6 +206,56 @@ export default function FourcutStoryResult() {
             }}
           />
         </div>
+
+        {/* 4컷 이미지 미리보기 (있는 경우) */}
+        {state.cutImages && state.cutImages.length > 0 && (
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "16px",
+            padding: "24px",
+            marginBottom: "30px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+          }}>
+            <h3 style={{
+              fontSize: "18px",
+              fontWeight: "700",
+              color: "#1F2937",
+              marginBottom: "20px",
+              textAlign: "center"
+            }}>
+              🎬 4컷 스토리 (이미지 + 텍스트)
+            </h3>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "15px"
+            }}>
+              {state.cutImages.map((cutImage, index) => (
+                <div key={index} style={{
+                  textAlign: "center"
+                }}>
+                  <p style={{
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    color: "#6B7280",
+                    marginBottom: "10px"
+                  }}>
+                    {index + 1}컷 - {["만남", "이야기", "감동", "작별"][index]}
+                  </p>
+                  <img 
+                    src={cutImage} 
+                    alt={`${index + 1}컷`}
+                    style={{
+                      width: "100%",
+                      borderRadius: "8px",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 버튼 그룹 */}
         <div style={{

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { saveStory } from "../services/dbService";
+import html2canvas from "html2canvas";
 
 interface CutData {
   cutNumber: number;
@@ -21,6 +22,7 @@ export default function FourcutImageGeneration() {
   ]);
 
   const [isSaving, setIsSaving] = useState(false);
+  const cutRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     if (!theme || !interviewScene || !questions || !answers) {
@@ -32,6 +34,8 @@ export default function FourcutImageGeneration() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      console.log("📸 4컷 이미지 캡처 시작...");
+      
       // 4컷 스토리 텍스트 생성
       const storyContent = `
 1컷 (만남):
@@ -51,13 +55,53 @@ export default function FourcutImageGeneration() {
 👤 답변: ${answers[3]}
 `.trim();
 
-      // DB 저장 - 마스터 이미지 1장만 사용
+      // 4컷 각각을 이미지로 캡처
+      const cutImages: string[] = [];
+      
+      for (let i = 0; i < 4; i++) {
+        const element = cutRefs.current[i];
+        if (element) {
+          console.log(`📸 ${i + 1}컷 캡처 중...`);
+          const canvas = await html2canvas(element, {
+            backgroundColor: "#ffffff",
+            scale: 2, // 고해상도
+            logging: false,
+            useCORS: true,
+            allowTaint: true
+          });
+          const imageData = canvas.toDataURL("image/png");
+          cutImages.push(imageData);
+          console.log(`✅ ${i + 1}컷 캡처 완료`);
+        }
+      }
+
+      console.log(`✅ 총 ${cutImages.length}개 이미지 캡처 완료`);
+
+      // DB 저장 - StoryImage 형식으로 변환
+      const cutLabels = ["만남", "이야기", "감동", "작별"];
+      const allImages = [
+        {
+          id: crypto.randomUUID(),
+          url: interviewScene.imageUrl,
+          prompt: "마스터 이미지",
+          createdAt: new Date().toISOString()
+        },
+        ...cutImages.map((img, i) => ({
+          id: crypto.randomUUID(),
+          url: img,
+          prompt: `${i + 1}컷 - ${cutLabels[i]}`,
+          createdAt: new Date().toISOString()
+        }))
+      ];
+      
       const savedId = await saveStory({
         title,
         content: storyContent,
         genre: "fourcut",
-        images: [interviewScene.imageUrl] // 마스터 이미지만 저장
+        images: allImages // 마스터 이미지 + 4컷 이미지
       });
+
+      console.log("✅ DB 저장 완료:", savedId);
 
       // 결과 페이지로 이동 (저장된 ID와 함께)
       navigate("/write/fourcut-story-result", {
@@ -66,6 +110,7 @@ export default function FourcutImageGeneration() {
           title,
           storyContent,
           imageUrl: interviewScene.imageUrl,
+          cutImages, // 4컷 이미지들
           theme
         }
       });
@@ -176,12 +221,16 @@ export default function FourcutImageGeneration() {
           marginBottom: "30px"
         }}>
           {cutData.map((cut, index) => (
-            <div key={index} style={{
-              backgroundColor: "white",
-              borderRadius: "12px",
-              padding: "20px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
-            }}>
+            <div 
+              key={index} 
+              ref={(el) => (cutRefs.current[index] = el)}
+              style={{
+                backgroundColor: "white",
+                borderRadius: "12px",
+                padding: "20px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+              }}
+            >
               {/* 컷 번호 */}
               <h3 style={{ 
                 marginBottom: "15px",

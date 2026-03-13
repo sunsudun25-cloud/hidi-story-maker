@@ -172,10 +172,26 @@ export default function FourcutInterviewSetup() {
       const selectedStyleInfo = artStyles.find(s => s.key === selectedStyle) || artStyles[0];
       const styleModel = selectedStyleInfo.model;
 
-      // 인터뷰어 한국어 설명
+      // ⭐ 아나운서 DNA (고정된 외모와 복장)
+      const interviewerDNA = selectedInterviewer === "male"
+        ? "한국인 남성 아나운서 30대, 검은 단발머리, 정장에 넥타이, 마이크 들고 있음"
+        : "한국인 여성 아나운서 30대, 단정한 헤어스타일, 정장 차림, 마이크 들고 있음";
+      
       const interviewerKorean = selectedInterviewer === "male" ? "남자 아나운서" : "여자 아나운서";
       
-      // 답변자 한국어 설명 매핑
+      // ⭐ 답변자 DNA (한국인 특징 강조)
+      const intervieweeDetailMap: Record<string, string> = {
+        grandmother: "한국인 할머니 70대, 흰 머리, 따뜻한 미소",
+        grandfather: "한국인 할아버지 70대, 흰 머리, 온화한 표정",
+        youngman: "한국인 젊은 남자 20대, 검은 머리, 캐주얼한 옷차림",
+        youngwoman: "한국인 젊은 여자 20대, 검은 머리, 캐주얼한 옷차림",
+        boyChild: "한국인 남자 어린이 7-10세, 검은 머리, 밝은 표정",
+        girlChild: "한국인 여자 어린이 7-10세, 검은 머리, 밝은 표정",
+        dog: "골든 리트리버 강아지, 밝은 갈색 털",
+        cat: "회색 고양이, 조용히 앉아 있는 모습"
+      };
+      let intervieweeDetail = intervieweeDetailMap[selectedInterviewee] || "답변자";
+      
       const intervieweeKoreanMap: Record<string, string> = {
         grandmother: "할머니",
         grandfather: "할아버지",
@@ -188,7 +204,7 @@ export default function FourcutInterviewSetup() {
       };
       const intervieweeKorean = intervieweeKoreanMap[selectedInterviewee] || "답변자";
       
-      // 캐릭터 DNA 추가
+      // ⭐ 사용자가 추가한 캐릭터 DNA
       let dnaText = "";
       if (characterDNA.appearance || characterDNA.clothes || characterDNA.features) {
         const dnaParts = [
@@ -196,12 +212,16 @@ export default function FourcutInterviewSetup() {
           characterDNA.clothes && `옷차림: ${characterDNA.clothes}`,
           characterDNA.features && `특징: ${characterDNA.features}`
         ].filter(Boolean);
-        dnaText = dnaParts.length > 0 ? ` ${dnaParts.join(", ")}.` : "";
+        if (dnaParts.length > 0) {
+          dnaText = ` 추가 설명: ${dnaParts.join(", ")}.`;
+          // 사용자 DNA가 있으면 기본 설명 대체
+          intervieweeDetail = `${intervieweeKorean} - ${dnaParts.join(", ")}`;
+        }
       }
       
       // ⭐ 4단 구조 프롬프트 조합
-      // A. 장면 프롬프트
-      const scenePrompt = `${selectedLocation}에서 ${interviewerKorean}가 ${intervieweeKorean}를 인터뷰하는 장면.${dnaText} 두 사람은 자연스럽게 마주 보고 대화하고 있다.`;
+      // A. 장면 프롬프트 (위치 명시: 왼쪽=아나운서, 오른쪽=답변자)
+      const scenePrompt = `${selectedLocation}에서 인터뷰 장면. 왼쪽에 ${interviewerDNA}, 오른쪽에 ${intervieweeDetail}. 두 사람은 마주 보고 대화 중.${dnaText}`;
       
       // B. 스타일 프롬프트
       const styleGuide = selectedStyleInfo.style;

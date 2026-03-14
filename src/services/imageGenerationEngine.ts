@@ -91,18 +91,28 @@ function buildScenePrompt(request: MasterImageRequest): string {
     grandfather: "Korean grandfather age 70, white hair, gentle expression, comfortable clothing, both hands forward, NOT in pockets",
     youngman: "Korean young man age 20, black hair, bright expression, casual clothing, both hands at sides, NOT in pockets",
     youngwoman: "Korean young woman age 20, black hair, bright expression, casual clothing, both hands at sides, NOT in pockets",
-    children: "Korean elementary school boy, exactly 8 years old child (NOT teenager, NOT adult), very short height (child size), round innocent face, short black hair, big bright eyes, cheerful smile, wearing children's t-shirt and shorts, small child body proportions, both hands visible at sides or gesturing naturally, arms outside, NEVER hands in pockets",
+    children: "Korean elementary school boy student, MUST look exactly 8 years old (ABSOLUTELY NOT 12+, NOT teenager, NOT young adult), extremely short child height (120cm tall, much shorter than adult), very round chubby innocent child face, baby face features, short messy black hair, very big round innocent eyes, wide cheerful child smile showing baby teeth, wearing colorful children's t-shirt with cartoon character and denim shorts, visibly small child body with short arms and legs, child proportions (head larger relative to body), both hands and arms completely visible outside at sides, small child hands, NEVER EVER hands in pockets or behind back",
     dog: "Golden Retriever dog, bright brown fur, sitting calmly",
     cat: "Gray cat, sitting quietly"
   };
   
   const interviewee = intervieweeMap[request.interviewee] || intervieweeMap.youngman;
   
-  // 커스텀 외모/의상 추가
+  // 커스텀 외모/의상 추가 (한글 필터링)
   let customParts = [];
-  if (request.customAppearance) customParts.push(request.customAppearance);
-  if (request.customClothing) customParts.push(request.customClothing);
-  if (request.customFeatures) customParts.push(request.customFeatures);
+  if (request.customAppearance) {
+    // 한글이 포함되어 있으면 제외
+    const cleaned = request.customAppearance.replace(/[\uAC00-\uD7A3]+/g, '').trim();
+    if (cleaned.length > 0) customParts.push(cleaned);
+  }
+  if (request.customClothing) {
+    const cleaned = request.customClothing.replace(/[\uAC00-\uD7A3]+/g, '').trim();
+    if (cleaned.length > 0) customParts.push(cleaned);
+  }
+  if (request.customFeatures) {
+    const cleaned = request.customFeatures.replace(/[\uAC00-\uD7A3]+/g, '').trim();
+    if (cleaned.length > 0) customParts.push(cleaned);
+  }
   
   const customText = customParts.length > 0 ? `, ${customParts.join(', ')}` : '';
   

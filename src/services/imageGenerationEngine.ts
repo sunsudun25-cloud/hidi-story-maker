@@ -92,8 +92,8 @@ function buildScenePrompt(request: MasterImageRequest): string {
     youngman: "Korean young man age 20, black hair, bright expression, casual clothing, both hands at sides, NOT in pockets",
     youngwoman: "Korean young woman age 20, black hair, bright expression, casual clothing, both hands at sides, NOT in pockets",
     children: "Korean elementary school boy student, MUST look exactly 8 years old (ABSOLUTELY NOT 12+, NOT teenager, NOT young adult), extremely short child height (120cm tall, much shorter than adult), very round chubby innocent child face, baby face features, short messy black hair, very big round innocent eyes, wide cheerful child smile showing baby teeth, wearing colorful children's t-shirt with cartoon character and denim shorts, visibly small child body with short arms and legs, child proportions (head larger relative to body), both hands and arms completely visible outside at sides, small child hands, NEVER EVER hands in pockets or behind back",
-    boyChild: "Korean elementary school boy age 8, student appearance, short black hair, bright cheerful expression, wearing casual children's t-shirt and shorts, both hands visible at sides, NOT in pockets",
-    girlChild: "Korean elementary school girl age 8, student appearance, short black hair with hair clips, bright cheerful expression, wearing casual children's dress or t-shirt, both hands visible at sides, NOT in pockets",
+    boyChild: "Korean young elementary school boy (lower grades, 7-8 years old), student appearance, short black hair, cheerful youthful expression, wearing casual children's t-shirt and shorts, both hands visible at sides, NOT in pockets",
+    girlChild: "Korean young elementary school girl (lower grades, 7-8 years old), student appearance, short black hair with hair clips, cheerful youthful expression, wearing casual children's dress or t-shirt, both hands visible at sides, NOT in pockets",
     dog: "Golden Retriever dog, bright brown fur, sitting calmly",
     cat: "Gray cat, sitting quietly"
   };

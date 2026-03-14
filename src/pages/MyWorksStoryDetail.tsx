@@ -59,6 +59,30 @@ export default function MyWorksStoryDetail() {
     try {
       const { saveArtifact } = await import("../services/classroomService");
       
+      // 이미지 URL을 Base64로 변환
+      const files: Record<string, string> = {};
+      if (story.images && story.images.length > 0) {
+        for (let i = 0; i < story.images.length; i++) {
+          const img = story.images[i];
+          try {
+            const response = await fetch(img.url);
+            const blob = await response.blob();
+            const base64 = await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            });
+            files[`image_${i}`] = base64;
+            console.log(`✅ 이미지 ${i + 1}/${story.images.length} 변환 완료`);
+          } catch (err) {
+            console.error(`❌ 이미지 ${i} 변환 실패:`, err);
+            // 변환 실패시 URL 그대로 사용
+            files[`image_${i}`] = img.url;
+          }
+        }
+      }
+      
       const result = await saveArtifact({
         learnerId: learner.learnerId,
         type: "story",
@@ -68,10 +92,7 @@ export default function MyWorksStoryDetail() {
           genre: story.genre || "fourcut",
           images: story.images || []
         },
-        files: story.images?.reduce((acc, img, i) => {
-          acc[`image_${i}`] = img.url;
-          return acc;
-        }, {} as Record<string, string>) || {}
+        files
       });
 
       alert(`✅ 제출 완료!\n\n선생님께서 갤러리에서 확인하실 수 있습니다.`);

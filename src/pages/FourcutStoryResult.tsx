@@ -257,57 +257,34 @@ export default function FourcutStoryResult() {
           </div>
         )}
 
-        {/* 버튼 그룹 - 간결하게 2개만 */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "16px",
-          marginBottom: "20px"
-        }}>
-          {/* 저장하기 (이미 저장되었지만 명시적 버튼) */}
-          <button
-            onClick={() => {
-              alert("✅ 이미 내 작품에 저장되었습니다!");
-            }}
-            style={{
-              padding: "20px",
-              fontSize: "18px",
-              fontWeight: "700",
-              backgroundColor: "#10B981",
-              color: "white",
-              border: "none",
-              borderRadius: "12px",
-              cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
-              transition: "transform 0.2s"
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
-            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-          >
-            💾 저장하기
-          </button>
-
-          {/* 내작품 보기 */}
-          <button
-            onClick={() => navigate(`/my-works/postcard/${state.savedId}`)}
-            style={{
-              padding: "20px",
-              fontSize: "18px",
-              fontWeight: "700",
-              backgroundColor: "#3B82F6",
-              color: "white",
-              border: "none",
-              borderRadius: "12px",
-              cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
-              transition: "transform 0.2s"
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
-            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-          >
-            📂 내 작품 보기
-          </button>
-        </div>
+        {/* 내 작품 보기 버튼 (단일 버튼) */}
+        <button
+          onClick={() => navigate(`/my-works/postcard/${state.savedId}`)}
+          style={{
+            width: "100%",
+            padding: "20px",
+            fontSize: "20px",
+            fontWeight: "700",
+            backgroundColor: "#3B82F6",
+            color: "white",
+            border: "none",
+            borderRadius: "16px",
+            cursor: "pointer",
+            boxShadow: "0 6px 16px rgba(59, 130, 246, 0.4)",
+            marginBottom: "20px",
+            transition: "all 0.3s ease"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow = "0 8px 20px rgba(59, 130, 246, 0.5)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 6px 16px rgba(59, 130, 246, 0.4)";
+          }}
+        >
+          📂 내 작품 보기
+        </button>
 
         {/* QR 코드 모달 */}
         {showQrModal && (

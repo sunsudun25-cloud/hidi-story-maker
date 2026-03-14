@@ -51,21 +51,29 @@ export async function generateImageViaCloudflare(
   });
 
   try {
-    console.log("📡 [cloudflareImageApi] Cloudflare Pages Function 호출:", GENERATE_IMAGE_URL);
+    // ✅ 모델에 따라 엔드포인트 선택
+    const model = options?.model || "dall-e-3";
+    const isGptImage = model.startsWith("gpt-image");
+    const apiUrl = isGptImage 
+      ? `${API_BASE_URL}/api/generate-image-realistic`  // GPT Image 전용
+      : GENERATE_IMAGE_URL;  // DALL-E 3 전용
+    
+    console.log("📡 [cloudflareImageApi] Cloudflare Pages Function 호출:", apiUrl);
+    console.log("🎨 [cloudflareImageApi] 모델 선택:", { model, isGptImage, endpoint: isGptImage ? 'realistic' : 'dalle3' });
 
     const requestBody = {
       // ✅ 프롬프트에 스타일이 포함되어 있으면 prompt로 보내서 서버 스타일 매핑 건너뛰기
       // userText가 아닌 prompt로 보내면 서버가 스타일 매핑을 적용하지 않음
       prompt: prompt,  // 완성된 프롬프트를 그대로 전달
-      model: options?.model || "dall-e-3",
+      model: model,
       size: options?.size || "1024x1024",
-      quality: options?.quality || "hd"
+      quality: options?.quality || (isGptImage ? "high" : "hd")
     };
 
     console.log("📤 [STEP 3 - 서버 전송 직전] Request Body:", JSON.stringify(requestBody, null, 2));
     console.log("📤 [STEP 3 - FULL PROMPT]", prompt);
 
-    const response = await fetch(GENERATE_IMAGE_URL, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

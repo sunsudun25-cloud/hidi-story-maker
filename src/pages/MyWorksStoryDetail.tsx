@@ -1,20 +1,14 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAllStories, deleteStory, type Story } from "../services/dbService";
-import QRCodeModal from "../components/QRCodeModal";
-import GoodsSelectionModal from "../components/GoodsSelectionModal";
+import { getCurrentLearner } from "../services/classroomService";
 
 export default function MyWorksStoryDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [story, setStory] = useState<Story | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // ✅ QR 코드 모달 상태
-  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
-  
-  // ✅ 굿즈 선택 모달 상태
-  const [isGoodsModalOpen, setIsGoodsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     loadStory();
@@ -33,16 +27,6 @@ export default function MyWorksStoryDetail() {
     }
   };
 
-  const handleEdit = () => {
-    if (!story) return;
-    navigate("/write/editor", {
-      state: {
-        title: story.title,
-        initialContent: story.content,
-      },
-    });
-  };
-
   const handleDelete = async () => {
     if (!story || !confirm("이 글을 삭제하시겠습니까?")) return;
 
@@ -57,16 +41,46 @@ export default function MyWorksStoryDetail() {
   };
 
   // 선생님께 제출하기
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!story) return;
-    navigate("/submit/stories", {
-      state: {
-        id: story.id,
-        title: story.title,
-        content: story.content,
-        imageUrl: story.images?.[0]?.url || ""
+
+    const learner = getCurrentLearner();
+    if (!learner) {
+      alert("로그인이 필요합니다.");
+      if (confirm("로그인 페이지로 이동하시겠습니까?")) {
+        navigate("/onboarding");
       }
-    });
+      return;
+    }
+
+    if (!confirm("이 작품을 선생님께 제출하시겠습니까?")) return;
+
+    setIsSubmitting(true);
+    try {
+      const { saveArtifact } = await import("../services/classroomService");
+      
+      const result = await saveArtifact({
+        learnerId: learner.learnerId,
+        type: "story",
+        title: story.title,
+        data: {
+          content: story.content,
+          genre: story.genre || "fourcut",
+          images: story.images || []
+        },
+        files: story.images?.reduce((acc, img, i) => {
+          acc[`image_${i}`] = img.url;
+          return acc;
+        }, {} as Record<string, string>) || {}
+      });
+
+      alert(`✅ 제출 완료!\n\n선생님께서 갤러리에서 확인하실 수 있습니다.`);
+    } catch (error: any) {
+      console.error("제출 오류:", error);
+      alert(`제출 중 오류가 발생했습니다.\n\n${error.message || "다시 시도해주세요."}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // 다운로드 (이미지들)
@@ -105,26 +119,6 @@ export default function MyWorksStoryDetail() {
       console.error("❌ 다운로드 오류:", error);
       alert("다운로드 중 오류가 발생했습니다.");
     }
-  };
-
-  // QR 코드용 URL 생성 (작품 내용을 Base64로 인코딩)
-  const getShareUrl = () => {
-    if (!story) return '';
-    
-    // 작품 데이터를 JSON으로 변환
-    const shareData = {
-      title: story.title,
-      content: story.content,
-      genre: story.genre,
-      createdAt: story.createdAt,
-    };
-    
-    // Base64 인코딩
-    const encoded = btoa(encodeURIComponent(JSON.stringify(shareData)));
-    
-    // 공유 URL 생성
-    const baseUrl = window.location.origin;
-    return `${baseUrl}/shared/story?data=${encoded}`;
   };
 
   if (isLoading) {
@@ -217,9 +211,10 @@ export default function MyWorksStoryDetail() {
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={handleSubmit}
-              className="py-5 px-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-[17px] font-bold hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+              disabled={isSubmitting}
+              className="py-5 px-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-[17px] font-bold hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              📤 선생님께 제출
+              {isSubmitting ? "제출 중..." : "📤 선생님께 제출"}
             </button>
             <button
               onClick={handleDownload}
@@ -229,19 +224,13 @@ export default function MyWorksStoryDetail() {
             </button>
           </div>
 
-          {/* 2행: 공유 + QR코드 + 삭제 */}
-          <div className="grid grid-cols-3 gap-3">
+          {/* 2행: QR코드 안내 + 삭제 */}
+          <div className="grid grid-cols-2 gap-3">
             <button
-              onClick={() => setIsGoodsModalOpen(true)}
-              className="py-4 px-4 bg-pink-500 text-white rounded-xl text-[16px] font-bold hover:bg-pink-600 transition-all duration-200 shadow-md hover:shadow-lg"
-            >
-              🎨 공유
-            </button>
-            <button
-              onClick={() => setIsQRModalOpen(true)}
+              onClick={() => alert("💡 QR코드 만들기\n\n1. 다운로드 버튼으로 이미지를 저장하세요\n2. 홈 화면의 '나만의 굿즈 만들기'에서\n3. QR코드를 생성할 수 있습니다!")}
               className="py-4 px-4 bg-purple-500 text-white rounded-xl text-[16px] font-bold hover:bg-purple-600 transition-all duration-200 shadow-md hover:shadow-lg"
             >
-              📱 QR코드
+              📱 QR코드 만들기
             </button>
             <button
               onClick={handleDelete}
@@ -251,26 +240,6 @@ export default function MyWorksStoryDetail() {
             </button>
           </div>
         </div>
-
-        {/* ✅ QR 코드 모달 */}
-        {story && (
-          <QRCodeModal
-            isOpen={isQRModalOpen}
-            onClose={() => setIsQRModalOpen(false)}
-            imageUrl={getShareUrl()}
-            title="글 QR 코드로 공유하기"
-          />
-        )}
-
-        {/* ✅ 굿즈 선택 모달 */}
-        {story && (
-          <GoodsSelectionModal
-            isOpen={isGoodsModalOpen}
-            onClose={() => setIsGoodsModalOpen(false)}
-            artwork={story}
-            artworkType="writing"
-          />
-        )}
       </div>
     </div>
   );

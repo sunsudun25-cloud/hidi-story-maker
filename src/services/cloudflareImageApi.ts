@@ -6,7 +6,7 @@
  */
 
 // Cloudflare Pages Functions 엔드포인트
-// ✅ Production으로 고정 (Preview 환경에 API Key 없음)
+// ✅ 현재 접속한 도메인 사용 (CORS 문제 방지)
 function getApiBaseUrl(): string {
   if (typeof window === 'undefined') return '';
   
@@ -17,9 +17,9 @@ function getApiBaseUrl(): string {
     return `${protocol}//${hostname}:${port || 3000}`;
   }
   
-  // ⭐ Preview/Production 모두 Production Functions 사용
-  // Preview 환경에는 OPENAI_API_KEY Secret이 없어 더미 이미지 반환됨
-  return 'https://story-maker-4l6.pages.dev';
+  // ✅ 현재 접속한 도메인 그대로 사용 (CORS 방지)
+  // www.story-maker.io, story-maker-4l6.pages.dev 등 모두 동일하게 작동
+  return `${protocol}//${hostname}`;
 }
 
 const API_BASE_URL = getApiBaseUrl();

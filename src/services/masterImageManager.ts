@@ -54,7 +54,7 @@ export interface MasterImageRequest {
   // 필수 정보
   location: string;
   interviewer: "male" | "female";
-  interviewee: "grandmother" | "grandfather" | "youngman" | "youngwoman" | "children" | "dog" | "cat";
+  interviewee: "grandmother" | "grandfather" | "youngman" | "youngwoman" | "children" | "boyChild" | "girlChild" | "dog" | "cat";
   styleKey: string;
   
   // 추가 요청 (옵션)
@@ -125,6 +125,18 @@ function buildIntervieweeDNA(
       age: "7-10세",
       appearance: "검은 머리, 밝은 표정, 한국 어린이",
       clothing: "편안한 옷"
+    },
+    boyChild: {
+      type: "boyChild",
+      age: "8세",
+      appearance: "짧은 검은 머리, 밝은 미소, 한국 남자 어린이",
+      clothing: "만화 캐릭터 티셔츠, 반바지"
+    },
+    girlChild: {
+      type: "girlChild",
+      age: "8세",
+      appearance: "짧은 검은 머리 또는 단발머리, 밝은 미소, 한국 여자 어린이",
+      clothing: "예쁜 원피스 또는 티셔츠"
     },
     dog: {
       type: "dog",

@@ -3,10 +3,5 @@
   "name": "story-maker",
   "compatibility_date": "2024-01-01",
   "pages_build_output_dir": "./dist",
-  "compatibility_flags": ["nodejs_compat"],
-  
-  // 환경변수 선언 (Cloudflare Dashboard에서 설정한 Secret 사용)
-  "vars": {
-    // 개발 환경에서 사용할 기본값 (프로덕션은 Dashboard Secret 우선)
-  }
+  "compatibility_flags": ["nodejs_compat"]
 }

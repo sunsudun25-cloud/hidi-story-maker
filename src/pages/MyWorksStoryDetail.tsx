@@ -61,7 +61,7 @@ export default function MyWorksStoryDetail() {
       
       console.log(`📤 [제출 시작] 작품: "${story.title}", 이미지 수: ${story.images?.length || 0}`);
       
-      // 이미지 URL을 Base64로 변환
+      // 이미지 URL을 Base64로 변환 (압축 적용)
       const files: Record<string, string> = {};
       if (story.images && story.images.length > 0) {
         for (let i = 0; i < story.images.length; i++) {
@@ -70,16 +70,47 @@ export default function MyWorksStoryDetail() {
             console.log(`🔄 이미지 ${i + 1} 변환 시작... (URL 길이: ${img.url.length})`);
             const response = await fetch(img.url);
             const blob = await response.blob();
-            console.log(`📦 Blob 크기: ${(blob.size / 1024).toFixed(2)} KB`);
+            console.log(`📦 원본 Blob 크기: ${(blob.size / 1024).toFixed(2)} KB`);
             
-            const base64 = await new Promise<string>((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onloadend = () => resolve(reader.result as string);
-              reader.onerror = reject;
-              reader.readAsDataURL(blob);
+            // 이미지 리사이징 및 압축 (최대 800x800, 품질 0.7)
+            const resizedBase64 = await new Promise<string>((resolve, reject) => {
+              const imgElement = new Image();
+              imgElement.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = imgElement.width;
+                let height = imgElement.height;
+                
+                // 최대 크기 제한 (800x800)
+                const maxSize = 800;
+                if (width > maxSize || height > maxSize) {
+                  if (width > height) {
+                    height = (height / width) * maxSize;
+                    width = maxSize;
+                  } else {
+                    width = (width / height) * maxSize;
+                    height = maxSize;
+                  }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                  reject(new Error('Canvas context not available'));
+                  return;
+                }
+                
+                ctx.drawImage(imgElement, 0, 0, width, height);
+                // JPEG로 변환 (품질 0.7)
+                const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                resolve(base64);
+              };
+              imgElement.onerror = reject;
+              imgElement.src = URL.createObjectURL(blob);
             });
-            files[`image_${i}`] = base64;
-            console.log(`✅ 이미지 ${i + 1}/${story.images.length} 변환 완료 (Base64 길이: ${base64.length})`);
+            
+            files[`image_${i}`] = resizedBase64;
+            console.log(`✅ 이미지 ${i + 1}/${story.images.length} 변환 완료 (압축 후 Base64 길이: ${resizedBase64.length}, 약 ${(resizedBase64.length / 1024).toFixed(2)} KB)`);
           } catch (err) {
             console.error(`❌ 이미지 ${i} 변환 실패:`, err);
             // 변환 실패시 URL 그대로 사용

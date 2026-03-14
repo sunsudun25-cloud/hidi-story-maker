@@ -139,17 +139,17 @@ export default function FourcutInterviewSetup() {
     }
   };
 
-  // 마스터 이미지 승인 → 결과 페이지로 이동
+  // 마스터 이미지 승인 → 질문 입력 페이지로 이동 (Practice)
   const handleMasterApprove = () => {
-    navigate("/write/fourcut-result", {
+    navigate("/write/fourcut-practice", {
       state: {
-        imageUrl: masterImageUrl,
         theme,
         interviewScene: {
           imageUrl: masterImageUrl,
           location: selectedLocation,
           interviewer: selectedInterviewer,
           interviewee: selectedInterviewee,
+          styleKey: selectedStyle,
           prompt: basePrompt
         }
       }

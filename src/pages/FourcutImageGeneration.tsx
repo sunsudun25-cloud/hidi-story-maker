@@ -22,8 +22,7 @@ export default function FourcutImageGeneration() {
   ]);
 
   const [isSaving, setIsSaving] = useState(false);
-  const cutRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const gridContainerRef = useRef<HTMLDivElement | null>(null); // 4컷 전체 그리드
+  const finalCardRef = useRef<HTMLDivElement | null>(null); // 최종 카드 (마스터 이미지 + 4컷 텍스트)
 
   useEffect(() => {
     if (!theme || !interviewScene || !questions || !answers) {
@@ -56,25 +55,25 @@ export default function FourcutImageGeneration() {
 👤 답변: ${answers[3]}
 `.trim();
 
-      // ✅ 4컷 전체를 하나의 이미지로 캡처
+      // ✅ 최종 카드 (마스터 이미지 1개 + 4컷 텍스트) 캡처
       let combinedImage: string;
       
-      if (gridContainerRef.current) {
-        console.log("📸 4컷 통합 캡처 중...");
-        const canvas = await html2canvas(gridContainerRef.current, {
+      if (finalCardRef.current) {
+        console.log("📸 4컷 카드 캡처 중 (마스터 이미지 + 텍스트)...");
+        const canvas = await html2canvas(finalCardRef.current, {
           backgroundColor: "#ffffff",
-          scale: 1.5,
+          scale: 2.0, // 고해상도
           logging: false,
           useCORS: true,
           allowTaint: true
         });
         
-        // JPEG 압축 (품질 0.85 - 통합 이미지는 조금 더 높은 품질)
-        combinedImage = canvas.toDataURL("image/jpeg", 0.85);
+        // JPEG 압축 (품질 0.8 - 텍스트 가독성 유지)
+        combinedImage = canvas.toDataURL("image/jpeg", 0.8);
         const imageSizeKB = (combinedImage.length * 0.75 / 1024).toFixed(2);
-        console.log(`✅ 4컷 통합 이미지 캡처 완료 (약 ${imageSizeKB} KB)`);
+        console.log(`✅ 4컷 카드 캡처 완료 (약 ${imageSizeKB} KB)`);
       } else {
-        throw new Error("4컷 그리드를 찾을 수 없습니다.");
+        throw new Error("4컷 카드를 찾을 수 없습니다.");
       }
 
       // 통합 이미지 하나만 저장
@@ -154,121 +153,127 @@ export default function FourcutImageGeneration() {
             color: "#3730A3",
             marginBottom: "10px"
           }}>
-            ✨ 완벽한 스타일 일관성!
+            ✨ 한 장의 이미지로 저장!
           </h3>
           <p style={{
             fontSize: "14px",
             color: "#4338CA",
             lineHeight: "1.6"
           }}>
-            마스터 이미지를 4컷 모두에 사용하여<br />
-            스타일이 완벽하게 일치해요!
+            마스터 이미지 + 4컷 스토리를 한 장으로 캡처해요<br />
+            용량 절감 & SNS 공유 최적화!
           </p>
         </div>
 
-        {/* 마스터 이미지 */}
-        <div style={{
-          backgroundColor: "white",
-          borderRadius: "12px",
-          padding: "24px",
-          marginBottom: "30px",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          textAlign: "center"
-        }}>
-          <h3 style={{
-            fontSize: "18px",
-            fontWeight: "700",
-            color: "#1F2937",
-            marginBottom: "15px"
-          }}>
-            📍 인터뷰 장면 (마스터 이미지)
-          </h3>
-          <img 
-            src={interviewScene.imageUrl} 
-            alt="마스터 이미지" 
-            style={{ 
-              width: "100%", 
-              maxWidth: "500px", 
-              borderRadius: "12px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
-            }} 
-          />
-          <p style={{
-            marginTop: "15px",
-            fontSize: "14px",
-            color: "#6B7280",
-            lineHeight: "1.6"
-          }}>
-            📍 {interviewScene.location}<br />
-            🎤 {interviewScene.interviewer === "male" ? "남자 아나운서" : "여자 아나운서"} • 
-            👤 {["할머니", "할아버지", "젊은 남자", "젊은 여자", "친구", "강아지", "고양이"][
-              ["grandmother", "grandfather", "youngman", "youngwoman", "friend", "dog", "cat"].indexOf(interviewScene.interviewee)
-            ]}
-          </p>
-        </div>
-
-        {/* 2x2 그리드 - 동일한 이미지 + 각 컷 내용 */}
+        {/* ✅ 최종 저장될 카드 (이 부분만 캡처) */}
         <div 
-          ref={gridContainerRef}
-          style={{ 
-            display: "grid", 
-            gridTemplateColumns: "1fr 1fr", 
-            gap: "20px",
+          ref={finalCardRef}
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: "16px",
+            padding: "30px",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
             marginBottom: "30px"
           }}
         >
-          {cutData.map((cut, index) => (
-            <div 
-              key={index} 
-              ref={(el) => (cutRefs.current[index] = el)}
-              style={{
-                backgroundColor: "white",
+          {/* 제목 헤더 */}
+          <div style={{
+            textAlign: "center",
+            marginBottom: "24px",
+            borderBottom: "3px solid #9C27B0",
+            paddingBottom: "16px"
+          }}>
+            <div style={{ fontSize: "32px", marginBottom: "8px" }}>{theme.icon}</div>
+            <h2 style={{
+              fontSize: "24px",
+              fontWeight: "700",
+              color: "#1F2937",
+              margin: 0
+            }}>
+              {title}
+            </h2>
+          </div>
+
+          {/* 마스터 이미지 (크게 상단에 배치) */}
+          <div style={{
+            textAlign: "center",
+            marginBottom: "24px"
+          }}>
+            <img 
+              src={interviewScene.imageUrl} 
+              alt="마스터 이미지" 
+              style={{ 
+                width: "100%", 
+                maxWidth: "600px",
                 borderRadius: "12px",
-                padding: "20px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
-              }}
-            >
-              {/* 컷 번호 */}
-              <h3 style={{ 
-                marginBottom: "15px",
-                fontSize: "18px",
-                fontWeight: "700",
-                color: "#1F2937"
-              }}>
-                {cut.cutNumber}컷 - {cutLabels[index]}
-              </h3>
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+              }} 
+            />
+            <p style={{
+              marginTop: "12px",
+              fontSize: "13px",
+              color: "#6B7280"
+            }}>
+              📍 {interviewScene.location} • 
+              🎤 {interviewScene.interviewer === "male" ? "남자 아나운서" : "여자 아나운서"} • 
+              👤 {["할머니", "할아버지", "젊은 남자", "젊은 여자", "친구", "강아지", "고양이"][
+                ["grandmother", "grandfather", "youngman", "youngwoman", "friend", "dog", "cat"].indexOf(interviewScene.interviewee)
+              ]}
+            </p>
+          </div>
 
-              {/* 마스터 이미지 (모든 컷 동일) */}
-              <img 
-                src={interviewScene.imageUrl} 
-                alt={`${cut.cutNumber}컷`} 
-                style={{ 
-                  width: "100%", 
-                  aspectRatio: "1/1",
-                  objectFit: "cover",
-                  borderRadius: "8px", 
-                  marginBottom: "15px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
-                }} 
-              />
+          {/* 4컷 텍스트 카드 (2x2 그리드) */}
+          <div style={{ 
+            display: "grid", 
+            gridTemplateColumns: "1fr 1fr", 
+            gap: "16px"
+          }}>
+            {cutData.map((cut, index) => (
+              <div 
+                key={index}
+                style={{
+                  backgroundColor: "#F9FAFB",
+                  borderRadius: "12px",
+                  padding: "16px",
+                  border: "2px solid #E5E7EB"
+                }}
+              >
+                {/* 컷 번호 + 라벨 */}
+                <div style={{
+                  fontSize: "16px",
+                  fontWeight: "700",
+                  color: "#9C27B0",
+                  marginBottom: "10px",
+                  borderBottom: "2px solid #E9D5FF",
+                  paddingBottom: "8px"
+                }}>
+                  {cut.cutNumber}컷 - {cutLabels[index]}
+                </div>
 
-              {/* 인터뷰 내용 */}
-              <div style={{ 
-                backgroundColor: "#F9FAFB", 
-                borderRadius: "8px", 
-                padding: "12px",
-                fontSize: "13px",
-                lineHeight: "1.6"
-              }}>
-                <div style={{ fontWeight: "700", color: "#7C3AED", marginBottom: "6px" }}>
+                {/* 질문 */}
+                <div style={{
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  color: "#7C3AED",
+                  marginBottom: "8px",
+                  lineHeight: "1.5"
+                }}>
                   📺 {cut.question}
                 </div>
-                <div style={{ color: "#374151" }}>
+
+                {/* 답변 */}
+                <div style={{
+                  fontSize: "13px",
+                  color: "#374151",
+                  lineHeight: "1.5",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word"
+                }}>
                   👤 {cut.answer}
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* 저장 버튼 */}

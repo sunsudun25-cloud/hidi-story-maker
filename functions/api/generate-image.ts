@@ -185,7 +185,8 @@ export async function onRequest(context: { request: Request; env: Env }) {
       model: actualModel,
       isGptImage,
       usingKey: isGptImage ? "OPENAI_API_KEY_GPT_IMAGE" : "OPENAI_API_KEY",
-      keyPrefix: apiKey ? apiKey.slice(0, 8) : "missing",
+      keyPrefix: apiKey ? apiKey.slice(0, 8) : "MISSING",
+      keyType: apiKey?.startsWith('sk-') ? 'OpenAI' : (apiKey?.startsWith('AIza') ? 'Gemini' : 'Unknown'),
       hasGptImageKey: !!env.OPENAI_API_KEY_GPT_IMAGE,
       hasDefaultKey: !!env.OPENAI_API_KEY
     });

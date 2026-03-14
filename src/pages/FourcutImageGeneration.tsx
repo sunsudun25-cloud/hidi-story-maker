@@ -55,7 +55,7 @@ export default function FourcutImageGeneration() {
 👤 답변: ${answers[3]}
 `.trim();
 
-      // 4컷 각각을 이미지로 캡처
+      // 4컷 각각을 이미지로 캡처 (압축 적용)
       const cutImages: string[] = [];
       
       for (let i = 0; i < 4; i++) {
@@ -64,14 +64,17 @@ export default function FourcutImageGeneration() {
           console.log(`📸 ${i + 1}컷 캡처 중...`);
           const canvas = await html2canvas(element, {
             backgroundColor: "#ffffff",
-            scale: 2, // 고해상도
+            scale: 1.5, // 해상도 1.5배 (기존 2배에서 감소)
             logging: false,
             useCORS: true,
             allowTaint: true
           });
-          const imageData = canvas.toDataURL("image/png");
+          
+          // PNG 대신 JPEG로 압축 (품질 0.8)
+          const imageData = canvas.toDataURL("image/jpeg", 0.8);
+          const imageSizeKB = (imageData.length * 0.75 / 1024).toFixed(2); // Base64 크기 추정
           cutImages.push(imageData);
-          console.log(`✅ ${i + 1}컷 캡처 완료`);
+          console.log(`✅ ${i + 1}컷 캡처 완료 (약 ${imageSizeKB} KB)`);
         }
       }
 

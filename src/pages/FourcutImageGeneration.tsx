@@ -23,6 +23,7 @@ export default function FourcutImageGeneration() {
 
   const [isSaving, setIsSaving] = useState(false);
   const cutRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const gridContainerRef = useRef<HTMLDivElement | null>(null); // 4컷 전체 그리드
 
   useEffect(() => {
     if (!theme || !interviewScene || !questions || !answers) {
@@ -34,7 +35,7 @@ export default function FourcutImageGeneration() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      console.log("📸 4컷 이미지 캡처 시작...");
+      console.log("📸 4컷 통합 이미지 캡처 시작...");
       
       // 4컷 스토리 텍스트 생성
       const storyContent = `
@@ -55,39 +56,37 @@ export default function FourcutImageGeneration() {
 👤 답변: ${answers[3]}
 `.trim();
 
-      // 4컷 각각을 이미지로 캡처 (압축 적용)
-      const cutImages: string[] = [];
+      // ✅ 4컷 전체를 하나의 이미지로 캡처
+      let combinedImage: string;
       
-      for (let i = 0; i < 4; i++) {
-        const element = cutRefs.current[i];
-        if (element) {
-          console.log(`📸 ${i + 1}컷 캡처 중...`);
-          const canvas = await html2canvas(element, {
-            backgroundColor: "#ffffff",
-            scale: 1.5, // 해상도 1.5배 (기존 2배에서 감소)
-            logging: false,
-            useCORS: true,
-            allowTaint: true
-          });
-          
-          // PNG 대신 JPEG로 압축 (품질 0.8)
-          const imageData = canvas.toDataURL("image/jpeg", 0.8);
-          const imageSizeKB = (imageData.length * 0.75 / 1024).toFixed(2); // Base64 크기 추정
-          cutImages.push(imageData);
-          console.log(`✅ ${i + 1}컷 캡처 완료 (약 ${imageSizeKB} KB)`);
-        }
+      if (gridContainerRef.current) {
+        console.log("📸 4컷 통합 캡처 중...");
+        const canvas = await html2canvas(gridContainerRef.current, {
+          backgroundColor: "#ffffff",
+          scale: 1.5,
+          logging: false,
+          useCORS: true,
+          allowTaint: true
+        });
+        
+        // JPEG 압축 (품질 0.85 - 통합 이미지는 조금 더 높은 품질)
+        combinedImage = canvas.toDataURL("image/jpeg", 0.85);
+        const imageSizeKB = (combinedImage.length * 0.75 / 1024).toFixed(2);
+        console.log(`✅ 4컷 통합 이미지 캡처 완료 (약 ${imageSizeKB} KB)`);
+      } else {
+        throw new Error("4컷 그리드를 찾을 수 없습니다.");
       }
 
-      console.log(`✅ 총 ${cutImages.length}개 이미지 캡처 완료`);
+      // 통합 이미지 하나만 저장
+      const cutImages = [combinedImage];
 
-      // DB 저장 - StoryImage 형식으로 변환 (마스터 이미지 제외, 4컷만 저장)
-      const cutLabels = ["만남", "이야기", "감동", "작별"];
-      const allImages = cutImages.map((img, i) => ({
+      // DB 저장 - 통합 이미지 하나만 저장
+      const allImages = [{
         id: crypto.randomUUID(),
-        url: img,
-        prompt: `${i + 1}컷 - ${cutLabels[i]}`,
+        url: combinedImage,
+        prompt: "4컷 통합 이미지 (만남-이야기-감동-작별)",
         createdAt: new Date().toISOString()
-      }));
+      }];
       
       const savedId = await saveStory({
         title,
@@ -209,12 +208,15 @@ export default function FourcutImageGeneration() {
         </div>
 
         {/* 2x2 그리드 - 동일한 이미지 + 각 컷 내용 */}
-        <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: "1fr 1fr", 
-          gap: "20px",
-          marginBottom: "30px"
-        }}>
+        <div 
+          ref={gridContainerRef}
+          style={{ 
+            display: "grid", 
+            gridTemplateColumns: "1fr 1fr", 
+            gap: "20px",
+            marginBottom: "30px"
+          }}
+        >
           {cutData.map((cut, index) => (
             <div 
               key={index} 

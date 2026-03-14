@@ -250,18 +250,33 @@ export default function MyWorksStoryDetail() {
         {/* 첨부 이미지들 */}
         {story.images && story.images.length > 0 && (
           <div className="mb-6">
-            <h4 className="text-[18px] font-bold mb-3">📸 첨부 이미지</h4>
-            <div className="grid grid-cols-2 gap-3">
-              {story.images.map((img) => (
+            <h4 className="text-[18px] font-bold mb-3">
+              📸 {story.images.length === 1 && story.genre === 'fourcut' ? '4컷 통합 이미지' : '첨부 이미지'}
+            </h4>
+            {/* 4컷 통합 이미지는 단일 이미지로 크게 표시 */}
+            {story.images.length === 1 && story.genre === 'fourcut' ? (
+              <div className="text-center">
                 <img
-                  key={img.id}
-                  src={img.url}
-                  alt="첨부 이미지"
-                  className="w-full rounded-xl border-2 border-gray-200 cursor-pointer"
-                  onClick={() => window.open(img.url, "_blank")}
+                  src={story.images[0].url}
+                  alt="4컷 통합 이미지"
+                  className="w-full max-w-[800px] mx-auto rounded-xl border-2 border-gray-200 cursor-pointer shadow-lg"
+                  onClick={() => window.open(story.images[0].url, "_blank")}
                 />
-              ))}
-            </div>
+                <p className="mt-3 text-sm text-gray-500">만남 → 이야기 → 감동 → 작별</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {story.images.map((img) => (
+                  <img
+                    key={img.id}
+                    src={img.url}
+                    alt="첨부 이미지"
+                    className="w-full rounded-xl border-2 border-gray-200 cursor-pointer"
+                    onClick={() => window.open(img.url, "_blank")}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
 

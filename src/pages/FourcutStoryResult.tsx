@@ -35,51 +35,35 @@ export default function FourcutStoryResult() {
       const timestamp = Date.now();
       const baseFilename = state.title.replace(/[^a-zA-Z0-9가-힣]/g, '_');
       
-      // 마스터 이미지 다운로드
-      const masterResponse = await fetch(state.imageUrl);
-      const masterBlob = await masterResponse.blob();
-      const masterUrl = URL.createObjectURL(masterBlob);
-      const masterLink = document.createElement('a');
-      masterLink.href = masterUrl;
-      masterLink.download = `${baseFilename}-master-${timestamp}.png`;
-      document.body.appendChild(masterLink);
-      masterLink.click();
-      document.body.removeChild(masterLink);
-      URL.revokeObjectURL(masterUrl);
-
-      // 4컷 이미지들 다운로드 (있는 경우)
+      // 4컷 통합 이미지 다운로드 (cutImages[0]가 통합 이미지)
       if (state.cutImages && state.cutImages.length > 0) {
-        for (let i = 0; i < state.cutImages.length; i++) {
-          // Base64 이미지를 Blob으로 변환
-          const base64Data = state.cutImages[i].split(',')[1];
-          const byteCharacters = atob(base64Data);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let j = 0; j < byteCharacters.length; j++) {
-            byteNumbers[j] = byteCharacters.charCodeAt(j);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: 'image/png' });
-          
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `${baseFilename}-cut${i + 1}-${timestamp}.png`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-          
-          // 브라우저가 여러 다운로드를 처리할 시간 제공
-          await new Promise(resolve => setTimeout(resolve, 300));
+        // Base64 이미지를 Blob으로 변환
+        const base64Data = state.cutImages[0].split(',')[1];
+        const byteCharacters = atob(base64Data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let j = 0; j < byteCharacters.length; j++) {
+          byteNumbers[j] = byteCharacters.charCodeAt(j);
         }
-      }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'image/jpeg' });
+        
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${baseFilename}-4cut-${timestamp}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
 
-      // 모바일 안내
-      const totalImages = 1 + (state.cutImages?.length || 0);
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        alert(`📱 이미지 저장 방법:\n\n✅ iOS: 사진 앱 → 다운로드 폴더\n✅ Android: 갤러리 → Downloads 폴더\n\n총 ${totalImages}개 파일이 다운로드되었습니다!`);
+        // 모바일 안내
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          alert(`📱 이미지 저장 방법:\n\n✅ iOS: 사진 앱 → 다운로드 폴더\n✅ Android: 갤러리 → Downloads 폴더\n\n4컷 통합 이미지가 다운로드되었습니다!`);
+        } else {
+          alert(`✅ 4컷 통합 이미지가 다운로드되었습니다!`);
+        }
       } else {
-        alert(`✅ 총 ${totalImages}개 이미지가 다운로드되었습니다!\n\n• 마스터 이미지 1개\n• 4컷 이미지 ${state.cutImages?.length || 0}개`);
+        alert("다운로드할 이미지가 없습니다.");
       }
     } catch (error) {
       console.error("❌ 다운로드 오류:", error);
@@ -207,53 +191,41 @@ export default function FourcutStoryResult() {
           />
         </div>
 
-        {/* 4컷 이미지 미리보기 (있는 경우) */}
+        {/* 4컷 통합 이미지 미리보기 */}
         {state.cutImages && state.cutImages.length > 0 && (
           <div style={{
             backgroundColor: "white",
             borderRadius: "16px",
             padding: "24px",
             marginBottom: "30px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            textAlign: "center"
           }}>
             <h3 style={{
               fontSize: "18px",
               fontWeight: "700",
               color: "#1F2937",
-              marginBottom: "20px",
-              textAlign: "center"
+              marginBottom: "20px"
             }}>
-              🎬 4컷 스토리 (이미지 + 텍스트)
+              🎬 4컷 스토리 통합 이미지
             </h3>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "15px"
+            <img 
+              src={state.cutImages[0]} 
+              alt="4컷 통합 이미지"
+              style={{
+                width: "100%",
+                maxWidth: "800px",
+                borderRadius: "12px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+              }}
+            />
+            <p style={{
+              marginTop: "15px",
+              fontSize: "14px",
+              color: "#6B7280"
             }}>
-              {state.cutImages.map((cutImage, index) => (
-                <div key={index} style={{
-                  textAlign: "center"
-                }}>
-                  <p style={{
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    color: "#6B7280",
-                    marginBottom: "10px"
-                  }}>
-                    {index + 1}컷 - {["만남", "이야기", "감동", "작별"][index]}
-                  </p>
-                  <img 
-                    src={cutImage} 
-                    alt={`${index + 1}컷`}
-                    style={{
-                      width: "100%",
-                      borderRadius: "8px",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
+              만남 → 이야기 → 감동 → 작별
+            </p>
           </div>
         )}
 

@@ -59,14 +59,19 @@ export default function MyWorksStoryDetail() {
     try {
       const { saveArtifact } = await import("../services/classroomService");
       
+      console.log(`📤 [제출 시작] 작품: "${story.title}", 이미지 수: ${story.images?.length || 0}`);
+      
       // 이미지 URL을 Base64로 변환
       const files: Record<string, string> = {};
       if (story.images && story.images.length > 0) {
         for (let i = 0; i < story.images.length; i++) {
           const img = story.images[i];
           try {
+            console.log(`🔄 이미지 ${i + 1} 변환 시작... (URL 길이: ${img.url.length})`);
             const response = await fetch(img.url);
             const blob = await response.blob();
+            console.log(`📦 Blob 크기: ${(blob.size / 1024).toFixed(2)} KB`);
+            
             const base64 = await new Promise<string>((resolve, reject) => {
               const reader = new FileReader();
               reader.onloadend = () => resolve(reader.result as string);
@@ -74,7 +79,7 @@ export default function MyWorksStoryDetail() {
               reader.readAsDataURL(blob);
             });
             files[`image_${i}`] = base64;
-            console.log(`✅ 이미지 ${i + 1}/${story.images.length} 변환 완료`);
+            console.log(`✅ 이미지 ${i + 1}/${story.images.length} 변환 완료 (Base64 길이: ${base64.length})`);
           } catch (err) {
             console.error(`❌ 이미지 ${i} 변환 실패:`, err);
             // 변환 실패시 URL 그대로 사용
@@ -82,6 +87,8 @@ export default function MyWorksStoryDetail() {
           }
         }
       }
+      
+      console.log(`📤 [Firestore 전송 시작] 파일 수: ${Object.keys(files).length}`);
       
       const result = await saveArtifact({
         learnerId: learner.learnerId,
@@ -95,7 +102,8 @@ export default function MyWorksStoryDetail() {
         files
       });
 
-      alert(`✅ 제출 완료!\n\n선생님께서 갤러리에서 확인하실 수 있습니다.`);
+      console.log(`✅ [제출 완료] artifactId: ${result.artifactId}, shareId: ${result.shareId}`);
+      alert(`✅ 제출 완료!\n\n작품 ID: ${result.artifactId}\n선생님께서 갤러리에서 확인하실 수 있습니다.`);
     } catch (error: any) {
       console.error("제출 오류:", error);
       alert(`제출 중 오류가 발생했습니다.\n\n${error.message || "다시 시도해주세요."}`);

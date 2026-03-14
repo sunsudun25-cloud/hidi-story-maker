@@ -83,17 +83,17 @@ function buildScenePrompt(request: MasterImageRequest): string {
   const locationEn = LOCATION_MAP[request.location] || request.location;
   
   const interviewer = request.interviewer === "male"
-    ? "Korean male reporter age 30, short black hair, business suit with tie, holding microphone, other hand natural, NOT in pockets"
-    : "Korean female reporter age 30, neat short hair, business suit, holding microphone, other hand natural, NOT in pockets";
+    ? "Korean male reporter age 30, short black hair, business suit with tie, ONLY ONE microphone in left hand, right hand at side, both hands completely visible, NEVER hands in pockets"
+    : "Korean female reporter age 30, neat short hair, business suit, ONLY ONE microphone in left hand, right hand at side, both hands completely visible, NEVER hands in pockets";
   
   const intervieweeMap: Record<string, string> = {
-    grandmother: "Korean grandmother age 70, white hair, warm expression, comfortable clothing, both hands forward, NOT in pockets",
-    grandfather: "Korean grandfather age 70, white hair, gentle expression, comfortable clothing, both hands forward, NOT in pockets",
-    youngman: "Korean young man age 20, black hair, bright expression, casual clothing, both hands at sides, NOT in pockets",
-    youngwoman: "Korean young woman age 20, black hair, bright expression, casual clothing, both hands at sides, NOT in pockets",
-    children: "Korean elementary school boy student, MUST look exactly 8 years old (ABSOLUTELY NOT 12+, NOT teenager, NOT young adult), extremely short child height (120cm tall, much shorter than adult), very round chubby innocent child face, baby face features, short messy black hair, very big round innocent eyes, wide cheerful child smile showing baby teeth, wearing colorful children's t-shirt with cartoon character and denim shorts, visibly small child body with short arms and legs, child proportions (head larger relative to body), both hands and arms completely visible outside at sides, small child hands, NEVER EVER hands in pockets or behind back",
-    boyChild: "Korean young elementary school boy (lower grades, 7-8 years old), student appearance, short black hair, cheerful youthful expression, wearing casual children's t-shirt and shorts, both hands visible at sides, NOT in pockets",
-    girlChild: "Korean young elementary school girl (lower grades, 7-8 years old), student appearance, short black hair with hair clips, cheerful youthful expression, wearing casual children's dress or t-shirt, both hands visible at sides, NOT in pockets",
+    grandmother: "Korean grandmother age 70, white hair, warm expression, comfortable clothing, both hands clasped together in front, NO microphone, hands completely visible, ABSOLUTELY NO hands in pockets",
+    grandfather: "Korean grandfather age 70, white hair, gentle expression, comfortable clothing, both hands clasped together in front, NO microphone, hands completely visible, ABSOLUTELY NO hands in pockets",
+    youngman: "Korean young man age 20, black hair, bright expression, casual clothing, both hands at sides naturally, NO microphone, hands completely visible outside, ABSOLUTELY NO hands in pockets or behind back",
+    youngwoman: "Korean young woman age 20, black hair, bright expression, casual clothing, both hands at sides naturally, NO microphone, hands completely visible outside, ABSOLUTELY NO hands in pockets or behind back",
+    children: "Korean elementary school boy student, MUST look exactly 8 years old (ABSOLUTELY NOT 12+, NOT teenager, NOT young adult), extremely short child height (120cm tall, much shorter than adult), very round chubby innocent child face, baby face features, short messy black hair, very big round innocent eyes, wide cheerful child smile showing baby teeth, wearing colorful children's t-shirt with cartoon character and denim shorts, visibly small child body with short arms and legs, child proportions (head larger relative to body), NO microphone, both hands and arms completely visible outside at sides, small child hands, NEVER EVER hands in pockets or behind back",
+    boyChild: "Korean young elementary school boy (lower grades, 7-8 years old), student appearance, short black hair, cheerful youthful expression, wearing casual children's t-shirt and shorts, NO microphone, both hands completely visible at sides, arms relaxed at sides, ABSOLUTELY NO hands in pockets or behind back",
+    girlChild: "Korean young elementary school girl (lower grades, 7-8 years old), student appearance, short black hair with hair clips, cheerful youthful expression, wearing casual children's dress or t-shirt, NO microphone, both hands completely visible at sides, arms relaxed at sides, ABSOLUTELY NO hands in pockets or behind back",
     dog: "Golden Retriever dog, bright brown fur, sitting calmly",
     cat: "Gray cat, sitting quietly"
   };

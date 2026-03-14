@@ -72,7 +72,10 @@ ABSOLUTELY FORBIDDEN:
 - NO text, Korean hangul, English letters, numbers
 - NO signs, watermarks, logos, captions, labels
 - NO studio lighting, artificial setup
-- NO hands in pockets, NO arms crossed, NO hidden hands
+- NO hands in pockets, NO arms crossed, NO hidden hands, NO hands behind back
+- NO multiple microphones, NO interviewee holding microphone
+- ONLY reporter holds ONE microphone, interviewee has NO microphone
+- Both people's hands MUST be completely visible and outside
 Pure authentic photojournalism only.
   `.trim()
 };
@@ -112,7 +115,10 @@ Lighting: Three-point lighting, soft ambient.
   negativePrompt: `
 NO: cartoon eyes, Pixar style, overly cute, exaggerated features,
 chibi, anime style, stylized faces, unrealistic proportions,
-text, Korean hangul, English letters, signs, watermarks.
+text, Korean hangul, English letters, signs, watermarks,
+hands in pockets, arms crossed, hidden hands, hands behind back,
+multiple microphones, interviewee holding microphone.
+ONLY reporter holds ONE microphone, interviewee has NO microphone.
   `.trim()
 };
 
@@ -149,7 +155,10 @@ Colors: Harmonious warm palette.
   
   negativePrompt: `
 NO: text, letters, words, Korean hangul, English text, numbers, signs,
-realistic photo, 3D render, dark mood, complex background.
+realistic photo, 3D render, dark mood, complex background,
+hands in pockets, arms crossed, hidden hands, hands behind back,
+multiple microphones, interviewee holding microphone.
+ONLY reporter holds ONE microphone, interviewee has NO microphone.
   `.trim()
 };
 
@@ -186,7 +195,10 @@ Expression: Emphasized emotions and reactions.
   
   negativePrompt: `
 NO: text, words, Korean text, English letters, signs, watermarks,
-realistic photo, 3D CGI, dark mood, static pose.
+realistic photo, 3D CGI, dark mood, static pose,
+hands in pockets, arms crossed, hidden hands, hands behind back,
+multiple microphones, interviewee holding microphone.
+ONLY reporter holds ONE microphone, interviewee has NO microphone.
   `.trim()
 };
 

@@ -77,28 +77,20 @@ export default function FourcutImageGeneration() {
 
       console.log(`✅ 총 ${cutImages.length}개 이미지 캡처 완료`);
 
-      // DB 저장 - StoryImage 형식으로 변환
+      // DB 저장 - StoryImage 형식으로 변환 (마스터 이미지 제외, 4컷만 저장)
       const cutLabels = ["만남", "이야기", "감동", "작별"];
-      const allImages = [
-        {
-          id: crypto.randomUUID(),
-          url: interviewScene.imageUrl,
-          prompt: "마스터 이미지",
-          createdAt: new Date().toISOString()
-        },
-        ...cutImages.map((img, i) => ({
-          id: crypto.randomUUID(),
-          url: img,
-          prompt: `${i + 1}컷 - ${cutLabels[i]}`,
-          createdAt: new Date().toISOString()
-        }))
-      ];
+      const allImages = cutImages.map((img, i) => ({
+        id: crypto.randomUUID(),
+        url: img,
+        prompt: `${i + 1}컷 - ${cutLabels[i]}`,
+        createdAt: new Date().toISOString()
+      }));
       
       const savedId = await saveStory({
         title,
         content: storyContent,
         genre: "fourcut",
-        images: allImages // 마스터 이미지 + 4컷 이미지
+        images: allImages // 4컷 이미지만 저장
       });
 
       console.log("✅ DB 저장 완료:", savedId);

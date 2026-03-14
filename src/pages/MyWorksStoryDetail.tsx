@@ -56,6 +56,57 @@ export default function MyWorksStoryDetail() {
     }
   };
 
+  // 선생님께 제출하기
+  const handleSubmit = () => {
+    if (!story) return;
+    navigate("/submit/stories", {
+      state: {
+        id: story.id,
+        title: story.title,
+        content: story.content,
+        imageUrl: story.images?.[0]?.url || ""
+      }
+    });
+  };
+
+  // 다운로드 (이미지들)
+  const handleDownload = async () => {
+    if (!story || !story.images || story.images.length === 0) {
+      alert("다운로드할 이미지가 없습니다.");
+      return;
+    }
+
+    try {
+      const timestamp = Date.now();
+      const baseFilename = story.title.replace(/[^a-zA-Z0-9가-힣]/g, '_');
+      
+      // 모든 이미지 다운로드
+      for (let i = 0; i < story.images.length; i++) {
+        const img = story.images[i];
+        const response = await fetch(img.url);
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${baseFilename}-${i + 1}-${timestamp}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        // 브라우저가 여러 다운로드를 처리할 시간 제공
+        if (i < story.images.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
+
+      alert(`✅ 총 ${story.images.length}개 이미지가 다운로드되었습니다!`);
+    } catch (error) {
+      console.error("❌ 다운로드 오류:", error);
+      alert("다운로드 중 오류가 발생했습니다.");
+    }
+  };
+
   // QR 코드용 URL 생성 (작품 내용을 Base64로 인코딩)
   const getShareUrl = () => {
     if (!story) return '';
@@ -162,37 +213,43 @@ export default function MyWorksStoryDetail() {
 
         {/* 액션 버튼들 - 통일된 큰 버튼 스타일 */}
         <div className="flex flex-col gap-3">
-          {/* 무엇을 만들까요? 버튼 - 가장 상단에 강조 */}
-          <button
-            onClick={() => setIsGoodsModalOpen(true)}
-            className="py-5 px-5 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl text-[18px] font-bold hover:from-pink-600 hover:to-purple-600 transition-all duration-200 shadow-lg hover:shadow-xl"
-          >
-            🎨 무엇을 만들까요?
-          </button>
-
-          {/* 1행: 수정하기 + QR 코드 */}
+          {/* 1행: 선생님께 제출 + 다운로드 */}
           <div className="grid grid-cols-2 gap-3">
             <button
-              onClick={handleEdit}
-              className="py-4 px-5 bg-blue-500 text-white rounded-xl text-[17px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
+              onClick={handleSubmit}
+              className="py-5 px-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-[17px] font-bold hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              ✏️ 수정하기
+              📤 선생님께 제출
             </button>
             <button
-              onClick={() => setIsQRModalOpen(true)}
-              className="py-4 px-5 bg-orange-500 text-white rounded-xl text-[17px] font-bold hover:bg-orange-600 transition-all duration-200 shadow-md hover:shadow-lg"
+              onClick={handleDownload}
+              className="py-5 px-5 bg-emerald-500 text-white rounded-xl text-[17px] font-bold hover:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg"
             >
-              📱 QR 코드
+              📥 다운로드
             </button>
           </div>
 
-          {/* 삭제 */}
-          <button
-            onClick={handleDelete}
-            className="py-4 px-5 bg-rose-500 text-white rounded-xl text-[17px] font-bold hover:bg-rose-600 transition-all duration-200 shadow-md hover:shadow-lg"
-          >
-            🗑️ 삭제하기
-          </button>
+          {/* 2행: 공유 + QR코드 + 삭제 */}
+          <div className="grid grid-cols-3 gap-3">
+            <button
+              onClick={() => setIsGoodsModalOpen(true)}
+              className="py-4 px-4 bg-pink-500 text-white rounded-xl text-[16px] font-bold hover:bg-pink-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              🎨 공유
+            </button>
+            <button
+              onClick={() => setIsQRModalOpen(true)}
+              className="py-4 px-4 bg-purple-500 text-white rounded-xl text-[16px] font-bold hover:bg-purple-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              📱 QR코드
+            </button>
+            <button
+              onClick={handleDelete}
+              className="py-4 px-4 bg-rose-500 text-white rounded-xl text-[16px] font-bold hover:bg-rose-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              🗑️ 삭제
+            </button>
+          </div>
         </div>
 
         {/* ✅ QR 코드 모달 */}

@@ -72,6 +72,9 @@ ABSOLUTELY FORBIDDEN:
 - NO text, Korean hangul, English letters, numbers
 - NO signs, watermarks, logos, captions, labels
 - NO studio lighting, artificial setup
+- NO hands in pockets, NO arms crossed, NO hidden hands
+- NO mature adult face on child character, NO teenager look on child
+- Ensure child characters look exactly 8 years old, NOT older
 Pure authentic photojournalism only.
   `.trim()
 };

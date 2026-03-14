@@ -91,7 +91,7 @@ function buildScenePrompt(request: MasterImageRequest): string {
     grandfather: "Korean grandfather age 70, white hair, gentle expression, comfortable clothing, both hands forward, NOT in pockets",
     youngman: "Korean young man age 20, black hair, bright expression, casual clothing, both hands at sides, NOT in pockets",
     youngwoman: "Korean young woman age 20, black hair, bright expression, casual clothing, both hands at sides, NOT in pockets",
-    children: "Korean boy age 8 years old, short black hair, bright cheerful child's expression, small child-sized body proportions, comfortable children's clothing, both hands natural, NOT in pockets",
+    children: "Korean elementary school boy, exactly 8 years old child (NOT teenager, NOT adult), very short height (child size), round innocent face, short black hair, big bright eyes, cheerful smile, wearing children's t-shirt and shorts, small child body proportions, both hands visible at sides or gesturing naturally, arms outside, NEVER hands in pockets",
     dog: "Golden Retriever dog, bright brown fur, sitting calmly",
     cat: "Gray cat, sitting quietly"
   };

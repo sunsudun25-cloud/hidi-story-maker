@@ -257,19 +257,21 @@ export default function FourcutStoryResult() {
           </div>
         )}
 
-        {/* 버튼 그룹 */}
+        {/* 버튼 그룹 - 간결하게 2개만 */}
         <div style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap: "12px",
+          gap: "16px",
           marginBottom: "20px"
         }}>
-          {/* 다운로드 */}
+          {/* 저장하기 (이미 저장되었지만 명시적 버튼) */}
           <button
-            onClick={handleDownload}
+            onClick={() => {
+              alert("✅ 이미 내 작품에 저장되었습니다!");
+            }}
             style={{
-              padding: "18px",
-              fontSize: "16px",
+              padding: "20px",
+              fontSize: "18px",
               fontWeight: "700",
               backgroundColor: "#10B981",
               color: "white",
@@ -282,117 +284,30 @@ export default function FourcutStoryResult() {
             onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
             onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
           >
-            📥 다운로드
-          </button>
-
-          {/* 공유하기 */}
-          <button
-            onClick={handleShare}
-            disabled={isSharing}
-            style={{
-              padding: "18px",
-              fontSize: "16px",
-              fontWeight: "700",
-              backgroundColor: isSharing ? "#D1D5DB" : "#3B82F6",
-              color: "white",
-              border: "none",
-              borderRadius: "12px",
-              cursor: isSharing ? "not-allowed" : "pointer",
-              boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
-              transition: "transform 0.2s"
-            }}
-            onMouseEnter={(e) => !isSharing && (e.currentTarget.style.transform = "scale(1.02)")}
-            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-          >
-            {isSharing ? "공유 중..." : "🔗 공유하기"}
-          </button>
-
-          {/* QR 코드 */}
-          <button
-            onClick={handleQrCode}
-            style={{
-              padding: "18px",
-              fontSize: "16px",
-              fontWeight: "700",
-              backgroundColor: "#8B5CF6",
-              color: "white",
-              border: "none",
-              borderRadius: "12px",
-              cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(139, 92, 246, 0.3)",
-              transition: "transform 0.2s"
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
-            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-          >
-            📱 QR 코드
+            💾 저장하기
           </button>
 
           {/* 내작품 보기 */}
           <button
-            onClick={() => navigate("/my-works/stories")}
+            onClick={() => navigate(`/my-works/postcard/${state.savedId}`)}
             style={{
-              padding: "18px",
-              fontSize: "16px",
+              padding: "20px",
+              fontSize: "18px",
               fontWeight: "700",
-              backgroundColor: "#F59E0B",
+              backgroundColor: "#3B82F6",
               color: "white",
               border: "none",
               borderRadius: "12px",
               cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(245, 158, 11, 0.3)",
+              boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
               transition: "transform 0.2s"
             }}
             onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
             onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
           >
-            📂 내작품 보기
+            📂 내 작품 보기
           </button>
         </div>
-
-        {/* 선생님께 제출하기 (큰 버튼) */}
-        <button
-          onClick={handleSubmit}
-          style={{
-            width: "100%",
-            padding: "20px",
-            fontSize: "18px",
-            fontWeight: "700",
-            backgroundColor: "#DC2626",
-            color: "white",
-            border: "none",
-            borderRadius: "12px",
-            cursor: "pointer",
-            boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
-            marginBottom: "20px",
-            transition: "transform 0.2s"
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
-          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-        >
-          📤 선생님께 제출하기
-        </button>
-
-        {/* 다시 만들기 */}
-        <button
-          onClick={() => navigate("/write/fourcut-theme")}
-          style={{
-            width: "100%",
-            padding: "16px",
-            fontSize: "16px",
-            fontWeight: "600",
-            backgroundColor: "white",
-            color: "#6B7280",
-            border: "2px solid #E5E7EB",
-            borderRadius: "12px",
-            cursor: "pointer",
-            transition: "transform 0.2s"
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
-          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-        >
-          🔄 다시 만들기
-        </button>
 
         {/* QR 코드 모달 */}
         {showQrModal && (

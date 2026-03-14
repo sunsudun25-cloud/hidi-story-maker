@@ -11,6 +11,9 @@ export default function MyWorksPostcardDetail() {
   const [item, setItem] = useState<Postcard | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
   const postcardRef = useRef<HTMLDivElement>(null);
 
   // 글자체 설정
@@ -166,6 +169,47 @@ export default function MyWorksPostcardDetail() {
     }
   };
 
+  // 공유하기
+  const handleShare = async () => {
+    if (!item) return;
+    setIsSharing(true);
+    try {
+      if (navigator.share && item.imageUrl) {
+        const response = await fetch(item.imageUrl);
+        const blob = await response.blob();
+        const file = new File([blob], `${item.title}.png`, { type: "image/png" });
+        
+        await navigator.share({
+          title: item.title,
+          text: item.content?.substring(0, 100) + "..." || "",
+          files: [file]
+        });
+      } else {
+        // Web Share API 미지원 시 클립보드 복사
+        await navigator.clipboard.writeText(
+          `${item.title}\n\n${item.content || ""}\n\n이미지: ${item.imageUrl || ""}`
+        );
+        alert("📋 클립보드에 복사되었습니다!");
+      }
+    } catch (error) {
+      console.error("공유 오류:", error);
+      alert("공유 기능을 사용할 수 없습니다.");
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
+  // QR 코드 생성
+  const handleQrCode = () => {
+    if (!item || !item.imageUrl) {
+      alert("이미지 URL이 없습니다.");
+      return;
+    }
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(item.imageUrl)}`;
+    setQrCodeUrl(qrApiUrl);
+    setShowQrModal(true);
+  };
+
   if (isLoading) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
@@ -290,41 +334,121 @@ export default function MyWorksPostcardDetail() {
           {new Date(item.createdAt).toLocaleString("ko-KR")}
         </div>
 
-        {/* 액션 버튼들 */}
+        {/* 액션 버튼들 - 5개로 재구성 */}
         <div className="flex flex-col gap-3">
-          {/* 선생님께 제출 버튼 - 가장 상단에 강조 */}
-          <button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="py-5 px-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-[18px] font-bold hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? "제출 중..." : "👩‍🏫 선생님께 제출하기"}
-          </button>
-
-          {/* 1행: PDF 저장 + 이미지 저장 */}
+          {/* 1행: 선생님께 제출 + 다운로드 */}
           <div className="grid grid-cols-2 gap-3">
             <button
-              onClick={handleDownloadPDF}
-              className="py-4 px-5 bg-blue-500 text-white rounded-xl text-[17px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="py-5 px-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-[17px] font-bold hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              📄 PDF 저장
+              {isSubmitting ? "제출 중..." : "📤 선생님께 제출"}
             </button>
             <button
               onClick={handleDownloadImage}
-              className="py-4 px-5 bg-emerald-500 text-white rounded-xl text-[17px] font-bold hover:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg"
+              className="py-5 px-5 bg-emerald-500 text-white rounded-xl text-[17px] font-bold hover:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg"
             >
-              🖼️ 이미지 저장
+              📥 다운로드
             </button>
           </div>
 
-          {/* 2행: 삭제하기 */}
-          <button
-            onClick={handleDelete}
-            className="py-4 px-5 bg-rose-500 text-white rounded-xl text-[17px] font-bold hover:bg-rose-600 transition-all duration-200 shadow-md hover:shadow-lg"
-          >
-            🗑️ 삭제하기
-          </button>
+          {/* 2행: 공유 + QR코드 + 삭제 */}
+          <div className="grid grid-cols-3 gap-3">
+            <button
+              onClick={handleShare}
+              disabled={isSharing}
+              className="py-4 px-4 bg-blue-500 text-white rounded-xl text-[16px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSharing ? "공유 중..." : "🔗 공유"}
+            </button>
+            <button
+              onClick={handleQrCode}
+              className="py-4 px-4 bg-purple-500 text-white rounded-xl text-[16px] font-bold hover:bg-purple-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              📱 QR코드
+            </button>
+            <button
+              onClick={handleDelete}
+              className="py-4 px-4 bg-rose-500 text-white rounded-xl text-[16px] font-bold hover:bg-rose-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              🗑️ 삭제
+            </button>
+          </div>
         </div>
+
+        {/* QR 코드 모달 */}
+        {showQrModal && (
+          <div 
+            onClick={() => setShowQrModal(false)}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.7)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1000
+            }}
+          >
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                backgroundColor: "white",
+                borderRadius: "20px",
+                padding: "30px",
+                maxWidth: "400px",
+                textAlign: "center"
+              }}
+            >
+              <h3 style={{
+                fontSize: "20px",
+                fontWeight: "700",
+                marginBottom: "20px",
+                color: "#1F2937"
+              }}>
+                📱 QR 코드로 공유하기
+              </h3>
+              <img 
+                src={qrCodeUrl} 
+                alt="QR Code" 
+                style={{
+                  width: "100%",
+                  maxWidth: "300px",
+                  height: "auto",
+                  marginBottom: "20px"
+                }}
+              />
+              <p style={{
+                fontSize: "14px",
+                color: "#6B7280",
+                marginBottom: "20px"
+              }}>
+                이 QR 코드를 스캔하면<br/>
+                엽서 이미지를 볼 수 있습니다!
+              </p>
+              <button
+                onClick={() => setShowQrModal(false)}
+                style={{
+                  width: "100%",
+                  padding: "14px",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                  backgroundColor: "#3B82F6",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "10px",
+                  cursor: "pointer"
+                }}
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

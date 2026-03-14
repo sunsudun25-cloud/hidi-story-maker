@@ -171,9 +171,9 @@ export async function generateWritingImage(
 ): Promise<string> {
   try {
     const {
-      model = "dall-e-3",
+      model = "gpt-image-1.5",  // ✅ GPT Image 1.5로 변경 (더 예쁜 이미지)
       size = "1024x1024",
-      quality = "hd",
+      quality = "high",  // ✅ high로 변경 (GPT Image 1.5는 high 사용)
       useRawPrompt = false  // ⭐ 기본값: false (기존 동작 유지)
     } = options || {};
 

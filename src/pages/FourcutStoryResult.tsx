@@ -259,7 +259,7 @@ export default function FourcutStoryResult() {
 
         {/* 내 작품 보기 버튼 (단일 버튼) */}
         <button
-          onClick={() => navigate(`/my-works/postcard/${state.savedId}`)}
+          onClick={() => navigate(`/my-works/stories/${state.savedId}`)}
           style={{
             width: "100%",
             padding: "20px",

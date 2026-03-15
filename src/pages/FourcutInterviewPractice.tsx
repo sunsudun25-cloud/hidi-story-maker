@@ -92,18 +92,31 @@ export default function FourcutInterviewPractice() {
     
     // ✅ 음성 인식 시작 전 현재 텍스트 저장
     const startText = answers[targetStep] || "";
+    const finalTexts: string[] = [];  // 최종 결과들을 배열로 누적
+    let finalCallCount = 0;  // 🔍 최종 결과 호출 횟수 카운터
     
     startListening({
       onResult: (text, isFinal) => {
         if (isFinal) {
-          // ✅ 최종 결과: answers에 직접 저장 (배열 사용 안 함)
-          console.log("📝 최종 텍스트 추가:", text);
+          finalCallCount++;  // 🔍 호출 횟수 증가
+          
+          // ✅ 최종 결과: 배열에 추가 (누적)
+          finalTexts.push(text);
+          console.log(`📝 [${finalCallCount}번째 최종 호출] 텍스트:`, text);
+          console.log("📝 현재 finalTexts:", finalTexts);
+          
           setInterimTranscript("");  // 중간 결과 초기화
           
           const newAnswers = [...answers];
-          // startText가 비어있으면 text만, 아니면 공백 추가 후 text
-          newAnswers[targetStep] = startText + (startText ? " " : "") + text;
+          // startText + 모든 최종 결과 합치기
+          const allFinal = finalTexts.join(" ");
+          newAnswers[targetStep] = startText + (startText ? " " : "") + allFinal;
           setAnswers(newAnswers);
+          
+          console.log("📝 최종 저장값:", newAnswers[targetStep]);
+          
+          // 🔍 모바일 디버깅용 alert (임시)
+          alert(`[${finalCallCount}번째 최종]\n받은값: "${text}"\nfinalTexts: [${finalTexts.join(", ")}]\n저장값: "${newAnswers[targetStep]}"`);
         } else {
           // ✅ 중간 결과: 별도 state에 저장 (덮어쓰기)
           console.log("⏳ 중간 텍스트:", text);

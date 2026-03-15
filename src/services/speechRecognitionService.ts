@@ -52,9 +52,13 @@ export function startSpeechRecognition(options: SpeechRecognitionOptions): () =>
   recognition.continuous = options.continuous ?? false;
   recognition.interimResults = options.interimResults ?? false;
 
+  // ✅ 인스턴스마다 초기화되는 상태
+  let lastFinalIndex = -1;  // 마지막으로 처리한 최종 결과 인덱스
+
   // 이벤트 핸들러
   recognition.onstart = () => {
     console.log("🎤 음성 인식 시작");
+    lastFinalIndex = -1;  // ✅ 시작 시 초기화
     if (options.onStart) {
       options.onStart();
     }
@@ -74,32 +78,41 @@ export function startSpeechRecognition(options: SpeechRecognitionOptions): () =>
       options.onEnd();
     }
   };
-
+  
   recognition.onresult = (event: any) => {
-    // ✅ 전체 transcript를 재구성 (중복 방지)
+    // ✅ 중간 결과: 전체 재구성
     let interimTranscript = "";
-    let finalTranscript = "";
     
+    // 모든 중간 결과 합치기
     for (let i = 0; i < event.results.length; i++) {
-      const result = event.results[i];
-      const transcript = result[0].transcript;
-      
-      if (result.isFinal) {
-        finalTranscript += transcript + " ";
-      } else {
-        interimTranscript += transcript;
+      if (!event.results[i].isFinal) {
+        interimTranscript += event.results[i][0].transcript;
       }
     }
     
-    // 최종 결과가 있으면 최종 결과만 전달
-    if (finalTranscript.trim()) {
-      console.log("✅ 음성 인식 최종 결과:", finalTranscript.trim());
-      options.onResult(finalTranscript.trim(), true);
-    } 
-    // 중간 결과만 있으면 중간 결과 전달
-    else if (interimTranscript.trim()) {
+    // 중간 결과가 있으면 표시
+    if (interimTranscript.trim()) {
       console.log("⏳ 중간 결과:", interimTranscript.trim());
       options.onResult(interimTranscript.trim(), false);
+    }
+    
+    // ✅ 최종 결과: 새로 추가된 것만 전달
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const result = event.results[i];
+      
+      if (result.isFinal && i > lastFinalIndex) {
+        const transcript = result[0].transcript.trim();
+        
+        // ✅ 빈 문자열 필터링
+        if (transcript) {
+          console.log(`✅ 음성 인식 최종 결과 [인덱스 ${i}]:`, transcript);
+          lastFinalIndex = i;  // 처리한 인덱스 기록
+          options.onResult(transcript, true);
+        } else {
+          console.log(`⚠️ 빈 최종 결과 무시 [인덱스 ${i}]`);
+          lastFinalIndex = i;  // 빈 결과도 처리했다고 기록
+        }
+      }
     }
   };
 

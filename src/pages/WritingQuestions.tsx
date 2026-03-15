@@ -36,6 +36,11 @@ export default function WritingQuestions() {
         id: "keyword",
         question: "특별히 떠오르는 단어나 장면이 있나요?",
         placeholder: "예: 가을 단풍, 손주의 웃음소리..."
+      },
+      {
+        id: "message",
+        question: "마지막으로 꼭 전하고 싶은 한 마디가 있나요?",
+        placeholder: "고마워요, 잊지 않을게요, 사랑합니다, 수고했어..."
       }
     ],
     novel: [

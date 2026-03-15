@@ -62,16 +62,18 @@ export default function FourcutImageGeneration() {
         console.log("📸 4컷 카드 캡처 중 (마스터 이미지 + 텍스트)...");
         const canvas = await html2canvas(finalCardRef.current, {
           backgroundColor: "#ffffff",
-          scale: 2.0, // 고해상도
+          scale: 1.5, // 적정 해상도 (모바일 최적화)
           logging: false,
           useCORS: true,
-          allowTaint: true
+          allowTaint: true,
+          width: 500, // 카드 너비 고정
+          windowWidth: 500
         });
         
-        // JPEG 압축 (품질 0.8 - 텍스트 가독성 유지)
-        combinedImage = canvas.toDataURL("image/jpeg", 0.8);
+        // JPEG 압축 (품질 0.75 - 용량 최소화)
+        combinedImage = canvas.toDataURL("image/jpeg", 0.75);
         const imageSizeKB = (combinedImage.length * 0.75 / 1024).toFixed(2);
-        console.log(`✅ 4컷 카드 캡처 완료 (약 ${imageSizeKB} KB)`);
+        console.log(`✅ 4컷 카드 캡처 완료 (크기: ${canvas.width}x${canvas.height}px, 용량: 약 ${imageSizeKB} KB)`);
       } else {
         throw new Error("4컷 카드를 찾을 수 없습니다.");
       }
@@ -171,21 +173,24 @@ export default function FourcutImageGeneration() {
           style={{
             backgroundColor: "#FFFFFF",
             borderRadius: "16px",
-            padding: "30px",
+            padding: "20px",
             boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-            marginBottom: "30px"
+            marginBottom: "30px",
+            maxWidth: "500px",
+            margin: "0 auto 30px auto",
+            width: "100%"
           }}
         >
           {/* 제목 헤더 */}
           <div style={{
             textAlign: "center",
-            marginBottom: "24px",
+            marginBottom: "16px",
             borderBottom: "3px solid #9C27B0",
-            paddingBottom: "16px"
+            paddingBottom: "12px"
           }}>
-            <div style={{ fontSize: "32px", marginBottom: "8px" }}>{theme.icon}</div>
+            <div style={{ fontSize: "28px", marginBottom: "6px" }}>{theme.icon}</div>
             <h2 style={{
-              fontSize: "24px",
+              fontSize: "20px",
               fontWeight: "700",
               color: "#1F2937",
               margin: 0
@@ -197,22 +202,22 @@ export default function FourcutImageGeneration() {
           {/* 마스터 이미지 (크게 상단에 배치) */}
           <div style={{
             textAlign: "center",
-            marginBottom: "24px"
+            marginBottom: "16px"
           }}>
             <img 
               src={interviewScene.imageUrl} 
               alt="마스터 이미지" 
               style={{ 
-                width: "100%", 
-                maxWidth: "600px",
-                borderRadius: "12px",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                width: "100%",
+                borderRadius: "10px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
               }} 
             />
             <p style={{
-              marginTop: "12px",
-              fontSize: "13px",
-              color: "#6B7280"
+              marginTop: "8px",
+              fontSize: "11px",
+              color: "#6B7280",
+              lineHeight: "1.4"
             }}>
               📍 {interviewScene.location} • 
               🎤 {interviewScene.interviewer === "male" ? "남자 아나운서" : "여자 아나운서"} • 
@@ -226,46 +231,46 @@ export default function FourcutImageGeneration() {
           <div style={{ 
             display: "grid", 
             gridTemplateColumns: "1fr 1fr", 
-            gap: "16px"
+            gap: "10px"
           }}>
             {cutData.map((cut, index) => (
               <div 
                 key={index}
                 style={{
                   backgroundColor: "#F9FAFB",
-                  borderRadius: "12px",
-                  padding: "16px",
+                  borderRadius: "8px",
+                  padding: "12px",
                   border: "2px solid #E5E7EB"
                 }}
               >
                 {/* 컷 번호 + 라벨 */}
                 <div style={{
-                  fontSize: "16px",
+                  fontSize: "14px",
                   fontWeight: "700",
                   color: "#9C27B0",
-                  marginBottom: "10px",
+                  marginBottom: "8px",
                   borderBottom: "2px solid #E9D5FF",
-                  paddingBottom: "8px"
+                  paddingBottom: "6px"
                 }}>
                   {cut.cutNumber}컷 - {cutLabels[index]}
                 </div>
 
                 {/* 질문 */}
                 <div style={{
-                  fontSize: "13px",
+                  fontSize: "12px",
                   fontWeight: "600",
                   color: "#7C3AED",
-                  marginBottom: "8px",
-                  lineHeight: "1.5"
+                  marginBottom: "6px",
+                  lineHeight: "1.4"
                 }}>
                   📺 {cut.question}
                 </div>
 
                 {/* 답변 */}
                 <div style={{
-                  fontSize: "13px",
+                  fontSize: "12px",
                   color: "#374151",
-                  lineHeight: "1.5",
+                  lineHeight: "1.4",
                   whiteSpace: "pre-wrap",
                   wordBreak: "break-word"
                 }}>

@@ -272,40 +272,58 @@ export default function FourcutImageGeneration() {
                 style={{
                   backgroundColor: "#F9FAFB",
                   borderRadius: "8px",
-                  padding: "12px",
-                  border: "2px solid #E5E7EB"
+                  padding: "10px",
+                  border: "2px solid #E5E7EB",
+                  minHeight: "140px",
+                  maxHeight: "140px",
+                  overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column"
                 }}
               >
                 {/* 컷 번호 + 라벨 */}
                 <div style={{
-                  fontSize: "14px",
+                  fontSize: "13px",
                   fontWeight: "700",
                   color: "#9C27B0",
-                  marginBottom: "8px",
+                  marginBottom: "6px",
                   borderBottom: "2px solid #E9D5FF",
-                  paddingBottom: "6px"
+                  paddingBottom: "4px",
+                  flexShrink: 0
                 }}>
                   {cut.cutNumber}컷 - {cutLabels[index]}
                 </div>
 
                 {/* 질문 */}
                 <div style={{
-                  fontSize: "12px",
+                  fontSize: "10px",
                   fontWeight: "600",
                   color: "#7C3AED",
-                  marginBottom: "6px",
-                  lineHeight: "1.4"
+                  marginBottom: "4px",
+                  lineHeight: "1.3",
+                  maxHeight: "26px",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical"
                 }}>
                   📺 {cut.question}
                 </div>
 
                 {/* 답변 */}
                 <div style={{
-                  fontSize: "12px",
+                  fontSize: "10px",
                   color: "#374151",
-                  lineHeight: "1.4",
+                  lineHeight: "1.3",
                   whiteSpace: "pre-wrap",
-                  wordBreak: "break-word"
+                  wordBreak: "break-word",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 5,
+                  WebkitBoxOrient: "vertical",
+                  flex: 1
                 }}>
                   👤 {cut.answer}
                 </div>

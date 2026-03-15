@@ -51,12 +51,20 @@ export default function Gallery() {
         throw new Error(data.error || "작품을 불러올 수 없습니다.");
       }
 
+      // 🔍 디버깅: 첫 번째 작품 데이터 확인
+      if (data.artifacts && data.artifacts.length > 0) {
+        console.log("📊 첫 번째 작품 데이터:", data.artifacts[0]);
+        console.log("📊 makerId 확인:", data.artifacts[0].makerId);
+        console.log("📊 learnerName 확인:", data.artifacts[0].learnerName);
+      }
+
       // HTTP URL을 HTTPS로 강제 변환
       const artifacts = (data.artifacts || []).map((artifact: any) => ({
         ...artifact,
         thumbnail: artifact.thumbnail?.replace('http://', 'https://') || ''
       }));
 
+      console.log("📊 전체 작품 개수:", artifacts.length);
       setArtifacts(artifacts);
     } catch (err: any) {
       console.error("작품 목록 로드 오류:", err);

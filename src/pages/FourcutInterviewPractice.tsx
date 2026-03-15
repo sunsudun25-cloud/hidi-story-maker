@@ -80,24 +80,35 @@ export default function FourcutInterviewPractice() {
     // 보완 모드일 경우 revisingCut 사용, 아니면 currentStep 사용
     const targetStep = isRevising && revisingCut !== null ? revisingCut : currentStep;
 
+    // ✅ 모바일 키보드 제거 (textarea 포커스 해제)
+    const activeElement = document.activeElement as HTMLElement;
+    if (activeElement && activeElement.blur) {
+      activeElement.blur();
+    }
+
     setIsListening(true);
     
-    let interimText = "";  // 중간 결과 임시 저장
+    let finalTexts: string[] = [];  // 최종 결과들만 저장
     
     startListening({
       onResult: (text, isFinal) => {
         const newAnswers = [...answers];
         
         if (isFinal) {
-          // ✅ 최종 결과: 기존 텍스트에 추가
+          // ✅ 최종 결과: 배열에 추가
           console.log("📝 최종 텍스트 추가:", text);
-          newAnswers[targetStep] = newAnswers[targetStep] + (newAnswers[targetStep] ? " " : "") + text;
-          interimText = "";  // 중간 결과 초기화
+          finalTexts.push(text);
+          
+          // 기존 텍스트 + 모든 최종 결과 합치기
+          const baseText = newAnswers[targetStep] || "";
+          const allFinalText = finalTexts.join(" ");
+          newAnswers[targetStep] = baseText + (baseText ? " " : "") + allFinalText;
         } else {
-          // ✅ 중간 결과: 임시로 표시 (덮어쓰기)
+          // ✅ 중간 결과: 실시간 표시 (덮어쓰기)
           console.log("⏳ 중간 텍스트 표시:", text);
-          interimText = text;
-          newAnswers[targetStep] = newAnswers[targetStep] + (newAnswers[targetStep] ? " " : "") + interimText;
+          const baseText = newAnswers[targetStep] || "";
+          const allFinalText = finalTexts.join(" ");
+          newAnswers[targetStep] = baseText + (baseText && allFinalText ? " " : "") + allFinalText + (allFinalText ? " " : "") + text;
         }
         
         setAnswers(newAnswers);
@@ -437,6 +448,40 @@ export default function FourcutInterviewPractice() {
             }}>
               👤 당신의 답변
             </div>
+            
+            {/* ✅ 음성 인식 중일 때 큰 피드백 표시 */}
+            {isListening && (
+              <div style={{
+                backgroundColor: "#10B981",
+                borderRadius: "12px",
+                padding: "24px",
+                marginBottom: "16px",
+                textAlign: "center",
+                animation: "pulse 2s infinite"
+              }}>
+                <div style={{
+                  fontSize: "48px",
+                  marginBottom: "12px"
+                }}>
+                  🎤
+                </div>
+                <div style={{
+                  fontSize: "20px",
+                  fontWeight: "700",
+                  color: "white",
+                  marginBottom: "8px"
+                }}>
+                  듣고 있어요...
+                </div>
+                <div style={{
+                  fontSize: "14px",
+                  color: "rgba(255,255,255,0.9)"
+                }}>
+                  말씀하시면 자동으로 입력됩니다
+                </div>
+              </div>
+            )}
+            
             <textarea
               value={answers[currentStep]}
               onChange={(e) => {
@@ -445,15 +490,18 @@ export default function FourcutInterviewPractice() {
                 setAnswers(newAnswers);
               }}
               placeholder="여기에 답변을 입력하세요..."
+              disabled={isListening}
               style={{
                 width: "100%",
                 minHeight: "120px",
                 padding: "12px",
                 fontSize: "15px",
-                border: "2px solid #E5E7EB",
+                border: isListening ? "2px solid #10B981" : "2px solid #E5E7EB",
                 borderRadius: "8px",
                 fontFamily: "'Noto Sans KR', sans-serif",
-                resize: "vertical"
+                resize: "vertical",
+                backgroundColor: isListening ? "#F0FDF4" : "white",
+                opacity: isListening ? 0.7 : 1
               }}
             />
 
@@ -464,17 +512,18 @@ export default function FourcutInterviewPractice() {
               style={{
                 width: "100%",
                 marginTop: "10px",
-                padding: "12px",
-                fontSize: "15px",
-                fontWeight: "600",
+                padding: "14px",
+                fontSize: "16px",
+                fontWeight: "700",
                 backgroundColor: isListening ? "#D1D5DB" : "#10B981",
                 color: "white",
                 border: "none",
                 borderRadius: "8px",
-                cursor: isListening ? "not-allowed" : "pointer"
+                cursor: isListening ? "not-allowed" : "pointer",
+                boxShadow: isListening ? "none" : "0 4px 12px rgba(16, 185, 129, 0.3)"
               }}
             >
-              {isListening ? "👂 듣고 있어요..." : "🎤 음성으로 답변하기"}
+              {isListening ? "⏸️ 음성 인식 중..." : "🎤 음성으로 답변하기"}
             </button>
           </div>
         </div>
@@ -805,6 +854,40 @@ export default function FourcutInterviewPractice() {
               }}>
                 ✨ 보완한 답변
               </div>
+              
+              {/* ✅ 음성 인식 중일 때 큰 피드백 표시 */}
+              {isListening && (
+                <div style={{
+                  backgroundColor: "#10B981",
+                  borderRadius: "12px",
+                  padding: "24px",
+                  marginBottom: "16px",
+                  textAlign: "center",
+                  animation: "pulse 2s infinite"
+                }}>
+                  <div style={{
+                    fontSize: "48px",
+                    marginBottom: "12px"
+                  }}>
+                    🎤
+                  </div>
+                  <div style={{
+                    fontSize: "20px",
+                    fontWeight: "700",
+                    color: "white",
+                    marginBottom: "8px"
+                  }}>
+                    듣고 있어요...
+                  </div>
+                  <div style={{
+                    fontSize: "14px",
+                    color: "rgba(255,255,255,0.9)"
+                  }}>
+                    말씀하시면 자동으로 입력됩니다
+                  </div>
+                </div>
+              )}
+              
               <textarea
                 value={answers[revisingCut]}
                 onChange={(e) => {
@@ -813,15 +896,18 @@ export default function FourcutInterviewPractice() {
                   setAnswers(newAnswers);
                 }}
                 placeholder="조언을 참고해서 답변을 다시 써보세요..."
+                disabled={isListening}
                 style={{
                   width: "100%",
                   minHeight: "140px",
                   padding: "12px",
                   fontSize: "15px",
-                  border: "2px solid #7C3AED",
+                  border: isListening ? "2px solid #10B981" : "2px solid #7C3AED",
                   borderRadius: "8px",
                   fontFamily: "'Noto Sans KR', sans-serif",
-                  resize: "vertical"
+                  resize: "vertical",
+                  backgroundColor: isListening ? "#F0FDF4" : "white",
+                  opacity: isListening ? 0.7 : 1
                 }}
               />
 
@@ -832,17 +918,18 @@ export default function FourcutInterviewPractice() {
                 style={{
                   width: "100%",
                   marginTop: "10px",
-                  padding: "12px",
-                  fontSize: "15px",
-                  fontWeight: "600",
+                  padding: "14px",
+                  fontSize: "16px",
+                  fontWeight: "700",
                   backgroundColor: isListening ? "#D1D5DB" : "#10B981",
                   color: "white",
                   border: "none",
                   borderRadius: "8px",
-                  cursor: isListening ? "not-allowed" : "pointer"
+                  cursor: isListening ? "not-allowed" : "pointer",
+                  boxShadow: isListening ? "none" : "0 4px 12px rgba(16, 185, 129, 0.3)"
                 }}
               >
-                {isListening ? "👂 듣고 있어요..." : "🎤 음성으로 답변하기"}
+                {isListening ? "⏸️ 음성 인식 중..." : "🎤 음성으로 답변하기"}
               </button>
             </div>
 

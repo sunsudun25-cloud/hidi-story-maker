@@ -66,7 +66,8 @@ export default function WritingAiQuestions() {
       poem: [
         { question: "어떤 감정을 표현하고 싶으신가요?", answer: "" },
         { question: "특별히 떠오르는 이미지나 장면이 있나요?", answer: "" },
-        { question: "이 시를 통해 전하고 싶은 것은?", answer: "" }
+        { question: "이 시를 통해 전하고 싶은 것은?", answer: "" },
+        { question: "마지막으로 꼭 전하고 싶은 한 마디가 있나요?", answer: "", placeholder: "고마워요, 잊지 않을게요, 사랑합니다, 수고했어..." }
       ],
       novel: [
         { question: "이야기의 주인공은 누구인가요?", answer: "" },

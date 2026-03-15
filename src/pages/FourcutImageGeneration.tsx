@@ -94,16 +94,16 @@ export default function FourcutImageGeneration() {
         console.log("📸 4컷 카드 캡처 중 (Base64 이미지 + 텍스트)...");
         const canvas = await html2canvas(finalCardRef.current, {
           backgroundColor: "#ffffff",
-          scale: 1.5, // 적정 해상도 (모바일 최적화)
+          scale: 2.0, // 고해상도 (800px 기준)
           logging: false,
           useCORS: false, // Base64 이미지 사용하므로 불필요
           allowTaint: true, // Base64는 taint 허용
-          width: 500, // 카드 너비 고정
-          windowWidth: 500
+          width: 800, // 카드 너비 800px로 확대
+          windowWidth: 800
         });
         
-        // JPEG 압축 (품질 0.75 - 용량 최소화)
-        combinedImage = canvas.toDataURL("image/jpeg", 0.75);
+        // JPEG 압축 (품질 0.8 - 고품질 유지)
+        combinedImage = canvas.toDataURL("image/jpeg", 0.8);
         const imageSizeKB = (combinedImage.length * 0.75 / 1024).toFixed(2);
         console.log(`✅ 4컷 카드 캡처 완료 (크기: ${canvas.width}x${canvas.height}px, 용량: 약 ${imageSizeKB} KB)`);
         console.log(`📊 Base64 길이: ${combinedImage.length}, 미리보기: ${combinedImage.substring(0, 100)}...`);
@@ -206,10 +206,10 @@ export default function FourcutImageGeneration() {
           style={{
             backgroundColor: "#FFFFFF",
             borderRadius: "16px",
-            padding: "20px",
+            padding: "24px",
             boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
             marginBottom: "30px",
-            maxWidth: "500px",
+            maxWidth: "800px",
             margin: "0 auto 30px auto",
             width: "100%"
           }}
@@ -221,9 +221,9 @@ export default function FourcutImageGeneration() {
             borderBottom: "3px solid #9C27B0",
             paddingBottom: "12px"
           }}>
-            <div style={{ fontSize: "28px", marginBottom: "6px" }}>{theme.icon}</div>
+            <div style={{ fontSize: "36px", marginBottom: "8px" }}>{theme.icon}</div>
             <h2 style={{
-              fontSize: "20px",
+              fontSize: "24px",
               fontWeight: "700",
               color: "#1F2937",
               margin: 0
@@ -247,10 +247,10 @@ export default function FourcutImageGeneration() {
               }} 
             />
             <p style={{
-              marginTop: "8px",
-              fontSize: "11px",
+              marginTop: "10px",
+              fontSize: "13px",
               color: "#6B7280",
-              lineHeight: "1.4"
+              lineHeight: "1.5"
             }}>
               📍 {interviewScene.location} • 
               🎤 {interviewScene.interviewer === "male" ? "남자 아나운서" : "여자 아나운서"} • 
@@ -281,21 +281,21 @@ export default function FourcutImageGeneration() {
               >
                 {/* 컷 번호 + 라벨 */}
                 <div style={{
-                  fontSize: "13px",
+                  fontSize: "15px",
                   fontWeight: "700",
                   color: "#9C27B0",
                   borderBottom: "2px solid #E9D5FF",
-                  paddingBottom: "4px"
+                  paddingBottom: "5px"
                 }}>
                   {cut.cutNumber}컷 - {cutLabels[index]}
                 </div>
 
                 {/* 질문 */}
                 <div style={{
-                  fontSize: "11px",
+                  fontSize: "13px",
                   fontWeight: "600",
                   color: "#7C3AED",
-                  lineHeight: "1.4",
+                  lineHeight: "1.5",
                   whiteSpace: "pre-wrap",
                   wordBreak: "break-word"
                 }}>
@@ -304,9 +304,9 @@ export default function FourcutImageGeneration() {
 
                 {/* 답변 */}
                 <div style={{
-                  fontSize: "11px",
+                  fontSize: "13px",
                   color: "#374151",
-                  lineHeight: "1.5",
+                  lineHeight: "1.6",
                   whiteSpace: "pre-wrap",
                   wordBreak: "break-word"
                 }}>

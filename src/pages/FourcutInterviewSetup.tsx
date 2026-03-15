@@ -15,6 +15,8 @@ export default function FourcutInterviewSetup() {
   const [selectedStyle, setSelectedStyle] = useState("animation");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isListening, setIsListening] = useState<string | null>(null); // "appearance" | "clothes" | "features" | null
+  const [generatingProgress, setGeneratingProgress] = useState(0);
+  const [generatingMessage, setGeneratingMessage] = useState("");
   
   // 마스터 이미지 확인
   const [masterImageUrl, setMasterImageUrl] = useState("");
@@ -100,8 +102,35 @@ export default function FourcutInterviewSetup() {
     }
 
     setIsGenerating(true);
+    setGeneratingProgress(0);
+    
     try {
       console.log("🎬 [NEW ENGINE] Starting master image generation...");
+      
+      // 진행률 시뮬레이션 시작
+      const progressInterval = setInterval(() => {
+        setGeneratingProgress(prev => {
+          if (prev >= 95) return prev; // 95%에서 멈춤 (완료 시 100%로)
+          
+          // 단계별 메시지
+          if (prev < 10) {
+            setGeneratingMessage("🎨 AI가 장면을 구상하는 중...");
+            return prev + 2;
+          } else if (prev < 30) {
+            setGeneratingMessage("🏞️ 인터뷰 배경을 그리는 중...");
+            return prev + 1.5;
+          } else if (prev < 60) {
+            setGeneratingMessage("👥 인물을 그리는 중...");
+            return prev + 1;
+          } else if (prev < 85) {
+            setGeneratingMessage("✨ 디테일을 다듬는 중...");
+            return prev + 0.8;
+          } else {
+            setGeneratingMessage("🎬 마지막 손질 중...");
+            return prev + 0.3;
+          }
+        });
+      }, 500);
       
       // 🆕 새 이미지 생성 엔진 사용
       const request: ImageGenerationRequest = {
@@ -118,6 +147,11 @@ export default function FourcutInterviewSetup() {
       };
       
       const response = await generateImage(request);
+      
+      // 진행률 중지
+      clearInterval(progressInterval);
+      setGeneratingProgress(100);
+      setGeneratingMessage("✅ 완성!");
       
       if (!response.success || !response.imageUrl) {
         throw new Error(response.error || "이미지 생성 실패");
@@ -136,6 +170,8 @@ export default function FourcutInterviewSetup() {
       alert(`이미지 생성 중 오류가 발생했습니다.\n${error.message || "다시 시도해주세요."}`);
     } finally {
       setIsGenerating(false);
+      setGeneratingProgress(0);
+      setGeneratingMessage("");
     }
   };
 
@@ -165,9 +201,34 @@ export default function FourcutInterviewSetup() {
 
     setIsGenerating(true);
     setShowMasterConfirm(false);
+    setGeneratingProgress(0);
     
     try {
       console.log("🔄 [NEW ENGINE] Regenerating master image with custom prompt...");
+      
+      // 진행률 시뮬레이션 시작
+      const progressInterval = setInterval(() => {
+        setGeneratingProgress(prev => {
+          if (prev >= 95) return prev;
+          
+          if (prev < 10) {
+            setGeneratingMessage("🔄 수정 사항을 반영하는 중...");
+            return prev + 2;
+          } else if (prev < 30) {
+            setGeneratingMessage("🏞️ 새로운 배경을 그리는 중...");
+            return prev + 1.5;
+          } else if (prev < 60) {
+            setGeneratingMessage("👥 인물을 다시 그리는 중...");
+            return prev + 1;
+          } else if (prev < 85) {
+            setGeneratingMessage("✨ 요청하신 부분을 수정하는 중...");
+            return prev + 0.8;
+          } else {
+            setGeneratingMessage("🎬 마지막 확인 중...");
+            return prev + 0.3;
+          }
+        });
+      }, 500);
       
       // 🆕 커스텀 프롬프트와 함께 재생성
       const request: ImageGenerationRequest = {
@@ -185,6 +246,11 @@ export default function FourcutInterviewSetup() {
       };
       
       const response = await generateImage(request);
+      
+      // 진행률 중지
+      clearInterval(progressInterval);
+      setGeneratingProgress(100);
+      setGeneratingMessage("✅ 완성!");
       
       if (!response.success || !response.imageUrl) {
         throw new Error(response.error || "이미지 재생성 실패");
@@ -494,7 +560,7 @@ export default function FourcutInterviewSetup() {
         </div>
 
         {/* 버튼 */}
-        {!showMasterConfirm && (
+        {!showMasterConfirm && !isGenerating && (
           <div style={{
             display: "flex",
             gap: "10px"
@@ -517,26 +583,105 @@ export default function FourcutInterviewSetup() {
             </button>
             <button
               onClick={handleGenerateScene}
-              disabled={isGenerating || !selectedLocation || !selectedInterviewer || !selectedInterviewee}
+              disabled={!selectedLocation || !selectedInterviewer || !selectedInterviewee}
               style={{
                 flex: 2,
                 padding: "16px",
                 fontSize: "18px",
                 fontWeight: "700",
-                backgroundColor: (isGenerating || !selectedLocation || !selectedInterviewer || !selectedInterviewee) 
+                backgroundColor: (!selectedLocation || !selectedInterviewer || !selectedInterviewee) 
                   ? "#D1D5DB" 
                   : "#9C27B0",
                 color: "white",
                 border: "none",
                 borderRadius: "12px",
-                cursor: (isGenerating || !selectedLocation || !selectedInterviewer || !selectedInterviewee) 
+                cursor: (!selectedLocation || !selectedInterviewer || !selectedInterviewee) 
                   ? "not-allowed" 
                   : "pointer",
                 boxShadow: "0 4px 12px rgba(156, 39, 176, 0.3)"
               }}
             >
-              {isGenerating ? "🎨 인터뷰 장면 만드는 중..." : "🎬 인터뷰 장면 만들기"}
+              🎬 인터뷰 장면 만들기
             </button>
+          </div>
+        )}
+
+        {/* 로딩 UI (진행률 표시) */}
+        {isGenerating && (
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "40px 30px",
+            marginTop: "20px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            textAlign: "center"
+          }}>
+            {/* 아이콘 애니메이션 */}
+            <div style={{
+              fontSize: "72px",
+              marginBottom: "24px",
+              animation: "pulse 2s ease-in-out infinite"
+            }}>
+              🎨
+            </div>
+
+            {/* 진행률 텍스트 */}
+            <div style={{
+              fontSize: "24px",
+              fontWeight: "700",
+              color: "#1F2937",
+              marginBottom: "12px"
+            }}>
+              고품질 AI 이미지 생성 중
+            </div>
+
+            {/* 단계별 메시지 */}
+            <div style={{
+              fontSize: "16px",
+              color: "#6B7280",
+              marginBottom: "24px",
+              minHeight: "24px"
+            }}>
+              {generatingMessage}
+            </div>
+
+            {/* 진행률 바 */}
+            <div style={{
+              width: "100%",
+              height: "12px",
+              backgroundColor: "#E5E7EB",
+              borderRadius: "6px",
+              overflow: "hidden",
+              marginBottom: "16px"
+            }}>
+              <div style={{
+                width: `${generatingProgress}%`,
+                height: "100%",
+                backgroundColor: "#9C27B0",
+                borderRadius: "6px",
+                transition: "width 0.5s ease-out"
+              }} />
+            </div>
+
+            {/* 진행률 퍼센트 */}
+            <div style={{
+              fontSize: "32px",
+              fontWeight: "700",
+              color: "#9C27B0",
+              marginBottom: "16px"
+            }}>
+              {Math.round(generatingProgress)}%
+            </div>
+
+            {/* 예상 시간 안내 */}
+            <div style={{
+              fontSize: "14px",
+              color: "#9CA3AF",
+              lineHeight: "1.6"
+            }}>
+              💡 고품질 이미지 생성에는 <strong>약 40-60초</strong>가 소요됩니다.<br />
+              잠시만 기다려 주세요!
+            </div>
           </div>
         )}
 
@@ -900,6 +1045,20 @@ export default function FourcutInterviewSetup() {
           </div>
         )}
       </div>
+
+      {/* CSS 애니메이션 */}
+      <style>{`
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.8;
+            transform: scale(1.1);
+          }
+        }
+      `}</style>
     </div>
   );
 }

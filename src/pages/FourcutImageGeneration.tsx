@@ -55,6 +55,23 @@ export default function FourcutImageGeneration() {
 👤 답변: ${answers[3]}
 `.trim();
 
+      // ✅ 마스터 이미지 로딩 대기 (중요!)
+      console.log("⏳ 마스터 이미지 로딩 대기 중...");
+      await new Promise<void>((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+          console.log("✅ 마스터 이미지 로드 완료");
+          // 추가로 조금 더 대기 (DOM 렌더링 완료 확인)
+          setTimeout(() => resolve(), 500);
+        };
+        img.onerror = () => {
+          console.warn("⚠️ 이미지 로드 실패, 계속 진행...");
+          resolve();
+        };
+        img.src = interviewScene.imageUrl;
+      });
+
       // ✅ 최종 카드 (마스터 이미지 1개 + 4컷 텍스트) 캡처
       let combinedImage: string;
       
@@ -63,9 +80,9 @@ export default function FourcutImageGeneration() {
         const canvas = await html2canvas(finalCardRef.current, {
           backgroundColor: "#ffffff",
           scale: 1.5, // 적정 해상도 (모바일 최적화)
-          logging: false,
+          logging: true, // 디버깅용 로그 활성화
           useCORS: true,
-          allowTaint: true,
+          allowTaint: false,
           width: 500, // 카드 너비 고정
           windowWidth: 500
         });
@@ -74,6 +91,7 @@ export default function FourcutImageGeneration() {
         combinedImage = canvas.toDataURL("image/jpeg", 0.75);
         const imageSizeKB = (combinedImage.length * 0.75 / 1024).toFixed(2);
         console.log(`✅ 4컷 카드 캡처 완료 (크기: ${canvas.width}x${canvas.height}px, 용량: 약 ${imageSizeKB} KB)`);
+        console.log(`📊 Base64 길이: ${combinedImage.length}, 미리보기: ${combinedImage.substring(0, 100)}...`);
       } else {
         throw new Error("4컷 카드를 찾을 수 없습니다.");
       }
@@ -206,7 +224,8 @@ export default function FourcutImageGeneration() {
           }}>
             <img 
               src={interviewScene.imageUrl} 
-              alt="마스터 이미지" 
+              alt="마스터 이미지"
+              crossOrigin="anonymous"
               style={{ 
                 width: "100%",
                 borderRadius: "10px",

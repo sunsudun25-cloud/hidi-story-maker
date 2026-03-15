@@ -72,6 +72,60 @@ export default function SubmitStories() {
 
       for (const story of selectedStories) {
         try {
+          // 🔍 이미지 크기 확인 및 압축
+          let imageToSubmit = story.image;
+          
+          if (story.image) {
+            const imageSize = story.image.length;
+            console.log(`📊 원본 이미지 크기: ${(imageSize / 1024).toFixed(2)} KB`);
+            
+            // 500KB 이상이면 압축
+            if (imageSize > 500 * 1024) {
+              console.log("🔄 이미지 압축 시작...");
+              
+              try {
+                // Base64 → Image 객체 생성
+                const img = new Image();
+                await new Promise((resolve, reject) => {
+                  img.onload = resolve;
+                  img.onerror = reject;
+                  img.src = story.image;
+                });
+                
+                // Canvas로 리사이즈 + 압축
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // 최대 크기 800px로 제한
+                const maxSize = 800;
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > maxSize || height > maxSize) {
+                  if (width > height) {
+                    height = Math.round((height * maxSize) / width);
+                    width = maxSize;
+                  } else {
+                    width = Math.round((width * maxSize) / height);
+                    height = maxSize;
+                  }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                ctx?.drawImage(img, 0, 0, width, height);
+                
+                // JPEG 0.7 품질로 압축
+                imageToSubmit = canvas.toDataURL('image/jpeg', 0.7);
+                
+                const compressedSize = imageToSubmit.length;
+                console.log(`✅ 압축 완료: ${(compressedSize / 1024).toFixed(2)} KB (${Math.round((1 - compressedSize / imageSize) * 100)}% 감소)`);
+              } catch (compressError) {
+                console.warn("⚠️ 이미지 압축 실패, 원본 사용:", compressError);
+              }
+            }
+          }
+          
           await saveArtifact({
             learnerId: learner.learnerId,
             type: "story",
@@ -83,7 +137,7 @@ export default function SubmitStories() {
               description: story.description,
               createdAt: story.createdAt
             },
-            files: story.image ? { image: story.image } : {}
+            files: imageToSubmit ? { image: imageToSubmit } : {}
           });
           successCount++;
         } catch (error: any) {

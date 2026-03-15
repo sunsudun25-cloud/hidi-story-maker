@@ -13,7 +13,6 @@ export default function FourcutInterviewPractice() {
   const [answers, setAnswers] = useState<string[]>(["", "", "", ""]);
   const [isListening, setIsListening] = useState(false);
   const [title, setTitle] = useState("");
-  const [interimTranscript, setInterimTranscript] = useState("");  // 중간 결과 임시 표시용
   
   // AI 조언 관련 상태
   const [showCompletion, setShowCompletion] = useState(false);
@@ -88,51 +87,22 @@ export default function FourcutInterviewPractice() {
     }
 
     setIsListening(true);
-    setInterimTranscript("");  // 중간 결과 초기화
-    
-    // ✅ 음성 인식 시작 전 현재 텍스트 저장
-    const startText = answers[targetStep] || "";
-    const finalTexts: string[] = [];  // 최종 결과들을 배열로 누적
-    let finalCallCount = 0;  // 🔍 최종 결과 호출 횟수 카운터
     
     startListening({
-      onResult: (text, isFinal) => {
-        if (isFinal) {
-          finalCallCount++;  // 🔍 호출 횟수 증가
-          
-          // ✅ 최종 결과: 배열에 추가 (누적)
-          finalTexts.push(text);
-          console.log(`📝 [${finalCallCount}번째 최종 호출] 텍스트:`, text);
-          console.log("📝 현재 finalTexts:", finalTexts);
-          
-          setInterimTranscript("");  // 중간 결과 초기화
-          
-          const newAnswers = [...answers];
-          // startText + 모든 최종 결과 합치기
-          const allFinal = finalTexts.join(" ");
-          newAnswers[targetStep] = startText + (startText ? " " : "") + allFinal;
-          setAnswers(newAnswers);
-          
-          console.log("📝 최종 저장값:", newAnswers[targetStep]);
-          
-          // 🔍 모바일 디버깅용 alert (임시)
-          alert(`[${finalCallCount}번째 최종]\n받은값: "${text}"\nfinalTexts: [${finalTexts.join(", ")}]\n저장값: "${newAnswers[targetStep]}"`);
-        } else {
-          // ✅ 중간 결과: 별도 state에 저장 (덮어쓰기)
-          console.log("⏳ 중간 텍스트:", text);
-          setInterimTranscript(text);
-        }
+      onResult: (text) => {
+        // ✅ DNA 설정 창과 동일한 로직: 모든 결과를 단순 누적
+        const newAnswers = [...answers];
+        newAnswers[targetStep] = newAnswers[targetStep] + (newAnswers[targetStep] ? " " : "") + text;
+        setAnswers(newAnswers);
       },
       onError: (error) => {
         console.error("음성 인식 오류:", error);
         alert(`음성 인식 오류: ${error}`);
         setIsListening(false);
-        setInterimTranscript("");
       },
       onEnd: () => {
         console.log("🎤 음성 인식 종료");
         setIsListening(false);
-        setInterimTranscript("");
       }
     });
   };
@@ -495,7 +465,7 @@ export default function FourcutInterviewPractice() {
             )}
             
             <textarea
-              value={answers[currentStep] + (isListening && interimTranscript ? (answers[currentStep] ? " " : "") + interimTranscript : "")}
+              value={answers[currentStep]}
               onChange={(e) => {
                 const newAnswers = [...answers];
                 newAnswers[currentStep] = e.target.value;
@@ -901,7 +871,7 @@ export default function FourcutInterviewPractice() {
               )}
               
               <textarea
-                value={answers[revisingCut] + (isListening && interimTranscript ? (answers[revisingCut] ? " " : "") + interimTranscript : "")}
+                value={answers[revisingCut]}
                 onChange={(e) => {
                   const newAnswers = [...answers];
                   newAnswers[revisingCut] = e.target.value;

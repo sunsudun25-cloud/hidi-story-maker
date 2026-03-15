@@ -697,7 +697,7 @@ ${content}
     }
   };
 
-  // 🤖 AI 감정 표현 강화
+  // 🤖 AI 감정 표현 강화 (줄별 처리)
   const handleAiEnhance = async () => {
     if (!content.trim()) {
       alert("강화할 내용이 없습니다!");
@@ -709,105 +709,116 @@ ${content}
       const originalLength = content.length;
       console.log('💖 [감정강화] 시작:', { originalLength });
       
-      const prompt = `
-당신은 글의 감정을 풍부하게 만드는 전문가입니다.
-원문의 모든 내용을 유지하면서, 감정 표현만 조금 더 강화해주세요.
+      // 줄 단위로 분리
+      const lines = content.split('\n');
+      console.log('📝 [감정강화] 총 줄 수:', lines.length);
+      
+      const enhancedLines: string[] = [];
+      
+      // 각 줄마다 개별적으로 감정 강화
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        
+        // 빈 줄은 그대로 유지
+        if (line.trim().length === 0) {
+          enhancedLines.push(line);
+          console.log(`📄 [감정강화] ${i + 1}번째 줄: (빈 줄)`);
+          continue;
+        }
+        
+        // 너무 짧은 줄 (3자 이하)은 그대로 유지
+        if (line.trim().length <= 3) {
+          enhancedLines.push(line);
+          console.log(`📄 [감정강화] ${i + 1}번째 줄: "${line}" → (짧아서 유지)`);
+          continue;
+        }
+        
+        console.log(`🚀 [감정강화] ${i + 1}번째 줄 처리 중: "${line}"`);
+        
+        const prompt = `
+다음 한 줄의 감정 표현을 더 풍부하게 만들어주세요.
 
-**절대 규칙:**
-1. 원문의 모든 줄을 반드시 포함하세요 (한 줄도 빼먹지 마세요)
-2. 원문의 단어와 표현을 최대한 그대로 사용하세요
-3. 감정을 나타내는 형용사만 살짝 추가하세요
-4. 문장 구조를 바꾸지 마세요
-5. 시 형식이면 시 형식을 유지하세요
+**규칙:**
+1. 원문의 모든 단어를 반드시 포함하세요
+2. 감정을 나타내는 형용사만 1~2개 추가하세요
+3. 문장 구조를 바꾸지 마세요
+4. 한 줄로 출력하세요
 
-**좋은 예시:**
-원문:
-새벽에 일어나
-딸을 위해 김치를 담갔다
-붉은 고추가루
+**예시:**
+원문: 새벽에 일어나
+강화: 이른 새벽에 일어나
 
-강화:
-이른 새벽에 일어나
-사랑하는 딸을 위해 정성껏 김치를 담갔다
-선명한 붉은 고추가루
+원문: 딸을 위해 김치를 담갔다
+강화: 사랑하는 딸을 위해 정성껏 김치를 담갔다
 
-**나쁜 예시 (절대 이렇게 하지 마세요):**
-원문:
-새벽에 일어나
-딸을 위해 김치를 담갔다
-붉은 고추가루
+원문: 붉은 고추가루
+강화: 선명한 붉은 고추가루
 
-잘못된 강화:
-이른 새벽부터 부엌에서 김치를 담갔다 (❌ "딸을 위해"가 삭제됨)
+**이제 다음 한 줄을 강화해주세요:**
+${line}
 
-**이제 다음 원문의 감정을 강화해주세요:**
-
-${content}
-
-**주의사항:**
-- 위의 원문에 있는 모든 줄을 반드시 포함하세요
-- 강화된 전체 글만 출력하세요
-- "강화 완료" 같은 설명을 쓰지 마세요
-- 원문이 7줄이면 강화도 7줄이어야 합니다
+**출력 형식:**
+강화된 한 줄만 출력하세요. 설명이나 부연 설명은 쓰지 마세요.
 `;
 
-      console.log('🚀 [감정강화] API 호출 시작');
-      const enhanced = await safeGeminiCall(prompt);
-      
-      if (!enhanced || enhanced.trim().length === 0) {
-        console.error('❌ [감정강화] 빈 응답');
-        alert("❌ 감정 강화 결과가 비어있습니다.\n\n다시 시도해주세요.");
-        return;
-      }
-
-      const enhancedLength = enhanced.trim().length;
-      console.log('✅ [감정강화] API 응답 수신:', { 
-        originalLength, 
-        enhancedLength,
-        ratio: (enhancedLength / originalLength * 100).toFixed(1) + '%'
-      });
-      console.log('📄 [감정강화] 원본 내용:', content);
-      console.log('📄 [감정강화] 강화된 내용:', enhanced.trim());
-
-      // 원본과 강화본 길이 차이가 너무 크면 경고
-      const lengthRatio = enhancedLength / originalLength;
-      
-      if (lengthRatio < 0.7) {
-        console.error('❌ [감정강화] 너무 많이 삭제됨:', lengthRatio);
-        alert(
-          "❌ 감정 강화 실패: AI가 내용을 너무 많이 삭제했습니다.\n\n" +
-          `원본: ${originalLength}자\n` +
-          `강화: ${enhancedLength}자 (${(lengthRatio * 100).toFixed(0)}%)\n\n` +
-          "다시 시도해주세요."
-        );
-        return;
-      }
-
-      if (lengthRatio < 0.85) {
-        const proceed = window.confirm(
-          "⚠️ 강화된 내용이 원본보다 짧습니다.\n\n" +
-          `원본: ${originalLength}자\n` +
-          `강화: ${enhancedLength}자 (${(lengthRatio * 100).toFixed(0)}%)\n\n` +
-          "그래도 적용하시겠습니까?\n\n" +
-          "(취소를 누르면 원래 내용을 유지합니다)"
-        );
-        if (!proceed) {
-          console.log('ℹ️ [감정강화] 사용자가 취소함');
-          return;
+        try {
+          const enhancedLine = await safeGeminiCall(prompt);
+          
+          if (!enhancedLine || enhancedLine.trim().length === 0) {
+            console.warn(`⚠️ [감정강화] ${i + 1}번째 줄 강화 실패 (빈 응답), 원본 유지`);
+            enhancedLines.push(line);
+            continue;
+          }
+          
+          // 여러 줄로 응답한 경우 첫 줄만 사용
+          const singleLine = enhancedLine.trim().split('\n')[0];
+          
+          // 원본과 너무 다르면 (길이가 3배 이상 또는 1/3 이하) 원본 유지
+          const lengthRatio = singleLine.length / line.length;
+          if (lengthRatio > 3 || lengthRatio < 0.33) {
+            console.warn(`⚠️ [감정강화] ${i + 1}번째 줄 길이 변화가 너무 큼 (${(lengthRatio * 100).toFixed(0)}%), 원본 유지`);
+            enhancedLines.push(line);
+            continue;
+          }
+          
+          enhancedLines.push(singleLine);
+          console.log(`✅ [감정강화] ${i + 1}번째 줄: "${line}" → "${singleLine}"`);
+          
+        } catch (error) {
+          console.error(`❌ [감정강화] ${i + 1}번째 줄 처리 오류:`, error);
+          enhancedLines.push(line); // 오류 시 원본 유지
+        }
+        
+        // API 호출 간격 조절 (과부하 방지)
+        if (i < lines.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
       }
       
+      const enhanced = enhancedLines.join('\n');
+      const enhancedLength = enhanced.length;
+      
+      console.log('✅ [감정강화] 완료:', { 
+        originalLength, 
+        enhancedLength,
+        ratio: (enhancedLength / originalLength * 100).toFixed(1) + '%',
+        originalLines: lines.length,
+        enhancedLines: enhancedLines.length
+      });
+      console.log('📄 [감정강화] 원본 내용:\n', content);
+      console.log('📄 [감정강화] 강화된 내용:\n', enhanced);
+      
       const confirmed = window.confirm(
         "✨ 감정 표현이 강화되었습니다!\n\n" +
-        `원본: ${originalLength}자\n` +
-        `강화: ${enhancedLength}자\n` +
+        `원본: ${originalLength}자 (${lines.length}줄)\n` +
+        `강화: ${enhancedLength}자 (${enhancedLines.length}줄)\n` +
         `변화: ${enhancedLength > originalLength ? '+' : ''}${enhancedLength - originalLength}자\n\n` +
         "강화된 내용으로 바꾸시겠습니까?\n\n" +
         "(취소를 누르면 원래 내용을 유지합니다)"
       );
       
       if (confirmed) {
-        setContent(enhanced.trim());
+        setContent(enhanced);
         console.log('✅ [감정강화] 적용 완료');
         alert("✨ 내용이 더 풍부해졌습니다!");
       } else {

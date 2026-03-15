@@ -375,6 +375,16 @@ export default function Gallery() {
                         marginBottom: "4px"
                       }}>
                         👤 {item.learnerName}
+                        {item.makerId && (
+                          <span style={{
+                            marginLeft: "6px",
+                            fontSize: "11px",
+                            color: "#9CA3AF",
+                            fontWeight: "500"
+                          }}>
+                            ({item.makerId})
+                          </span>
+                        )}
                       </p>
                     )}
                     <p style={{

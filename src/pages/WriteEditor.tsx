@@ -642,6 +642,8 @@ ${content}
         correctedLength,
         ratio: (correctedLength / originalLength * 100).toFixed(1) + '%'
       });
+      console.log('📄 [문법교정] 원본 내용:', content);
+      console.log('📄 [문법교정] 교정된 내용:', corrected.trim());
 
       // 원본과 교정본 길이 차이가 너무 크면 거부
       const lengthRatio = correctedLength / originalLength;

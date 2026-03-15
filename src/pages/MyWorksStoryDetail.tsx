@@ -217,35 +217,92 @@ export default function MyWorksStoryDetail() {
     }
   };
 
-  // PDF 파일로 저장 (한글 지원 버전 사용)
+  // PDF 파일로 저장 (html2canvas 방식 사용)
   const handleExportPDF = async () => {
     if (!story) return;
 
     try {
       console.log("📄 PDF 생성 시작:", { title: story.title, images: story.images?.length });
 
-      // generateStorybookPDF 사용 (한글 폰트 지원)
-      const { generateStorybookPDF } = await import("../services/pdfService");
+      // html2canvas + jsPDF 방식 (가장 안정적)
+      const html2canvas = (await import("html2canvas")).default;
+      const { default: jsPDF } = await import("jspdf");
+
+      // PDF 생성용 임시 컨테이너 생성
+      const container = document.createElement('div');
+      container.style.position = 'fixed';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      container.style.width = '800px';
+      container.style.padding = '40px';
+      container.style.backgroundColor = '#ffffff';
+      container.style.fontFamily = '"Noto Sans KR", "Malgun Gothic", sans-serif';
       
-      await generateStorybookPDF(
-        {
-          title: story.title,
-          coverImageUrl: story.images && story.images.length > 0 ? story.images[0].url : undefined,
-          pages: [
-            {
-              text: story.content,
-              imageUrl: story.images && story.images.length > 0 ? story.images[0].url : undefined
-            }
-          ]
-        },
-        `${story.title}.pdf`
-      );
+      // 제목
+      const titleEl = document.createElement('h1');
+      titleEl.textContent = story.title;
+      titleEl.style.fontSize = '28px';
+      titleEl.style.fontWeight = 'bold';
+      titleEl.style.marginBottom = '20px';
+      titleEl.style.color = '#000000';
+      container.appendChild(titleEl);
+      
+      // 이미지 (있는 경우)
+      if (story.images && story.images.length > 0) {
+        const imgEl = document.createElement('img');
+        imgEl.src = story.images[0].url;
+        imgEl.style.width = '100%';
+        imgEl.style.maxWidth = '700px';
+        imgEl.style.height = 'auto';
+        imgEl.style.marginBottom = '20px';
+        imgEl.style.borderRadius = '8px';
+        container.appendChild(imgEl);
+        
+        // 이미지 로드 대기
+        await new Promise((resolve, reject) => {
+          imgEl.onload = resolve;
+          imgEl.onerror = reject;
+        });
+      }
+      
+      // 내용
+      const contentEl = document.createElement('div');
+      contentEl.textContent = story.content;
+      contentEl.style.fontSize = '16px';
+      contentEl.style.lineHeight = '1.8';
+      contentEl.style.color = '#000000';
+      contentEl.style.whiteSpace = 'pre-wrap';
+      container.appendChild(contentEl);
+      
+      document.body.appendChild(container);
+      
+      // HTML을 Canvas로 렌더링
+      const canvas = await html2canvas(container, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        logging: false,
+        useCORS: true,
+        allowTaint: true
+      });
+      
+      document.body.removeChild(container);
+      
+      // Canvas를 PDF로 변환
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width / 2, canvas.height / 2]
+      });
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+      pdf.save(`${story.title.replace(/[^a-zA-Z0-9가-힣]/g, '_')}.pdf`);
 
       console.log("✅ PDF 생성 완료");
       alert(`✅ PDF가 저장되었습니다!\n\n파일명: ${story.title}.pdf`);
     } catch (error) {
       console.error("❌ PDF 생성 오류:", error);
-      alert("PDF 생성 중 오류가 발생했습니다.\n\n다시 시도해주세요.");
+      alert("PDF 생성 중 오류가 발생했습니다.\n\n이미지가 포함된 경우 시간이 걸릴 수 있습니다.\n다시 시도해주세요.");
     }
   };
 

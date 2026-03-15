@@ -350,6 +350,13 @@ export default function WriteEditor() {
     }
 
     try {
+      console.log("💾 [저장 시작]", {
+        title: title.trim(),
+        contentLength: content.trim().length,
+        genre: genre || "없음",
+        images: storyImages.length
+      });
+      
       await saveStory({
         title: title.trim(),
         content: content.trim(),
@@ -359,11 +366,17 @@ export default function WriteEditor() {
         updatedAt: new Date().toISOString(),
       });
       
+      console.log("✅ [저장 완료] IndexedDB에 저장됨");
+      
       setLastSaved(new Date());
       alert("✅ 저장되었습니다!");
       loadStories();
+      
+      // 저장 후 목록 확인
+      const allStories = await getAllStories();
+      console.log("📚 [전체 글 목록]", allStories.length, "개");
     } catch (error) {
-      console.error("저장 오류:", error);
+      console.error("❌ [저장 오류]", error);
       alert("저장 중 오류가 발생했습니다.");
     }
   };

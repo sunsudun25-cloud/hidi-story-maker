@@ -13,6 +13,7 @@ export default function FourcutInterviewPractice() {
   const [answers, setAnswers] = useState<string[]>(["", "", "", ""]);
   const [isListening, setIsListening] = useState(false);
   const [title, setTitle] = useState("");
+  const [interimTranscript, setInterimTranscript] = useState("");  // 중간 결과 임시 표시용
   
   // AI 조언 관련 상태
   const [showCompletion, setShowCompletion] = useState(false);
@@ -87,43 +88,41 @@ export default function FourcutInterviewPractice() {
     }
 
     setIsListening(true);
+    setInterimTranscript("");  // 중간 결과 초기화
     
     // ✅ 음성 인식 시작 전 현재 텍스트 저장
     const startText = answers[targetStep] || "";
-    const finalResults: string[] = [];  // 최종 결과들만 배열로 저장
+    const finalResults: string[] = [];  // 최종 결과들만 저장
     
     startListening({
       onResult: (text, isFinal) => {
-        const newAnswers = [...answers];
-        
         if (isFinal) {
-          // ✅ 최종 결과: 배열에 추가 (한 번만)
+          // ✅ 최종 결과: 배열에 추가
           console.log("📝 최종 텍스트 추가:", text);
           finalResults.push(text);
+          setInterimTranscript("");  // 중간 결과 초기화
           
-          // 시작 텍스트 + 모든 최종 결과 합치기
+          // 최종 결과만 answers에 저장
+          const newAnswers = [...answers];
           const allFinal = finalResults.join(" ");
           newAnswers[targetStep] = startText + (startText ? " " : "") + allFinal;
+          setAnswers(newAnswers);
         } else {
-          // ✅ 중간 결과: 실시간 표시만
+          // ✅ 중간 결과: 별도 state에 저장 (덮어쓰기)
           console.log("⏳ 중간 텍스트 표시:", text);
-          
-          // 시작 텍스트 + 이미 확정된 최종 결과들 + 현재 중간 결과
-          const allFinal = finalResults.join(" ");
-          const preview = allFinal + (allFinal ? " " : "") + text;
-          newAnswers[targetStep] = startText + (startText ? " " : "") + preview;
+          setInterimTranscript(text);
         }
-        
-        setAnswers(newAnswers);
       },
       onError: (error) => {
         console.error("음성 인식 오류:", error);
         alert(`음성 인식 오류: ${error}`);
         setIsListening(false);
+        setInterimTranscript("");
       },
       onEnd: () => {
         console.log("🎤 음성 인식 종료");
         setIsListening(false);
+        setInterimTranscript("");
       }
     });
   };
@@ -486,7 +485,7 @@ export default function FourcutInterviewPractice() {
             )}
             
             <textarea
-              value={answers[currentStep]}
+              value={answers[currentStep] + (isListening && interimTranscript ? (answers[currentStep] ? " " : "") + interimTranscript : "")}
               onChange={(e) => {
                 const newAnswers = [...answers];
                 newAnswers[currentStep] = e.target.value;
@@ -892,7 +891,7 @@ export default function FourcutInterviewPractice() {
               )}
               
               <textarea
-                value={answers[revisingCut]}
+                value={answers[revisingCut] + (isListening && interimTranscript ? (answers[revisingCut] ? " " : "") + interimTranscript : "")}
                 onChange={(e) => {
                   const newAnswers = [...answers];
                   newAnswers[revisingCut] = e.target.value;

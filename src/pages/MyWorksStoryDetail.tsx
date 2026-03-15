@@ -2,7 +2,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAllStories, deleteStory, type Story } from "../services/dbService";
 import { getCurrentLearner } from "../services/classroomService";
-import { generateStoryPDF, type Story as PDFStory } from "../services/pdfService";
 
 export default function MyWorksStoryDetail() {
   const { id } = useParams();
@@ -69,49 +68,76 @@ export default function MyWorksStoryDetail() {
           const img = story.images[i];
           try {
             console.log(`🔄 이미지 ${i + 1} 변환 시작... (URL 길이: ${img.url.length})`);
-            const response = await fetch(img.url);
-            const blob = await response.blob();
-            console.log(`📦 원본 Blob 크기: ${(blob.size / 1024).toFixed(2)} KB`);
             
-            // 이미지 리사이징 및 압축 (최대 800x800, 품질 0.7)
-            const resizedBase64 = await new Promise<string>((resolve, reject) => {
-              const imgElement = new Image();
-              imgElement.onload = () => {
-                const canvas = document.createElement('canvas');
-                let width = imgElement.width;
-                let height = imgElement.height;
-                
-                // 최대 크기 제한 (800x800)
-                const maxSize = 800;
-                if (width > maxSize || height > maxSize) {
-                  if (width > height) {
-                    height = (height / width) * maxSize;
-                    width = maxSize;
-                  } else {
-                    width = (width / height) * maxSize;
-                    height = maxSize;
+            let imageData = img.url;
+            
+            // Base64 Data URL이 아닌 경우에만 fetch
+            if (!img.url.startsWith('data:')) {
+              const response = await fetch(img.url);
+              const blob = await response.blob();
+              console.log(`📦 원본 Blob 크기: ${(blob.size / 1024).toFixed(2)} KB`);
+              
+              // Blob → Base64
+              imageData = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+              });
+            }
+            
+            // 이미지 크기 확인
+            const imageSize = imageData.length;
+            console.log(`📊 원본 이미지 크기: ${(imageSize / 1024).toFixed(2)} KB`);
+            
+            // 500KB 이상이면 압축
+            if (imageSize > 500 * 1024) {
+              console.log("🔄 이미지 압축 시작...");
+              
+              // 이미지 리사이징 및 압축 (최대 800x800, 품질 0.7)
+              const resizedBase64 = await new Promise<string>((resolve, reject) => {
+                const imgElement = new Image();
+                imgElement.onload = () => {
+                  const canvas = document.createElement('canvas');
+                  let width = imgElement.width;
+                  let height = imgElement.height;
+                  
+                  // 최대 크기 제한 (800x800)
+                  const maxSize = 800;
+                  if (width > maxSize || height > maxSize) {
+                    if (width > height) {
+                      height = Math.round((height / width) * maxSize);
+                      width = maxSize;
+                    } else {
+                      width = Math.round((width / height) * maxSize);
+                      height = maxSize;
+                    }
                   }
-                }
-                
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                if (!ctx) {
-                  reject(new Error('Canvas context not available'));
-                  return;
-                }
-                
-                ctx.drawImage(imgElement, 0, 0, width, height);
-                // JPEG로 변환 (품질 0.7)
-                const base64 = canvas.toDataURL('image/jpeg', 0.7);
-                resolve(base64);
-              };
-              imgElement.onerror = reject;
-              imgElement.src = URL.createObjectURL(blob);
-            });
-            
-            files[`image_${i}`] = resizedBase64;
-            console.log(`✅ 이미지 ${i + 1}/${story.images.length} 변환 완료 (압축 후 Base64 길이: ${resizedBase64.length}, 약 ${(resizedBase64.length / 1024).toFixed(2)} KB)`);
+                  
+                  canvas.width = width;
+                  canvas.height = height;
+                  const ctx = canvas.getContext('2d');
+                  if (!ctx) {
+                    reject(new Error('Canvas context not available'));
+                    return;
+                  }
+                  
+                  ctx.drawImage(imgElement, 0, 0, width, height);
+                  // JPEG로 변환 (품질 0.7)
+                  const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                  resolve(base64);
+                };
+                imgElement.onerror = reject;
+                imgElement.src = imageData;
+              });
+              
+              files[`image_${i}`] = resizedBase64;
+              console.log(`✅ 이미지 ${i + 1}/${story.images.length} 압축 완료 (${(resizedBase64.length / 1024).toFixed(2)} KB, ${Math.round((1 - resizedBase64.length / imageSize) * 100)}% 감소)`);
+            } else {
+              // 500KB 이하는 그대로 사용
+              files[`image_${i}`] = imageData;
+              console.log(`✅ 이미지 ${i + 1}/${story.images.length} 변환 완료 (압축 불필요)`);
+            }
           } catch (err) {
             console.error(`❌ 이미지 ${i} 변환 실패:`, err);
             // 변환 실패시 URL 그대로 사용
@@ -190,27 +216,32 @@ export default function MyWorksStoryDetail() {
     }
   };
 
-  // PDF 파일로 저장
+  // PDF 파일로 저장 (한글 지원 버전 사용)
   const handleExportPDF = async () => {
     if (!story) return;
 
     try {
       console.log("📄 PDF 생성 시작:", { title: story.title, images: story.images?.length });
 
-      // Story를 PDFStory 형식으로 변환
-      const pdfStory: PDFStory = {
-        id: String(story.id || Date.now()),
-        title: story.title,
-        image: story.images && story.images.length > 0 ? story.images[0].url : undefined,
-        description: story.content,
-        content: story.content
-      };
-
-      // PDF 생성 (A안: 그림 위 + 글 아래)
-      await generateStoryPDF(pdfStory, { layout: "A" });
+      // generateStorybookPDF 사용 (한글 폰트 지원)
+      const { generateStorybookPDF } = await import("../services/pdfService");
+      
+      await generateStorybookPDF(
+        {
+          title: story.title,
+          coverImageUrl: story.images && story.images.length > 0 ? story.images[0].url : undefined,
+          pages: [
+            {
+              text: story.content,
+              imageUrl: story.images && story.images.length > 0 ? story.images[0].url : undefined
+            }
+          ]
+        },
+        `${story.title}.pdf`
+      );
 
       console.log("✅ PDF 생성 완료");
-      alert(`✅ PDF가 저장되었습니다!\n\n파일명: Story_A_${story.title}.pdf`);
+      alert(`✅ PDF가 저장되었습니다!\n\n파일명: ${story.title}.pdf`);
     } catch (error) {
       console.error("❌ PDF 생성 오류:", error);
       alert("PDF 생성 중 오류가 발생했습니다.\n\n다시 시도해주세요.");

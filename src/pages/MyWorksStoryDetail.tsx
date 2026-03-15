@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAllStories, deleteStory, type Story } from "../services/dbService";
 import { getCurrentLearner } from "../services/classroomService";
+import { generateStoryPDF, type Story as PDFStory } from "../services/pdfService";
 
 export default function MyWorksStoryDetail() {
   const { id } = useParams();
@@ -151,6 +152,7 @@ export default function MyWorksStoryDetail() {
   };
 
   // 다운로드 (이미지들)
+  // 이미지만 다운로드
   const handleDownload = async () => {
     if (!story || !story.images || story.images.length === 0) {
       alert("다운로드할 이미지가 없습니다.");
@@ -185,6 +187,33 @@ export default function MyWorksStoryDetail() {
     } catch (error) {
       console.error("❌ 다운로드 오류:", error);
       alert("다운로드 중 오류가 발생했습니다.");
+    }
+  };
+
+  // PDF 파일로 저장
+  const handleExportPDF = async () => {
+    if (!story) return;
+
+    try {
+      console.log("📄 PDF 생성 시작:", { title: story.title, images: story.images?.length });
+
+      // Story를 PDFStory 형식으로 변환
+      const pdfStory: PDFStory = {
+        id: String(story.id || Date.now()),
+        title: story.title,
+        image: story.images && story.images.length > 0 ? story.images[0].url : undefined,
+        description: story.content,
+        content: story.content
+      };
+
+      // PDF 생성 (A안: 그림 위 + 글 아래)
+      await generateStoryPDF(pdfStory, { layout: "A" });
+
+      console.log("✅ PDF 생성 완료");
+      alert(`✅ PDF가 저장되었습니다!\n\n파일명: Story_A_${story.title}.pdf`);
+    } catch (error) {
+      console.error("❌ PDF 생성 오류:", error);
+      alert("PDF 생성 중 오류가 발생했습니다.\n\n다시 시도해주세요.");
     }
   };
 
@@ -289,14 +318,14 @@ export default function MyWorksStoryDetail() {
 
         {/* 액션 버튼들 - 통일된 큰 버튼 스타일 */}
         <div className="flex flex-col gap-3">
-          {/* 1행: 선생님께 제출 + 다운로드 */}
+          {/* 1행: 선생님께 제출하기 + 다운로드 */}
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
               className="py-5 px-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-[17px] font-bold hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "제출 중..." : "📤 선생님께 제출"}
+              {isSubmitting ? "제출 중..." : "📤 선생님께 제출하기"}
             </button>
             <button
               onClick={handleDownload}
@@ -306,13 +335,13 @@ export default function MyWorksStoryDetail() {
             </button>
           </div>
 
-          {/* 2행: QR코드 안내 + 삭제 */}
+          {/* 2행: PDF파일로 저장 + 삭제 */}
           <div className="grid grid-cols-2 gap-3">
             <button
-              onClick={() => alert("💡 QR코드 만들기\n\n1. 다운로드 버튼으로 이미지를 저장하세요\n2. 홈 화면의 '나만의 굿즈 만들기'에서\n3. QR코드를 생성할 수 있습니다!")}
-              className="py-4 px-4 bg-purple-500 text-white rounded-xl text-[16px] font-bold hover:bg-purple-600 transition-all duration-200 shadow-md hover:shadow-lg"
+              onClick={handleExportPDF}
+              className="py-4 px-4 bg-blue-500 text-white rounded-xl text-[16px] font-bold hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
             >
-              📱 QR코드 만들기
+              📄 PDF파일로 저장
             </button>
             <button
               onClick={handleDelete}

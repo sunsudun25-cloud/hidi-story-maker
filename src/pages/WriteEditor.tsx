@@ -43,6 +43,8 @@ export default function WriteEditor() {
   // 이미지 상태
   const [storyImages, setStoryImages] = useState<StoryImage[]>([]);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [imageLoadingProgress, setImageLoadingProgress] = useState(0); // 일반 이미지 생성 진행률
+  const [imageLoadingMessage, setImageLoadingMessage] = useState(""); // 일반 이미지 생성 메시지
   
   // 4컷 이미지 생성 상태
   const [masterImage, setMasterImage] = useState<string | null>(null);
@@ -141,11 +143,42 @@ export default function WriteEditor() {
     }
 
     setIsGeneratingImage(true);
+    setImageLoadingProgress(0);
+    setImageLoadingMessage("🧠 AI가 내용을 분석하고 있어요...");
+    
     try {
       console.log("🎨 이미지 생성 시작:", { genre: genreLabel, contentLength: content.length });
       
+      // 진행률 시뮬레이션 (0% -> 100%)
+      const progressInterval = setInterval(() => {
+        setImageLoadingProgress(prev => {
+          const next = prev + 1;
+          
+          // 메시지 변경
+          if (next >= 0 && next < 10) {
+            setImageLoadingMessage("🧠 AI가 내용을 분석하고 있어요...");
+          } else if (next >= 10 && next < 30) {
+            setImageLoadingMessage("🌄 배경을 그리고 있어요...");
+          } else if (next >= 30 && next < 60) {
+            setImageLoadingMessage("👨‍🎨 주요 요소를 그리고 있어요...");
+          } else if (next >= 60 && next < 85) {
+            setImageLoadingMessage("✨ 디테일을 추가하고 있어요...");
+          } else if (next >= 85 && next < 95) {
+            setImageLoadingMessage("🎨 마무리 중...");
+          } else if (next >= 95) {
+            setImageLoadingMessage("✅ 거의 완성되었어요!");
+          }
+          
+          return next >= 100 ? 100 : next;
+        });
+      }, 500); // 0.5초마다 1% 증가 (50초 = 100%)
+      
       // 글쓰기 전용 이미지 생성 (장르 정보 포함)
       const imageUrl = await generateWritingImage(content, genreLabel || undefined);
+      
+      clearInterval(progressInterval);
+      setImageLoadingProgress(100);
+      setImageLoadingMessage("✅ 이미지 생성 완료!");
       
       // 생성된 이미지 추가
       const newImage: StoryImage = {
@@ -156,10 +189,18 @@ export default function WriteEditor() {
       };
       
       setStoryImages([...storyImages, newImage]);
+      
+      // 짧은 대기 후 초기화
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setImageLoadingProgress(0);
+      setImageLoadingMessage("");
+      
       alert("✨ 이미지가 생성되었습니다!");
       
     } catch (error) {
       console.error("이미지 생성 오류:", error);
+      setImageLoadingProgress(0);
+      setImageLoadingMessage("");
       alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
       setIsGeneratingImage(false);
@@ -1221,6 +1262,73 @@ ${content}
               )
             }
           </button>
+
+          {/* 일반 이미지 생성 로딩 UI */}
+          {isGeneratingImage && genre !== "fourcut" && (
+            <div style={{
+              marginTop: "20px",
+              padding: "20px",
+              backgroundColor: "#F3E8FF",
+              borderRadius: "12px",
+              border: "2px solid #9C27B0",
+              textAlign: "center"
+            }}>
+              {/* 아이콘 애니메이션 */}
+              <div style={{
+                fontSize: "72px",
+                animation: "pulse 1.5s ease-in-out infinite",
+                marginBottom: "16px"
+              }}>
+                🎨
+              </div>
+              
+              {/* 메시지 */}
+              <div style={{
+                fontSize: "16px",
+                fontWeight: "600",
+                color: "#6B21A8",
+                marginBottom: "12px"
+              }}>
+                {imageLoadingMessage}
+              </div>
+              
+              {/* 진행률 바 */}
+              <div style={{
+                width: "100%",
+                height: "8px",
+                backgroundColor: "#DDD6FE",
+                borderRadius: "4px",
+                overflow: "hidden",
+                marginBottom: "8px"
+              }}>
+                <div style={{
+                  width: `${imageLoadingProgress}%`,
+                  height: "100%",
+                  background: "linear-gradient(90deg, #9C27B0 0%, #E91E63 100%)",
+                  transition: "width 0.5s ease",
+                  borderRadius: "4px"
+                }}></div>
+              </div>
+              
+              {/* 퍼센트 */}
+              <div style={{
+                fontSize: "14px",
+                color: "#8B5CF6",
+                fontWeight: "600"
+              }}>
+                {imageLoadingProgress}%
+              </div>
+              
+              {/* 예상 시간 */}
+              <div style={{
+                fontSize: "12px",
+                color: "#9CA3AF",
+                marginTop: "8px"
+              }}>
+                ⏳ 예상 시간: 약 40-60초
+              </div>
+            </div>
+          )}
           
           {/* 4컷 이미지 생성 진행 상황 */}
           {imageProgress && (

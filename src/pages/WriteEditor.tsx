@@ -595,7 +595,7 @@ ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""
     }
   };
 
-  // 🤖 AI 문법 교정
+  // 🤖 AI 문법 교정 (줄별 처리)
   const handleAiCorrect = async () => {
     if (!content.trim()) {
       alert("교정할 내용이 없습니다!");
@@ -607,83 +607,116 @@ ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""
       const originalLength = content.length;
       console.log('📝 [문법교정] 시작:', { originalLength });
       
-      const prompt = `
-다음 글의 맞춤법, 띄어쓰기, 문법만 교정해주세요.
+      // 줄 단위로 분리
+      const lines = content.split('\n');
+      console.log('📝 [문법교정] 총 줄 수:', lines.length);
+      
+      const correctedLines: string[] = [];
+      
+      // 각 줄마다 개별적으로 문법 교정
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        
+        // 빈 줄은 그대로 유지
+        if (line.trim().length === 0) {
+          correctedLines.push(line);
+          console.log(`📄 [문법교정] ${i + 1}번째 줄: (빈 줄)`);
+          continue;
+        }
+        
+        // 너무 짧은 줄 (3자 이하)은 그대로 유지
+        if (line.trim().length <= 3) {
+          correctedLines.push(line);
+          console.log(`📄 [문법교정] ${i + 1}번째 줄: "${line}" → (짧아서 유지)`);
+          continue;
+        }
+        
+        console.log(`🚀 [문법교정] ${i + 1}번째 줄 처리 중: "${line}"`);
+        
+        const prompt = `
+다음 한 줄의 맞춤법, 띄어쓰기, 문법만 교정해주세요.
 
-**절대 규칙 (반드시 지켜야 함):**
-1. 원문의 모든 내용을 반드시 포함해야 합니다.
-2. 문장을 삭제하거나 생략하지 마세요.
-3. 의미를 바꾸지 마세요.
-4. 단어를 바꾸지 마세요.
-5. 오직 맞춤법, 띄어쓰기, 문법 오류만 고치세요.
-6. 원문의 길이와 비슷하게 유지하세요.
-7. 전체 글을 그대로 출력하세요 (요약이나 설명 금지).
+**규칙:**
+1. 원문의 모든 단어를 반드시 포함하세요
+2. 의미를 바꾸지 마세요
+3. 오직 맞춤법, 띄어쓰기, 문법 오류만 고치세요
+4. 한 줄로 출력하세요
 
-**원문:**
-${content}
+**예시:**
+원문: 오늘은날씨가 좋앗어요
+교정: 오늘은 날씨가 좋았어요
+
+원문: 친구들과공원에 갔습니다
+교정: 친구들과 공원에 갔습니다
+
+원문: 맛잇는 음식도먹었어요
+교정: 맛있는 음식도 먹었어요
+
+**이제 다음 한 줄을 교정해주세요:**
+${line}
 
 **출력 형식:**
-교정된 전체 글만 출력하세요. "교정 완료" 같은 설명은 절대 쓰지 마세요.
-원문의 모든 문장을 빠짐없이 포함해서 출력하세요.
+교정된 한 줄만 출력하세요. 설명이나 부연 설명은 쓰지 마세요.
 `;
 
-      console.log('🚀 [문법교정] API 호출 시작');
-      const corrected = await safeGeminiCall(prompt);
-      
-      if (!corrected || corrected.trim().length === 0) {
-        console.error('❌ [문법교정] 빈 응답');
-        alert("❌ 교정 결과가 비어있습니다.\n\n다시 시도해주세요.");
-        return;
-      }
-
-      const correctedLength = corrected.trim().length;
-      console.log('✅ [문법교정] API 응답 수신:', { 
-        originalLength, 
-        correctedLength,
-        ratio: (correctedLength / originalLength * 100).toFixed(1) + '%'
-      });
-      console.log('📄 [문법교정] 원본 내용:', content);
-      console.log('📄 [문법교정] 교정된 내용:', corrected.trim());
-
-      // 원본과 교정본 길이 차이가 너무 크면 거부
-      const lengthRatio = correctedLength / originalLength;
-      
-      if (lengthRatio < 0.7) {
-        console.error('❌ [문법교정] 너무 많이 삭제됨:', lengthRatio);
-        alert(
-          "❌ 교정 실패: AI가 내용을 너무 많이 삭제했습니다.\n\n" +
-          `원본: ${originalLength}자\n` +
-          `교정: ${correctedLength}자 (${(lengthRatio * 100).toFixed(0)}%)\n\n` +
-          "다시 시도해주세요."
-        );
-        return;
-      }
-
-      if (lengthRatio < 0.85) {
-        const proceed = window.confirm(
-          "⚠️ 교정된 내용이 원본보다 짧습니다.\n\n" +
-          `원본: ${originalLength}자\n` +
-          `교정: ${correctedLength}자 (${(lengthRatio * 100).toFixed(0)}%)\n\n` +
-          "그래도 적용하시겠습니까?\n\n" +
-          "(취소를 누르면 원래 내용을 유지합니다)"
-        );
-        if (!proceed) {
-          console.log('ℹ️ [문법교정] 사용자가 취소함');
-          return;
+        try {
+          const correctedLine = await safeGeminiCall(prompt);
+          
+          if (!correctedLine || correctedLine.trim().length === 0) {
+            console.warn(`⚠️ [문법교정] ${i + 1}번째 줄 교정 실패 (빈 응답), 원본 유지`);
+            correctedLines.push(line);
+            continue;
+          }
+          
+          // 여러 줄로 응답한 경우 첫 줄만 사용
+          const singleLine = correctedLine.trim().split('\n')[0];
+          
+          // 원본과 너무 다르면 (길이가 3배 이상 또는 1/3 이하) 원본 유지
+          const lengthRatio = singleLine.length / line.length;
+          if (lengthRatio > 3 || lengthRatio < 0.33) {
+            console.warn(`⚠️ [문법교정] ${i + 1}번째 줄 길이 변화가 너무 큼 (${(lengthRatio * 100).toFixed(0)}%), 원본 유지`);
+            correctedLines.push(line);
+            continue;
+          }
+          
+          correctedLines.push(singleLine);
+          console.log(`✅ [문법교정] ${i + 1}번째 줄: "${line}" → "${singleLine}"`);
+          
+        } catch (error) {
+          console.error(`❌ [문법교정] ${i + 1}번째 줄 처리 오류:`, error);
+          correctedLines.push(line); // 오류 시 원본 유지
+        }
+        
+        // API 호출 간격 조절 (과부하 방지)
+        if (i < lines.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
       }
       
+      const corrected = correctedLines.join('\n');
+      const correctedLength = corrected.length;
+      
+      console.log('✅ [문법교정] 완료:', { 
+        originalLength, 
+        correctedLength,
+        ratio: (correctedLength / originalLength * 100).toFixed(1) + '%',
+        originalLines: lines.length,
+        correctedLines: correctedLines.length
+      });
+      console.log('📄 [문법교정] 원본 내용:\n', content);
+      console.log('📄 [문법교정] 교정된 내용:\n', corrected);
+      
       const confirmed = window.confirm(
         "✅ 교정이 완료되었습니다!\n\n" +
-        `원본: ${originalLength}자\n` +
-        `교정: ${correctedLength}자\n` +
+        `원본: ${originalLength}자 (${lines.length}줄)\n` +
+        `교정: ${correctedLength}자 (${correctedLines.length}줄)\n` +
         `변화: ${correctedLength > originalLength ? '+' : ''}${correctedLength - originalLength}자\n\n` +
         "교정된 내용으로 바꾸시겠습니까?\n\n" +
         "(취소를 누르면 원래 내용을 유지합니다)"
       );
       
       if (confirmed) {
-        setContent(corrected.trim());
+        setContent(corrected);
         console.log('✅ [문법교정] 적용 완료');
         alert("✨ 내용이 교정되었습니다!");
       } else {

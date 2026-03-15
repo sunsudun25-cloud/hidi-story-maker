@@ -706,32 +706,100 @@ ${content}
 
     setIsAiHelping(true);
     try {
+      const originalLength = content.length;
+      console.log('💖 [감정강화] 시작:', { originalLength });
+      
       const prompt = `
 다음 글의 감정 표현을 더 풍부하게 만들어주세요.
-형용사와 감정을 나타내는 표현을 추가하여 더 생동감 있게 만들어주세요.
 
----
+**절대 규칙 (반드시 지켜야 함):**
+1. 원문의 모든 문장과 내용을 반드시 포함해야 합니다.
+2. 문장을 삭제하거나 생략하지 마세요.
+3. 원문의 구조와 흐름을 그대로 유지하세요.
+4. 원문이 시 형식이면 시 형식을 유지하세요.
+5. 감정을 나타내는 형용사나 표현을 추가하거나 강조하세요.
+6. 원문의 핵심 단어와 이미지는 반드시 포함하세요.
+7. 원문의 길이와 비슷하게 유지하세요 (너무 길어지지 않게).
+8. 전체 글을 그대로 출력하세요 (요약이나 설명 금지).
+
+**예시:**
+원문: "오늘은 날씨가 좋았어요"
+강화: "오늘은 날씨가 참 좋았어요" (✅ 간단한 강조만 추가)
+잘못: "오늘은 화창하고 아름다운 봄날이었어요" (❌ 너무 많이 바꿈)
+
+**원문:**
 ${content}
----
 
-강화된 버전만 출력해주세요 (설명 불필요).
+**출력 형식:**
+감정이 강화된 전체 글만 출력하세요. "강화 완료" 같은 설명은 절대 쓰지 마세요.
+원문의 모든 문장을 빠짐없이 포함해서 출력하세요.
 `;
 
+      console.log('🚀 [감정강화] API 호출 시작');
       const enhanced = await safeGeminiCall(prompt);
+      
+      if (!enhanced || enhanced.trim().length === 0) {
+        console.error('❌ [감정강화] 빈 응답');
+        alert("❌ 감정 강화 결과가 비어있습니다.\n\n다시 시도해주세요.");
+        return;
+      }
+
+      const enhancedLength = enhanced.trim().length;
+      console.log('✅ [감정강화] API 응답 수신:', { 
+        originalLength, 
+        enhancedLength,
+        ratio: (enhancedLength / originalLength * 100).toFixed(1) + '%'
+      });
+      console.log('📄 [감정강화] 원본 내용:', content);
+      console.log('📄 [감정강화] 강화된 내용:', enhanced.trim());
+
+      // 원본과 강화본 길이 차이가 너무 크면 경고
+      const lengthRatio = enhancedLength / originalLength;
+      
+      if (lengthRatio < 0.7) {
+        console.error('❌ [감정강화] 너무 많이 삭제됨:', lengthRatio);
+        alert(
+          "❌ 감정 강화 실패: AI가 내용을 너무 많이 삭제했습니다.\n\n" +
+          `원본: ${originalLength}자\n` +
+          `강화: ${enhancedLength}자 (${(lengthRatio * 100).toFixed(0)}%)\n\n` +
+          "다시 시도해주세요."
+        );
+        return;
+      }
+
+      if (lengthRatio < 0.85) {
+        const proceed = window.confirm(
+          "⚠️ 강화된 내용이 원본보다 짧습니다.\n\n" +
+          `원본: ${originalLength}자\n` +
+          `강화: ${enhancedLength}자 (${(lengthRatio * 100).toFixed(0)}%)\n\n` +
+          "그래도 적용하시겠습니까?\n\n" +
+          "(취소를 누르면 원래 내용을 유지합니다)"
+        );
+        if (!proceed) {
+          console.log('ℹ️ [감정강화] 사용자가 취소함');
+          return;
+        }
+      }
       
       const confirmed = window.confirm(
         "✨ 감정 표현이 강화되었습니다!\n\n" +
+        `원본: ${originalLength}자\n` +
+        `강화: ${enhancedLength}자\n` +
+        `변화: ${enhancedLength > originalLength ? '+' : ''}${enhancedLength - originalLength}자\n\n` +
         "강화된 내용으로 바꾸시겠습니까?\n\n" +
         "(취소를 누르면 원래 내용을 유지합니다)"
       );
       
       if (confirmed) {
-        setContent(enhanced);
+        setContent(enhanced.trim());
+        console.log('✅ [감정강화] 적용 완료');
         alert("✨ 내용이 더 풍부해졌습니다!");
+      } else {
+        console.log('ℹ️ [감정강화] 사용자가 취소함');
       }
     } catch (error) {
-      console.error("AI 강화 오류:", error);
-      alert("강화 중 오류가 발생했습니다.");
+      console.error("❌ [감정강화] 오류:", error);
+      alert("감정 강화 중 오류가 발생했습니다.\n\n" + (error instanceof Error ? error.message : "알 수 없는 오류"));
     } finally {
       setIsAiHelping(false);
     }

@@ -15,7 +15,7 @@ export interface SpeechRecognitionOptions {
   interimResults?: boolean;
   onStart?: () => void;
   onEnd?: () => void;
-  onResult: (text: string) => void;
+  onResult: (text: string, isFinal: boolean) => void;  // isFinal 파라미터 추가
   onError?: (error: string) => void;
 }
 
@@ -76,19 +76,17 @@ export function startSpeechRecognition(options: SpeechRecognitionOptions): () =>
   };
 
   recognition.onresult = (event: any) => {
-    // continuous 모드: 최종 결과(isFinal=true)만 콜백으로 전달
-    // 중간 결과는 무시하여 중복 방지
+    // 중간 결과와 최종 결과 모두 처리
     for (let i = event.resultIndex; i < event.results.length; i++) {
       const result = event.results[i];
+      const transcript = result[0].transcript.trim();
       
-      // 최종 결과만 처리
       if (result.isFinal) {
-        const transcript = result[0].transcript.trim();
         console.log("✅ 음성 인식 최종 결과:", transcript);
-        options.onResult(transcript);
+        options.onResult(transcript, true);  // 최종 결과
       } else {
-        // 중간 결과는 로그만 출력
-        console.log("⏳ 중간 결과:", result[0].transcript);
+        console.log("⏳ 중간 결과:", transcript);
+        options.onResult(transcript, false);  // 중간 결과 (실시간 표시)
       }
     }
   };
@@ -142,36 +140,74 @@ function getSpeechRecognitionErrorMessage(error: string): string {
  * ```
  */
 export function startListening(
-  onResult: (text: string) => void,
-  onError?: (error: string) => void,
-  onEnd?: () => void
+  options: {
+    onResult: (text: string, isFinal: boolean) => void;
+    onError?: (error: string) => void;
+    onEnd?: () => void;
+  }
 ): () => void {
   if (!isSpeechRecognitionSupported()) {
     const errorMsg = "이 브라우저는 음성 인식을 지원하지 않습니다.\n\nChrome, Edge, Safari 브라우저를 사용해주세요.";
-    if (onError) {
-      onError(errorMsg);
+    if (options.onError) {
+      options.onError(errorMsg);
     } else {
       alert(errorMsg);
     }
     return () => {};
   }
 
-  return startSpeechRecognition({
+  let silenceTimer: NodeJS.Timeout | null = null;
+  let stopFunction: (() => void) | null = null;
+
+  stopFunction = startSpeechRecognition({
     lang: "ko-KR",
     continuous: true,  // ✅ 연속 인식 모드
     interimResults: true,  // ✅ 중간 결과도 표시
-    onResult,
+    onResult: (text, isFinal) => {
+      options.onResult(text, isFinal);
+      
+      // ✅ 5초 침묵 타이머 리셋
+      if (silenceTimer) {
+        clearTimeout(silenceTimer);
+      }
+      
+      // ✅ 최종 결과 후 5초 대기 후 자동 종료
+      if (isFinal) {
+        silenceTimer = setTimeout(() => {
+          console.log("⏱️ 5초 침묵 감지 - 음성 인식 자동 종료");
+          if (stopFunction) {
+            stopFunction();
+          }
+        }, 5000);  // 5초 대기
+      }
+    },
     onError: (error) => {
-      if (onError) {
-        onError(error);
+      if (silenceTimer) {
+        clearTimeout(silenceTimer);
+      }
+      if (options.onError) {
+        options.onError(error);
       } else {
         alert(error);
       }
     },
     onEnd: () => {
-      if (onEnd) {
-        onEnd();
+      if (silenceTimer) {
+        clearTimeout(silenceTimer);
+      }
+      if (options.onEnd) {
+        options.onEnd();
       }
     },
   });
+
+  // 수동 중지 시 타이머도 정리
+  return () => {
+    if (silenceTimer) {
+      clearTimeout(silenceTimer);
+    }
+    if (stopFunction) {
+      stopFunction();
+    }
+  };
 }

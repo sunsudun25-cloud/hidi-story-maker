@@ -81,10 +81,25 @@ export default function FourcutInterviewPractice() {
     const targetStep = isRevising && revisingCut !== null ? revisingCut : currentStep;
 
     setIsListening(true);
+    
+    let interimText = "";  // 중간 결과 임시 저장
+    
     startListening({
-      onResult: (text) => {
+      onResult: (text, isFinal) => {
         const newAnswers = [...answers];
-        newAnswers[targetStep] = newAnswers[targetStep] + (newAnswers[targetStep] ? " " : "") + text;
+        
+        if (isFinal) {
+          // ✅ 최종 결과: 기존 텍스트에 추가
+          console.log("📝 최종 텍스트 추가:", text);
+          newAnswers[targetStep] = newAnswers[targetStep] + (newAnswers[targetStep] ? " " : "") + text;
+          interimText = "";  // 중간 결과 초기화
+        } else {
+          // ✅ 중간 결과: 임시로 표시 (덮어쓰기)
+          console.log("⏳ 중간 텍스트 표시:", text);
+          interimText = text;
+          newAnswers[targetStep] = newAnswers[targetStep] + (newAnswers[targetStep] ? " " : "") + interimText;
+        }
+        
         setAnswers(newAnswers);
       },
       onError: (error) => {
@@ -93,6 +108,7 @@ export default function FourcutInterviewPractice() {
         setIsListening(false);
       },
       onEnd: () => {
+        console.log("🎤 음성 인식 종료");
         setIsListening(false);
       }
     });

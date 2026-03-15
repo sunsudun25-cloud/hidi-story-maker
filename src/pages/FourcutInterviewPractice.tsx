@@ -88,27 +88,28 @@ export default function FourcutInterviewPractice() {
 
     setIsListening(true);
     
-    let finalTexts: string[] = [];  // 최종 결과들만 저장
+    // ✅ 음성 인식 시작 전 현재 텍스트 저장
+    const startText = answers[targetStep] || "";
+    let recognizedText = "";  // 음성으로 인식된 텍스트만 저장
     
     startListening({
       onResult: (text, isFinal) => {
         const newAnswers = [...answers];
         
         if (isFinal) {
-          // ✅ 최종 결과: 배열에 추가
+          // ✅ 최종 결과: recognizedText에 추가
           console.log("📝 최종 텍스트 추가:", text);
-          finalTexts.push(text);
+          recognizedText += (recognizedText ? " " : "") + text;
           
-          // 기존 텍스트 + 모든 최종 결과 합치기
-          const baseText = newAnswers[targetStep] || "";
-          const allFinalText = finalTexts.join(" ");
-          newAnswers[targetStep] = baseText + (baseText ? " " : "") + allFinalText;
+          // 시작 텍스트 + 인식된 텍스트
+          newAnswers[targetStep] = startText + (startText ? " " : "") + recognizedText;
         } else {
-          // ✅ 중간 결과: 실시간 표시 (덮어쓰기)
+          // ✅ 중간 결과: 실시간 표시만 (recognizedText는 수정 안 함)
           console.log("⏳ 중간 텍스트 표시:", text);
-          const baseText = newAnswers[targetStep] || "";
-          const allFinalText = finalTexts.join(" ");
-          newAnswers[targetStep] = baseText + (baseText && allFinalText ? " " : "") + allFinalText + (allFinalText ? " " : "") + text;
+          
+          // 시작 텍스트 + 이미 인식된 텍스트 + 현재 중간 텍스트
+          const currentInterim = recognizedText + (recognizedText ? " " : "") + text;
+          newAnswers[targetStep] = startText + (startText ? " " : "") + currentInterim;
         }
         
         setAnswers(newAnswers);

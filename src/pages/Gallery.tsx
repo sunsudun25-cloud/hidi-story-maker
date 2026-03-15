@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { deleteArtifact, getCurrentLearner } from "../services/classroomService";
 
 interface Artifact {
   artifactId: string;
@@ -8,6 +9,7 @@ interface Artifact {
   createdAt: string;
   thumbnail?: string;
   learnerName?: string;
+  makerId?: string; // 작품 제작자 ID
 }
 
 export default function Gallery() {
@@ -17,8 +19,15 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "image" | "story" | "storybook">("all");
   const [error, setError] = useState("");
+  const [currentLearnerId, setCurrentLearnerId] = useState<string | null>(null);
 
   useEffect(() => {
+    // 현재 로그인된 학생 정보 가져오기
+    const learner = getCurrentLearner();
+    if (learner) {
+      setCurrentLearnerId(learner.learnerId);
+    }
+
     if (classCode) {
       loadArtifacts();
     }
@@ -76,6 +85,37 @@ export default function Gallery() {
       case "story": return "글쓰기";
       case "storybook": return "동화책";
       default: return "작품";
+    }
+  };
+
+  const handleDelete = async (artifactId: string, title: string, makerId?: string) => {
+    // 본인이 제출한 작품인지 확인
+    if (!currentLearnerId) {
+      alert("⚠️ 로그인이 필요합니다.");
+      return;
+    }
+
+    if (makerId && makerId !== currentLearnerId) {
+      alert("⚠️ 본인이 제출한 작품만 삭제할 수 있습니다.");
+      return;
+    }
+
+    const confirmed = confirm(
+      `"${title}" 작품을 갤러리에서 삭제하시겠습니까?\n\n` +
+      `⚠️ 이 작업은 되돌릴 수 없습니다!`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await deleteArtifact(artifactId, currentLearnerId);
+      alert("✅ 작품이 삭제되었습니다.");
+      
+      // 목록 새로고침
+      loadArtifacts();
+    } catch (error: any) {
+      console.error("작품 삭제 오류:", error);
+      alert(`❌ 삭제 실패: ${error.message}`);
     }
   };
 
@@ -238,8 +278,8 @@ export default function Gallery() {
                     border: "2px solid #E5E7EB",
                     borderRadius: "16px",
                     overflow: "hidden",
-                    cursor: "pointer",
-                    transition: "all 0.3s"
+                    transition: "all 0.3s",
+                    position: "relative"
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "translateY(-4px)";
@@ -266,6 +306,46 @@ export default function Gallery() {
                   }}>
                     {!item.thumbnail && getTypeIcon(item.type)}
                   </div>
+
+                  {/* 삭제 버튼 (본인 작품만) */}
+                  {currentLearnerId && item.makerId === currentLearnerId && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(item.artifactId, item.title, item.makerId);
+                      }}
+                      style={{
+                        position: "absolute",
+                        top: "8px",
+                        right: "8px",
+                        width: "32px",
+                        height: "32px",
+                        borderRadius: "50%",
+                        background: "rgba(239, 68, 68, 0.9)",
+                        color: "white",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                        transition: "all 0.2s",
+                        zIndex: 10
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "rgba(220, 38, 38, 1)";
+                        e.currentTarget.style.transform = "scale(1.1)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "rgba(239, 68, 68, 0.9)";
+                        e.currentTarget.style.transform = "scale(1)";
+                      }}
+                      title="내 작품 삭제"
+                    >
+                      🗑️
+                    </button>
+                  )}
 
                   {/* 작품 정보 */}
                   <div style={{ padding: "12px" }}>

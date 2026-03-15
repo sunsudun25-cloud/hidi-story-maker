@@ -274,7 +274,28 @@ export async function getArtifactByShare(shareId: string): Promise<ArtifactDetai
 }
 
 /**
- * 7. 강사용 ZIP 다운로드 (전체 작품)
+ * 7. 작품 삭제 (본인만 가능)
+ */
+export async function deleteArtifact(artifactId: string, learnerId: string): Promise<void> {
+  console.log('🗑️ 작품 삭제 요청:', { artifactId, learnerId });
+
+  const response = await fetch(`${FUNCTIONS_BASE_URL}/artifactDelete`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ artifactId, learnerId }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || !data.success) {
+    throw new Error(data.error || '작품 삭제 실패');
+  }
+
+  console.log('✅ 작품 삭제 완료:', artifactId);
+}
+
+/**
+ * 8. 강사용 ZIP 다운로드 (전체 작품)
  */
 export async function exportClassZip(
   classCode: string,

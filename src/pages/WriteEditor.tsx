@@ -146,11 +146,14 @@ export default function WriteEditor() {
     setImageLoadingProgress(0);
     setImageLoadingMessage("🧠 AI가 내용을 분석하고 있어요...");
     
+    // progressInterval을 외부에 선언하여 catch 블록에서도 접근 가능하게
+    let progressInterval: NodeJS.Timeout | null = null;
+    
     try {
       console.log("🎨 이미지 생성 시작:", { genre: genreLabel, contentLength: content.length });
       
       // 진행률 시뮬레이션 (0% -> 100%)
-      const progressInterval = setInterval(() => {
+      progressInterval = setInterval(() => {
         setImageLoadingProgress(prev => {
           const next = prev + 1;
           
@@ -176,7 +179,7 @@ export default function WriteEditor() {
       // 글쓰기 전용 이미지 생성 (장르 정보 포함)
       const imageUrl = await generateWritingImage(content, genreLabel || undefined);
       
-      clearInterval(progressInterval);
+      if (progressInterval) clearInterval(progressInterval);
       setImageLoadingProgress(100);
       setImageLoadingMessage("✅ 이미지 생성 완료!");
       
@@ -199,6 +202,8 @@ export default function WriteEditor() {
       
     } catch (error) {
       console.error("이미지 생성 오류:", error);
+      // 에러 발생 시에도 타이머 정리
+      if (progressInterval) clearInterval(progressInterval);
       setImageLoadingProgress(0);
       setImageLoadingMessage("");
       alert("이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");

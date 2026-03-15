@@ -162,7 +162,8 @@ export default function MyWorksStoryDetail() {
         data: {
           content: story.content,
           genre: story.genre || "fourcut",
-          images: story.images || []
+          // ❌ images 배열을 data에 포함하지 않음 (files에만 저장)
+          // images: story.images || []
         },
         files
       });

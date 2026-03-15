@@ -121,8 +121,15 @@ export default function MyWorksStoryDetail() {
       
       console.log(`📤 [Firestore 전송 시작] 파일 수: ${Object.keys(files).length}`);
       
+      // ✅ 대표 이미지를 files.image에도 저장 (갤러리 표시용)
+      if (story.images && story.images.length > 0 && files.image_0) {
+        files.image = files.image_0;
+        console.log(`✅ 대표 이미지를 files.image에 복사 (길이: ${files.image.length})`);
+      }
+      
       const result = await saveArtifact({
         learnerId: learner.learnerId,
+        makerId: learner.learnerId, // ✅ makerId 추가
         type: "story",
         title: story.title,
         data: {

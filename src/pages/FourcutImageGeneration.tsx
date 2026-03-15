@@ -22,6 +22,7 @@ export default function FourcutImageGeneration() {
   ]);
 
   const [isSaving, setIsSaving] = useState(false);
+  const [masterImageBase64, setMasterImageBase64] = useState<string>("");
   const finalCardRef = useRef<HTMLDivElement | null>(null); // 최종 카드 (마스터 이미지 + 4컷 텍스트)
 
   useEffect(() => {
@@ -29,7 +30,29 @@ export default function FourcutImageGeneration() {
       navigate("/write/fourcut-theme");
       return;
     }
-  }, []);
+
+    // 마스터 이미지를 Base64로 미리 변환 (CORS 문제 해결)
+    const convertImageToBase64 = async () => {
+      try {
+        console.log("🔄 마스터 이미지 Base64 변환 중...");
+        const response = await fetch(interviewScene.imageUrl);
+        const blob = await response.blob();
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = reader.result as string;
+          setMasterImageBase64(base64);
+          console.log("✅ 마스터 이미지 Base64 변환 완료:", base64.length, "bytes");
+        };
+        reader.readAsDataURL(blob);
+      } catch (error) {
+        console.error("❌ 이미지 변환 실패:", error);
+        // 실패 시 원본 URL 사용
+        setMasterImageBase64(interviewScene.imageUrl);
+      }
+    };
+
+    convertImageToBase64();
+  }, [theme, interviewScene, questions, answers, navigate]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -55,34 +78,26 @@ export default function FourcutImageGeneration() {
 👤 답변: ${answers[3]}
 `.trim();
 
-      // ✅ 마스터 이미지 로딩 대기 (중요!)
-      console.log("⏳ 마스터 이미지 로딩 대기 중...");
-      await new Promise<void>((resolve) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => {
-          console.log("✅ 마스터 이미지 로드 완료");
-          // 추가로 조금 더 대기 (DOM 렌더링 완료 확인)
-          setTimeout(() => resolve(), 500);
-        };
-        img.onerror = () => {
-          console.warn("⚠️ 이미지 로드 실패, 계속 진행...");
-          resolve();
-        };
-        img.src = interviewScene.imageUrl;
-      });
+      // ✅ Base64 이미지 준비 확인
+      if (!masterImageBase64) {
+        alert("이미지가 아직 준비되지 않았습니다. 잠시 후 다시 시도해주세요.");
+        return;
+      }
+
+      console.log("⏳ DOM 렌더링 대기 중...");
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       // ✅ 최종 카드 (마스터 이미지 1개 + 4컷 텍스트) 캡처
       let combinedImage: string;
       
       if (finalCardRef.current) {
-        console.log("📸 4컷 카드 캡처 중 (마스터 이미지 + 텍스트)...");
+        console.log("📸 4컷 카드 캡처 중 (Base64 이미지 + 텍스트)...");
         const canvas = await html2canvas(finalCardRef.current, {
           backgroundColor: "#ffffff",
           scale: 1.5, // 적정 해상도 (모바일 최적화)
-          logging: true, // 디버깅용 로그 활성화
-          useCORS: true,
-          allowTaint: false,
+          logging: false,
+          useCORS: false, // Base64 이미지 사용하므로 불필요
+          allowTaint: true, // Base64는 taint 허용
           width: 500, // 카드 너비 고정
           windowWidth: 500
         });
@@ -223,9 +238,8 @@ export default function FourcutImageGeneration() {
             marginBottom: "16px"
           }}>
             <img 
-              src={interviewScene.imageUrl} 
+              src={masterImageBase64 || interviewScene.imageUrl} 
               alt="마스터 이미지"
-              crossOrigin="anonymous"
               style={{ 
                 width: "100%",
                 borderRadius: "10px",

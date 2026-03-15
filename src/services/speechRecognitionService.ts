@@ -76,18 +76,30 @@ export function startSpeechRecognition(options: SpeechRecognitionOptions): () =>
   };
 
   recognition.onresult = (event: any) => {
-    // 중간 결과와 최종 결과 모두 처리
-    for (let i = event.resultIndex; i < event.results.length; i++) {
+    // ✅ 전체 transcript를 재구성 (중복 방지)
+    let interimTranscript = "";
+    let finalTranscript = "";
+    
+    for (let i = 0; i < event.results.length; i++) {
       const result = event.results[i];
-      const transcript = result[0].transcript.trim();
+      const transcript = result[0].transcript;
       
       if (result.isFinal) {
-        console.log("✅ 음성 인식 최종 결과:", transcript);
-        options.onResult(transcript, true);  // 최종 결과
+        finalTranscript += transcript + " ";
       } else {
-        console.log("⏳ 중간 결과:", transcript);
-        options.onResult(transcript, false);  // 중간 결과 (실시간 표시)
+        interimTranscript += transcript;
       }
+    }
+    
+    // 최종 결과가 있으면 최종 결과만 전달
+    if (finalTranscript.trim()) {
+      console.log("✅ 음성 인식 최종 결과:", finalTranscript.trim());
+      options.onResult(finalTranscript.trim(), true);
+    } 
+    // 중간 결과만 있으면 중간 결과 전달
+    else if (interimTranscript.trim()) {
+      console.log("⏳ 중간 결과:", interimTranscript.trim());
+      options.onResult(interimTranscript.trim(), false);
     }
   };
 

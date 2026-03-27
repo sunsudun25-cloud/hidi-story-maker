@@ -1038,25 +1038,34 @@ ${content}
       return;
     }
 
+    if (isListening) {
+      // 이미 듣는 중이면 중지
+      setIsListening(false);
+      return;
+    }
+
     setIsListening(true);
 
-    const stopListening = startListening(
-      (text) => {
-        // ✅ 함수형 업데이트로 최신 상태 값 사용
-        setContent((prevContent) => {
-          return prevContent + (prevContent ? " " : "") + text;
-        });
+    const stopListening = startListening({
+      onResult: (text, isFinal) => {
+        if (isFinal) {
+          // ✅ 최종 결과만 텍스트에 추가
+          setContent((prevContent) => {
+            return prevContent + (prevContent ? " " : "") + text;
+          });
+        }
+        // 중간 결과는 무시 (이미 화면에 표시됨)
       },
-      (error) => {
+      onError: (error) => {
         alert(error);
         setIsListening(false);
       },
-      () => {
+      onEnd: () => {
         // ✅ 음성 인식 종료 시 상태 업데이트
         console.log("🎤 음성 인식 자동 종료");
         setIsListening(false);
       }
-    );
+    });
 
     // 컴포넌트가 언마운트될 때 음성 인식 중지
     return () => {
@@ -1100,7 +1109,15 @@ ${content}
   };
 
   return (
-    <main style={{ padding: "10px 20px 20px", maxWidth: "900px", margin: "0 auto" }}>
+    <>
+      <style>{`
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.3; }
+        }
+      `}</style>
+      
+      <main style={{ padding: "10px 20px 20px", maxWidth: "900px", margin: "0 auto" }}>
       {/* 장르 가이드 (장르가 있을 경우만 표시) */}
       {genre && genreGuide && (
         <div style={{
@@ -1380,20 +1397,34 @@ ${content}
 
             <button
               onClick={handleVoiceInput}
-              disabled={isListening || isAnalyzing}
+              disabled={isAnalyzing}
               style={{
                 padding: "16px",
                 fontSize: "16px",
-                backgroundColor: isListening ? "#ccc" : "#E91E63",
+                backgroundColor: isListening ? "#E91E63" : "#E91E63",
                 color: "white",
-                border: "none",
+                border: isListening ? "2px solid #C2185B" : "none",
                 borderRadius: "12px",
-                cursor: isListening ? "not-allowed" : "pointer",
+                cursor: isAnalyzing ? "not-allowed" : "pointer",
                 fontWeight: "600",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                boxShadow: isListening ? "0 0 20px rgba(233, 30, 99, 0.5)" : "0 2px 4px rgba(0,0,0,0.1)",
+                animation: isListening ? "pulse 1.5s ease-in-out infinite" : "none",
+                position: "relative"
               }}
             >
-              {isListening ? "👂 듣는 중..." : "🎤 음성 입력"}
+              {isListening ? "⏹️ 중지하기" : "🎤 음성 입력"}
+              {isListening && (
+                <span style={{
+                  position: "absolute",
+                  top: "-8px",
+                  right: "-8px",
+                  width: "16px",
+                  height: "16px",
+                  backgroundColor: "#4CAF50",
+                  borderRadius: "50%",
+                  animation: "blink 1s ease-in-out infinite"
+                }}></span>
+              )}
             </button>
 
             <button
@@ -1922,5 +1953,6 @@ ${content}
 
       {/* ⭐ Layout 컴포넌트에 푸터가 있으므로 중복 제거 */}
     </main>
+    </>
   );
 }

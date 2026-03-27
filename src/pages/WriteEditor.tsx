@@ -45,6 +45,8 @@ export default function WriteEditor() {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageLoadingProgress, setImageLoadingProgress] = useState(0); // 일반 이미지 생성 진행률
   const [imageLoadingMessage, setImageLoadingMessage] = useState(""); // 일반 이미지 생성 메시지
+  const [imagePromptMode, setImagePromptMode] = useState<"auto" | "manual">("auto"); // 이미지 프롬프트 생성 방식
+  const [customImagePrompt, setCustomImagePrompt] = useState(""); // 사용자 직접 입력 프롬프트
   
   // 4컷 이미지 생성 상태
   const [masterImage, setMasterImage] = useState<string | null>(null);
@@ -131,9 +133,18 @@ export default function WriteEditor() {
   // 💾 저장하기
   // 🎨 이미지 생성
   const handleGenerateImage = async () => {
-    if (!content.trim()) {
-      alert("먼저 글을 작성해주세요!");
-      return;
+    // 직접 입력 모드에서는 커스텀 프롬프트가 필요
+    if (imagePromptMode === "manual") {
+      if (!customImagePrompt.trim()) {
+        alert("이미지 설명을 입력해주세요!");
+        return;
+      }
+    } else {
+      // 자동 생성 모드에서는 글 내용이 필요
+      if (!content.trim()) {
+        alert("먼저 글을 작성해주세요!");
+        return;
+      }
     }
 
     // 4컷 이야기 장르인 경우 4컷 이미지 생성
@@ -150,7 +161,12 @@ export default function WriteEditor() {
     let progressInterval: NodeJS.Timeout | null = null;
     
     try {
-      console.log("🎨 이미지 생성 시작:", { genre: genreLabel, contentLength: content.length });
+      console.log("🎨 이미지 생성 시작:", { 
+        mode: imagePromptMode,
+        genre: genreLabel, 
+        contentLength: content.length,
+        customPrompt: imagePromptMode === "manual" ? customImagePrompt : null
+      });
       
       // 진행률 시뮬레이션 (0% -> 100%)
       progressInterval = setInterval(() => {
@@ -159,7 +175,7 @@ export default function WriteEditor() {
           
           // 메시지 변경
           if (next >= 0 && next < 10) {
-            setImageLoadingMessage("🧠 AI가 내용을 분석하고 있어요...");
+            setImageLoadingMessage(imagePromptMode === "manual" ? "🎨 이미지 설명을 분석하고 있어요..." : "🧠 AI가 내용을 분석하고 있어요...");
           } else if (next >= 10 && next < 30) {
             setImageLoadingMessage("🌄 배경을 그리고 있어요...");
           } else if (next >= 30 && next < 60) {
@@ -176,8 +192,18 @@ export default function WriteEditor() {
         });
       }, 500); // 0.5초마다 1% 증가 (50초 = 100%)
       
-      // 글쓰기 전용 이미지 생성 (장르 정보 포함)
-      const imageUrl = await generateWritingImage(content, genreLabel || undefined);
+      let imageUrl: string;
+      let promptText: string;
+      
+      if (imagePromptMode === "manual") {
+        // 직접 입력 모드: 사용자가 입력한 프롬프트 사용
+        imageUrl = await generateWritingImage(customImagePrompt, genreLabel || undefined);
+        promptText = customImagePrompt;
+      } else {
+        // 자동 생성 모드: 글 내용 기반으로 프롬프트 생성
+        imageUrl = await generateWritingImage(content, genreLabel || undefined);
+        promptText = `${genreLabel || "글쓰기"} - ${content.substring(0, 50)}...`;
+      }
       
       if (progressInterval) clearInterval(progressInterval);
       setImageLoadingProgress(100);
@@ -187,11 +213,16 @@ export default function WriteEditor() {
       const newImage: StoryImage = {
         id: crypto.randomUUID(),
         url: imageUrl,
-        prompt: `${genreLabel || "글쓰기"} - ${content.substring(0, 50)}...`,
+        prompt: promptText,
         createdAt: new Date().toISOString()
       };
       
       setStoryImages([...storyImages, newImage]);
+      
+      // 직접 입력 모드인 경우 프롬프트 초기화
+      if (imagePromptMode === "manual") {
+        setCustomImagePrompt("");
+      }
       
       // 짧은 대기 후 초기화
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -1384,20 +1415,132 @@ ${content}
             </button>
           </div>
           
+          {/* 이미지 생성 옵션 */}
+          <div style={{
+            marginTop: "20px",
+            padding: "16px",
+            backgroundColor: "#F9FAFB",
+            borderRadius: "12px",
+            border: "1px solid #E5E7EB"
+          }}>
+            <div style={{
+              fontSize: "14px",
+              fontWeight: "600",
+              color: "#374151",
+              marginBottom: "12px"
+            }}>
+              🎨 이미지 생성 방식
+            </div>
+            
+            {/* 자동 생성 옵션 */}
+            <label style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: "12px",
+              cursor: "pointer"
+            }}>
+              <input
+                type="radio"
+                name="imagePromptMode"
+                value="auto"
+                checked={imagePromptMode === "auto"}
+                onChange={(e) => setImagePromptMode(e.target.value as "auto" | "manual")}
+                style={{
+                  marginRight: "8px",
+                  cursor: "pointer"
+                }}
+              />
+              <div>
+                <div style={{ fontSize: "14px", fontWeight: "500", color: "#1F2937" }}>
+                  글 내용 기반으로 자동 생성
+                </div>
+                <div style={{ fontSize: "12px", color: "#6B7280", marginTop: "2px" }}>
+                  AI가 작성한 글을 분석해서 이미지를 만들어요
+                </div>
+              </div>
+            </label>
+            
+            {/* 직접 입력 옵션 */}
+            <label style={{
+              display: "flex",
+              alignItems: "flex-start",
+              cursor: "pointer"
+            }}>
+              <input
+                type="radio"
+                name="imagePromptMode"
+                value="manual"
+                checked={imagePromptMode === "manual"}
+                onChange={(e) => setImagePromptMode(e.target.value as "auto" | "manual")}
+                style={{
+                  marginRight: "8px",
+                  marginTop: "4px",
+                  cursor: "pointer"
+                }}
+              />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "14px", fontWeight: "500", color: "#1F2937", marginBottom: "4px" }}>
+                  이미지 설명 직접 입력하기
+                </div>
+                <div style={{ fontSize: "12px", color: "#6B7280", marginBottom: "8px" }}>
+                  원하는 이미지를 구체적으로 설명해주세요
+                </div>
+                
+                {/* 직접 입력 텍스트 영역 */}
+                {imagePromptMode === "manual" && (
+                  <textarea
+                    value={customImagePrompt}
+                    onChange={(e) => setCustomImagePrompt(e.target.value)}
+                    placeholder="예: 붉은 노을이 지는 바닷가, 할머니가 혼자 앉아 있는 모습, 따뜻한 분위기"
+                    disabled={isGeneratingImage}
+                    style={{
+                      width: "100%",
+                      minHeight: "80px",
+                      padding: "12px",
+                      fontSize: "14px",
+                      border: "1px solid #D1D5DB",
+                      borderRadius: "8px",
+                      resize: "vertical",
+                      fontFamily: "inherit",
+                      outline: "none",
+                      transition: "border-color 0.2s",
+                      backgroundColor: isGeneratingImage ? "#F3F4F6" : "white"
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = "#9C27B0"}
+                    onBlur={(e) => e.target.style.borderColor = "#D1D5DB"}
+                  />
+                )}
+              </div>
+            </label>
+          </div>
+          
           {/* 이미지 생성 버튼 */}
           <button
             onClick={handleGenerateImage}
-            disabled={isGeneratingImage || !content.trim()}
+            disabled={
+              isGeneratingImage || 
+              (imagePromptMode === "auto" && !content.trim()) ||
+              (imagePromptMode === "manual" && !customImagePrompt.trim())
+            }
             style={{
               width: "100%",
               marginTop: "10px",
               padding: "16px",
               fontSize: "16px",
-              backgroundColor: isGeneratingImage ? "#ccc" : content.trim() ? "#9C27B0" : "#ddd",
+              backgroundColor: 
+                isGeneratingImage ? "#ccc" : 
+                (imagePromptMode === "auto" && content.trim()) || (imagePromptMode === "manual" && customImagePrompt.trim()) 
+                  ? "#9C27B0" 
+                  : "#ddd",
               color: "white",
               border: "none",
               borderRadius: "12px",
-              cursor: isGeneratingImage || !content.trim() ? "not-allowed" : "pointer",
+              cursor: 
+                isGeneratingImage || 
+                (imagePromptMode === "auto" && !content.trim()) ||
+                (imagePromptMode === "manual" && !customImagePrompt.trim())
+                  ? "not-allowed" 
+                  : "pointer",
               fontWeight: "600",
               boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
             }}

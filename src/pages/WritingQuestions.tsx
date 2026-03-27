@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { safeGeminiCall } from "../services/geminiService";
+import { startListening, isSpeechRecognitionSupported } from "../services/speechRecognitionService";
 
 export default function WritingQuestions() {
   const navigate = useNavigate();
@@ -18,6 +19,9 @@ export default function WritingQuestions() {
   // 질문 답변 상태
   const [answers, setAnswers] = useState<{ [key: string]: string }>({});
   const [isGenerating, setIsGenerating] = useState(false);
+  
+  // 음성 입력 상태
+  const [listeningQuestionId, setListeningQuestionId] = useState<string | null>(null);
 
   // 장르별 질문 정의
   const questions: { [key: string]: { id: string; question: string; placeholder: string }[] } = {
@@ -75,6 +79,51 @@ export default function WritingQuestions() {
       ...answers,
       [id]: value
     });
+  };
+
+  // 🎤 음성 입력 핸들러
+  const handleVoiceInput = (questionId: string) => {
+    if (!isSpeechRecognitionSupported()) {
+      alert("이 브라우저는 음성 인식을 지원하지 않습니다.\n\nChrome, Edge, Safari 브라우저를 사용해주세요.");
+      return;
+    }
+
+    if (listeningQuestionId === questionId) {
+      // 이미 해당 질문에서 듣는 중이면 중지
+      setListeningQuestionId(null);
+      return;
+    }
+
+    setListeningQuestionId(questionId);
+
+    const stopListening = startListening({
+      onResult: (text, isFinal) => {
+        if (isFinal) {
+          // ✅ 최종 결과만 텍스트에 추가
+          setAnswers((prevAnswers) => {
+            const currentAnswer = prevAnswers[questionId] || "";
+            return {
+              ...prevAnswers,
+              [questionId]: currentAnswer + (currentAnswer ? " " : "") + text
+            };
+          });
+        }
+      },
+      onError: (error) => {
+        alert(error);
+        setListeningQuestionId(null);
+      },
+      onEnd: () => {
+        console.log("🎤 음성 인식 자동 종료");
+        setListeningQuestionId(null);
+      }
+    });
+
+    // 컴포넌트가 언마운트될 때 음성 인식 중지
+    return () => {
+      stopListening();
+      setListeningQuestionId(null);
+    };
   };
 
   // AI 초안 생성
@@ -159,12 +208,20 @@ export default function WritingQuestions() {
   };
 
   return (
-    <main style={{
-      padding: "20px",
-      maxWidth: "800px",
-      margin: "0 auto",
-      minHeight: "100vh",
-    }}>
+    <>
+      <style>{`
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.3; }
+        }
+      `}</style>
+      
+      <main style={{
+        padding: "20px",
+        maxWidth: "800px",
+        margin: "0 auto",
+        minHeight: "100vh",
+      }}>
       {/* 헤더 */}
       <div style={{
         display: "flex",
@@ -243,15 +300,52 @@ export default function WritingQuestions() {
               marginBottom: "20px",
             }}
           >
-            <label style={{
-              display: "block",
-              fontSize: "20px",
-              fontWeight: "600",
-              color: "#333",
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
               marginBottom: "15px",
             }}>
-              {index + 1}. {q.question}
-            </label>
+              <label style={{
+                fontSize: "20px",
+                fontWeight: "600",
+                color: "#333",
+              }}>
+                {index + 1}. {q.question}
+              </label>
+              <button
+                onClick={() => handleVoiceInput(q.id)}
+                disabled={isGenerating}
+                style={{
+                  padding: "10px 16px",
+                  fontSize: "16px",
+                  backgroundColor: listeningQuestionId === q.id ? "#E91E63" : "#E91E63",
+                  color: "white",
+                  border: listeningQuestionId === q.id ? "2px solid #C2185B" : "none",
+                  borderRadius: "8px",
+                  cursor: isGenerating ? "not-allowed" : "pointer",
+                  fontWeight: "600",
+                  boxShadow: listeningQuestionId === q.id ? "0 0 20px rgba(233, 30, 99, 0.5)" : "0 2px 4px rgba(0,0,0,0.1)",
+                  animation: listeningQuestionId === q.id ? "pulse 1.5s ease-in-out infinite" : "none",
+                  position: "relative",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {listeningQuestionId === q.id ? "⏹️ 중지" : "🎤 음성"}
+                {listeningQuestionId === q.id && (
+                  <span style={{
+                    position: "absolute",
+                    top: "-6px",
+                    right: "-6px",
+                    width: "12px",
+                    height: "12px",
+                    backgroundColor: "#4CAF50",
+                    borderRadius: "50%",
+                    animation: "blink 1s ease-in-out infinite"
+                  }}></span>
+                )}
+              </button>
+            </div>
             <textarea
               value={answers[q.id] || ""}
               onChange={(e) => handleAnswerChange(q.id, e.target.value)}
@@ -329,5 +423,6 @@ export default function WritingQuestions() {
         💡 <strong>도움말:</strong> 간단하게 답변하셔도 괜찮아요! AI가 자연스럽게 확장해드립니다.
       </div>
     </main>
+    </>
   );
 }

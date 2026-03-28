@@ -7,44 +7,30 @@ export default function NovelGenreSelect() {
     {
       key: "fantasy",
       label: "🧙‍♂️ 판타지",
-      desc: "마법과 모험이 가득한 환상의 세계",
+      desc: "현실 너머의 신비로운 사건이 펼쳐지는 이야기",
       emoji: "✨",
-      examples: "마법사, 용, 마법의 검, 다른 세계..."
+      examples: "마법, 신비로운 문, 이상한 징조, 평범함 속 비현실..."
     },
     {
       key: "romance",
       label: "💕 로맨스",
-      desc: "따뜻한 사랑 이야기",
+      desc: "만남과 감정의 변화가 중심이 되는 이야기",
       emoji: "💝",
-      examples: "첫사랑, 재회, 운명적인 만남..."
-    },
-    {
-      key: "mystery",
-      label: "🔍 추리",
-      desc: "수수께끼를 풀어가는 이야기",
-      emoji: "🕵️",
-      examples: "사건, 단서, 범인 찾기, 미스터리..."
+      examples: "첫 만남, 재회, 시선, 마음의 흔들림..."
     },
     {
       key: "healing",
       label: "🌿 힐링",
-      desc: "마음을 위로하는 따뜻한 이야기",
+      desc: "일상 속 위로와 따뜻한 변화를 담은 이야기",
       emoji: "☕",
-      examples: "일상, 평화, 치유, 성장..."
+      examples: "조용한 공간, 작은 행동, 느린 감정, 쉼..."
     },
     {
-      key: "historical",
-      label: "🏛️ 대하소설",
-      desc: "역사적 배경의 장대한 이야기",
-      emoji: "📜",
-      examples: "역사, 가문, 시대적 배경, 대를 잇는 이야기..."
-    },
-    {
-      key: "adventure",
-      label: "🗺️ 모험",
-      desc: "흥미진진한 여행과 탐험",
-      emoji: "⛵",
-      examples: "탐험, 보물찾기, 여행, 새로운 세계..."
+      key: "mystery",
+      label: "🔍 미스터리",
+      desc: "비밀과 단서를 따라가는 궁금한 이야기",
+      emoji: "🕵️",
+      examples: "설명되지 않는 일, 수상한 물건, 낯선 흔적, 반전..."
     }
   ];
 

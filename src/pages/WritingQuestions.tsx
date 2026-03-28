@@ -10,11 +10,13 @@ export default function WritingQuestions() {
     genre: string;
     genreLabel: string;
     genreGuide: string;
+    novelSubGenre?: string;
   } | undefined;
 
   const genre = state?.genre || "poem";
   const genreLabel = state?.genreLabel || "";
   const genreGuide = state?.genreGuide || "";
+  const novelSubGenre = state?.novelSubGenre || "";
 
   // 질문 답변 상태
   const [answers, setAnswers] = useState<{ [key: string]: string }>({});
@@ -71,7 +73,63 @@ export default function WritingQuestions() {
     ]
   };
 
-  const currentQuestions = questions[genre] || questions.poem;
+  // 소설 하위 장르별 맞춤 질문
+  const getNovelQuestions = (subGenre: string) => {
+    const baseQuestions = questions.novel;
+    
+    // 장르별 맞춤 플레이스홀더
+    const customPlaceholders: { [key: string]: any } = {
+      fantasy: {
+        protagonist: "예: 마법사 소년, 용을 키우는 소녀, 마법 검을 가진 기사...",
+        setting: "예: 마법 학교, 드래곤의 왕국, 마법의 숲, 다른 차원의 세계...",
+        conflict: "예: 어둠의 마법사를 물리치기, 마법의 보물 찾기, 저주 풀기...",
+        mood: "예: 신비롭고 모험적인, 마법으로 가득한, 환상적이고 웅장한..."
+      },
+      romance: {
+        protagonist: "예: 첫사랑을 만난 청년, 오랜 친구, 운명적으로 만난 두 사람...",
+        setting: "예: 작은 카페, 시골 마을, 아름다운 해변, 학교...",
+        conflict: "예: 오해로 인한 갈등, 재회, 멀리 떨어져 있기, 고백...",
+        mood: "예: 따뜻하고 감동적인, 설레는, 애틋한, 행복한..."
+      },
+      mystery: {
+        protagonist: "예: 명탐정, 호기심 많은 소년, 경찰관, 평범한 사람...",
+        setting: "예: 오래된 저택, 작은 마을, 도시, 학교...",
+        conflict: "예: 사라진 보물 찾기, 범인 찾기, 미스터리 풀기, 단서 조사...",
+        mood: "예: 긴장감 넘치는, 미스터리한, 추리가 필요한, 흥미진진한..."
+      },
+      healing: {
+        protagonist: "예: 지친 직장인, 시골에 온 도시 사람, 할머니, 고양이...",
+        setting: "예: 평화로운 시골, 조용한 카페, 작은 정원, 바닷가 마을...",
+        conflict: "예: 마음의 상처 치유하기, 일상 속 작은 기쁨 찾기, 새로운 시작...",
+        mood: "예: 따뜻하고 평화로운, 위로가 되는, 잔잔한, 희망적인..."
+      },
+      historical: {
+        protagonist: "예: 장군, 왕족, 평민 출신 영웅, 가문의 어른...",
+        setting: "예: 조선시대, 고려 왕조, 전쟁터, 궁궐, 시대적 격변기...",
+        conflict: "예: 나라를 지키기, 가문의 명예, 역사적 사건, 시대의 변화...",
+        mood: "예: 장대하고 웅장한, 역사적인, 감동적인, 교훈적인..."
+      },
+      adventure: {
+        protagonist: "예: 모험가, 탐험가, 보물 사냥꾼, 여행자...",
+        setting: "예: 미지의 섬, 정글, 사막, 바다, 산맥...",
+        conflict: "예: 보물 찾기, 위험한 여정, 미지의 땅 탐험, 구출 작전...",
+        mood: "예: 흥미진진한, 모험적인, 긴장감 넘치는, 용감한..."
+      }
+    };
+
+    if (subGenre && customPlaceholders[subGenre]) {
+      return baseQuestions.map(q => ({
+        ...q,
+        placeholder: customPlaceholders[subGenre][q.id] || q.placeholder
+      }));
+    }
+    
+    return baseQuestions;
+  };
+
+  const currentQuestions = genre === "novel" && novelSubGenre 
+    ? getNovelQuestions(novelSubGenre)
+    : (questions[genre] || questions.poem);
 
   // 답변 입력 핸들러
   const handleAnswerChange = (id: string, value: string) => {
@@ -158,9 +216,22 @@ export default function WritingQuestions() {
         title = `${answers.subject}에 대한 시`;
 
       } else if (genre === "novel") {
-        // 소설 초안 생성
+        // 소설 초안 생성 - 장르별 맞춤 프롬프트
+        const genrePrompts: { [key: string]: string } = {
+          fantasy: `마법과 환상이 가득한 판타지 소설의 도입부를 작성해주세요. 신비로운 분위기와 모험의 설렘이 느껴지도록 해주세요.`,
+          romance: `따뜻하고 설레는 로맨스 소설의 도입부를 작성해주세요. 두 사람의 첫 만남이나 관계가 시작되는 순간을 감동적으로 표현해주세요.`,
+          mystery: `긴장감 넘치는 추리 소설의 도입부를 작성해주세요. 미스터리한 사건과 단서를 제시하며 독자의 호기심을 자극해주세요.`,
+          healing: `마음을 위로하는 힐링 소설의 도입부를 작성해주세요. 평화롭고 따뜻한 분위기로 독자에게 안정감을 주세요.`,
+          historical: `역사적 배경의 대하소설 도입부를 작성해주세요. 시대적 분위기와 장대한 이야기의 시작을 웅장하게 표현해주세요.`,
+          adventure: `흥미진진한 모험 소설의 도입부를 작성해주세요. 탐험과 모험의 설렘이 가득하도록 역동적으로 표현해주세요.`
+        };
+
+        const genreInstruction = novelSubGenre && genrePrompts[novelSubGenre] 
+          ? genrePrompts[novelSubGenre]
+          : "짧은 소설의 도입부를 작성해주세요.";
+
         prompt = `
-다음 정보를 바탕으로 짧은 소설의 도입부를 작성해주세요:
+다음 정보를 바탕으로 ${genreInstruction}
 
 - 주인공: ${answers.protagonist}
 - 배경: ${answers.setting}

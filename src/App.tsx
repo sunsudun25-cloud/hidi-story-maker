@@ -15,6 +15,7 @@ import WriteStart from './pages/WriteStart'
 import WriteEditor from './pages/WriteEditor'
 import WritingPracticeNew from './pages/WritingPracticeNew'
 import WritingGenre from './pages/WritingGenre'
+import NovelGenreSelect from './pages/NovelGenreSelect'
 import WritingQuestions from './pages/WritingQuestions'
 import WritingAiQuestions from './pages/WritingAiQuestions'
 import FourcutInterviewTheme from './pages/FourcutInterviewTheme'
@@ -133,6 +134,7 @@ function AppContent() {
           <Route path="/writing/photo" element={<WritingPhoto />} />
           <Route path="/writing/voice" element={<WritingVoice />} />
           <Route path="/writing/genre" element={<WritingGenre />} />
+          <Route path="/writing/novel/genre" element={<NovelGenreSelect />} />
           <Route path="/writing/genre/questions" element={<WritingQuestions />} />
           <Route path="/writing/questions" element={<WritingAiQuestions />} />
           <Route path="/writing/help" element={<WritingHelp />} />

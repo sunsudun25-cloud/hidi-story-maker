@@ -67,8 +67,12 @@ export default function WritingGenre() {
                 if (g.key === "fourcut") {
                   navigate("/write/fourcut-theme");
                 }
-                // 시와 소설은 질문 페이지로
-                else if (g.key === "poem" || g.key === "novel") {
+                // 소설은 장르 선택 페이지로
+                else if (g.key === "novel") {
+                  navigate("/writing/novel/genre");
+                }
+                // 시는 질문 페이지로
+                else if (g.key === "poem") {
                   navigate("/writing/genre/questions", { 
                     state: { 
                       genre: g.key, 

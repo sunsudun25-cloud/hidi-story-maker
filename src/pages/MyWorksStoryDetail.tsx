@@ -40,6 +40,22 @@ export default function MyWorksStoryDetail() {
     }
   };
 
+  // 이어서 쓰기
+  const handleContinueWriting = () => {
+    if (!story) return;
+
+    // 편집기로 이동하며 기존 내용과 장르 정보 전달
+    navigate("/write/editor", {
+      state: {
+        genre: story.genre || "novel",
+        label: story.title,
+        content: story.content,
+        id: story.id,
+        // novelSubGenre 정보가 있으면 전달 (추후 확장 가능)
+      }
+    });
+  };
+
   // 선생님께 제출하기
   const handleSubmit = async () => {
     if (!story) return;
@@ -435,24 +451,32 @@ export default function MyWorksStoryDetail() {
 
         {/* 액션 버튼들 - 통일된 큰 버튼 스타일 */}
         <div className="flex flex-col gap-3">
-          {/* 1행: 선생님께 제출하기 + 다운로드 */}
+          {/* 1행: 이어서 쓰기 (전체 너비, 강조) */}
+          <button
+            onClick={handleContinueWriting}
+            className="w-full py-5 px-5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl text-[18px] font-bold hover:from-blue-600 hover:to-cyan-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+          >
+            ✏️ 이어서 쓰기
+          </button>
+
+          {/* 2행: 선생님께 제출하기 + 다운로드 */}
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="py-5 px-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-[17px] font-bold hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="py-4 px-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-[16px] font-bold hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "제출 중..." : "📤 선생님께 제출하기"}
             </button>
             <button
               onClick={handleDownload}
-              className="py-5 px-5 bg-emerald-500 text-white rounded-xl text-[17px] font-bold hover:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg"
+              className="py-4 px-4 bg-emerald-500 text-white rounded-xl text-[16px] font-bold hover:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg"
             >
               📥 다운로드
             </button>
           </div>
 
-          {/* 2행: PDF파일로 저장 + 삭제 */}
+          {/* 3행: PDF파일로 저장 + 삭제 */}
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={handleExportPDF}

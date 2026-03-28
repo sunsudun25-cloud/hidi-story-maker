@@ -161,10 +161,18 @@ ${text}
 
       {/* 메인 영역 */}
       <div className="p-5">
+        {/* 제목 표시 (수정 모드일 때) */}
+        {isEditMode && label && (
+          <div className="mb-4 p-4 bg-blue-50 rounded-xl border-2 border-blue-200">
+            <p className="text-sm text-blue-600 font-semibold mb-1">작품 제목</p>
+            <h2 className="text-xl font-bold text-gray-800">{label}</h2>
+          </div>
+        )}
+
         {/* 글자 수 카운터 */}
         <div className="flex justify-between items-center mb-3">
           <p className="text-lg text-gray-600 font-semibold">
-            {isEditMode ? "📝 수정 중..." : "✍️ 작성 중..."}
+            {isEditMode ? "✏️ 이어서 쓰기..." : "✍️ 작성 중..."}
           </p>
           <p className="text-sm text-gray-500">
             {text.length} 글자

@@ -324,13 +324,16 @@ ${guideText} 3개를 만들어주세요.
 /** 이어쓰기 샘플 생성 (Cloudflare Functions 사용) */
 export async function generateContinuationSamples(
   currentText: string,
-  mood?: string
+  mood?: string,
+  genre?: string,
+  novelSubGenre?: string
 ): Promise<string[]> {
   try {
     // ✅ Cloudflare Pages Functions 사용 (Firebase Functions 대체)
     const apiUrl = `${window.location.origin}/api/continue-writing`;
     
     console.log('📝 [generateContinuationSamples] API 호출:', apiUrl);
+    console.log('📝 [generateContinuationSamples] 장르:', genre, novelSubGenre);
     
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -340,6 +343,8 @@ export async function generateContinuationSamples(
       body: JSON.stringify({
         currentText,
         mood: mood || "자연스럽고 부드럽게",
+        genre,
+        novelSubGenre,
         count: 3
       })
     });

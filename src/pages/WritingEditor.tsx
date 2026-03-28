@@ -9,7 +9,7 @@ export default function WritingEditor() {
   const navigate = useNavigate();
   const { addStory, updateStory } = useStory();
 
-  const { genre, label, content, id, initialText } = location.state || {};
+  const { genre, label, content, id, initialText, novelSubGenre } = location.state || {};
 
   // 수정 모드인 경우 기존 content 로드, AI 질문에서 온 경우 initialText 사용
   const [text, setText] = useState(content || initialText || "");
@@ -57,7 +57,7 @@ export default function WritingEditor() {
     setShowSamples(false);
 
     try {
-      const samples = await generateContinuationSamples(text);
+      const samples = await generateContinuationSamples(text, undefined, genre, novelSubGenre);
       setContinuationSamples(samples);
       setShowSamples(true);
     } catch (error) {

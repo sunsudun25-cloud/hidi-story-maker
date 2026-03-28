@@ -284,6 +284,7 @@ ${genreData.opening}
           genre: genre,
           genreLabel: genreLabel,
           genreGuide: genreGuide,
+          novelSubGenre: novelSubGenre,
           title: title,
           initialContent: draft
         }
@@ -303,7 +304,8 @@ ${genreData.opening}
       state: {
         genre: genre,
         genreLabel: genreLabel,
-        genreGuide: genreGuide
+        genreGuide: genreGuide,
+        novelSubGenre: novelSubGenre
       }
     });
   };

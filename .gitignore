@@ -16,7 +16,7 @@ node_modules/
 .wrangler
 
 # Firebase Functions (deployed separately, not for Cloudflare Pages)
-functions/
+# functions/ - COMMENTED OUT: Cloudflare Pages needs functions/api/
 .firebase/
 
 # env

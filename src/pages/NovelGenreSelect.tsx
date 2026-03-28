@@ -52,7 +52,7 @@ export default function NovelGenreSelect() {
     navigate("/writing/genre/questions", {
       state: {
         genre: "novel",
-        genreLabel: `📚 소설 (${genreLabel})`,
+        genreLabel: genreLabel,
         genreGuide: "등장인물 → 배경 → 사건 → 결말 순으로",
         novelSubGenre: genreKey
       }
@@ -87,7 +87,7 @@ export default function NovelGenreSelect() {
           ← 뒤로
         </button>
         <h1 style={{ fontSize: "28px", fontWeight: "bold", margin: 0 }}>
-          📚 소설 장르 선택
+          📚 장르 선택
         </h1>
         <button
           onClick={() => navigate("/home")}

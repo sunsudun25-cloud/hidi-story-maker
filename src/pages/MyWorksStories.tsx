@@ -118,10 +118,25 @@ export default function MyWorksStories() {
                 e.currentTarget.style.boxShadow = "none";
               }}
             >
-              {/* 제목 */}
-              <h3 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "8px", color: "#1F2937" }}>
-                {story.title}
-              </h3>
+              {/* 제목 + 장르 배지 */}
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                <h3 style={{ fontSize: "18px", fontWeight: "bold", color: "#1F2937" }}>
+                  {story.title}
+                </h3>
+                {story.genre === 'novel' && (
+                  <span style={{
+                    display: "inline-block",
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    padding: "2px 8px",
+                    backgroundColor: "#E0E7FF",
+                    color: "#4338CA",
+                    borderRadius: "6px"
+                  }}>
+                    📚 소설
+                  </span>
+                )}
+              </div>
 
               {/* 내용 미리보기 */}
               <p

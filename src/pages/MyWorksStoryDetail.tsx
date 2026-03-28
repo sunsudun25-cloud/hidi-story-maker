@@ -366,10 +366,38 @@ export default function MyWorksStoryDetail() {
         </div>
 
         {/* 내용 */}
-        <div className="bg-gray-50 rounded-2xl p-4 mb-6">
-          <p className="text-[16px] text-gray-700 whitespace-pre-line leading-relaxed">
-            {story.content}
-          </p>
+        <div className="bg-white rounded-2xl p-6 mb-6 shadow-md" style={{
+          backgroundColor: story.genre === 'novel' ? '#FFFFFF' : '#F9FAFB',
+          border: story.genre === 'novel' ? '1px solid #E5E7EB' : 'none'
+        }}>
+          {story.genre === 'novel' ? (
+            // 웹소설 형식 (novel 장르)
+            <div className="prose prose-lg max-w-none" style={{
+              fontSize: '18px',
+              lineHeight: '2.0',
+              letterSpacing: '0.5px',
+              fontFamily: "'Noto Serif KR', 'Georgia', serif"
+            }}>
+              {story.content.split('\n').map((paragraph, index) => (
+                paragraph.trim() ? (
+                  <p key={index} style={{
+                    marginBottom: '1.5em',
+                    textIndent: '2em',
+                    color: '#1F2937'
+                  }}>
+                    {paragraph}
+                  </p>
+                ) : (
+                  <div key={index} style={{ height: '1em' }} />
+                )
+              ))}
+            </div>
+          ) : (
+            // 기존 형식 (일기, 편지, 수필, 시 등)
+            <p className="text-[16px] text-gray-700 whitespace-pre-line leading-relaxed">
+              {story.content}
+            </p>
+          )}
         </div>
 
         {/* 첨부 이미지들 */}

@@ -6,6 +6,7 @@ export interface Story {
   id: string
   title: string
   content: string
+  genre?: string        // 장르 정보 (novel, poem, diary 등)
   image?: string        // 선택적 이미지 필드
   description?: string  // 선택적 설명 필드
   createdAt: Date | string
@@ -15,9 +16,9 @@ export interface Story {
 // Context 타입 정의
 interface StoryContextType {
   stories: Story[]
-  addStory: (title: string, content: string) => Promise<void>
-  addStoryWithImage: (title: string, content: string, image?: string, description?: string) => Promise<void>
-  updateStory: (id: string, title: string, content: string) => Promise<void>
+  addStory: (title: string, content: string, genre?: string) => Promise<void>
+  addStoryWithImage: (title: string, content: string, image?: string, description?: string, genre?: string) => Promise<void>
+  updateStory: (id: string, title: string, content: string, genre?: string) => Promise<void>
   deleteStory: (id: string) => Promise<void>
   getStory: (id: string) => Story | undefined
   clearAll: () => Promise<void>
@@ -68,13 +69,21 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
   }, [])
 
   // 스토리 추가
-  const addStory = async (title: string, content: string) => {
+  const addStory = async (title: string, content: string, genre?: string) => {
     try {
-      const newStory = await db.saveStory(title, content)
+      const storyData: db.Story = {
+        id: crypto.randomUUID(),
+        title,
+        content,
+        genre,
+        createdAt: new Date().toISOString(),
+      }
+      const newStoryId = await db.saveStory(storyData)
       const normalizedStory: Story = {
-        ...newStory,
-        createdAt: new Date(newStory.createdAt),
-        updatedAt: new Date(newStory.updatedAt || newStory.createdAt),
+        ...storyData,
+        id: newStoryId,
+        createdAt: new Date(storyData.createdAt),
+        updatedAt: new Date(storyData.createdAt),
       }
       setStories((prev) => [...prev, normalizedStory])
     } catch (error) {
@@ -88,14 +97,25 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
     title: string,
     content: string,
     image?: string,
-    description?: string
+    description?: string,
+    genre?: string
   ) => {
     try {
-      const newStory = await db.saveStory(title, content, image, description)
+      const storyData: db.Story = {
+        id: crypto.randomUUID(),
+        title,
+        content,
+        genre,
+        image,
+        description,
+        createdAt: new Date().toISOString(),
+      }
+      const newStoryId = await db.saveStory(storyData)
       const normalizedStory: Story = {
-        ...newStory,
-        createdAt: new Date(newStory.createdAt),
-        updatedAt: new Date(newStory.updatedAt || newStory.createdAt),
+        ...storyData,
+        id: newStoryId,
+        createdAt: new Date(storyData.createdAt),
+        updatedAt: new Date(storyData.createdAt),
       }
       setStories((prev) => [...prev, normalizedStory])
     } catch (error) {
@@ -105,7 +125,7 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
   }
 
   // 스토리 업데이트
-  const updateStory = async (id: string, title: string, content: string) => {
+  const updateStory = async (id: string, title: string, content: string, genre?: string) => {
     const existingStory = stories.find((story) => story.id === id)
     if (!existingStory) {
       throw new Error('스토리를 찾을 수 없습니다.')
@@ -115,11 +135,12 @@ export const StoryProvider = ({ children }: StoryProviderProps) => {
       ...existingStory,
       title,
       content,
+      genre: genre !== undefined ? genre : existingStory.genre,
       updatedAt: new Date(),
     }
 
     try {
-      await db.updateStory(updatedStory)
+      await db.updateStory(id, updatedStory)
       setStories((prev) =>
         prev.map((story) => {
           if (story.id === id) {

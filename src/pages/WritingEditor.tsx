@@ -112,13 +112,13 @@ ${text}
       if (isEditMode) {
         try {
           // IndexedDB 저장 시도
-          await updateStory(id, label, text);
+          await updateStory(id, label, text, genre);
           alert("✅ 수정되었습니다!");
         } catch (err) {
           console.warn("⚠ IndexedDB 수정 실패 → localStorage fallback 적용", err);
 
           // localStorage에 백업 저장 (안전 래퍼 사용)
-          const backup = { id, label, text, updatedAt: Date.now() };
+          const backup = { id, label, text, genre, updatedAt: Date.now() };
           safeStorageSet(`story-backup-${id}`, backup);
           
           alert("✅ 수정되었습니다! (임시 저장)");
@@ -126,14 +126,14 @@ ${text}
       } else {
         try {
           // 새 글 저장
-          await addStory(label, text);
+          await addStory(label, text, genre);
           alert("✅ 저장되었습니다!");
         } catch (err) {
           console.warn("⚠ IndexedDB 저장 실패 → localStorage fallback 적용", err);
 
           // localStorage 임시 저장 (안전 래퍼 사용)
           const tempId = `story-temp-${Date.now()}`;
-          const backup = { id: tempId, label, text, createdAt: Date.now() };
+          const backup = { id: tempId, label, text, genre, createdAt: Date.now() };
           safeStorageSet(tempId, backup);
 
           alert("✅ 저장되었습니다! (임시 저장)");

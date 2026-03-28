@@ -175,14 +175,57 @@ ${text}
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="여기에 글을 작성하세요..."
+          placeholder={genre === 'novel' ? '여기에 소설을 작성하세요...\n\n각 문단은 자동으로 들여쓰기가 적용됩니다.' : '여기에 글을 작성하세요...'}
+          style={{
+            fontFamily: genre === 'novel' ? "'Noto Serif KR', 'Georgia', serif" : 'inherit',
+            fontSize: genre === 'novel' ? '18px' : '16px',
+            lineHeight: genre === 'novel' ? '2.0' : '1.6',
+            letterSpacing: genre === 'novel' ? '0.5px' : 'normal'
+          }}
           className="
-            w-full h-[350px] p-4 text-lg
+            w-full h-[350px] p-4
             border-2 rounded-xl border-gray-300
             focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent
-            resize-none leading-relaxed
+            resize-none
           "
         />
+
+        {/* 소설 미리보기 (novel 장르일 때만) */}
+        {genre === 'novel' && text.trim() && (
+          <div className="mt-4 p-6 bg-white rounded-2xl border-2 border-blue-200">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-bold text-blue-800">
+                📖 웹소설 미리보기
+              </h3>
+              <p className="text-sm text-gray-500">저장 후 이렇게 표시됩니다</p>
+            </div>
+            <div 
+              className="prose prose-lg max-w-none bg-gray-50 rounded-xl p-4"
+              style={{
+                fontSize: '18px',
+                lineHeight: '2.0',
+                letterSpacing: '0.5px',
+                fontFamily: "'Noto Serif KR', 'Georgia', serif",
+                maxHeight: '400px',
+                overflowY: 'auto'
+              }}
+            >
+              {text.split('\n').map((paragraph, index) => (
+                paragraph.trim() ? (
+                  <p key={index} style={{
+                    marginBottom: '1.5em',
+                    textIndent: '2em',
+                    color: '#1F2937'
+                  }}>
+                    {paragraph}
+                  </p>
+                ) : (
+                  <div key={index} style={{ height: '1em' }} />
+                )
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 이어쓰기 샘플 표시 */}
         {showSamples && continuationSamples.length > 0 && (

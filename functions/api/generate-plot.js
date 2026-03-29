@@ -93,18 +93,34 @@ export async function onRequest(context) {
       );
     }
 
-    // 📖 줄거리 생성 프롬프트 구성
-    const prompt = `당신은 소설 줄거리를 기획하는 전문가입니다.
+    // 📖 줄거리 생성 프롬프트 구성 (더욱 강력한 지시)
+    const prompt = `당신은 반드시 지정된 형식을 따라야 하는 소설 줄거리 작성 AI입니다.
 
-사용자 정보:
+다음 정보를 바탕으로 기승전결 줄거리를 작성하세요:
 - 주인공: ${answers.protagonist}
 - 배경: ${answers.setting}
 - 사건: ${answers.conflict}
 - 분위기: ${answers.mood}
 
-위 정보로 기승전결 구조의 줄거리를 작성하세요.
+장르 스타일:
+- ${guide.tone}
+- ${guide.style}
 
-출력 형식 예시:
+⚠️ 필수 출력 형식 (절대 변경 금지):
+
+[기]
+시작 부분을 2-3문장으로 작성
+
+[승]
+전개 부분을 2-3문장으로 작성
+
+[전]
+위기 부분을 2-3문장으로 작성
+
+[결]
+결말 부분을 2-3문장으로 작성
+
+출력 예시:
 
 [기]
 사랑할 여유 없이 고시촌에서 살아가던 철수는 비 오는 날 편의점 앞에서 젖은 케이크를 들고 서 있는 영희를 만난다. 우연한 도움으로 시작된 짧은 인연은 철수의 무미건조한 일상에 잔잔한 파문을 만든다.
@@ -118,12 +134,13 @@ export async function onRequest(context) {
 [결]
 결국 철수는 처음 만났던 그 자리에서 다시 용기를 낸다. 멈춰 있던 자신의 삶을 조금씩 바꾸기 시작하며, 영희에게도 진심을 전한다.
 
-반드시 위와 똑같은 형식으로 작성하세요:
-- [기], [승], [전], [결] 태그 필수
-- 각 단계마다 2-3문장
-- 구연동화체 금지 ("~답니다", "~였단다" 등)
-- ${guide.tone}
-- ${guide.style}`;
+규칙:
+1. 반드시 [기], [승], [전], [결] 태그를 각 줄 시작 부분에 넣으세요
+2. 각 부분은 2-3문장으로 구성
+3. 구연동화체 금지 (~답니다, ~였단다 등 사용 금지)
+4. 위 형식을 정확히 따라야 합니다
+
+지금 [기]부터 시작하여 위 형식으로 작성하세요:`;
 
     console.log('📖 [generate-plot] 줄거리 생성 시작:', genre);
 
@@ -279,26 +296,20 @@ function parsePlot(rawText) {
     conclusion: conclusion ? `✅ (${conclusion.length}자)` : '❌'
   });
   
-  // 🔧 백업: 파싱 실패 시 전체 텍스트를 4등분
+  // 🔧 백업: 파싱 실패 시 원본 텍스트를 그대로 사용
   const emptyCount = [beginning, development, turn, conclusion].filter(x => !x).length;
   
   if (emptyCount >= 2) {
-    console.warn('⚠️ 파싱 실패가 많아 백업 전략 사용: 텍스트 4등분');
+    console.warn('⚠️ 파싱 실패 - 원본 텍스트를 전체 줄거리로 사용');
+    console.log('📄 원본 텍스트:', text);
     
-    // 줄바꿈으로 문단 분리
-    const paragraphs = text.split(/\n\n+/).filter(p => p.trim().length > 10);
-    
-    if (paragraphs.length >= 4) {
-      plot.beginning = plot.beginning || paragraphs[0].trim();
-      plot.development = plot.development || paragraphs[1].trim();
-      plot.turn = plot.turn || paragraphs[2].trim();
-      plot.conclusion = plot.conclusion || paragraphs[3].trim();
-      console.log('✅ 백업 전략으로 4개 문단 할당 완료');
-    } else {
-      // 최악의 경우: 전체 텍스트를 기에만 넣기
-      plot.beginning = plot.beginning || text.trim();
-      console.log('⚠️ 최종 백업: 전체 텍스트를 기에 할당');
-    }
+    // 파싱 실패 시 원본 텍스트 전체를 하나의 문자열로 반환
+    return {
+      beginning: text.trim(),  // 전체 텍스트를 하나의 줄거리로 표시
+      development: "",
+      turn: "",
+      conclusion: ""
+    };
   }
 
   return plot;

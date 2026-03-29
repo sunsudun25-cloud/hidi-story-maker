@@ -1130,7 +1130,7 @@ ${content}
     };
   };
 
-  // ✍️ 손글씨/인쇄물 인식
+  // ✍️ 손글씨/인쇄물 인식 (OCR - 글자 읽기)
   const handleHandwritingInput = async () => {
     // 사용자에게 손글씨/인쇄물 선택
     const choice = confirm("📸 사진 속 텍스트 인식\n\n인쇄물(책, 신문 등)이면 '확인'을 누르세요.\n손글씨면 '취소'를 누르세요.");
@@ -1158,10 +1158,36 @@ ${content}
         alert("❌ 텍스트를 인식할 수 없습니다.\n\n다음을 확인해주세요:\n1. 글자가 명확하게 보이는지\n2. 사진이 흐릿하지 않은지\n3. 조명이 충분한지\n4. 글자 크기가 너무 작지 않은지");
       }
     } catch (error) {
-      console.error("❌ [WriteEditor] 손글씨 분석 실패:", error);
-      alert("❌ 손글씨 분석 중 오류가 발생했습니다.\n\n" + (error instanceof Error ? error.message : "알 수 없는 오류"));
+      console.error("❌ [WriteEditor] OCR 분석 실패:", error);
+      alert("❌ 텍스트 인식 중 오류가 발생했습니다.\n\n" + (error instanceof Error ? error.message : "알 수 없는 오류"));
     } finally {
       setIsAnalyzing(false);
+    }
+  };
+
+  // 🖼️ 사진/그림 직접 업로드 (스토리에 삽입용)
+  const handleDirectImageUpload = async () => {
+    try {
+      console.log("📤 [이미지 업로드] 시작");
+      
+      // 이미지 파일 선택 및 업로드
+      const result = await uploadImage(true);
+      
+      console.log("✅ [이미지 업로드] 완료:", result.url.substring(0, 50));
+      
+      // 스토리 이미지 배열에 추가
+      const newImage: StoryImage = {
+        url: result.url,
+        base64: result.base64,
+        caption: ""
+      };
+      
+      setStoryImages([...storyImages, newImage]);
+      alert("✅ 사진이 추가되었습니다!\n\n아래 '생성된 이미지' 섹션에서 확인할 수 있습니다.");
+      
+    } catch (error) {
+      console.error("❌ [이미지 업로드] 실패:", error);
+      alert("이미지 업로드 중 오류가 발생했습니다.\n\n" + (error instanceof Error ? error.message : "알 수 없는 오류"));
     }
   };
 
@@ -1602,45 +1628,67 @@ ${content}
             </label>
           </div>
           
-          {/* 이미지 생성 버튼 */}
-          <button
-            onClick={handleGenerateImage}
-            disabled={
-              isGeneratingImage || 
-              (imagePromptMode === "auto" && !content.trim()) ||
-              (imagePromptMode === "manual" && !customImagePrompt.trim())
-            }
-            style={{
-              width: "100%",
-              marginTop: "10px",
-              padding: "16px",
-              fontSize: "16px",
-              backgroundColor: 
-                isGeneratingImage ? "#ccc" : 
-                (imagePromptMode === "auto" && content.trim()) || (imagePromptMode === "manual" && customImagePrompt.trim()) 
-                  ? "#9C27B0" 
-                  : "#ddd",
-              color: "white",
-              border: "none",
-              borderRadius: "12px",
-              cursor: 
+          {/* 이미지 버튼 그룹 */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "10px",
+            marginTop: "10px"
+          }}>
+            {/* AI 이미지 생성 버튼 */}
+            <button
+              onClick={handleGenerateImage}
+              disabled={
                 isGeneratingImage || 
                 (imagePromptMode === "auto" && !content.trim()) ||
                 (imagePromptMode === "manual" && !customImagePrompt.trim())
-                  ? "not-allowed" 
-                  : "pointer",
-              fontWeight: "600",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            }}
-          >
-            {isGeneratingImage 
-              ? (genre === "fourcut" ? "🎬 4컷 이미지 생성 중..." : "🎨 이미지 생성 중...") 
-              : (genre === "fourcut" 
-                ? (storyImages.length > 0 ? "➕ 4컷 이미지 추가" : "🎬 4컷 이미지 만들기")
-                : (storyImages.length > 0 ? "➕ 이미지 추가" : "🎨 이미지 만들기")
-              )
-            }
-          </button>
+              }
+              style={{
+                padding: "16px",
+                fontSize: "16px",
+                backgroundColor: 
+                  isGeneratingImage ? "#ccc" : 
+                  (imagePromptMode === "auto" && content.trim()) || (imagePromptMode === "manual" && customImagePrompt.trim()) 
+                    ? "#9C27B0" 
+                    : "#ddd",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                cursor: 
+                  isGeneratingImage || 
+                  (imagePromptMode === "auto" && !content.trim()) ||
+                  (imagePromptMode === "manual" && !customImagePrompt.trim())
+                    ? "not-allowed" 
+                    : "pointer",
+                fontWeight: "600",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              }}
+            >
+              {isGeneratingImage 
+                ? "🎨 생성 중..." 
+                : (storyImages.length > 0 ? "➕ AI 그림 추가" : "🎨 AI 그림 만들기")
+              }
+            </button>
+
+            {/* 사진/그림 직접 업로드 버튼 */}
+            <button
+              onClick={handleDirectImageUpload}
+              disabled={isGeneratingImage}
+              style={{
+                padding: "16px",
+                fontSize: "16px",
+                backgroundColor: isGeneratingImage ? "#ccc" : "#FF9800",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                cursor: isGeneratingImage ? "not-allowed" : "pointer",
+                fontWeight: "600",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              }}
+            >
+              📤 사진 업로드
+            </button>
+          </div>
 
           {/* 일반 이미지 생성 로딩 UI */}
           {isGeneratingImage && genre !== "fourcut" && (

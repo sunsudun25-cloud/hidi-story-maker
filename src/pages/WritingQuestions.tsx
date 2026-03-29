@@ -24,6 +24,16 @@ export default function WritingQuestions() {
   
   // 음성 입력 상태
   const [listeningQuestionId, setListeningQuestionId] = useState<string | null>(null);
+  
+  // 📖 줄거리 미리보기 상태 (소설 전용)
+  const [showPlotPreview, setShowPlotPreview] = useState(false);
+  const [plot, setPlot] = useState<{
+    beginning: string;
+    development: string;
+    turn: string;
+    conclusion: string;
+  } | null>(null);
+  const [isGeneratingPlot, setIsGeneratingPlot] = useState(false);
 
   // 장르별 질문 정의
   const questions: { [key: string]: { id: string; question: string; placeholder: string }[] } = {
@@ -184,7 +194,56 @@ export default function WritingQuestions() {
     };
   };
 
-  // AI 초안 생성
+  // 📖 소설 줄거리 생성 (소설 전용)
+  const handleGeneratePlot = async () => {
+    // 답변 체크
+    const currentQuestions = genre === "novel" 
+      ? getNovelQuestions(novelSubGenre || "")
+      : questions[genre] || [];
+
+    const missingAnswers = currentQuestions.filter(q => !answers[q.id] || !answers[q.id].trim());
+    
+    if (missingAnswers.length > 0) {
+      alert(`모든 질문에 답해주세요:\n\n${missingAnswers.map(q => q.question).join("\n")}`);
+      return;
+    }
+
+    setIsGeneratingPlot(true);
+
+    try {
+      console.log('📖 줄거리 생성 시작:', { genre: novelSubGenre || genre, answers });
+
+      const response = await fetch('/api/generate-plot', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          genre: novelSubGenre || 'fantasy',
+          answers: answers
+        })
+      });
+
+      const data = await response.json();
+
+      if (!data.success || !data.plot) {
+        throw new Error(data.error || '줄거리 생성 실패');
+      }
+
+      console.log('✅ 줄거리 생성 완료:', data.plot);
+
+      setPlot(data.plot);
+      setShowPlotPreview(true);
+
+    } catch (error) {
+      console.error('❌ 줄거리 생성 오류:', error);
+      alert('줄거리 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsGeneratingPlot(false);
+    }
+  };
+
+  // AI 초안 생성 (줄거리 기반)
   const handleGenerateDraft = async () => {
     // 모든 질문에 답변했는지 확인
     const allAnswered = currentQuestions.every((q) => answers[q.id]?.trim());
@@ -216,7 +275,12 @@ export default function WritingQuestions() {
         title = `${answers.subject}에 대한 시`;
 
       } else if (genre === "novel") {
-        // 소설 초안 생성 - 장르별 완전히 다른 시작 방식
+        // 소설 초안 생성 - 줄거리 기반
+        if (!plot) {
+          alert('줄거리를 먼저 생성해주세요.');
+          return;
+        }
+
         const genrePrompts: { [key: string]: { instruction: string; style: string; opening: string } } = {
           fantasy: {
             instruction: "판타지 소설의 도입부를 작성해주세요.",
@@ -249,7 +313,13 @@ export default function WritingQuestions() {
             };
 
         prompt = `
-다음 정보를 바탕으로 ${genreData.instruction}
+다음 줄거리를 바탕으로 ${genreData.instruction}
+
+**기승전결 줄거리:**
+[기] ${plot.beginning}
+[승] ${plot.development}
+[전] ${plot.turn}
+[결] ${plot.conclusion}
 
 **주어진 정보:**
 - 주인공: ${answers.protagonist}
@@ -260,16 +330,14 @@ export default function WritingQuestions() {
 **장르별 시작 방식:**
 ${genreData.style}
 
-**시작 문장 참고 예시:**
-${genreData.opening}
-
 **작성 규칙:**
-1. 도입부는 3-4개의 짧은 문단으로 작성
+1. 위 줄거리의 [기] 부분을 바탕으로 도입부를 3-4개의 짧은 문단으로 작성
 2. 첫 문장은 장르 특성에 맞게 독자의 관심을 끄는 방식으로 시작
 3. "얘들아, 할머니가~" 같은 구연동화체 시작은 절대 사용하지 말 것
 4. 등장인물과 배경을 자연스럽게 소개
 5. 사건의 시작을 암시
 6. 쉽고 읽기 편한 문체 사용
+7. [승], [전], [결] 부분은 사용자가 이어서 쓸 예정이니 [기] 부분만 작성
 
 소설 내용만 출력하고, 제목이나 설명은 포함하지 마세요.
 `;
@@ -472,47 +540,172 @@ ${genreData.opening}
         ))}
       </div>
 
-      {/* 버튼 영역 */}
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "15px",
-      }}>
-        <button
-          onClick={handleGenerateDraft}
-          disabled={isGenerating}
-          style={{
-            padding: "20px",
-            fontSize: "22px",
-            backgroundColor: isGenerating ? "#ccc" : "#4CAF50",
-            color: "white",
-            border: "none",
-            borderRadius: "12px",
-            cursor: isGenerating ? "not-allowed" : "pointer",
+      {/* 📖 줄거리 미리보기 UI (소설 전용) */}
+      {genre === "novel" && showPlotPreview && plot && (
+        <div style={{
+          padding: "30px",
+          backgroundColor: "#F3E5F5",
+          border: "3px solid #9C27B0",
+          borderRadius: "16px",
+          marginBottom: "30px",
+          boxShadow: "0 4px 16px rgba(156, 39, 176, 0.2)",
+        }}>
+          <h2 style={{
+            fontSize: "26px",
             fontWeight: "bold",
-            boxShadow: isGenerating ? "none" : "0 4px 12px rgba(76, 175, 80, 0.3)",
-          }}
-        >
-          {isGenerating ? "⏳ AI가 초안 만드는 중..." : "✨ AI 초안 만들기"}
-        </button>
+            color: "#9C27B0",
+            marginBottom: "25px",
+            textAlign: "center",
+          }}>
+            📖 줄거리 미리보기
+          </h2>
 
-        <button
-          onClick={handleSkip}
-          disabled={isGenerating}
-          style={{
-            padding: "16px",
-            fontSize: "18px",
-            backgroundColor: "white",
-            color: "#666",
-            border: "2px solid #ddd",
-            borderRadius: "12px",
-            cursor: isGenerating ? "not-allowed" : "pointer",
-            fontWeight: "600",
-          }}
-        >
-          건너뛰고 직접 작성하기 →
-        </button>
-      </div>
+          {/* 기승전결 구조 */}
+          <div style={{ marginBottom: "25px" }}>
+            {[
+              { key: 'beginning', label: '기 (시작)', content: plot.beginning, emoji: '📌', color: '#E3F2FD' },
+              { key: 'development', label: '승 (전개)', content: plot.development, emoji: '📈', color: '#FFF3E0' },
+              { key: 'turn', label: '전 (위기)', content: plot.turn, emoji: '⚡', color: '#FFEBEE' },
+              { key: 'conclusion', label: '결 (결말)', content: plot.conclusion, emoji: '✨', color: '#E8F5E9' },
+            ].map((item) => (
+              <div key={item.key} style={{
+                padding: "20px",
+                backgroundColor: item.color,
+                borderRadius: "12px",
+                marginBottom: "15px",
+                border: "2px solid #ddd",
+              }}>
+                <div style={{
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                  color: "#333",
+                  marginBottom: "10px",
+                }}>
+                  {item.emoji} {item.label}
+                </div>
+                <div style={{
+                  fontSize: "16px",
+                  color: "#555",
+                  lineHeight: "1.8",
+                  whiteSpace: "pre-wrap",
+                }}>
+                  {item.content}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* 버튼 영역 */}
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+          }}>
+            <button
+              onClick={handleGenerateDraft}
+              disabled={isGenerating}
+              style={{
+                padding: "20px",
+                fontSize: "22px",
+                backgroundColor: isGenerating ? "#ccc" : "#4CAF50",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                cursor: isGenerating ? "not-allowed" : "pointer",
+                fontWeight: "bold",
+                boxShadow: isGenerating ? "none" : "0 4px 12px rgba(76, 175, 80, 0.3)",
+              }}
+            >
+              {isGenerating ? "⏳ AI가 초안 만드는 중..." : "✅ 이 줄거리로 초안 만들기"}
+            </button>
+
+            <button
+              onClick={handleGeneratePlot}
+              disabled={isGeneratingPlot}
+              style={{
+                padding: "16px",
+                fontSize: "18px",
+                backgroundColor: "white",
+                color: "#9C27B0",
+                border: "2px solid #9C27B0",
+                borderRadius: "12px",
+                cursor: isGeneratingPlot ? "not-allowed" : "pointer",
+                fontWeight: "600",
+              }}
+            >
+              {isGeneratingPlot ? "⏳ 다시 만드는 중..." : "🔄 줄거리 다시 생성하기"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 버튼 영역 (일반) */}
+      {!(genre === "novel" && showPlotPreview) && (
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "15px",
+        }}>
+          {/* 소설일 경우: 줄거리 미리보기 버튼 */}
+          {genre === "novel" && (
+            <button
+              onClick={handleGeneratePlot}
+              disabled={isGeneratingPlot}
+              style={{
+                padding: "20px",
+                fontSize: "22px",
+                backgroundColor: isGeneratingPlot ? "#ccc" : "#9C27B0",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                cursor: isGeneratingPlot ? "not-allowed" : "pointer",
+                fontWeight: "bold",
+                boxShadow: isGeneratingPlot ? "none" : "0 4px 12px rgba(156, 39, 176, 0.3)",
+              }}
+            >
+              {isGeneratingPlot ? "⏳ 줄거리 만드는 중..." : "📖 줄거리 미리보기"}
+            </button>
+          )}
+
+          {/* 시일 경우: 바로 초안 만들기 */}
+          {genre !== "novel" && (
+            <button
+              onClick={handleGenerateDraft}
+              disabled={isGenerating}
+              style={{
+                padding: "20px",
+                fontSize: "22px",
+                backgroundColor: isGenerating ? "#ccc" : "#4CAF50",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                cursor: isGenerating ? "not-allowed" : "pointer",
+                fontWeight: "bold",
+                boxShadow: isGenerating ? "none" : "0 4px 12px rgba(76, 175, 80, 0.3)",
+              }}
+            >
+              {isGenerating ? "⏳ AI가 초안 만드는 중..." : "✨ AI 초안 만들기"}
+            </button>
+          )}
+
+          <button
+            onClick={handleSkip}
+            disabled={isGenerating || isGeneratingPlot}
+            style={{
+              padding: "16px",
+              fontSize: "18px",
+              backgroundColor: "white",
+              color: "#666",
+              border: "2px solid #ddd",
+              borderRadius: "12px",
+              cursor: (isGenerating || isGeneratingPlot) ? "not-allowed" : "pointer",
+              fontWeight: "600",
+            }}
+          >
+            건너뛰고 직접 작성하기 →
+          </button>
+        </div>
+      )}
 
       {/* 팁 */}
       <div style={{

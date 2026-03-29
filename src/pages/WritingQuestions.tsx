@@ -234,6 +234,20 @@ export default function WritingQuestions() {
       }
 
       console.log('✅ 줄거리 생성 완료:', data.plot);
+      console.log('📌 기:', data.plot.beginning);
+      console.log('📈 승:', data.plot.development);
+      console.log('⚡ 전:', data.plot.turn);
+      console.log('✨ 결:', data.plot.conclusion);
+
+      // 빈 내용 체크
+      if (!data.plot.beginning || !data.plot.development || !data.plot.turn || !data.plot.conclusion) {
+        console.warn('⚠️ 일부 줄거리가 비어있습니다:', {
+          beginning: !!data.plot.beginning,
+          development: !!data.plot.development,
+          turn: !!data.plot.turn,
+          conclusion: !!data.plot.conclusion
+        });
+      }
 
       setPlot(data.plot);
       setShowPlotPreview(true);
@@ -628,15 +642,16 @@ ${genreData.style}
                     <div style={{
                       padding: "0 20px 20px 20px",
                       fontSize: "17px",
-                      color: "#333",
+                      color: item.content ? "#333" : "#999",
                       lineHeight: "2.0",
                       whiteSpace: "pre-wrap",
                       wordBreak: "keep-all",
                       borderTop: `2px solid ${item.borderColor}`,
                       paddingTop: "20px",
                       animation: "slideDown 0.3s ease",
+                      fontStyle: item.content ? "normal" : "italic",
                     }}>
-                      {item.content}
+                      {item.content || "⚠️ 줄거리 생성 중 이 부분이 누락되었습니다. '🔄 줄거리 다시 생성하기'를 눌러주세요."}
                     </div>
                   )}
                 </div>

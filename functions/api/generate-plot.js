@@ -231,6 +231,8 @@ ${JSON.stringify(answers, null, 2)}
  * 📖 줄거리 텍스트를 기승전결 객체로 파싱
  */
 function parsePlot(text) {
+  console.log('📖 [parsePlot] 원본 텍스트:', text);
+  
   const plot = {
     beginning: "",
     development: "",
@@ -238,16 +240,54 @@ function parsePlot(text) {
     conclusion: ""
   };
 
-  // [기], [승], [전], [결] 형식 파싱
-  const beginningMatch = text.match(/\[기\]\s*([\s\S]*?)(?=\[승\]|$)/);
-  const developmentMatch = text.match(/\[승\]\s*([\s\S]*?)(?=\[전\]|$)/);
-  const turnMatch = text.match(/\[전\]\s*([\s\S]*?)(?=\[결\]|$)/);
-  const conclusionMatch = text.match(/\[결\]\s*([\s\S]*?)$/);
+  // 여러 형식 지원: [기], **기**, 기:, 기), 등
+  const patterns = {
+    beginning: /(?:\[기\]|기\s*[:)]\s*|\*\*기\*\*)\s*([\s\S]*?)(?=\[승\]|승\s*[:)]\s*|\*\*승\*\*|$)/i,
+    development: /(?:\[승\]|승\s*[:)]\s*|\*\*승\*\*)\s*([\s\S]*?)(?=\[전\]|전\s*[:)]\s*|\*\*전\*\*|$)/i,
+    turn: /(?:\[전\]|전\s*[:)]\s*|\*\*전\*\*)\s*([\s\S]*?)(?=\[결\]|결\s*[:)]\s*|\*\*결\*\*|$)/i,
+    conclusion: /(?:\[결\]|결\s*[:)]\s*|\*\*결\*\*)\s*([\s\S]*?)$/i
+  };
 
-  if (beginningMatch) plot.beginning = beginningMatch[1].trim();
-  if (developmentMatch) plot.development = developmentMatch[1].trim();
-  if (turnMatch) plot.turn = turnMatch[1].trim();
-  if (conclusionMatch) plot.conclusion = conclusionMatch[1].trim();
+  // 각 섹션 파싱
+  const beginningMatch = text.match(patterns.beginning);
+  const developmentMatch = text.match(patterns.development);
+  const turnMatch = text.match(patterns.turn);
+  const conclusionMatch = text.match(patterns.conclusion);
+
+  if (beginningMatch) {
+    plot.beginning = beginningMatch[1].trim();
+    console.log('✅ 기 파싱 성공:', plot.beginning.substring(0, 50) + '...');
+  } else {
+    console.warn('⚠️ 기 파싱 실패');
+  }
+  
+  if (developmentMatch) {
+    plot.development = developmentMatch[1].trim();
+    console.log('✅ 승 파싱 성공:', plot.development.substring(0, 50) + '...');
+  } else {
+    console.warn('⚠️ 승 파싱 실패');
+  }
+  
+  if (turnMatch) {
+    plot.turn = turnMatch[1].trim();
+    console.log('✅ 전 파싱 성공:', plot.turn.substring(0, 50) + '...');
+  } else {
+    console.warn('⚠️ 전 파싱 실패');
+  }
+  
+  if (conclusionMatch) {
+    plot.conclusion = conclusionMatch[1].trim();
+    console.log('✅ 결 파싱 성공:', plot.conclusion.substring(0, 50) + '...');
+  } else {
+    console.warn('⚠️ 결 파싱 실패');
+  }
+
+  console.log('📊 파싱 결과:', {
+    beginning: plot.beginning ? '✅' : '❌',
+    development: plot.development ? '✅' : '❌',
+    turn: plot.turn ? '✅' : '❌',
+    conclusion: plot.conclusion ? '✅' : '❌'
+  });
 
   return plot;
 }

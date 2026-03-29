@@ -21,6 +21,7 @@ export default function WriteEditor() {
     themeTitle?: string;
     themeKey?: string;
     exampleSynopsis?: string;
+    id?: number;  // 기존 글 ID (이어쓰기용)
   } | undefined;
   
   const mode = state?.mode || "free";
@@ -30,6 +31,7 @@ export default function WriteEditor() {
   const themeTitle = state?.themeTitle || null;
   const themeKey = state?.themeKey || null;
   const exampleSynopsis = state?.exampleSynopsis || null;
+  const existingStoryId = state?.id || null;  // 기존 글 ID
   
   const [title, setTitle] = useState(state?.title || "");
   const [content, setContent] = useState(state?.initialContent || "");
@@ -385,19 +387,23 @@ export default function WriteEditor() {
         title: title.trim(),
         contentLength: content.trim().length,
         genre: genre || "없음",
-        images: storyImages.length
+        images: storyImages.length,
+        existingId: existingStoryId || "새 글"
       });
       
       await saveStory({
+        id: existingStoryId || undefined,  // ✅ 기존 글이면 ID 포함
         title: title.trim(),
         content: content.trim(),
         genre: genre || undefined,
         images: storyImages.length > 0 ? storyImages : undefined,
-        createdAt: new Date().toISOString(),
+        createdAt: existingStoryId ? undefined : new Date().toISOString(),  // 기존 글이면 createdAt 유지
         updatedAt: new Date().toISOString(),
       });
       
-      console.log("✅ [저장 완료] IndexedDB에 저장됨");
+      console.log(existingStoryId 
+        ? "✅ [저장 완료] 기존 글 업데이트됨" 
+        : "✅ [저장 완료] 새 글 저장됨");
       
       setLastSaved(new Date());
       alert("✅ 저장되었습니다!");

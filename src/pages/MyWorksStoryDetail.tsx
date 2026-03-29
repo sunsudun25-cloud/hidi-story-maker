@@ -48,10 +48,11 @@ export default function MyWorksStoryDetail() {
     navigate("/write/editor", {
       state: {
         genre: story.genre || "novel",
-        label: story.title,
-        content: story.content,
+        genreLabel: story.title || "글 상세",  // 장르 레이블 추가
+        title: story.title,              // 제목 전달
+        initialContent: story.content,   // ✅ initialContent로 변경
         id: story.id,
-        // novelSubGenre 정보가 있으면 전달 (추후 확장 가능)
+        mode: "continue",                // 이어쓰기 모드 표시
       }
     });
   };

@@ -588,49 +588,30 @@ ${genreData.style}
             📖 줄거리 미리보기
           </h2>
 
-          {/* 기승전결 구조 - 전체 보기 */}
+          {/* 줄거리 전체 보기 - 하나의 텍스트 */}
           <div style={{ 
             marginBottom: "25px",
-            maxHeight: "600px",
+            maxHeight: "500px",
             overflowY: "auto",
             backgroundColor: "white",
             borderRadius: "12px",
-            padding: "20px",
-            border: "2px solid #ddd",
+            padding: "25px",
+            border: "2px solid #9C27B0",
+            boxShadow: "0 2px 8px rgba(156, 39, 176, 0.1)",
           }}>
-            {[
-              { key: 'beginning', label: '기 (시작)', content: plot.beginning, emoji: '📌', color: '#E3F2FD', borderColor: '#2196F3' },
-              { key: 'development', label: '승 (전개)', content: plot.development, emoji: '📈', color: '#FFF3E0', borderColor: '#FF9800' },
-              { key: 'turn', label: '전 (위기)', content: plot.turn, emoji: '⚡', color: '#FFEBEE', borderColor: '#F44336' },
-              { key: 'conclusion', label: '결 (결말)', content: plot.conclusion, emoji: '✨', color: '#E8F5E9', borderColor: '#4CAF50' },
-            ].map((item) => (
-              <div key={item.key} style={{
-                padding: "20px",
-                backgroundColor: item.color,
-                borderRadius: "12px",
-                marginBottom: "15px",
-                border: `2px solid ${item.borderColor}`,
-              }}>
-                <div style={{
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                  color: "#333",
-                  marginBottom: "12px",
-                }}>
-                  {item.emoji} {item.label}
-                </div>
-                <div style={{
-                  fontSize: "17px",
-                  color: item.content ? "#333" : "#999",
-                  lineHeight: "2.0",
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "keep-all",
-                  fontStyle: item.content ? "normal" : "italic",
-                }}>
-                  {item.content || "⚠️ 이 부분이 생성되지 않았습니다."}
-                </div>
-              </div>
-            ))}
+            <div style={{
+              fontSize: "17px",
+              color: "#333",
+              lineHeight: "2.2",
+              whiteSpace: "pre-wrap",
+              wordBreak: "keep-all",
+              fontFamily: "'Noto Serif KR', 'Georgia', serif",
+            }}>
+              {[plot.beginning, plot.development, plot.turn, plot.conclusion]
+                .filter(text => text && text.trim())
+                .join('\n\n') || 
+                "⚠️ 줄거리 생성 중 오류가 발생했습니다. '🔄 줄거리 다시 생성하기'를 눌러주세요."}
+            </div>
           </div>
 
           {/* 버튼 영역 */}

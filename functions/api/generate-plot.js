@@ -226,69 +226,61 @@ export async function onRequest(context) {
 }
 
 /**
- * 📖 줄거리 텍스트를 기승전결 객체로 파싱
+ * 📖 줄거리 텍스트를 기승전결 객체로 파싱 (강력한 indexOf 방식)
  */
-function parsePlot(text) {
-  console.log('📖 [parsePlot] 원본 텍스트:', text);
+function parsePlot(rawText) {
+  console.log('📖 [parsePlot] 원본 텍스트 길이:', rawText?.length || 0);
+  console.log('📖 [parsePlot] 원본 텍스트 미리보기:', rawText?.substring(0, 100) + '...');
+  
+  // 줄바꿈 정규화
+  const text = (rawText || "").replace(/\r/g, "").trim();
+  
+  /**
+   * 시작 태그부터 끝 태그 전까지 텍스트 추출
+   */
+  const getSection = (startTag, endTag) => {
+    const start = text.indexOf(startTag);
+    if (start === -1) {
+      console.warn(`⚠️ ${startTag} 태그를 찾을 수 없음`);
+      return "";
+    }
+    
+    const from = start + startTag.length;
+    const end = endTag ? text.indexOf(endTag, from) : text.length;
+    
+    if (end === -1 || end === from) {
+      // 끝 태그가 없으면 끝까지
+      const content = text.slice(from).trim();
+      console.log(`✅ ${startTag} 파싱 성공 (끝까지): ${content.substring(0, 50)}...`);
+      return content;
+    }
+    
+    const content = text.slice(from, end).trim();
+    console.log(`✅ ${startTag} 파싱 성공: ${content.substring(0, 50)}...`);
+    return content;
+  };
+  
+  const beginning = getSection("[기]", "[승]");
+  const development = getSection("[승]", "[전]");
+  const turn = getSection("[전]", "[결]");
+  const conclusion = getSection("[결]", null);  // 끝까지
   
   const plot = {
-    beginning: "",
-    development: "",
-    turn: "",
-    conclusion: ""
+    beginning,
+    development,
+    turn,
+    conclusion
   };
-
-  // 여러 형식 지원: [기], **기**, 기:, 기), 등
-  const patterns = {
-    beginning: /(?:\[기\]|기\s*[:)]\s*|\*\*기\*\*)\s*([\s\S]*?)(?=\[승\]|승\s*[:)]\s*|\*\*승\*\*|$)/i,
-    development: /(?:\[승\]|승\s*[:)]\s*|\*\*승\*\*)\s*([\s\S]*?)(?=\[전\]|전\s*[:)]\s*|\*\*전\*\*|$)/i,
-    turn: /(?:\[전\]|전\s*[:)]\s*|\*\*전\*\*)\s*([\s\S]*?)(?=\[결\]|결\s*[:)]\s*|\*\*결\*\*|$)/i,
-    conclusion: /(?:\[결\]|결\s*[:)]\s*|\*\*결\*\*)\s*([\s\S]*?)$/i
-  };
-
-  // 각 섹션 파싱
-  const beginningMatch = text.match(patterns.beginning);
-  const developmentMatch = text.match(patterns.development);
-  const turnMatch = text.match(patterns.turn);
-  const conclusionMatch = text.match(patterns.conclusion);
-
-  if (beginningMatch) {
-    plot.beginning = beginningMatch[1].trim();
-    console.log('✅ 기 파싱 성공:', plot.beginning.substring(0, 50) + '...');
-  } else {
-    console.warn('⚠️ 기 파싱 실패');
-  }
   
-  if (developmentMatch) {
-    plot.development = developmentMatch[1].trim();
-    console.log('✅ 승 파싱 성공:', plot.development.substring(0, 50) + '...');
-  } else {
-    console.warn('⚠️ 승 파싱 실패');
-  }
-  
-  if (turnMatch) {
-    plot.turn = turnMatch[1].trim();
-    console.log('✅ 전 파싱 성공:', plot.turn.substring(0, 50) + '...');
-  } else {
-    console.warn('⚠️ 전 파싱 실패');
-  }
-  
-  if (conclusionMatch) {
-    plot.conclusion = conclusionMatch[1].trim();
-    console.log('✅ 결 파싱 성공:', plot.conclusion.substring(0, 50) + '...');
-  } else {
-    console.warn('⚠️ 결 파싱 실패');
-  }
-
   console.log('📊 파싱 결과:', {
-    beginning: plot.beginning ? '✅' : '❌',
-    development: plot.development ? '✅' : '❌',
-    turn: plot.turn ? '✅' : '❌',
-    conclusion: plot.conclusion ? '✅' : '❌'
+    beginning: beginning ? `✅ (${beginning.length}자)` : '❌',
+    development: development ? `✅ (${development.length}자)` : '❌',
+    turn: turn ? `✅ (${turn.length}자)` : '❌',
+    conclusion: conclusion ? `✅ (${conclusion.length}자)` : '❌'
   });
-
+  
   // 🔧 백업: 파싱 실패 시 전체 텍스트를 4등분
-  const emptyCount = [plot.beginning, plot.development, plot.turn, plot.conclusion].filter(x => !x).length;
+  const emptyCount = [beginning, development, turn, conclusion].filter(x => !x).length;
   
   if (emptyCount >= 2) {
     console.warn('⚠️ 파싱 실패가 많아 백업 전략 사용: 텍스트 4등분');
@@ -302,16 +294,6 @@ function parsePlot(text) {
       plot.turn = plot.turn || paragraphs[2].trim();
       plot.conclusion = plot.conclusion || paragraphs[3].trim();
       console.log('✅ 백업 전략으로 4개 문단 할당 완료');
-    } else if (paragraphs.length === 1) {
-      // 하나의 긴 텍스트면 문장으로 분리
-      const sentences = paragraphs[0].split(/\. /).filter(s => s.trim().length > 10);
-      const quarter = Math.ceil(sentences.length / 4);
-      
-      plot.beginning = plot.beginning || sentences.slice(0, quarter).join('. ') + '.';
-      plot.development = plot.development || sentences.slice(quarter, quarter * 2).join('. ') + '.';
-      plot.turn = plot.turn || sentences.slice(quarter * 2, quarter * 3).join('. ') + '.';
-      plot.conclusion = plot.conclusion || sentences.slice(quarter * 3).join('. ') + '.';
-      console.log('✅ 백업 전략으로 문장 분할 완료');
     } else {
       // 최악의 경우: 전체 텍스트를 기에만 넣기
       plot.beginning = plot.beginning || text.trim();

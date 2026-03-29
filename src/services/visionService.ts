@@ -10,14 +10,16 @@ export interface VisionAnalyzeResult {
 }
 
 /**
- * 손글씨 이미지를 분석하여 텍스트 추출
+ * 손글씨 또는 인쇄물 이미지를 분석하여 텍스트 추출
  * 
  * @param imageBase64 - Base64 인코딩된 이미지 (data:image/... 형식)
+ * @param type - 'handwriting' (손글씨) 또는 'print' (인쇄물), 기본값: 'handwriting'
  * @returns 추출된 텍스트
  */
-export async function analyzeHandwriting(imageBase64: string): Promise<string> {
+export async function analyzeHandwriting(imageBase64: string, type: 'handwriting' | 'print' = 'handwriting'): Promise<string> {
   try {
-    console.log('📸 [Vision] 손글씨 분석 시작');
+    const typeLabel = type === 'print' ? '인쇄물' : '손글씨';
+    console.log(`📸 [Vision] ${typeLabel} 분석 시작`);
 
     const response = await fetch('/api/analyze-image', {
       method: 'POST',
@@ -26,7 +28,7 @@ export async function analyzeHandwriting(imageBase64: string): Promise<string> {
       },
       body: JSON.stringify({
         imageBase64,
-        type: 'handwriting',
+        type,
       }),
     });
 
@@ -41,10 +43,10 @@ export async function analyzeHandwriting(imageBase64: string): Promise<string> {
       throw new Error(result.error || '텍스트를 추출할 수 없습니다');
     }
 
-    console.log('✅ [Vision] 손글씨 분석 완료:', result.text.substring(0, 50));
+    console.log(`✅ [Vision] ${typeLabel} 분석 완료:`, result.text.substring(0, 50));
     return result.text;
   } catch (error) {
-    console.error('❌ [Vision] 손글씨 분석 오류:', error);
+    console.error(`❌ [Vision] ${type} 분석 오류:`, error);
     throw error;
   }
 }

@@ -291,5 +291,37 @@ function parsePlot(text) {
     conclusion: plot.conclusion ? '✅' : '❌'
   });
 
+  // 🔧 백업: 파싱 실패 시 전체 텍스트를 4등분
+  const emptyCount = [plot.beginning, plot.development, plot.turn, plot.conclusion].filter(x => !x).length;
+  
+  if (emptyCount >= 2) {
+    console.warn('⚠️ 파싱 실패가 많아 백업 전략 사용: 텍스트 4등분');
+    
+    // 줄바꿈으로 문단 분리
+    const paragraphs = text.split(/\n\n+/).filter(p => p.trim().length > 10);
+    
+    if (paragraphs.length >= 4) {
+      plot.beginning = plot.beginning || paragraphs[0].trim();
+      plot.development = plot.development || paragraphs[1].trim();
+      plot.turn = plot.turn || paragraphs[2].trim();
+      plot.conclusion = plot.conclusion || paragraphs[3].trim();
+      console.log('✅ 백업 전략으로 4개 문단 할당 완료');
+    } else if (paragraphs.length === 1) {
+      // 하나의 긴 텍스트면 문장으로 분리
+      const sentences = paragraphs[0].split(/\. /).filter(s => s.trim().length > 10);
+      const quarter = Math.ceil(sentences.length / 4);
+      
+      plot.beginning = plot.beginning || sentences.slice(0, quarter).join('. ') + '.';
+      plot.development = plot.development || sentences.slice(quarter, quarter * 2).join('. ') + '.';
+      plot.turn = plot.turn || sentences.slice(quarter * 2, quarter * 3).join('. ') + '.';
+      plot.conclusion = plot.conclusion || sentences.slice(quarter * 3).join('. ') + '.';
+      console.log('✅ 백업 전략으로 문장 분할 완료');
+    } else {
+      // 최악의 경우: 전체 텍스트를 기에만 넣기
+      plot.beginning = plot.beginning || text.trim();
+      console.log('⚠️ 최종 백업: 전체 텍스트를 기에 할당');
+    }
+  }
+
   return plot;
 }

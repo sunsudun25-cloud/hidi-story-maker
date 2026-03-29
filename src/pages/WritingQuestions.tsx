@@ -233,20 +233,34 @@ export default function WritingQuestions() {
         throw new Error(data.error || '줄거리 생성 실패');
       }
 
-      console.log('✅ 줄거리 생성 완료:', data.plot);
-      console.log('📌 기:', data.plot.beginning);
-      console.log('📈 승:', data.plot.development);
-      console.log('⚡ 전:', data.plot.turn);
-      console.log('✨ 결:', data.plot.conclusion);
+      console.log('✅ 줄거리 생성 완료 (전체):', JSON.stringify(data, null, 2));
+      console.log('📌 기 (길이: ' + (data.plot.beginning?.length || 0) + '):', data.plot.beginning);
+      console.log('📈 승 (길이: ' + (data.plot.development?.length || 0) + '):', data.plot.development);
+      console.log('⚡ 전 (길이: ' + (data.plot.turn?.length || 0) + '):', data.plot.turn);
+      console.log('✨ 결 (길이: ' + (data.plot.conclusion?.length || 0) + '):', data.plot.conclusion);
+
+      // 원본 텍스트도 출력
+      if (data.rawText) {
+        console.log('📄 원본 AI 응답:', data.rawText);
+      }
 
       // 빈 내용 체크
+      const emptyChecks = {
+        기: !!data.plot.beginning,
+        승: !!data.plot.development,
+        전: !!data.plot.turn,
+        결: !!data.plot.conclusion
+      };
+      
       if (!data.plot.beginning || !data.plot.development || !data.plot.turn || !data.plot.conclusion) {
-        console.warn('⚠️ 일부 줄거리가 비어있습니다:', {
-          beginning: !!data.plot.beginning,
-          development: !!data.plot.development,
-          turn: !!data.plot.turn,
-          conclusion: !!data.plot.conclusion
-        });
+        console.error('❌ 일부 줄거리가 비어있습니다!');
+        console.table(emptyChecks);
+        alert(`⚠️ 줄거리 생성 중 일부가 누락되었습니다:\n\n${
+          Object.entries(emptyChecks)
+            .filter(([_, value]) => !value)
+            .map(([key]) => `- ${key} 부분이 비어있음`)
+            .join('\n')
+        }\n\n"🔄 줄거리 다시 생성하기"를 눌러주세요.`);
       }
 
       setPlot(data.plot);

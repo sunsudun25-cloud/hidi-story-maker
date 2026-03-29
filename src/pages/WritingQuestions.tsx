@@ -34,9 +34,6 @@ export default function WritingQuestions() {
     conclusion: string;
   } | null>(null);
   const [isGeneratingPlot, setIsGeneratingPlot] = useState(false);
-  
-  // 🎯 아코디언 펼침/접힘 상태
-  const [expandedPlotSection, setExpandedPlotSection] = useState<string>('beginning');
 
   // 장르별 질문 정의
   const questions: { [key: string]: { id: string; question: string; placeholder: string }[] } = {
@@ -416,17 +413,6 @@ ${genreData.style}
           0%, 100% { opacity: 1; }
           50% { opacity: 0.3; }
         }
-        
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
       `}</style>
       
       <main style={{
@@ -602,75 +588,49 @@ ${genreData.style}
             📖 줄거리 미리보기
           </h2>
 
-          {/* 기승전결 구조 - 아코디언 방식 */}
-          <div style={{ marginBottom: "25px" }}>
+          {/* 기승전결 구조 - 전체 보기 */}
+          <div style={{ 
+            marginBottom: "25px",
+            maxHeight: "600px",
+            overflowY: "auto",
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "20px",
+            border: "2px solid #ddd",
+          }}>
             {[
               { key: 'beginning', label: '기 (시작)', content: plot.beginning, emoji: '📌', color: '#E3F2FD', borderColor: '#2196F3' },
               { key: 'development', label: '승 (전개)', content: plot.development, emoji: '📈', color: '#FFF3E0', borderColor: '#FF9800' },
               { key: 'turn', label: '전 (위기)', content: plot.turn, emoji: '⚡', color: '#FFEBEE', borderColor: '#F44336' },
               { key: 'conclusion', label: '결 (결말)', content: plot.conclusion, emoji: '✨', color: '#E8F5E9', borderColor: '#4CAF50' },
-            ].map((item) => {
-              const isExpanded = expandedPlotSection === item.key;
-              
-              return (
-                <div key={item.key} style={{
-                  backgroundColor: item.color,
-                  borderRadius: "12px",
+            ].map((item) => (
+              <div key={item.key} style={{
+                padding: "20px",
+                backgroundColor: item.color,
+                borderRadius: "12px",
+                marginBottom: "15px",
+                border: `2px solid ${item.borderColor}`,
+              }}>
+                <div style={{
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                  color: "#333",
                   marginBottom: "12px",
-                  border: isExpanded ? `3px solid ${item.borderColor}` : "2px solid #ddd",
-                  overflow: "hidden",
-                  transition: "all 0.3s ease",
-                  boxShadow: isExpanded ? `0 4px 12px ${item.borderColor}33` : "0 2px 4px rgba(0,0,0,0.1)",
                 }}>
-                  {/* 헤더 (클릭 가능) */}
-                  <div 
-                    onClick={() => setExpandedPlotSection(isExpanded ? '' : item.key)}
-                    style={{
-                      padding: "20px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      cursor: "pointer",
-                      userSelect: "none",
-                    }}
-                  >
-                    <div style={{
-                      fontSize: "20px",
-                      fontWeight: "bold",
-                      color: "#333",
-                    }}>
-                      {item.emoji} {item.label}
-                    </div>
-                    <div style={{
-                      fontSize: "24px",
-                      color: item.borderColor,
-                      transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-                      transition: "transform 0.3s ease",
-                    }}>
-                      ▼
-                    </div>
-                  </div>
-                  
-                  {/* 내용 (펼쳤을 때만 표시) */}
-                  {isExpanded && (
-                    <div style={{
-                      padding: "0 20px 20px 20px",
-                      fontSize: "17px",
-                      color: item.content ? "#333" : "#999",
-                      lineHeight: "2.0",
-                      whiteSpace: "pre-wrap",
-                      wordBreak: "keep-all",
-                      borderTop: `2px solid ${item.borderColor}`,
-                      paddingTop: "20px",
-                      animation: "slideDown 0.3s ease",
-                      fontStyle: item.content ? "normal" : "italic",
-                    }}>
-                      {item.content || "⚠️ 줄거리 생성 중 이 부분이 누락되었습니다. '🔄 줄거리 다시 생성하기'를 눌러주세요."}
-                    </div>
-                  )}
+                  {item.emoji} {item.label}
                 </div>
-              );
-            })}
+                <div style={{
+                  fontSize: "17px",
+                  color: item.content ? "#333" : "#999",
+                  lineHeight: "2.0",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "keep-all",
+                  fontStyle: item.content ? "normal" : "italic",
+                }}>
+                  {item.content || "⚠️ 이 부분이 생성되지 않았습니다."}
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* 버튼 영역 */}

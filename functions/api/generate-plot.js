@@ -165,7 +165,7 @@ export async function onRequest(context) {
           ],
           generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 1000,
+            maxOutputTokens: 2000,  // 한글 기승전결 생성을 위해 증가
           }
         }),
       });
@@ -186,9 +186,19 @@ export async function onRequest(context) {
       const data = await geminiResponse.json();
       const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
+      // 원본 응답 로그 (디버깅용)
+      console.log('📄 [RAW] Gemini 원본 응답 길이:', generatedText.length);
+      console.log('📄 [RAW] Gemini 원본 응답 전체:', generatedText);
+      console.log('📄 [RAW] finishReason:', data.candidates?.[0]?.finishReason);
+
       if (!generatedText) {
         console.error('❌ Gemini 응답에 텍스트 없음:', JSON.stringify(data));
         throw new Error('No text in Gemini response');
+      }
+
+      // 응답이 중간에 잘린 경우 감지
+      if (data.candidates?.[0]?.finishReason === 'MAX_TOKENS') {
+        console.warn('⚠️ MAX_TOKENS로 인해 응답이 잘렸습니다!');
       }
 
       return generatedText;
@@ -198,6 +208,36 @@ export async function onRequest(context) {
 
     // 📖 줄거리 파싱
     const plot = parsePlot(text);
+
+    // ✅ 완성도 검증: 모든 섹션이 있어야 성공
+    const isComplete = 
+      plot.beginning?.trim().length > 0 &&
+      plot.development?.trim().length > 0 &&
+      plot.turn?.trim().length > 0 &&
+      plot.conclusion?.trim().length > 0;
+
+    if (!isComplete) {
+      console.error('❌ 불완전한 줄거리:', {
+        beginning: plot.beginning?.length || 0,
+        development: plot.development?.length || 0,
+        turn: plot.turn?.length || 0,
+        conclusion: plot.conclusion?.length || 0
+      });
+      
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "불완전한 줄거리가 생성되었습니다. '줄거리 다시 생성하기'를 눌러주세요.",
+          errorCode: "INCOMPLETE_PLOT",
+          plot: plot,
+          rawText: text.trim()
+        }),
+        { 
+          status: 200,  // UI에서 에러 메시지를 보여주기 위해 200 유지
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
 
     return new Response(
       JSON.stringify({

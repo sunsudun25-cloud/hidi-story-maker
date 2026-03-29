@@ -226,8 +226,20 @@ export default function WritingQuestions() {
 
       const data = await response.json();
 
-      if (!data.success || !data.plot) {
-        throw new Error(data.error || '줄거리 생성 실패');
+      // ⚠️ 불완전한 줄거리 처리
+      if (!data.success) {
+        console.error('❌ API 응답 실패:', data);
+        if (data.errorCode === 'INCOMPLETE_PLOT') {
+          alert('⚠️ ' + data.error + '\n\n일부 내용이 누락되었습니다. 다시 생성해주세요.');
+        } else {
+          throw new Error(data.error || '줄거리 생성 실패');
+        }
+        setIsGeneratingPlot(false);
+        return;
+      }
+
+      if (!data.plot) {
+        throw new Error('줄거리 데이터가 없습니다.');
       }
 
       console.log('✅ 줄거리 생성 완료 (전체):', JSON.stringify(data, null, 2));

@@ -157,20 +157,6 @@ export default function WriteEditor() {
         alert("먼저 글을 작성해주세요!");
         return;
       }
-
-      // 수필인 경우 상세 프롬프트 생성 제안
-      if (genre === "essay" && content.length >= 100) {
-        const useDetailedPrompt = confirm(
-          "📸 상세한 이미지 프롬프트를 생성할까요?\n\n" +
-          "✅ 예: 글의 분위기를 반영한 문학적 이미지 (스타일, 배경, 분위기 등 상세 지정)\n" +
-          "❌ 아니요: 간단한 이미지 생성"
-        );
-
-        if (useDetailedPrompt) {
-          await handleGenerateDetailedImagePrompt();
-          return;
-        }
-      }
     }
 
     // 4컷 이야기 장르인 경우 4컷 이미지 생성
@@ -1322,65 +1308,6 @@ ${content}
       alert("조언 생성 중 오류가 발생했습니다.\n\n" + (error instanceof Error ? error.message : "알 수 없는 오류"));
     } finally {
       setIsAnalyzingForAdvice(false);
-    }
-  };
-
-  // 📸 상세 이미지 프롬프트 생성
-  const handleGenerateDetailedImagePrompt = async () => {
-    try {
-      setIsGeneratingImage(true);
-      setImageLoadingProgress(0);
-      setImageLoadingMessage("🧠 글을 분석하여 상세 프롬프트 생성 중...");
-
-      console.log("📸 [상세 프롬프트 생성] 시작");
-
-      const response = await fetch("/api/generate-image-prompt-from-text", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: content,
-          genre: genre || "essay",
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`API 오류: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || "프롬프트 생성 실패");
-      }
-
-      console.log("✅ [상세 프롬프트 생성] 완료:", data.prompt.substring(0, 200));
-
-      // 생성된 프롬프트를 customImagePrompt에 설정
-      setCustomImagePrompt(data.prompt);
-      setImagePromptMode("manual");
-
-      setImageLoadingProgress(100);
-      setImageLoadingMessage("✅ 상세 프롬프트 생성 완료!");
-
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setImageLoadingProgress(0);
-      setImageLoadingMessage("");
-      setIsGeneratingImage(false);
-
-      alert(
-        "✅ 상세 이미지 프롬프트가 생성되었습니다!\n\n" +
-        "📝 아래 '이미지 설명 직접 입력하기' 칸에서 확인하고 수정할 수 있습니다.\n\n" +
-        "🎨 원하시면 프롬프트를 수정한 후 '🎨 AI 그림 만들기' 버튼을 눌러주세요."
-      );
-
-    } catch (error) {
-      console.error("❌ [상세 프롬프트 생성] 실패:", error);
-      setIsGeneratingImage(false);
-      setImageLoadingProgress(0);
-      setImageLoadingMessage("");
-      alert("상세 프롬프트 생성 중 오류가 발생했습니다.\n\n" + (error instanceof Error ? error.message : "알 수 없는 오류"));
     }
   };
 

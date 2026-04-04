@@ -22,6 +22,7 @@ export default function WriteEditor() {
     themeKey?: string;
     exampleSynopsis?: string;
     id?: number;  // 기존 글 ID (이어쓰기용)
+    isComplete?: boolean;  // 수필 초안 완성 여부
   } | undefined;
   
   const mode = state?.mode || "free";
@@ -32,6 +33,7 @@ export default function WriteEditor() {
   const themeKey = state?.themeKey || null;
   const exampleSynopsis = state?.exampleSynopsis || null;
   const existingStoryId = state?.id || null;  // 기존 글 ID
+  const isEssayComplete = state?.isComplete || false;  // 수필 초안 완성 여부
   
   const [title, setTitle] = useState(state?.title || "");
   const [content, setContent] = useState(state?.initialContent || "");
@@ -1319,8 +1321,33 @@ ${content}
       `}</style>
       
       <main style={{ padding: "10px 20px 20px", maxWidth: "900px", margin: "0 auto" }}>
+      {/* 수필 초안 완성 안내 (수필인 경우만 표시) */}
+      {genre === "essay" && isEssayComplete && (
+        <div style={{
+          padding: "20px",
+          backgroundColor: "#E3F2FD",
+          border: "2px solid #2196F3",
+          borderRadius: "8px",
+          marginBottom: "20px",
+          fontSize: "16px",
+        }}>
+          <div style={{ fontWeight: "600", marginBottom: "10px", color: "#1976D2" }}>
+            ✅ 수필 초안이 완성되었습니다!
+          </div>
+          <div style={{ marginBottom: "8px", color: "#555" }}>
+            📖 400-500자 분량의 완결된 수필로 작성되었습니다.
+          </div>
+          <div style={{ marginBottom: "8px", color: "#555" }}>
+            🎯 마지막 문장은 여운이 남도록 작성되었으니 확인해보세요.
+          </div>
+          <div style={{ color: "#666", fontSize: "15px", marginTop: "12px", paddingTop: "12px", borderTop: "1px solid #BBDEFB" }}>
+            💡 <strong>다음 단계:</strong> 이대로 저장하거나, 직접 수정하거나, "🤖 AI 이어쓰기"로 내용을 더 추가할 수 있습니다.
+          </div>
+        </div>
+      )}
+
       {/* 장르 가이드 (장르가 있을 경우만 표시) */}
-      {genre && genreGuide && (
+      {genre && genreGuide && !isEssayComplete && (
         <div style={{
           padding: "15px 20px",
           backgroundColor: "#E8F5E9",

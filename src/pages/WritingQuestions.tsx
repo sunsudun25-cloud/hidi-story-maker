@@ -337,7 +337,7 @@ export default function WritingQuestions() {
         title = `${answers.subject}에 대한 시`;
 
       } else if (genre === "essay") {
-        // 수필 초안 생성
+        // 수필 초안 생성 (400-500자 완결 형태)
         prompt = `
 다음 정보를 바탕으로 문학적이고 절제된 수필을 작성해주세요:
 
@@ -345,6 +345,16 @@ export default function WritingQuestions() {
 - 경험한 때와 장소: ${answers.experience}
 - 당시의 느낌: ${answers.feeling}
 - 깨달은 점: ${answers.lesson}
+
+**📏 분량 규칙:**
+- 반드시 400자에서 500자 사이로 작성 (공백 포함)
+- 너무 짧지도, 너무 길지도 않게
+- 하나의 완결된 작품처럼 시작-중간-마무리 구조
+
+**📖 구성 방식:**
+1. **시작 (100-150자)**: 구체적인 사물이나 장면으로 시작
+2. **중간 (200-250자)**: 경험과 당시의 상황을 구체적으로 묘사
+3. **마무리 (100-150자)**: 여운 있는 문장으로 자연스럽게 종결
 
 **⚠️ 중요한 문체 규칙 (반드시 지킬 것):**
 
@@ -360,9 +370,10 @@ export default function WritingQuestions() {
    - 예: "비가 오면 그 우산을 든다. 무겁다." (O)
    - 예: "비가 오면 그리운 마음에 그 우산을 든다." (X)
 
-3. **여운 있는 마무리**
+3. **여운 있는 마무리 (매우 중요!)**
    - 마지막 문장은 깨달음을 직접 설명하지 말 것
    - 대신 의미 있는 행동이나 사물로 끝내기
+   - 독자가 스스로 의미를 생각하도록 여운 남기기
    - 예: "사람은 떠나도 물건은 남는다는 게 이상했는데, 이제는 그게 고맙다." (O)
    - 예: "그래서 나는 이 우산을 통해 아버지를 그리워하게 되었다." (X)
 
@@ -465,6 +476,17 @@ ${genreData.style}
 
       const draft = await safeGeminiCall(prompt);
 
+      // 수필인 경우 완성 안내 메시지
+      if (genre === "essay") {
+        alert(`✅ 수필 초안이 완성되었습니다!
+
+📖 400-500자 분량의 완결된 수필로 작성되었습니다.
+
+💡 이대로 저장하셔도 좋고, 직접 수정하거나 "AI 이어쓰기"로 내용을 더 추가하실 수 있습니다.
+
+🎯 마지막 문장은 여운이 남도록 작성되었으니 확인해보세요!`);
+      }
+
       // WriteEditor로 이동하며 초안 전달
       navigate("/write/editor", {
         state: {
@@ -473,7 +495,8 @@ ${genreData.style}
           genreGuide: genreGuide,
           novelSubGenre: novelSubGenre,
           title: title,
-          initialContent: draft
+          initialContent: draft,
+          isComplete: genre === "essay" // 수필은 초안이 완결됨을 표시
         }
       });
 

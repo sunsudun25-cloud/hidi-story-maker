@@ -58,6 +58,14 @@ export default function WriteEditor() {
   // 손글씨 인식 상태
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
+  // 💡 글쓰기 조언 상태
+  const [writingAdvice, setWritingAdvice] = useState<{
+    visualElements: string;
+    mood: string;
+    writingAdvice: string;
+  } | null>(null);
+  const [isAnalyzingForAdvice, setIsAnalyzingForAdvice] = useState(false);
+  
   // 자동 저장
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
@@ -1196,10 +1204,68 @@ ${content}
       
       setStoryImages([...storyImages, newImage]);
       alert("✅ 사진이 추가되었습니다!\n\n아래 '생성된 이미지' 섹션에서 확인할 수 있습니다.");
+
+      // 💡 글쓰기 조언 생성 (장르가 있는 경우만)
+      if (genre && result.base64) {
+        const wantsAdvice = confirm("💡 이 사진을 기반으로 글쓰기 조언을 받으시겠어요?\n\n(장면, 분위기, 글쓰기 팁 제공)");
+        
+        if (wantsAdvice) {
+          await analyzeImageForWritingAdvice(result.base64);
+        }
+      }
       
     } catch (error) {
       console.error("❌ [이미지 업로드] 실패:", error);
       alert("이미지 업로드 중 오류가 발생했습니다.\n\n" + (error instanceof Error ? error.message : "알 수 없는 오류"));
+    }
+  };
+
+  // 💡 이미지 기반 글쓰기 조언 분석
+  const analyzeImageForWritingAdvice = async (imageBase64: string) => {
+    try {
+      setIsAnalyzingForAdvice(true);
+      console.log("💡 [글쓰기 조언] 분석 시작");
+
+      const response = await fetch("/api/analyze-image-for-writing", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageBase64,
+          genre: genre || "essay",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API 오류: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || "조언 생성 실패");
+      }
+
+      console.log("✅ [글쓰기 조언] 생성 완료:", {
+        visualElements: data.visualElements?.substring(0, 50),
+        mood: data.mood?.substring(0, 50),
+        advice: data.writingAdvice?.substring(0, 50),
+      });
+
+      setWritingAdvice({
+        visualElements: data.visualElements || "",
+        mood: data.mood || "",
+        writingAdvice: data.writingAdvice || "",
+      });
+
+      alert("✅ 글쓰기 조언이 생성되었습니다!\n\n아래 '💡 글쓰기 조언' 섹션을 확인해주세요.");
+
+    } catch (error) {
+      console.error("❌ [글쓰기 조언] 실패:", error);
+      alert("조언 생성 중 오류가 발생했습니다.\n\n" + (error instanceof Error ? error.message : "알 수 없는 오류"));
+    } finally {
+      setIsAnalyzingForAdvice(false);
     }
   };
 
@@ -1685,11 +1751,11 @@ ${content}
             {/* 사진/그림 직접 업로드 버튼 */}
             <button
               onClick={handleDirectImageUpload}
-              disabled={isGeneratingImage}
+              disabled={isGeneratingImage || isAnalyzingForAdvice}
               style={{
                 padding: "16px",
                 fontSize: "16px",
-                backgroundColor: isGeneratingImage ? "#ccc" : "#FF9800",
+                backgroundColor: (isGeneratingImage || isAnalyzingForAdvice) ? "#ccc" : "#FF9800",
                 color: "white",
                 border: "none",
                 borderRadius: "12px",
@@ -1698,7 +1764,7 @@ ${content}
                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
               }}
             >
-              📤 사진 업로드
+              {isAnalyzingForAdvice ? "💡 분석 중..." : "📤 사진 업로드"}
             </button>
           </div>
 
@@ -1922,6 +1988,88 @@ ${content}
                 </button>
               </div>
             )}
+          </div>
+        )}
+
+        {/* 💡 글쓰기 조언 섹션 */}
+        {writingAdvice && (
+          <div style={{
+            marginBottom: "20px",
+            padding: "20px",
+            backgroundColor: "#E3F2FD",
+            borderRadius: "12px",
+            border: "2px solid #2196F3",
+          }}>
+            <div style={{
+              fontSize: "20px",
+              fontWeight: "600",
+              color: "#1976D2",
+              marginBottom: "15px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}>
+              💡 AI 글쓰기 조언
+              <button
+                onClick={() => setWritingAdvice(null)}
+                style={{
+                  marginLeft: "auto",
+                  padding: "5px 10px",
+                  fontSize: "14px",
+                  backgroundColor: "#fff",
+                  color: "#666",
+                  border: "1px solid #ddd",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                }}
+              >
+                ✕ 닫기
+              </button>
+            </div>
+
+            {/* 시각적 요소 */}
+            <div style={{
+              marginBottom: "15px",
+              padding: "12px",
+              backgroundColor: "#fff",
+              borderRadius: "8px",
+            }}>
+              <div style={{ fontWeight: "600", color: "#1976D2", marginBottom: "5px" }}>
+                🎨 사진 속 시각적 요소
+              </div>
+              <div style={{ color: "#555", lineHeight: "1.6" }}>
+                {writingAdvice.visualElements}
+              </div>
+            </div>
+
+            {/* 분위기/감정 */}
+            <div style={{
+              marginBottom: "15px",
+              padding: "12px",
+              backgroundColor: "#fff",
+              borderRadius: "8px",
+            }}>
+              <div style={{ fontWeight: "600", color: "#1976D2", marginBottom: "5px" }}>
+                💭 분위기 & 감정
+              </div>
+              <div style={{ color: "#555", lineHeight: "1.6" }}>
+                {writingAdvice.mood}
+              </div>
+            </div>
+
+            {/* 글쓰기 조언 */}
+            <div style={{
+              padding: "12px",
+              backgroundColor: "#fff",
+              borderRadius: "8px",
+            }}>
+              <div style={{ fontWeight: "600", color: "#1976D2", marginBottom: "5px" }}>
+                ✍️ 글쓰기 팁
+              </div>
+              <div style={{ color: "#555", lineHeight: "1.6" }}>
+                {writingAdvice.writingAdvice}
+              </div>
+            </div>
           </div>
         )}
 

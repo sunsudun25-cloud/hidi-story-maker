@@ -59,6 +59,28 @@ export default function WritingQuestions() {
         placeholder: "고마워요, 잊지 않을게요, 사랑합니다, 수고했어..."
       }
     ],
+    essay: [
+      {
+        id: "topic",
+        question: "어떤 이야기를 쓰고 싶으신가요?",
+        placeholder: "예: 어린 시절 추억, 여행에서 겪은 일, 요즘 드는 생각..."
+      },
+      {
+        id: "experience",
+        question: "언제, 어디서 있었던 일인가요?",
+        placeholder: "예: 작년 여름 제주도에서, 어렸을 때 시골집에서..."
+      },
+      {
+        id: "feeling",
+        question: "그때 어떤 느낌이 들었나요?",
+        placeholder: "예: 따뜻했다, 그리웠다, 행복했다, 뿌듯했다..."
+      },
+      {
+        id: "lesson",
+        question: "그 경험에서 무엇을 느끼셨나요?",
+        placeholder: "예: 가족의 소중함, 인생의 의미, 작은 행복..."
+      }
+    ],
     novel: [
       {
         id: "protagonist",
@@ -313,6 +335,30 @@ export default function WritingQuestions() {
 시만 출력하고 설명은 불필요합니다.
 `;
         title = `${answers.subject}에 대한 시`;
+
+      } else if (genre === "essay") {
+        // 수필 초안 생성
+        prompt = `
+다음 정보를 바탕으로 따뜻하고 진솔한 수필 초안을 작성해주세요:
+
+- 주제/이야기: ${answers.topic}
+- 경험한 때와 장소: ${answers.experience}
+- 당시의 느낌: ${answers.feeling}
+- 깨달은 점: ${answers.lesson}
+
+**수필 작성 규칙:**
+1. 3-4개의 짧은 문단으로 작성
+2. 첫 문단: 경험의 배경과 상황을 자연스럽게 소개
+3. 중간 문단: 구체적인 경험과 그때의 느낌을 묘사
+4. 마지막 문단: 그 경험에서 느낀 점과 깨달음을 담담하게 표현
+5. 구연동화체("~답니다", "~였단다") 절대 사용 금지
+6. 자연스러운 과거형("~했다", "~였다") 사용
+7. 쉽고 따뜻한 언어로 작성
+8. 진솔하고 솔직한 감정 표현
+
+수필 내용만 출력하고, 제목이나 설명은 포함하지 마세요.
+`;
+        title = answers.topic ? `${answers.topic.substring(0, 20)}` : "나의 이야기";
 
       } else if (genre === "novel") {
         // 소설 초안 생성 - 줄거리 기반

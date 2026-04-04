@@ -71,8 +71,8 @@ export default function WritingGenre() {
                 else if (g.key === "novel") {
                   navigate("/writing/novel/genre");
                 }
-                // 시는 질문 페이지로
-                else if (g.key === "poem") {
+                // 시와 수필은 질문 페이지로
+                else if (g.key === "poem" || g.key === "essay") {
                   navigate("/writing/genre/questions", { 
                     state: { 
                       genre: g.key, 

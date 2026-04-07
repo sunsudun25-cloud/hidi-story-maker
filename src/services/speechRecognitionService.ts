@@ -54,11 +54,13 @@ export function startSpeechRecognition(options: SpeechRecognitionOptions): () =>
 
   // ✅ 인스턴스마다 초기화되는 상태
   let lastFinalIndex = -1;  // 마지막으로 처리한 최종 결과 인덱스
+  let processedTexts = new Set<string>();  // 🔥 중복 방지: 이미 처리한 텍스트 추적
 
   // 이벤트 핸들러
   recognition.onstart = () => {
     console.log("🎤 음성 인식 시작");
     lastFinalIndex = -1;  // ✅ 시작 시 초기화
+    processedTexts.clear();  // 🔥 중복 방지 세트 초기화
     if (options.onStart) {
       options.onStart();
     }
@@ -105,9 +107,16 @@ export function startSpeechRecognition(options: SpeechRecognitionOptions): () =>
         
         // ✅ 빈 문자열 필터링
         if (transcript) {
-          console.log(`✅ 음성 인식 최종 결과 [인덱스 ${i}]:`, transcript);
-          lastFinalIndex = i;  // 처리한 인덱스 기록
-          options.onResult(transcript, true);
+          // 🔥 중복 텍스트 필터링 추가
+          if (!processedTexts.has(transcript)) {
+            console.log(`✅ 음성 인식 최종 결과 [인덱스 ${i}]:`, transcript);
+            processedTexts.add(transcript);  // 처리한 텍스트 기록
+            lastFinalIndex = i;  // 처리한 인덱스 기록
+            options.onResult(transcript, true);
+          } else {
+            console.log(`⚠️ 중복 최종 결과 무시 [인덱스 ${i}]: "${transcript}"`);
+            lastFinalIndex = i;  // 중복 결과도 인덱스는 업데이트
+          }
         } else {
           console.log(`⚠️ 빈 최종 결과 무시 [인덱스 ${i}]`);
           lastFinalIndex = i;  // 빈 결과도 처리했다고 기록

@@ -538,32 +538,49 @@ ${content}
 
 **⚠️ 수필 이어쓰기 규칙 (반드시 지킬 것):**
 
-1. **자연스러운 문장 흐름**
+1. **완전한 문장 작성 (최우선)**
+   - 반드시 2~3개의 완전한 문장을 작성하세요
+   - 모든 문장은 "~했다.", "~였다.", "~있다." 등으로 끝나야 합니다
+   - 문장이 중간에 끊기면 절대 안 됩니다 (예: "골목길 안에 똑같은" ❌)
+   - 완성 예시: "골목길 안에 똑같은 대문이 있었다." ✅
+
+2. **자연스러운 문장 흐름**
    - 짧은 문장과 중간 길이 문장을 적절히 섞어 사용
    - 단순 나열이 아닌 자연스러운 이야기 흐름
-   - 2~3개의 문장 작성
-
-2. **감정과 의미를 담은 표현**
+   
+3. **감정과 의미를 담은 표현**
    - 단순 행동 나열 금지 ("A를 잡는다. B에 닿는다." 같은 기계적 표현 X)
    - 비유, 은유 활용
    - 서정적 부사 사용 ("비로소", "오롯이", "여전히", "부드럽게")
 
-3. **감각적이고 풍부한 묘사**
+4. **감각적이고 풍부한 묘사**
    - 오감을 활용한 표현
    - 시각, 촉각, 후각 등을 자연스럽게 녹이기
    - 예: "사진 속 젊은 얼굴을 오래 바라봤습니다. 그때는 몰랐던 표정의 의미가 지금에야 조금씩 읽혔습니다."
 
-4. **절대 금지 표현:**
+5. **절대 금지 표현:**
    - "A를 B로 한다. C를 D한다." 같은 기계적 문장
    - "설레는", "행복한", "슬픈" 같은 직접적 감정 형용사
    - 구연동화체: "~습니다", "~했지요", "~였단다"
+   - 불완전한 문장: "골목길 안에 똑같은" (❌), "사진을 두 손으로" (❌)
 
-5. **기존 내용 절대 반복 금지**
+6. **기존 내용 절대 반복 금지**
 
 **참고 스타일 (이런 식으로):**
 "사진 속 젊은 얼굴을 오래 바라봤습니다. 그때는 몰랐던 표정의 의미가 지금에야 조금씩 읽혔습니다. 창밖 햇살이 사진 위로 기울어지는 동안, 나는 그 시절의 나를 처음 만난 것처럼 낯설게 느꼈습니다."
 
-위 수필에 자연스럽게 이어질 2~3개의 문장을 작성해주세요. 
+**❌ 잘못된 예시 (불완전한 문장):**
+"골목길 안에 똑같은"
+"사진을 두 손으로"
+"창밖 햇살이 벽에"
+
+**✅ 올바른 예시 (완전한 문장):**
+"골목길 안에 똑같은 대문이 있었다."
+"사진을 두 손으로 꼭 쥐었다."
+"창밖 햇살이 벽에 닿았다."
+
+위 수필에 자연스럽게 이어질 2~3개의 **완전한 문장**을 작성해주세요. 
+반드시 모든 문장을 "~다.", "~었다.", "~있다." 등으로 완성하세요.
 기계적인 짧은 문장("A를 한다. B를 한다.")이 아닌, 자연스럽고 문학적인 흐름을 만들어주세요.
 ` : `
 다음은 사용자가 작성 중인 글입니다:
@@ -616,10 +633,35 @@ ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""
 
       console.log('✅ [이어쓰기] API 응답 수신:', continuation.substring(0, 100));
       
-      // 혹시 AI가 기존 내용을 포함했다면 제거
+      // 🔥 기존 내용 중복 제거 (더 정교하게)
       let newContent = continuation.trim();
+      
+      // 방법 1: 전체 내용이 포함된 경우
       if (newContent.startsWith(content.trim())) {
         newContent = newContent.substring(content.trim().length).trim();
+        console.log('🔍 [이어쓰기] 전체 중복 제거됨');
+      }
+      
+      // 방법 2: 마지막 문장이 중복된 경우
+      const lastSentences = content.trim().split(/[.!?]\s+/).filter(s => s.length > 0);
+      if (lastSentences.length > 0) {
+        const lastSentence = lastSentences[lastSentences.length - 1].trim();
+        if (newContent.startsWith(lastSentence)) {
+          newContent = newContent.substring(lastSentence.length).trim();
+          console.log('🔍 [이어쓰기] 마지막 문장 중복 제거됨:', lastSentence.substring(0, 30));
+        }
+      }
+      
+      // 방법 3: 마지막 단어들이 중복된 경우 (5단어 이상)
+      const contentWords = content.trim().split(/\s+/);
+      const newContentWords = newContent.split(/\s+/);
+      if (contentWords.length >= 5 && newContentWords.length >= 5) {
+        const lastFiveWords = contentWords.slice(-5).join(' ');
+        const firstFiveWords = newContentWords.slice(0, 5).join(' ');
+        if (lastFiveWords === firstFiveWords) {
+          newContent = newContentWords.slice(5).join(' ');
+          console.log('🔍 [이어쓰기] 단어 중복 제거됨:', lastFiveWords);
+        }
       }
       
       console.log('🔍 [이어쓰기] 원본 응답:', newContent);
@@ -663,51 +705,53 @@ ${genre ? `${genreLabel} 장르의 특성을 살려서 작성해주세요.` : ""
       
       // 시(poem) 장르는 문장 끝 검증 제외
       if (!isPoem) {
-        // 강화된 문장 끝 검증 (시가 아닐 때만) - 구연동화체 제외
-        const sentenceEndings = ['다.', '다!', '다?', '었다.', '했다.', '있다.', '없다.', '보였다.', '느꼈다.'];
+        // 🔥 강화된 문장 끝 검증 (시가 아닐 때만)
+        const sentenceEndings = ['다.', '다!', '다?', '었다.', '았다.', '했다.', '있다.', '없다.', '보였다.', '느꼈다.', '였다.', '왔다.', '갔다.'];
         const hasCompleteEnding = sentenceEndings.some(ending => newContent.endsWith(ending));
         
         if (!hasCompleteEnding) {
-          console.warn('⚠️ [이어쓰기] 불완전한 문장 감지, 수정 시작');
+          console.warn('⚠️ [이어쓰기] 불완전한 문장 감지:', newContent.slice(-30));
           
-          // 방법 1: 마지막 완전한 문장까지만 추출
+          // 🔥 방법 1: 마지막 완전한 문장까지만 추출
           let lastCompleteIndex = -1;
+          let foundEnding = '';
+          
           for (const ending of sentenceEndings) {
             const index = newContent.lastIndexOf(ending);
             if (index > lastCompleteIndex) {
               lastCompleteIndex = index;
+              foundEnding = ending;
             }
           }
           
-          if (lastCompleteIndex > 0) {
+          if (lastCompleteIndex > 0 && foundEnding) {
             // 마지막 완전한 문장까지만 잘라냄
-            const endingLength = sentenceEndings.find(e => 
-              newContent.substring(lastCompleteIndex).startsWith(e)
-            )?.length || 2;
-            newContent = newContent.substring(0, lastCompleteIndex + endingLength).trim();
-            console.log('✂️ [이어쓰기] 불완전한 부분 제거:', newContent);
+            newContent = newContent.substring(0, lastCompleteIndex + foundEnding.length).trim();
+            console.log('✂️ [이어쓰기] 불완전한 부분 제거 완료:', newContent.slice(-50));
           } else {
-            // 방법 2: 완전한 문장이 없으면 마지막에 "다." 추가
-            console.warn('⚠️ [이어쓰기] 완전한 문장을 찾을 수 없음');
-            // 마지막 글자가 조사나 불완전한 단어면 제거하고 "다." 추가
-            if (!/[.!?]$/.test(newContent)) {
-              // 마지막 공백 이후 단어를 제거하고 "다." 추가
-              const lastSpaceIndex = newContent.lastIndexOf(' ');
-              if (lastSpaceIndex > 0) {
-                newContent = newContent.substring(0, lastSpaceIndex) + '다.';
-                console.log('🔧 [이어쓰기] 강제로 문장 완성:', newContent);
-              }
-            }
+            // 🔥 방법 2: 완전한 문장이 전혀 없으면 오류 반환
+            console.error('❌ [이어쓰기] 완전한 문장을 찾을 수 없음');
+            alert('⚠️ AI가 불완전한 문장을 생성했습니다.\n\n예: "골목길 안에 똑같은"\n\n다시 시도해주세요.');
+            return;
           }
         }
         
-        // 최종 검증 (시가 아닐 때만)
+        // 🔥 최종 검증: 다시 한 번 확인
         const finalCheck = sentenceEndings.some(ending => newContent.endsWith(ending));
         if (!finalCheck) {
-          console.error('❌ [이어쓰기] 여전히 불완전한 문장');
+          console.error('❌ [이어쓰기] 최종 검증 실패 - 여전히 불완전한 문장');
           alert('⚠️ AI가 완전한 문장을 생성하지 못했습니다.\n\n다시 시도해주세요.');
           return;
         }
+        
+        // 🔥 빈 결과 방지
+        if (newContent.trim().length < 5) {
+          console.error('❌ [이어쓰기] 너무 짧은 결과:', newContent);
+          alert('⚠️ AI 응답이 너무 짧습니다.\n\n다시 시도해주세요.');
+          return;
+        }
+        
+        console.log('✅ [이어쓰기] 문장 완성도 검증 통과');
       } else {
         console.log('📝 [이어쓰기] 시(poem) 장르 - 문장 끝 검증 생략');
       }

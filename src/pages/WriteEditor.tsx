@@ -965,6 +965,130 @@ ${line}
     }
   };
 
+  // 🎬 줄글을 드라마 대본으로 변환
+  const handleConvertToDrama = async () => {
+    if (!content.trim()) {
+      alert("변환할 내용이 없습니다!");
+      return;
+    }
+
+    // 이미 대본 형식인지 확인
+    if (content.includes('#') && content.includes(':')) {
+      const confirmed = confirm(
+        "이미 대본 형식으로 보이는 내용이 포함되어 있습니다.\n\n" +
+        "그래도 변환하시겠습니까?"
+      );
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    setIsAiHelping(true);
+    try {
+      console.log('🎬 [드라마 변환] 시작:', { contentLength: content.length });
+
+      const prompt = `
+다음 줄글을 드라마 대본 형식으로 변환해주세요:
+
+원문:
+${content}
+
+---
+
+**🎬 드라마 대본 변환 규칙:**
+
+1. **형식 구조**
+   - 장면 헤더: #번호. 장소 - 시간 (예: #1. 거실 - 낮)
+   - 지문(행동): 괄호 없이 간결하게 (예: "할머니가 창밖을 바라본다.")
+   - 대사: 인물명: (감정) 대사 내용
+   - 빈 줄로 각 요소 구분
+
+2. **내용 분석**
+   - 원문의 내용을 분석하여 적절한 장면으로 나누기
+   - 서술된 내용을 대사와 행동으로 분리
+   - 등장인물 파악 (할머니, 손자, 가족 등)
+
+3. **대사 변환**
+   - 서술 문장을 자연스러운 대화로 전환
+   - 노인이 실제로 사용할 법한 자연스러운 말투
+   - 감정 표현 추가 (웃으며), (조용히), (반갑게) 등
+
+4. **지문 작성**
+   - 시각적으로 표현 가능한 행동만 기술
+   - 간결하고 명확하게
+   - 과도한 감정 설명 제외
+
+5. **장면 구성**
+   - 적절한 장소와 시간 설정
+   - 2~3개 장면으로 자연스럽게 구분
+   - 각 장면마다 번호 부여
+
+**✅ 변환 예시:**
+
+원문:
+"오늘 손주가 놀러 왔다. 오랜만에 보니 반가웠다. 함께 공원을 산책하며 많은 이야기를 나눴다."
+
+변환:
+#1. 거실 - 오후
+
+현관 초인종이 울린다. 할머니가 문을 연다.
+
+손주: (밝게) 할머니! 저 왔어요!
+할머니: (반갑게) 어머, 우리 손주! 어서 들어와.
+
+할머니, 손주를 꼭 안아준다.
+
+#2. 공원 산책로 - 오후
+
+할머니와 손주가 나란히 걷고 있다.
+
+손주: 할머니, 요즘은 어떻게 지내세요?
+할머니: (웃으며) 네가 이렇게 자주 와주니 좋구나.
+
+두 사람, 벤치에 앉아 이야기를 나눈다.
+
+---
+
+위 원문을 드라마 대본으로 변환해주세요.
+원문의 모든 내용을 포함하되, 대본 형식에 맞게 재구성하세요.
+`;
+
+      console.log('🚀 [드라마 변환] API 호출 시작');
+      const dramaScript = await safeGeminiCall(prompt);
+
+      if (!dramaScript) {
+        console.error('❌ [드라마 변환] API 응답이 비어있음');
+        alert('드라마 대본 변환에 실패했습니다.\n\n다시 시도해주세요.');
+        return;
+      }
+
+      console.log('✅ [드라마 변환] API 응답 수신:', dramaScript.substring(0, 100));
+
+      // 결과 미리보기
+      const confirmed = confirm(
+        `🎬 드라마 대본으로 변환되었습니다!\n\n` +
+        `원문: ${content.length}자\n` +
+        `변환: ${dramaScript.length}자\n\n` +
+        `미리보기:\n${dramaScript.substring(0, 150)}${dramaScript.length > 150 ? '...' : ''}\n\n` +
+        `변환된 내용으로 바꾸시겠습니까?\n\n` +
+        `(취소를 누르면 원래 내용을 유지합니다)`
+      );
+
+      if (confirmed) {
+        setContent(dramaScript.trim());
+        console.log('✅ [드라마 변환] 적용 완료');
+        alert("✨ 드라마 대본으로 변환되었습니다!\n\n필요하면 수정해주세요.");
+      } else {
+        console.log('ℹ️ [드라마 변환] 사용자가 취소함');
+      }
+    } catch (error) {
+      console.error("❌ [드라마 변환] 오류:", error);
+      alert("변환 중 오류가 발생했습니다.\n\n" + (error instanceof Error ? error.message : "알 수 없는 오류"));
+    } finally {
+      setIsAiHelping(false);
+    }
+  };
+
   // 🤖 AI 감정 표현 강화 (줄별 처리)
   const handleAiEnhance = async () => {
     if (!content.trim()) {
@@ -1719,6 +1843,24 @@ ${content}
               }}
             >
               💫 감정 강화
+            </button>
+
+            <button
+              onClick={handleConvertToDrama}
+              disabled={isAiHelping}
+              style={{
+                padding: "16px",
+                fontSize: "16px",
+                backgroundColor: isAiHelping ? "#ccc" : "#9C27B0",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                cursor: isAiHelping ? "not-allowed" : "pointer",
+                fontWeight: "600",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              }}
+            >
+              🎬 드라마 대본으로
             </button>
 
             <button

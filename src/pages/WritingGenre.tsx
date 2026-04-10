@@ -47,6 +47,12 @@ export default function WritingGenre() {
       desc: "인터뷰 작가가 되어 4컷 이야기를 만들어요",
       guide: "만남 → 이야기 → 감동 → 작별"
     },
+    { 
+      key: "drama", 
+      label: "🎬 드라마 대본", 
+      desc: "등장인물의 대화와 행동으로 이야기를 써요",
+      guide: "장면 설명 → 인물 대사 → 행동 지시"
+    },
   ];
 
   return (

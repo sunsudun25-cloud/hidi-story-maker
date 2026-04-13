@@ -44,7 +44,8 @@ export async function onRequest(context) {
 
   try {
     const body = await request.json();
-    const { prompt, temperature = 0.7, maxTokens = 1000 } = body;
+    // 🔥 maxTokens 기본값을 4000으로 증가 (드라마 대본 등 긴 응답을 위해)
+    const { prompt, temperature = 0.7, maxTokens = 4000 } = body;
 
     if (!prompt || !prompt.trim()) {
       return new Response(

@@ -1845,23 +1845,26 @@ ${content}
               💫 감정 강화
             </button>
 
-            <button
-              onClick={handleConvertToDrama}
-              disabled={isAiHelping}
-              style={{
-                padding: "16px",
-                fontSize: "16px",
-                backgroundColor: isAiHelping ? "#ccc" : "#9C27B0",
-                color: "white",
-                border: "none",
-                borderRadius: "12px",
-                cursor: isAiHelping ? "not-allowed" : "pointer",
-                fontWeight: "600",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-              }}
-            >
-              🎬 드라마 대본으로
-            </button>
+            {/* 🎬 드라마 대본 변환 버튼 - 드라마 장르에서만 표시 */}
+            {genre === 'drama' && (
+              <button
+                onClick={handleConvertToDrama}
+                disabled={isAiHelping}
+                style={{
+                  padding: "16px",
+                  fontSize: "16px",
+                  backgroundColor: isAiHelping ? "#ccc" : "#9C27B0",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "12px",
+                  cursor: isAiHelping ? "not-allowed" : "pointer",
+                  fontWeight: "600",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                }}
+              >
+                🎬 드라마 대본으로
+              </button>
+            )}
 
             <button
               onClick={handleVoiceInput}

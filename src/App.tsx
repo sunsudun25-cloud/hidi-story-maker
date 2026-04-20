@@ -65,6 +65,7 @@ import ImageMakePractice from './pages/ImageMake/Practice'
 import ImageMakeCustom from './pages/ImageMake/Custom'
 import ImageMakeResult from './pages/ImageMake/Result'
 import Gallery from './pages/Gallery'
+import GalleryStoryDetail from './pages/GalleryStoryDetail'
 import './App.css'
 
 // Header를 조건부로 렌더링하는 래퍼 컴포넌트
@@ -152,6 +153,7 @@ function AppContent() {
 
           {/* 🎨 갤러리 */}
           <Route path="/gallery/:classCode" element={<Gallery />} />
+          <Route path="/gallery/:classCode/story/:artifactId" element={<GalleryStoryDetail />} />
 
           {/* 기타 페이지 */}
           <Route path="/image/practice" element={<ImageMakePractice />} />

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { deleteArtifact, getCurrentLearner } from "../services/classroomService";
+import { deleteArtifact, getCurrentLearner, exportClassZip, downloadZipFile } from "../services/classroomService";
 
 interface Artifact {
   artifactId: string;
@@ -20,6 +20,7 @@ export default function Gallery() {
   const [filter, setFilter] = useState<"all" | "image" | "story" | "storybook">("all");
   const [error, setError] = useState("");
   const [currentLearnerId, setCurrentLearnerId] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     // 현재 로그인된 학생 정보 가져오기
@@ -127,6 +128,42 @@ export default function Gallery() {
     }
   };
 
+  const handleExportAll = async () => {
+    if (!classCode) return;
+
+    const instructorPin = prompt(
+      "📥 전체 작품을 다운로드하려면 교사 PIN을 입력하세요:\n\n" +
+      "⚠️ 교사만 전체 작품을 다운로드할 수 있습니다."
+    );
+
+    if (!instructorPin) return;
+
+    setIsExporting(true);
+    try {
+      console.log("📦 ZIP 다운로드 시작...");
+      const blob = await exportClassZip(classCode, instructorPin);
+      const filename = `${classCode}_작품모음_${new Date().toISOString().split('T')[0]}.zip`;
+      downloadZipFile(blob, filename);
+      alert("✅ 전체 작품이 다운로드되었습니다!");
+    } catch (error: any) {
+      console.error("다운로드 오류:", error);
+      alert(`❌ 다운로드 실패: ${error.message}`);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleCardClick = (item: Artifact) => {
+    // 작품 타입별로 다른 페이지로 이동
+    if (item.type === "story") {
+      navigate(`/gallery/${classCode}/story/${item.artifactId}`);
+    } else if (item.type === "storybook") {
+      navigate(`/gallery/${classCode}/storybook/${item.artifactId}`);
+    } else if (item.type === "image") {
+      navigate(`/gallery/${classCode}/image/${item.artifactId}`);
+    }
+  };
+
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#FFF9F0", padding: "20px" }}>
       <div className="responsive-container" style={{ maxWidth: "800px", margin: "0 auto" }}>
@@ -149,6 +186,35 @@ export default function Gallery() {
           }}>
             수업 코드: <strong>{classCode}</strong>
           </p>
+        </div>
+
+        {/* 다운로드 버튼 */}
+        <div style={{
+          marginBottom: "16px",
+          textAlign: "right"
+        }}>
+          <button
+            onClick={handleExportAll}
+            disabled={isExporting || artifacts.length === 0}
+            style={{
+              padding: "12px 24px",
+              fontSize: "15px",
+              fontWeight: "600",
+              background: isExporting || artifacts.length === 0
+                ? "#ccc"
+                : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "12px",
+              cursor: isExporting || artifacts.length === 0 ? "not-allowed" : "pointer",
+              boxShadow: isExporting || artifacts.length === 0
+                ? "none"
+                : "0 4px 12px rgba(16, 185, 129, 0.3)",
+              transition: "all 0.2s"
+            }}
+          >
+            {isExporting ? "📦 다운로드 중..." : "📥 전체 작품 다운로드 (교사용)"}
+          </button>
         </div>
 
         {/* 필터 버튼 */}
@@ -281,13 +347,15 @@ export default function Gallery() {
               {filteredArtifacts.map((item) => (
                 <div
                   key={item.artifactId}
+                  onClick={() => handleCardClick(item)}
                   style={{
                     background: "#ffffff",
                     border: "2px solid #E5E7EB",
                     borderRadius: "16px",
                     overflow: "hidden",
                     transition: "all 0.3s",
-                    position: "relative"
+                    position: "relative",
+                    cursor: "pointer"
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "translateY(-4px)";

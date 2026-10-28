@@ -1,152 +1,106 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1f2d52">
-<title>우리 팀 숏폼 프롬프트 복사창</title>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#182b52"><title>우리 팀 숏폼 프롬프트 복사창 | 영산고</title>
 <style>
-:root{--ink:#18243f;--mute:#62708b;--line:#dbe2ef;--blue:#505fe5;--pale:#eef1ff;--shadow:0 16px 45px rgba(34,43,85,.08)}
-*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:#f5f7fb;color:var(--ink);font-family:system-ui,-apple-system,"Malgun Gothic","Noto Sans KR",sans-serif;font-size:16px;line-height:1.6}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}:focus-visible{outline:3px solid #f9bd69;outline-offset:2px}.wrap{max-width:1050px;margin:auto;padding:0 24px 56px}
-header{background:linear-gradient(112deg,#1c2a4a,#364c88);color:white;padding:37px 0 42px}header small{font-size:13px;letter-spacing:.11em;color:#c9d6ff;font-weight:800}h1{font-size:clamp(29px,4vw,43px);letter-spacing:-.06em;line-height:1.27;margin:9px 0}header p{margin:0;color:#dbe4ff;font-size:15px}.panel{background:white;border:1px solid var(--line);border-radius:20px;padding:26px;margin-top:22px;box-shadow:var(--shadow)}.panel h2{font-size:20px;letter-spacing:-.035em;margin:0 0 17px}.field-name{display:block;font-size:14px;font-weight:800;margin-bottom:8px}.topic{width:100%;border:2px solid #cfd8ed;border-radius:12px;padding:15px 17px;font-size:19px;color:#1c2950;outline:none}.topic:focus,.story-input:focus{border-color:var(--blue)}.story-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:21px}.story-input{width:100%;min-height:104px;padding:13px 15px;border:2px solid #cfd8ed;background:#fff;border-radius:12px;color:#1c2950;font-size:16px;line-height:1.55;resize:vertical;outline:none}.micro-help{margin:6px 0 0;font-size:12px;color:#75829c}.field-number{font-weight:900;color:#4353ca;margin-right:3px}.required-hint{display:inline-block;color:#6b7895;font-size:12px;font-weight:600;margin-left:8px}.example{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.chip{background:#f2f5fb;border:1px solid #dde3ef;border-radius:30px;padding:7px 11px;font-size:13px;color:#3f4b67}.chip:hover{background:#e7ebff}.highlight-field{margin-top:19px}.highlight-field .topic{font-size:16px;padding:12px 15px}.options{display:flex;flex-wrap:wrap;gap:16px;margin-top:20px}.group{display:flex;align-items:center;flex-wrap:wrap;gap:8px}.group-label{color:#53627e;font-size:14px;font-weight:700;margin-right:4px}.pill{border:1px solid #d6deef;background:white;border-radius:10px;padding:8px 14px;font-size:14px;color:#3d4c69;font-weight:700}.pill.active{background:#e9ecff;color:#394cc6;border-color:#7080fa;box-shadow:inset 0 0 0 1px #7080fa}.how{margin:16px 0 0;font-size:13px;color:var(--mute)}.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:18px}.tab{padding:13px 8px;border:1px solid #dbe2ef;border-radius:12px;background:#f6f8fd;color:#53627e;font-size:14px;font-weight:800}.tab.active{border-color:var(--blue);background:var(--pale);color:#3545c4}.preview-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.preview-head h2{margin:0}.subtext{color:var(--mute);font-size:14px;margin:7px 0 16px}.codebox{background:#f8faff;border:1px solid #dce4f3;padding:22px 24px;border-radius:13px;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;font-size:16px;line-height:1.9;min-height:235px;user-select:text}.placeholder{color:#8b95aa}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:17px}.copy{border:0;background:var(--blue);color:white;border-radius:12px;padding:13px 24px;font-size:15px;font-weight:800;min-width:200px}.secondary{border:1px solid #cfd8ef;background:white;color:#374773;padding:12px 17px;border-radius:12px;font-weight:700}.copy:hover{background:#3d4ed1}.tip{font-size:13px;color:#596783;margin-top:15px;border-left:3px solid #b8c3f8;padding:5px 0 5px 11px}.choice-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px}.choice-row select{border:1px solid #cfdaeb;border-radius:9px;padding:9px 11px;background:white;color:#2b3c65}.notice{margin-top:12px;padding:10px 13px;color:#334b71;background:#f0f5fe;border-radius:9px;font-size:13px}.foot{margin:26px 0 0;color:#78859c;text-align:center;font-size:12px}.sr{position:absolute;left:-10000px}@media(max-width:700px){.wrap{padding:0 14px 40px}.panel{padding:19px 16px;border-radius:16px;margin-top:14px}.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.codebox{padding:17px 15px;font-size:15px}.copy{width:100%}.secondary{flex:1}.topic{font-size:17px}.group{width:100%}.options{gap:12px}.story-fields{grid-template-columns:1fr}.story-input{min-height:88px}}
-</style>
-</head>
-<body>
-<header><div class="wrap"><small>GEMINI × CANVA | 영산고 숏폼 실습</small><h1>우리 팀 프롬프트 복사창</h1><p>주제를 정하고, 프롬프트를 복사해서 제미나이에 붙여넣으세요.</p></div></header>
-<main class="wrap">
-<section class="panel" aria-labelledby="setup-title">
-<h2 id="setup-title">1. 우리 팀이 전하고 싶은 이야기는?</h2>
-<label class="field-name" for="topic">영상의 핵심 주제 직접 입력</label>
-<input id="topic" class="topic" type="text" maxlength="100" autocomplete="off" placeholder="예: 친구들과 함께 성장하는 학교생활" aria-describedby="topic-help">
-<div id="topic-help" class="example"><span style="font-size:13px;color:#79859c;align-self:center">이야기 주제 예시:</span><button class="chip" data-example="동아리에서 찾은 즐거움과 우정">동아리의 즐거움</button><button class="chip" data-example="친구들과 함께 성장하는 학교생활">친구와 성장</button><button class="chip" data-example="우리 학교에서 찾은 나의 꿈">나의 꿈 찾기</button><button class="chip" data-example="평범한 하루 속 특별한 순간들">특별한 하루</button><button class="chip" data-example="중3 때는 몰랐던 우리 학교의 매력">우리 학교의 매력</button></div>
-<div class="story-fields">
-<div><label class="field-name" for="hook"><span class="field-number">①</span> 처음 3초, 어떤 말로 시선을 끌까요?<span class="required-hint">우리 팀이 직접 작성</span></label><textarea id="hook" class="story-input" maxlength="140" placeholder="예: 학교에서 가장 즐거운 시간이 언제인지 알아?" aria-describedby="hook-help"></textarea><p class="micro-help" id="hook-help">중3 후배가 계속 보고 싶어지는 짧은 질문이나 한마디</p></div>
-<div><label class="field-name" for="message"><span class="field-number">②</span> 이 영상으로 꼭 하고 싶은 말은?<span class="required-hint">우리 팀이 직접 작성</span></label><textarea id="message" class="story-input" maxlength="220" placeholder="예: 우리 학교에서는 동아리 활동을 통해 친구들과 도전하고 성장할 수 있다는 걸 보여주고 싶어." aria-describedby="message-help"></textarea><p class="micro-help" id="message-help">영상이 끝난 뒤 후배가 기억했으면 하는 메시지</p></div>
-</div>
-<div class="highlight-field">
-<label class="field-name" for="highlight"><span class="field-number">③</span> 이미지에 넣고 싶은 짧은 강조 문구는?<span class="required-hint">원할 때 작성</span></label>
-<input id="highlight" class="topic" type="text" maxlength="34" autocomplete="off" placeholder="예: 함께 성장하는 시간" aria-describedby="highlight-help">
-<p class="micro-help" id="highlight-help">포스터처럼 강조할 한마디만 적으세요. 글자를 넣을 장면과 위치는 제미나이가 자연스럽게 결정합니다.</p>
-</div>
-<div class="options">
-<div class="group" role="group" aria-label="그림 스타일"><span class="group-label">이미지 스타일</span><button class="pill active" data-style="real" aria-pressed="true">실사형</button><button class="pill" data-style="anime" aria-pressed="false">애니메이션형</button></div>
-<div class="group" role="group" aria-label="영상 장면 수"><span class="group-label">장면 수</span><button class="pill" data-scenes="6" aria-pressed="false">6장면</button><button class="pill active" data-scenes="8" aria-pressed="true">8장면</button></div>
-</div>
-<p class="how"><strong>주제 + 첫 3초 후킹 + 하고 싶은 말</strong>을 의논해 작성하세요. 강조 문구는 선택 사항입니다. <strong>글자를 넣을 장면과 위치는 프롬프트가 자동으로 정합니다.</strong></p>
+:root{--ink:#162443;--muted:#64728e;--line:#dce4f0;--primary:#4c59d6;--cream:#f9fafc;--light:#f0f3ff;--mint:#ecf9f5;--shadow:0 14px 42px rgba(18,32,67,.09)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:#f5f7fc;font-family:system-ui,-apple-system,"Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.56}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.43}button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible,select:focus-visible{outline:3px solid #ffbb5e;outline-offset:3px}header{background:linear-gradient(118deg,#182b52,#334a88);color:white}header .inner{max-width:1140px;padding:33px 26px 35px;margin:auto}header .eyebrow{color:#bdccff;font-size:12px;font-weight:800;letter-spacing:.13em}h1{margin:9px 0;font-size:clamp(28px,3vw,41px);letter-spacing:-.045em;line-height:1.3}header p{color:#e3eaff;margin:3px 0 0;font-size:15px}.wrap{max-width:1140px;padding:23px 25px 64px;margin:auto}.layout{display:grid;grid-template-columns: .97fr 1.03fr;gap:20px;align-items:start}.panel{background:white;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:25px}.panel h2{font-size:21px;line-height:1.4;letter-spacing:-.04em;margin:0 0 8px}.muted{color:var(--muted);font-size:13px;margin:0 0 18px}.label{display:block;font-size:15px;font-weight:850;margin:18px 0 8px}.num{display:inline-flex;width:24px;height:24px;border-radius:50%;align-items:center;justify-content:center;background:#eef1ff;color:#394ac3;font-size:13px;margin-right:6px}.field{border:2px solid #d5deee;background:#fff;border-radius:11px;min-height:49px;padding:11px 13px;width:100%;color:#17274c;font-size:16px;outline:none}.field:focus{border-color:var(--primary)}textarea.field{min-height:94px;resize:vertical;line-height:1.6}.examples{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.chip{border:1px solid #dde5ef;border-radius:999px;background:#f4f6fb;color:#3b4e70;padding:7px 11px;font-size:12.5px}.chip:hover{background:#e9eeff;border-color:#b8c3fc}.small-note{font-size:12px;color:#74819a;margin:6px 0 0}.style-choices{display:grid;grid-template-columns:1fr 1fr;gap:9px}.style-choice{display:flex;align-items:center;justify-content:center;gap:7px;background:#fff;border:2px solid #d7dfed;border-radius:12px;padding:12px 8px;color:#405171;font-weight:800}.style-choice.on{background:#f0f2ff;border-color:#6877ef;color:#3343b2}.more{border-top:1px solid #e7ebf3;margin-top:22px;padding-top:8px}.more summary{font-weight:750;color:#536486;font-size:14px;cursor:pointer;padding:12px 0}.more .morebody{padding-bottom:8px}.more .row{display:flex;gap:7px;flex-wrap:wrap}.small-select{padding:8px 12px;border:1px solid #cbd5e7;background:white;border-radius:9px;color:#334461}.small-select.active{background:var(--light);border-color:#7282e6;color:#3847a8;font-weight:800}.intro{padding:11px 13px;background:var(--mint);border-radius:11px;color:#306656;font-size:13px;margin:0 0 18px}.step{border:1px solid #dce4f1;background:#fff;border-radius:15px;margin-top:11px;overflow:hidden}.step-head{padding:15px 16px 0}.step-title{font-size:16px;font-weight:850;margin:0}.step-desc{font-size:12.5px;color:#697794;margin:3px 0 0}.step-controls{padding:12px 16px 3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.step-controls label{font-size:13px;font-weight:750;color:#54637c}.step-controls select{padding:7px 10px;border:1px solid #ced8ea;border-radius:9px;background:white;color:#26365e}.step-actions{padding:12px 16px 16px}.copybtn{width:100%;border:0;border-radius:11px;min-height:48px;background:#4b58d7;color:white;font-weight:850;font-size:15px;padding:12px 15px}.copybtn:hover:not(:disabled){background:#3546c4}.copybtn.done{background:#10866f}.step-detail{border-top:1px solid #e8edf5;background:#f9faff;padding:0 15px}.step-detail summary{color:#506286;padding:11px 0;cursor:pointer;font-size:13px;font-weight:700}.step-detail pre{margin:0 0 15px;background:#fff;border:1px solid #dde4ef;border-radius:10px;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:keep-all;max-height:330px;overflow:auto;font:13px/1.75 "Noto Sans KR","Malgun Gothic",system-ui,sans-serif}.status{margin-top:14px;background:#eef5ff;color:#335486;padding:12px 14px;border-radius:11px;font-size:13px;min-height:44px}.flow{font-size:12.5px;color:#59708e;margin:14px 0 0}.warning{background:#fffaf0;border:1px solid #f0dfaf;color:#796036;border-radius:11px;padding:11px 13px;font-size:12.5px;margin:15px 0 0}.footer{text-align:center;color:#8190a6;font-size:12px;margin-top:26px}.compact{font-size:12px;color:#6e7c94;margin-top:4px}.shortpreview{background:#f7f9ff;border:1px solid #e0e6f2;border-radius:10px;padding:11px 13px;font-size:13px;color:#435474;margin:16px 0 0}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.wrap{padding:16px 13px 40px}header .inner{padding:26px 17px}.panel{padding:20px 17px}.panel h2{font-size:19px}}@media(max-width:460px){.chip{font-size:12px;padding:7px 8px}.style-choice{font-size:13px}.step-actions{padding:10px 12px 13px}.step-head{padding:13px 12px 0}.step-controls{padding:10px 12px 2px}}
+</style></head><body>
+<header><div class="inner"><div class="eyebrow">YOUNGSAN SCHOOL · GEMINI × CANVA</div><h1>🎬 우리 팀 숏폼 만들기</h1><p>우리 이야기를 정하고, ①부터 차례대로 복사해 제미나이에 붙여넣어요.</p></div></header>
+<main class="wrap"><div class="layout">
+<section class="panel" aria-labelledby="formtitle"><h2 id="formtitle">우리 팀의 생각 정하기</h2><p class="muted">2명이 2~3분 정도 이야기한 뒤 적어 보세요. 정답은 없습니다.</p>
+<label class="label" for="topic"><span class="num">1</span>우리 영상의 주제는?</label><input class="field" id="topic" maxlength="100" placeholder="예: 동아리 생활의 즐거움" autocomplete="off"><div class="examples" aria-label="주제 예시"><button type="button" class="chip" data-topic="동아리에서 찾은 즐거움과 우정">동아리의 즐거움</button><button type="button" class="chip" data-topic="친구들과 함께 성장한 하루">친구와 성장</button><button type="button" class="chip" data-topic="우리 학교에서 찾은 나의 꿈">나의 꿈 찾기</button><button type="button" class="chip" data-topic="평범한 학교의 특별한 하루">특별한 하루</button></div>
+<label class="label" for="hook"><span class="num">2</span>처음 3초에 하고 싶은 말은?</label><textarea class="field" id="hook" maxlength="140" placeholder="예: 학교에서 가장 기다려지는 시간이 언제인지 알아?"></textarea><div class="examples"><button type="button" class="chip" data-hook="학교에서 가장 기다려지는 시간이 언제인지 알아?">궁금증 질문</button><button type="button" class="chip" data-hook="우리 학교가 생각보다 특별한 이유!">호기심 한마디</button><button type="button" class="chip" data-hook="고등학교 생활, 정말 지루할까?">편견 뒤집기</button></div>
+<label class="label" for="message"><span class="num">3</span>후배에게 꼭 전하고 싶은 말은?</label><textarea class="field" id="message" maxlength="220" placeholder="예: 친구들과 도전하면서 나도 몰랐던 장점을 찾을 수 있다는 걸 보여주고 싶어."></textarea>
+<label class="label" for="style">그림 스타일 선택</label><div class="style-choices" id="style" role="group" aria-label="그림 스타일"><button type="button" class="style-choice on" data-style="real" aria-pressed="true">📷 실사형</button><button type="button" class="style-choice" data-style="anime" aria-pressed="false">🎨 애니메이션형</button></div>
+<div class="shortpreview" id="summary" aria-live="polite">위의 세 가지를 적으면 우리 팀만의 프롬프트가 준비됩니다.</div>
+<details class="more"><summary>선택 사항 · 장면 수와 포스터 글자 바꾸기</summary><div class="morebody"><div class="label" style="margin-top:7px">영상 장면 수</div><div class="row" role="group" aria-label="장면 수"><button type="button" class="small-select active" data-scenes="6" aria-pressed="true">기본 6장면</button><button type="button" class="small-select" data-scenes="8" aria-pressed="false">도전 8장면</button></div><label class="label" for="highlight" style="margin-top:18px">포스터처럼 강조할 글자 (선택)</label><input class="field" id="highlight" maxlength="34" placeholder="예: 함께 성장하는 시간"><p class="small-note">어느 장면에 넣을지, 어디에 배치할지는 제미나이가 판단합니다.</p></div></details>
 </section>
-<section class="panel" aria-labelledby="prompt-title">
-<div class="preview-head"><h2 id="prompt-title">2. 필요한 프롬프트 복사</h2><span style="font-size:13px;color:#6a7894">①부터 순서대로 사용</span></div>
-<div class="tabs" role="tablist" aria-label="프롬프트 단계">
-<button class="tab active" role="tab" data-tab="plan" aria-selected="true">① 기획표</button>
-<button class="tab" role="tab" data-tab="concept" aria-selected="false">② 4개 시안</button>
-<button class="tab" role="tab" data-tab="scene" aria-selected="false">③ 한 장씩</button>
-<button class="tab" role="tab" data-tab="thumb" aria-selected="false">④ 썸네일</button>
-</div>
-<p id="description" class="subtext">학생들이 정한 주제로 숏폼 기획표를 만듭니다.</p>
-<div id="scene-chooser" class="choice-row" hidden><label for="scene-num" class="group-label">만들 장면 선택</label><select id="scene-num" aria-label="이미지로 만들 장면 번호"></select><span style="font-size:13px;color:#6d7890">같은 제미나이 채팅에서 순서대로 사용</span></div>
-<div id="concept-chooser" class="choice-row" hidden><span class="group-label">시안 고른 뒤에는 ③에서 선택한 시안 번호를 반영합니다.</span></div>
-<div id="chosen-chooser" class="choice-row" hidden><label for="chosen-num" class="group-label">선택한 시안</label><select id="chosen-num"><option value="1">1번 시안</option><option value="2">2번 시안</option><option value="3">3번 시안</option><option value="4">4번 시안</option></select></div>
-<div id="prompt" class="codebox placeholder" aria-live="polite">위의 세 칸을 채우면 우리 팀만의 프롬프트가 완성됩니다.</div>
-<div class="actions"><button id="copy" class="copy" disabled>📋 이 프롬프트 복사</button><button id="next" class="secondary">다음 단계 →</button></div>
-<div class="tip">학생이 직접 정한 주제를 반영합니다. 제미나이가 만든 내용은 그대로 쓰지 말고 실제 학교 모습과 맞는지 확인하고 수정하세요.</div>
-<div class="notice" id="status" role="status" aria-live="polite">팀원과 의논해 세 칸을 작성해 보세요.</div>
-</section>
-<p class="foot">브라우저에서 바로 실행 · 로그인/개인정보 입력 없음 · 크롬북과 태블릿 지원</p>
-</main>
+<section class="panel" aria-labelledby="steptitle"><h2 id="steptitle">프롬프트 복사하기</h2><p class="muted">긴 프롬프트는 읽거나 외우지 않아도 괜찮아요. <b>순서대로 복사해서 제미나이에 붙여넣으세요.</b></p>
+<div class="intro">👫 한 명은 화면을 조작하고, 다른 한 명은 결과를 확인해 주세요. 다음 단계에서 역할을 바꿔도 좋아요.</div>
+<div class="step" id="step-plan"><div class="step-head"><p class="step-title">① 우리 팀 영상 기획표</p><p class="step-desc">주제·3초 후킹·메시지로 6장면(또는 8장면) 구성</p></div><div class="step-actions"><button type="button" class="copybtn" data-copy="plan" disabled>① 기획 프롬프트 복사</button></div><details class="step-detail"><summary>복사할 내용 미리 보기</summary><pre id="preview-plan"></pre></details></div>
+<div class="step" id="step-concept"><div class="step-head"><p class="step-title">② 마음에 드는 시안 고르기</p><p class="step-desc">주인공·교복·그림체를 비교할 시안 4개</p></div><div class="step-actions"><button type="button" class="copybtn" data-copy="concept" disabled>② 시안 프롬프트 복사</button></div><details class="step-detail"><summary>복사할 내용 미리 보기</summary><pre id="preview-concept"></pre></details></div>
+<div class="step" id="step-scene"><div class="step-head"><p class="step-title">③ 장면 이미지 한 장씩 만들기</p><p class="step-desc">선택한 시안과 같은 인물·교복·스타일 유지</p></div><div class="step-controls"><label for="chosen">내가 고른 시안</label><select id="chosen"><option value="1">1번</option><option value="2">2번</option><option value="3">3번</option><option value="4">4번</option></select><label for="scene">만들 장면</label><select id="scene"></select></div><div class="step-actions"><button type="button" class="copybtn" data-copy="scene" disabled>③ 선택한 장면 프롬프트 복사</button></div><details class="step-detail"><summary>복사할 내용 미리 보기</summary><pre id="preview-scene"></pre></details></div>
+<div class="step" id="step-thumb"><div class="step-head"><p class="step-title">④ 썸네일 이미지 만들기</p><p class="step-desc">우리 팀 영상의 분위기를 담은 세로형 표지 한 장</p></div><div class="step-actions"><button type="button" class="copybtn" data-copy="thumb" disabled>④ 썸네일 프롬프트 복사</button></div><details class="step-detail"><summary>복사할 내용 미리 보기</summary><pre id="preview-thumb"></pre></details></div>
+<div class="status" id="status" role="status" aria-live="polite">먼저 왼쪽에 주제·후킹·전하고 싶은 말을 입력해 주세요.</div>
+<div class="warning">💡 실제 학교 시설·교복·학과 정보는 학교 자료와 비교해 확인하세요. 이미지 안의 글자에 오타가 나면 캔바에서 수정하면 됩니다.</div>
+<div class="flow">이후 캔바에서 이미지 배치 → 음성 또는 녹음 → 자막 → 음악 → MP4 저장</div>
+</section></div><p class="footer">크롬북 · 태블릿 사용 가능 · 입력한 내용은 브라우저 안에서만 프롬프트로 조합합니다.</p></main>
 <script>
-(()=>{
-'use strict';
+(()=>{'use strict';
 const $=id=>document.getElementById(id);
-const state={topic:'',hook:'',message:'',highlight:'',style:'real',scenes:8,tab:'plan',scene:1,chosen:1};
-const names=['plan','concept','scene','thumb'];
-const descriptions={plan:'학생들이 정한 주제로 숏폼 기획표를 만듭니다.',concept:'실사 또는 애니메이션 스타일의 숏폼 시안 네 개를 한 번에 비교합니다.',scene:'기획표와 선택한 시안을 바탕으로 이미지 한 장씩 생성합니다.',thumb:'영상과 동일한 분위기의 세로형 썸네일을 따로 만듭니다.'};
-const styleText=()=>state.style==='anime'?'깔끔하고 세련된 한국 청소년 애니메이션/웹툰 스타일. 정돈된 구도, 자연스러운 인물 비율, 섬세한 표정, 조화로운 색감, 부드러운 빛.':'깨끗하고 세련된 실사형 사진 스타일. 영화적인 자연광, 정돈된 배경, 자연스러운 표정, 고급스러운 색감, 충분한 여백.';
-function prompt(){
- const t=state.topic.trim(),h=state.hook.trim(),m=state.message.trim(),k=state.highlight.trim(),n=state.scenes;
- if(!t||!h||!m)return '';
- const keywordRule=k?`우리 팀이 선택한 포스터형 강조 문구: "${k}". 이 문구가 자연스럽게 어울리는 핵심 장면에서 우선 사용해 줘.`:'우리 팀이 강조 문구를 정하지 않았다면 해당 장면의 내용을 보고 짧은 포스터형 핵심어를 제안해 줘.';
- const posterRule=`[짧은 포스터형 글자 — 디자인은 스스로 판단]
-- ${keywordRule}
-- 모든 장면에 억지로 글자를 넣지 말고, 오프닝·학과 소개·핵심 활동·엔딩처럼 글자가 실제로 도움이 되는 장면에서만 한 줄 넣어 줘.
-- 글자를 넣을지 여부와 위쪽/아래쪽/적절한 위치는 장면 구도에 맞게 자동으로 정해 줘. 인물 얼굴과 중요한 시설을 가리지 마. 사용자에게 다시 묻지 마.
-- 정돈된 포스터형 타이포그래피: 굵고 선명한 한글, 높은 대비, 여백, 단정한 글꼴, 영화적·감성적 디자인.
-- 한 장면에 짧은 한글 강조 문구 하나만 허용해. 긴 자막·설명글·번호·워터마크는 넣지 마.
-- 정확한 명칭과 한글 맞춤법을 지켜 줘. 오타가 생기면 그 장면은 글자 없이 생성한 뒤 캔바에서 직접 수정할 수 있도록 해 줘.`;
- if(state.tab==='plan')return `중학교 3학년에게 우리 학교의 매력을 소개하는 50~60초 숏폼을 기획해 줘.
-주제는 ${t}이야.
+const state={topic:'',hook:'',message:'',highlight:'',style:'real',scenes:6,chosen:1,scene:1};
+const styleText=()=>state.style==='anime'?'세련된 한국 청소년 웹툰·애니메이션 스타일. 자연스러운 인물 비율, 정교한 선과 표정, 조화로운 파스텔 색감, 부드러운 조명, 정돈된 배경.':'깨끗한 실사형 홍보 사진 스타일. 영화 같은 자연광, 자연스러운 표정과 피부 질감, 안정적인 화면 구성, 정돈된 배경과 여백, 고급스러운 색감.';
+const ready=()=>Boolean(state.topic.trim()&&state.hook.trim()&&state.message.trim());
+function makePrompt(kind){if(!ready())return '';
+const t=state.topic.trim(),h=state.hook.trim(),m=state.message.trim(),k=state.highlight.trim(),n=state.scenes;
+const emphasis=k?`우리 팀이 정한 짧은 강조 문구: "${k}". 이 문구가 자연스러운 핵심 장면에 우선 활용해 줘.`:'강조 문구가 어울리는 장면에서는 짧은 포스터형 문구를 직접 제안해 줘.';
+const poster=`[이미지 속 글자 디자인]
+- ${emphasis}
+- 모든 장면에 글자를 넣지 말고, 오프닝·학과 소개·핵심 활동·마지막 장면 등 필요한 경우에만 넣어 줘.
+- 인물이나 중요한 활동을 가리지 않게 글자 위치를 스스로 결정해 줘.
+- 짧고 굵은 한글 한 줄만 허용해. 긴 설명·대사·번호·워터마크 금지.
+- 단정하고 세련된 포스터형 타이포그래피로 만들어 줘. 한글 오타가 생기면 글자 없이 다시 만들어 캔바에서 수정할 수 있게 해 줘.`;
+if(kind==='plan')return `중학교 3학년에게 우리 학교의 매력을 소개하는 50~60초 숏폼을 기획해 줘.
 
-[우리 팀이 직접 정한 내용 — 반드시 우선 반영]
+[우리 팀이 직접 정한 이야기]
+영상 주제: ${t}
+첫 3초에 시선을 끌 문장: "${h}"
+영상에서 꼭 전하고 싶은 말: "${m}"
+${k?`이미지 안에 넣을 짧은 강조 문구: "${k}"`:'강조 문구는 필요한 장면에만 짧게 제안해 줘.'}
+
+학교 공식 자료에서 확인한 내용만 사실로 사용하고, 총 ${n}개 장면을 표로 만들어 줘. 학교 자료가 없으면 확인되지 않은 시설·학과·성과를 지어내지 말아 줘.
+각 장면에 ① 화면 내용 ② 시간 ③ 캔바에 넣을 짧은 자막 ④ AI 음성용 자연스러운 한 문장 ⑤ 이미지 속 짧은 강조 문구(없으면 '없음')를 써 줘.
+첫 장면은 0~3초 후킹으로 시작하고, 나머지 장면은 시간을 적절히 나눠 전체 50~60초로 구성해 줘.
+학과를 단순히 나열하지 말고 주제에 맞는 이야기를 만들어 줘. 학생들의 진짜 경험을 중심에 두고 마지막은 중3 후배를 초대하는 메시지로 마무리해 줘.
+음성은 고1 학생이 말하는 듯 자연스럽고 짧게 작성해 줘. 학생이 직접 바꿀 수 있도록 표를 명확하게 보여 줘.`;
+if(kind==='concept')return `방금 만든 '${t}' 숏폼 기획표를 참고해 우리 팀이 고를 수 있는 4가지 시각 시안을 하나의 이미지로 만들어 줘.
 첫 3초 후킹: "${h}"
-영상으로 꼭 전하고 싶은 말: "${m}"
-${k?`이미지 안의 짧은 강조 문구: "${k}"`:'이미지 안의 강조 문구는 필요한 장면에만 짧게 제안해 줘.'}
+중심 메시지: "${m}"
 
-학교 공식 자료에서 확인한 내용만 사실로 사용하고 총 ${n}개 장면의 표를 만들어 줘.
-학과를 단순히 나열하지 말고 주제가 드러나는 이야기 흐름으로 구성해 줘. 학과·실습·동아리는 이야기를 보여 주는 장면으로 활용해 줘.
-각 장면에 ① 화면 내용 ② 시간 ③ 캔바용 짧은 자막 ④ AI 음성용 자연스러운 한 문장 ⑤ 이미지에 짧은 포스터형 강조 문구가 필요한지(필요 없다면 '없음')를 넣어 줘.
-첫 장면은 0~3초 후킹으로 구성해 줘. 나머지 ${n-1}개 장면은 대략 ${n===8?'6~8':'9~11'}초씩 배분해 전체 50~60초로 만들어 줘.
-영상 전체에 우리 팀이 전하고 싶은 말을 자연스럽게 담고, 마지막은 중3 후배를 초대하는 메시지로 마무리해 줘.
-강조 문구는 이미지에 짧게, 설명 자막·내레이션은 캔바에서 편집할 수 있게 구분해 줘.
-문장은 고1 학생이 직접 말하듯 자연스럽게 해 줘. 학교 공식 자료로 확인되지 않은 정보는 사실처럼 만들지 마.`;
- if(state.tab==='concept')return `방금 만든 '${t}' 홍보 숏폼 기획표를 바탕으로 시각적 분위기를 비교할 수 있는 시안 네 개를 이미지 한 장으로 만들어 줘.
-우리 팀의 첫 3초 후킹은 "${h}", 꼭 전할 메시지는 "${m}"야.
-
-- 정확히 2행 × 2열로 4개 시안을 배치해 줘.
-- 4개 시안은 구도와 분위기가 서로 다르되, 공통으로 ${styleText()}
-- 학교 홍보에 어울리는 학생과 대표 활동을 보여줘.
-- 교복과 학교 공간은 실제로 확인된 참고 자료가 있다면 그것을 우선 반영하고, 확인되지 않은 학교 로고나 시설은 임의로 만들어 사실처럼 보이게 하지 마.
-- 인물 표정과 교복을 자연스럽게 표현하고 배경은 깔끔하게 정리해 줘.
-- 시안은 디자인 비교용이므로 글자·자막·번호 없이 만들어 줘. 최종 장면 이미지에는 필요할 때 짧은 포스터형 문구를 넣을 거야.
-
-4개 시안만 보여주고 멈춰 줘. 학생들이 가장 마음에 드는 시안을 선택할 거야.`;
- if(state.tab==='scene')return `앞서 만든 '${t}' 홍보 숏폼 기획표와 시안 4개 중 내가 고른 ${state.chosen}번 시안을 기준으로 이미지를 만들어 줘.
+- 시안 4개를 정확히 2행 × 2열로 배열해 줘. 이 시트는 최종 4장면이 아니라 분위기 비교용 시안 4개야.
+- 각 시안은 구도·표정·배경 분위기를 서로 다르게 보여 줘.
+- 모든 시안은 공통적으로 ${styleText()}
+- 주제에 어울리는 한국 고등학생과 대표 활동을 자연스럽게 보여 줘.
+- 실제 교복·교실·학교 건물 사진을 첨부했다면 색상과 형태를 참고해 줘. 확인되지 않은 학교 로고·시설은 사실처럼 만들지 마.
+- 이 시안에는 글자·자막·번호·워터마크를 넣지 마. 최종 장면에서는 필요할 때 짧은 포스터형 글자를 넣을 거야.
+- 네 시안을 한 장으로 생성한 뒤 멈춰 줘. 학생들이 마음에 드는 하나를 고를 거야.`;
+if(kind==='scene')return `앞서 작성한 '${t}' 홍보 숏폼 기획표와 내가 고른 ${state.chosen}번 시안을 기준으로 ${state.scene}번 장면만 이미지로 만들어 줘.
 첫 3초 후킹: "${h}"
-영상의 핵심 메시지: "${m}"
-기획표에서 정한 ${state.scene}번 장면 내용과 학생들의 메시지를 우선 반영해 줘.
+영상의 중심 메시지: "${m}"
 
-지금은 ${state.scene}번 장면만 세로 9:16 비율의 독립된 이미지 한 장으로 만들어 줘.
-4컷·콜라주·분할 화면으로 만들지 마.
-${styleText()}
-앞서 선택한 시안과 동일한 주인공 얼굴, 헤어스타일, 교복 디자인, 전체 색감과 조명을 최대한 유지해 줘.
-학교 공식 자료로 확인되지 않은 건물·시설·교복 문양을 임의로 만들어 실제처럼 표현하지 마.
-
-${posterRule}
-정확성이 중요한 학과명은 공식 자료에 나온 경우에만 넣어 줘. 별도의 상세 자막과 음성은 캔바에서 추가할 거야.
-이미지 한 장을 생성한 뒤 다음 장면을 자동 생성하지 말고 멈춰 줘.`;
- return `앞서 만든 '${t}' 홍보 숏폼의 기획표와 ${state.chosen}번 시안, 완성된 이미지를 기준으로 썸네일 한 장을 만들어 줘.
-첫 3초 후킹: "${h}"
-영상으로 전할 핵심 메시지: "${m}"
-
-- 세로 9:16 비율의 독립된 이미지 한 장. 분할 화면이나 콜라주 금지.
-- 학생들이 만든 숏폼에서 가장 매력적인 활동·표정·학교생활을 포스터처럼 강하게 보여줘.
+[출력]
+- 기획표의 ${state.scene}번 장면 내용과 해당 장면의 짧은 강조 문구 계획을 우선 반영해 줘.
+- 세로 9:16 비율의 독립된 이미지 단 한 장. 여러 컷·콜라주·분할 화면 금지.
 - ${styleText()}
-- 앞선 장면과 동일한 얼굴, 머리, 교복과 분위기를 유지해 줘.
-- ${keywordRule}
-- 썸네일에 알맞은 짧은 한글 제목 한 줄만 포스터형으로 크게 강조해 줘. 문구가 길면 뜻을 유지하면서 짧게 다듬어 줘.
-- 글자 위치는 학생이 지정하지 않는다. 인물이나 핵심 장면을 가리지 않고 가장 읽기 좋은 위치를 스스로 골라 줘.
-- 긴 자막·부연 설명·번호·워터마크를 넣지 말고, 로고를 임의로 만들지 마.
-- 제목의 맞춤법이 틀리면 글자가 없는 배경으로 다시 생성해 캔바에서 수정할 수 있게 해 줘.
-- 확인되지 않은 학교 시설이나 활동을 사실처럼 만들지 마.`;
+- 선택한 시안과 이전에 만든 장면의 주인공 얼굴, 헤어스타일, 교복 색상과 디자인, 그림체와 조명을 유지해 줘.
+- 실제 학교 참고 이미지가 있다면 교복과 시설을 우선 반영하되, 확인되지 않은 학교 정보를 사실처럼 표현하지 마.
+
+${poster}
+학과 이름처럼 정확해야 하는 이름은 확인된 경우에만 넣어 줘. 긴 내레이션과 자막은 캔바에서 편집할 예정이야.
+이 한 장만 완성하고 다음 이미지는 자동으로 만들지 마.`;
+return `앞서 만든 '${t}' 홍보 숏폼 기획표, 선택한 ${state.chosen}번 시안과 완성된 장면 이미지를 참고하여 썸네일 하나를 생성해 줘.
+첫 3초 후킹: "${h}"
+중심 메시지: "${m}"
+
+- 세로 9:16 한 장의 독립된 썸네일. 여러 컷·콜라주 금지.
+- ${styleText()}
+- 영상 속 주인공의 얼굴, 머리, 교복과 색감을 그대로 유지해 줘.
+- ${emphasis}
+- 호기심을 끄는 짧은 한글 제목 한 줄을 포스터처럼 눈에 띄게 넣어 줘. 학생들이 정한 후킹과 영상 메시지를 우선 고려해 줘.
+- 글자는 인물 얼굴과 중요한 부분을 가리지 않는 곳에 자동 배치해 줘.
+- 설명 글·번호·워터마크·임의의 학교 로고는 넣지 마.
+- 정확하지 않은 시설이나 활동을 사실처럼 그리지 마. 오타가 있으면 글자 없는 배경으로 다시 생성해 캔바에서 수정하게 해 줘.`;
 }
-function refresh(){
- const text=prompt();$('prompt').textContent=text||'주제·첫 3초 후킹·하고 싶은 말, 세 칸을 모두 채우면 복사할 수 있습니다.';$('prompt').classList.toggle('placeholder',!text);$('copy').disabled=!text;$('description').textContent=descriptions[state.tab];
- for(const el of document.querySelectorAll('[data-tab]')){const on=el.dataset.tab===state.tab;el.classList.toggle('active',on);el.setAttribute('aria-selected',String(on));}
- $('scene-chooser').hidden=state.tab!=='scene';$('chosen-chooser').hidden=!(state.tab==='scene'||state.tab==='thumb');$('next').textContent=state.tab==='thumb'?'① 기획표로 돌아가기':'다음 단계 →';
- const s=$('scene-num');if(s.options.length!==state.scenes){s.innerHTML='';for(let i=1;i<=state.scenes;i++){const opt=document.createElement('option');opt.value=i;opt.textContent=`${i}번 장면`;s.appendChild(opt)};}s.value=String(state.scene);$('chosen-num').value=String(state.chosen);
-}
-$('topic').addEventListener('input',e=>{state.topic=e.target.value;refresh()});
-$('hook').addEventListener('input',e=>{state.hook=e.target.value;refresh()});
-$('message').addEventListener('input',e=>{state.message=e.target.value;refresh()});
-$('highlight').addEventListener('input',e=>{state.highlight=e.target.value;refresh()});
-for(const el of document.querySelectorAll('[data-example]'))el.addEventListener('click',()=>{state.topic=el.dataset.example;$('topic').value=state.topic;refresh();$('topic').focus()});
-for(const el of document.querySelectorAll('[data-style]'))el.addEventListener('click',()=>{state.style=el.dataset.style;for(const e of document.querySelectorAll('[data-style]')){let on=e===el;e.classList.toggle('active',on);e.setAttribute('aria-pressed',String(on))}refresh()});
-for(const el of document.querySelectorAll('[data-scenes]'))el.addEventListener('click',()=>{state.scenes=Number(el.dataset.scenes);state.scene=Math.min(state.scene,state.scenes);for(const e of document.querySelectorAll('[data-scenes]')){let on=e===el;e.classList.toggle('active',on);e.setAttribute('aria-pressed',String(on))}refresh()});
-for(const el of document.querySelectorAll('[data-tab]'))el.addEventListener('click',()=>{state.tab=el.dataset.tab;refresh()});
-$('scene-num').addEventListener('change',e=>{state.scene=Number(e.target.value);refresh()});$('chosen-num').addEventListener('change',e=>{state.chosen=Number(e.target.value);refresh()});
-$('next').addEventListener('click',()=>{state.tab=names[(names.indexOf(state.tab)+1)%names.length];refresh();document.querySelector('#prompt-title').scrollIntoView({behavior:'smooth',block:'start'})});
-async function copyText(t){if(navigator.clipboard&&window.isSecureContext){try{await navigator.clipboard.writeText(t);return true}catch(e){}}let x=document.createElement('textarea');x.value=t;x.setAttribute('readonly','');x.style.position='fixed';x.style.opacity='0';document.body.appendChild(x);x.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}x.remove();return ok}
-$('copy').addEventListener('click',async()=>{const t=prompt();if(!t)return;const ok=await copyText(t);$('status').textContent=ok?'✓ 복사 완료! 제미나이 채팅창에 붙여넣으세요.':'자동 복사가 제한되었습니다. 위 문장을 선택한 뒤 Ctrl+C로 복사하세요.';if(!ok){const range=document.createRange();range.selectNodeContents($('prompt'));const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range)}else{$('copy').textContent='✓ 복사 완료';setTimeout(()=>$('copy').textContent='📋 이 프롬프트 복사',1500)} });
+function refresh(){for(const id of ['topic','hook','message','highlight'])state[id]=$(id).value;for(const kind of ['plan','concept','scene','thumb']){$('preview-'+kind).textContent=makePrompt(kind)||'위 입력칸 세 개를 채운 후 이곳에서 복사할 내용을 확인할 수 있습니다.';document.querySelector(`[data-copy="${kind}"]`).disabled=!ready()};$('summary').textContent=ready()?`✦ 우리 팀: ${state.topic.trim()} · ${state.scenes}장면 · ${state.style==='real'?'실사형':'애니메이션형'}`:'주제, 첫 3초 후킹, 전하고 싶은 말을 적으면 복사 버튼이 켜집니다.';if(ready()&&$('status').dataset.copied!=='true')$('status').textContent='준비됐어요! 오른쪽 ①번부터 복사해 제미나이에 붙여넣으세요.';updateSceneOptions()}
+function updateSceneOptions(){const scene=$('scene');if(scene.options.length!==state.scenes){scene.textContent='';for(let i=1;i<=state.scenes;i++){const op=document.createElement('option');op.value=String(i);op.textContent=`${i}번 장면`;scene.appendChild(op)}}state.scene=Math.min(state.scene,state.scenes);scene.value=String(state.scene)}
+for(const id of ['topic','hook','message','highlight'])$(id).addEventListener('input',()=>{$('status').dataset.copied='false';refresh()});
+for(const el of document.querySelectorAll('[data-topic]'))el.addEventListener('click',()=>{$('topic').value=el.dataset.topic;refresh()});
+for(const el of document.querySelectorAll('[data-hook]'))el.addEventListener('click',()=>{$('hook').value=el.dataset.hook;refresh()});
+for(const el of document.querySelectorAll('[data-style]'))el.addEventListener('click',()=>{state.style=el.dataset.style;for(const b of document.querySelectorAll('[data-style]')){const active=b===el;b.classList.toggle('on',active);b.setAttribute('aria-pressed',String(active))}refresh()});
+for(const el of document.querySelectorAll('[data-scenes]'))el.addEventListener('click',()=>{state.scenes=Number(el.dataset.scenes);for(const b of document.querySelectorAll('[data-scenes]')){const active=b===el;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))}refresh()});
+$('chosen').addEventListener('change',e=>{state.chosen=Number(e.target.value);refresh()});$('scene').addEventListener('change',e=>{state.scene=Number(e.target.value);refresh()});
+async function copyToClipboard(text){if(navigator.clipboard&&window.isSecureContext){try{await navigator.clipboard.writeText(text);return true}catch(e){}}const t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.cssText='position:fixed;left:-9999px;top:0;opacity:0';document.body.appendChild(t);t.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}t.remove();return ok}
+for(const b of document.querySelectorAll('[data-copy]'))b.addEventListener('click',async()=>{const kind=b.dataset.copy,text=makePrompt(kind);if(!text)return;const ok=await copyToClipboard(text);$('status').dataset.copied='true';$('status').textContent=ok?`✓ ${b.textContent.trim()} 완료! 제미나이 채팅 입력창에 붙여넣으세요.`:'복사가 차단되었습니다. 바로 아래 «복사할 내용 미리 보기»를 열어 문장을 선택하고 Ctrl+C를 눌러 주세요.';if(ok){const prev=b.textContent;b.textContent='✓ 복사 완료!';b.classList.add('done');setTimeout(()=>{b.textContent=prev;b.classList.remove('done')},1400)}else{const details=b.closest('.step').querySelector('details');details.open=true;const pre=details.querySelector('pre');const selection=window.getSelection(),range=document.createRange();range.selectNodeContents(pre);selection.removeAllRanges();selection.addRange(range)}});
 refresh();
 })();
-</script>
-</body>
-</html>
+</script></body></html>
